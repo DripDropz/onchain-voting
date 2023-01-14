@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/dripdropz/onchain-voting/tree/main/docs/schema/",
+  "$id": "https://raw.githubusercontent.com/DripDropz/onchain-voting/main/docs/schema/Vote.json",
   "title": "Vote",
   "description": "Describe an individual user vote cast for a given ballot",
   "type": "object",
