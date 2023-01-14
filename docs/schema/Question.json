@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dripdropz/onchain-voting/",
+  "title": "Question",
+  "description": "Describe one of the questions on a ballot",
+  "type": "object",
+  "properties": {
+    "type": {
+      "title": "Type of Question",
+      "description": "Choose the voter answer format",
+      "$ref": "#/$defs/cardanoString",
+      "enum": [
+        "single",
+        "multiple",
+        "ranked"
+      ]
+    },
+    "question": {
+      "title": "The Question",
+      "description": "The human-readable question posed to voters",
+      "$ref": "#/$defs/stringOrArray"
+    },
+    "choices": {
+      "title": "The Choices",
+      "description": "The choices voters may select from. Abstain should always be an option and should not be reflected in the question itself",
+      "type": "array",
+      "items": {
+
+      }
+    },
+    "supplemental": {
+      "title": "Question Supplemental Information",
+      "description": "This should be a URI pointing to additional information or clarification about the question that is not strictly necessary for validation.",
+      "type": "uri"
+    },
+    "maxChoices": {
+      "title": "Maximum Choices",
+      "description": "Used for multiple or ranked choice votes. Represents the maximum amount of options a user may select per the voting authority. Do not provide if no limit.",
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": [
+    "type",
+    "question",
+    "choices"
+  ],
+  "$defs": {
+    "cardanoString": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "stringOrArray": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/cardanoString"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cardanoString"
+          }
+        }
+      ]
+    }
+  }
+}

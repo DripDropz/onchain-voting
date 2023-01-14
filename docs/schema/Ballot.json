@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dripdropz/onchain-voting/",
+  "title": "Ballot",
+  "description": "Describe the ballot that voters will be casting votes for",
+  "type": "object",
+  "properties": {
+    "version": {
+      "title": "Version",
+      "description": "A string representing the semantic version of this voting system that should be used for interpretations",
+      "$ref": "#/$defs/cardanoString",
+      "minimum": "1.0.0"
+    },
+    "type": {
+      "title": "Type of Vote",
+      "description": "Describes the mechanism for determining voter eligibility. Current version only supports snapshot based",
+      "$ref": "#/$defs/cardanoString",
+      "enum": [
+        "snapshot"
+      ]
+    },
+    "snapshot": {
+      "title": "Snapshot Details",
+      "description": "Define the parameters of the snapshot",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "authority": {
+      "title": "Voting Authority",
+      "description": "Simple text descriptor of the voting authority conducting the vote",
+      "$ref": "#/$defs/stringOrArray"
+    },
+    "start": {
+      "title": "Voting Start Time",
+      "description": "A UNIX timestamp value declaring the start of the voting period. Votes cast before this should be considered invalid.",
+      "type": "integer"
+    },
+    "end": {
+      "title": "Voting End Time",
+      "description": "A UNIX timestamp value declaring the end of the voting period. Note: Votes may be recorded on-chain after this time period.",
+      "type": "integer"
+    },
+    "questions": {
+      "title": "Ballot Questions",
+      "description": "An array declaring and describing the questions on the ballot that voters shall cast votes on.",
+      "type": "array",
+      "items": {
+
+      }
+    }
+  },
+  "required": [
+    "version",
+    "type",
+    "start",
+    "end",
+    "questions"
+  ],
+  "$defs": {
+    "cardanoString": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "stringOrArray": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/cardanoString"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cardanoString"
+          }
+        }
+      ]
+    }
+  }
+}
