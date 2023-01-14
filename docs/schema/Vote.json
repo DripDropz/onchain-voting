@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/DripDropz/onchain-voting/main/docs/schema/Vote.json",
+  "title": "Vote",
+  "description": "Describe an individual user vote cast for a given ballot",
+  "type": "object",
+  "properties": {
+    "voter_id": {
+      "title": "Voter Identification",
+      "description": "This should be a unique identifier for a given voter who can also be found in the snapshot or voter rolls",
+      "$ref": "#/$defs/stringOrArray"
+    },
+    "voter_power": {
+      "title": "Voter Power",
+      "description": "For votes utilizing voter power, this should be provided by the voting authority and match the snapshot or voter rolls value",
+      "type": "integer"
+    },
+    "ballot_id": {
+      "title": "Ballot ID",
+      "description": "This should be a unique data hash that is presented to the voter so they can validate that their vote was cast without modification",
+      "$ref": "#/$defs/stringOrArray"
+    },
+    "signature": {
+      "title": "Voter Signature",
+      "description": "For utilizing CIP-8/CIP-30 wallet signing. The user's cryptographic signature of the ballot should be passed for verification purposes",
+      "$ref": "#/$defs/stringOrArray"
+    },
+    "choices": {
+      "title": "Voter Ballot Choices",
+      "description": "Here we should detail the voter's choices as cross-referencable to the on-chain ballot",
+      "type": "array",
+      "items": {
+        "type": "array",
+        "description": "All voter choices, even single choice, should be passed as an array of values",
+        "items": {
+          "default": 0,
+          "type": "integer",
+          "description": "The 1-indexed choices for the indexed question from the ballot. 0 should be treated as abstention"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "cardanoString": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "stringOrArray": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/cardanoString"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cardanoString"
+          }
+        }
+      ]
+    }
+  }
+}

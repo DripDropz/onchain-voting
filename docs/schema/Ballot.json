@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/DripDropz/onchain-voting/main/docs/schema/Ballot.json",
+  "title": "Ballot",
+  "description": "Describe the ballot that voters will be casting votes for",
+  "type": "object",
+  "properties": {
+    "version": {
+      "title": "Version",
+      "description": "A string representing the semantic version of this voting system that should be used for interpretations",
+      "$ref": "#/$defs/cardanoString",
+      "minimum": "1.0.0"
+    },
+    "type": {
+      "title": "Type of Vote",
+      "description": "Describes the mechanism for determining voter eligibility. Current version only supports snapshot based",
+      "$ref": "#/$defs/cardanoString",
+      "enum": [
+        "snapshot"
+      ]
+    },
+    "snapshot": {
+      "title": "Snapshot Details",
+      "description": "Define the parameters of the snapshot",
+      "type": "object",
+      "properties": {
+        "asset": {
+          "default": "lovelace",
+          "oneOf": [
+            {
+              "const": "lovelace"
+            },
+            {
+              "$ref": "#/$defs/cardanoString",
+              "description": "For none-Lovelace values the asset should be set to the bech32-encoded Asset ID of the native asset."
+            }
+          ]
+        },
+        "policy": {
+          "$ref": "#/$defs/cardanoString",
+          "description": "A Cardano Native Token Policy ID. This can be specified as opposed to asset to consider all tokens under a given policy for the snapshot (i.e. NFT projects)"
+        },
+        "epoch": {
+          "type": "integer",
+          "description": "The Cardano blockchain epoch snapshot that should be considered for the snapshot."
+        },
+        "timestamp": {
+          "type": "integer",
+          "description": "A UNIX timestamp value declaring the time to be considered for the snapshot."
+        },
+        "minimum": {
+          "title": "Snapshot Minimum Value",
+          "type": "integer",
+          "description": "The minimum value of an asset that must be held during the snapshot to be considered a valid voter."
+        },
+        "maximum": {
+          "title": "Snapshot Maximum Value",
+          "type": "integer",
+          "description": "The maximum value of an asset that can be held during the snapshot to be considered a valid voter."
+        }
+      }
+    },
+    "authority": {
+      "title": "Voting Authority",
+      "description": "Simple text descriptor of the voting authority conducting the vote",
+      "$ref": "#/$defs/stringOrArray"
+    },
+    "useVoterPower": {
+      "default": 1,
+      "type": "integer",
+      "title": "Use Voter Power",
+      "description": "Should the quantity of assets present during the snapshot be used to represent a voter's power?"
+    },
+    "capVoterPower": {
+      "default": 0,
+      "type": "integer",
+      "title": "Cap for Voting Power",
+      "description": "Users should be granted voter power up to this specified cap"
+    },
+    "allowTransfer": {
+      "default": 1,
+      "type": "integer",
+      "title": "May Voters Transfer Voting Power?",
+      "description": "May users transfer or otherwise delegate their voting power to another user?"
+    },
+    "start": {
+      "title": "Voting Start Time",
+      "description": "A UNIX timestamp value declaring the start of the voting period. Votes cast before this should be considered invalid.",
+      "type": "integer"
+    },
+    "end": {
+      "title": "Voting End Time",
+      "description": "A UNIX timestamp value declaring the end of the voting period. Note: Votes may be recorded on-chain after this time period.",
+      "type": "integer"
+    },
+    "questions": {
+      "title": "Ballot Questions",
+      "description": "An array declaring and describing the questions on the ballot that voters shall cast votes on.",
+      "type": "array",
+      "items": {
+        "$ref": "Question.json"
+      }
+    }
+  },
+  "required": [
+    "version",
+    "type",
+    "start",
+    "end",
+    "questions"
+  ],
+  "$defs": {
+    "cardanoString": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "stringOrArray": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/cardanoString"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cardanoString"
+          }
+        }
+      ]
+    }
+  }
+}
