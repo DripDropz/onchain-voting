@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/dripdropz/onchain-voting/",
+  "$id": "https://github.com/dripdropz/onchain-voting/tree/main/docs/schema/",
   "title": "Question",
   "description": "Describe one of the questions on a ballot",
   "type": "object",
@@ -25,7 +25,7 @@
       "description": "The choices voters may select from. Abstain should always be an option and should not be reflected in the question itself",
       "type": "array",
       "items": {
-
+        "$ref": "#/$defs/stringOrArray"
       }
     },
     "supplemental": {

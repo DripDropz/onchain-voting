@@ -43,7 +43,7 @@ Please see [LICENSE](LICENSE.md) for the full details of the license.
   voting utilizing the $DRIP native asset. We have conducted several successful votes utilizing the techniques and
   solutions described in this repository. It has always been our goal to give back to the Cardano community by open
   sourcing solutions to common problems.
-  - More information and historic vote results available at: [https://dripdropz.io/governance](https://dripdropz.io/governance/)
+  - More information and historic vote results available at: [https://dripdropz.io/vote/](https://dripdropz.io/vote/)
 - **SundaeSwap**: The team at SundaeSwap has been hard at work on their own version of on-chain governance using Merkle Tree
   roll-ups to the blockchain to provide vote auditability.
   - More information available at: [https://services.sundaeswap.finance/](https://services.sundaeswap.finance/)
