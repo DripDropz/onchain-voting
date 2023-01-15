@@ -47,9 +47,9 @@ Please see [LICENSE](LICENSE.md) for the full details of the license.
 - **SundaeSwap**: The team at SundaeSwap has been hard at work on their own version of on-chain governance using Merkle Tree
   roll-ups to the blockchain to provide vote auditability.
   - More information available at: [https://services.sundaeswap.finance/](https://services.sundaeswap.finance/)
-- **Votaire**: The team at Votaire has created a simple and easy to use voting platform that is open and available today to
+- **Voteaire**: The team at Voteaire has created a simple and easy to use voting platform that is open and available today to
   all ecosystem participants. This platform was built out as an expansion to the earlier work performed by members of 
-  the DripDropz Team, the Votaire Team, and other community participants on behalf of SPOCRA.
+  the DripDropz Team, the Voteaire Team, and other community participants on behalf of SPOCRA.
   - Platform Available at: [https://voteaire.io](https://voteaire.io).
   - Github: [https://github.com/voteaire/voteaire-onchain-spec/](https://github.com/voteaire/voteaire-onchain-spec/)
 - **SPOCRA**: The Stake Pool Operators Collective Representation Assemble (SPOCRA) conducted the very first on-chain voting
