@@ -65,23 +65,30 @@
       "description": "Simple text descriptor of the voting authority conducting the vote",
       "$ref": "#/$defs/stringOrArray"
     },
-    "useVoterPower": {
-      "default": 1,
-      "type": "integer",
-      "title": "Use Voter Power",
-      "description": "Should the quantity of assets present during the snapshot be used to represent a voter's power?"
-    },
-    "capVoterPower": {
-      "default": 0,
-      "type": "integer",
-      "title": "Cap for Voting Power",
-      "description": "Users should be granted voter power up to this specified cap"
-    },
-    "allowTransfer": {
-      "default": 1,
-      "type": "integer",
-      "title": "May Voters Transfer Voting Power?",
-      "description": "May users transfer or otherwise delegate their voting power to another user?"
+    "rules": {
+      "type": "object",
+      "title": "Rules of the Vote",
+      "description": "Provide configurable options for the rules of this particular vote.",
+      "properties": {
+        "useVoterPower": {
+          "default": 1,
+          "type": "integer",
+          "title": "Use Voter Power",
+          "description": "Should the quantity of assets present during the snapshot be used to represent a voter's power?"
+        },
+        "capVoterPower": {
+          "default": 0,
+          "type": "integer",
+          "title": "Cap for Voting Power",
+          "description": "Users should be granted voter power up to this specified cap"
+        },
+        "allowTransfer": {
+          "default": 1,
+          "type": "integer",
+          "title": "May Voters Transfer Voting Power?",
+          "description": "May users transfer or otherwise delegate their voting power to another user?"
+        }
+      }
     },
     "start": {
       "title": "Voting Start Time",
