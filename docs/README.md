@@ -20,7 +20,7 @@ than ever to track and record specific votes in specific governance votes withou
 this end, all on-chain metadata published regarding a particular vote should be published by a discrete policy so that
 the count of voters, their votes, and the results are easily indexed in the ledger.
 
-On-Chain Metadata Schemas are documented in the [schema](schema/README.md) directory.
+On-Chain Metadata Schemas are documented in the [schema](schema) directory.
 
 #### Step #2: Ensure Equality and Ease of Access ####
 
