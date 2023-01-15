@@ -5,6 +5,10 @@ On-Chain Voting tool format. A [Question](Question.json) is a sub-schema that de
 [Ballot](Ballot.json) format. A [Vote](Vote.json) represents a single, individual user vote that is cast onto the chain
 and is the part that is tabulated to determine results.
 
+**Note: All submissions of metadata on-chain should use 446 for the metadata index. The initial ballot should be
+published with a nameless token under the voting policy and voter ballots should be submitted (one or more at a time)
+using a token with "Ballot" as the Asset ID.**
+
 ## Schema Notes and Considerations ##
 
 ### Ballot.json ###
