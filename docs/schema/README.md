@@ -108,11 +108,11 @@ or ranked choice.
 
   _voter_power_ × (1 - ((_candidate_choice_index_ - 1) ÷ _maxChoices_))
   
-  First Choice: 100 × (1 - ((1 - 1) ÷ 5))) = 100% Vote Power
+  First Choice: `100 × (1 - ((1 - 1) ÷ 5))` = 100% Vote Power
 
-  Second Choice: 100 × (1 - ((2 - 1) ÷ 5))) = 80% Vote Power
+  Second Choice: `100 × (1 - ((2 - 1) ÷ 5))` = 80% Vote Power
 
-  Third Choice: 100 × (1 - ((3 - 1) × (1 ÷ 5))) = 60% Vote Power
+  Third Choice: `100 × (1 - ((3 - 1) ÷ 5))` = 60% Vote Power
 
   And so on depending upon the number of choices and _maxChoices_ given to a voter.
   
