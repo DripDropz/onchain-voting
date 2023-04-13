@@ -1,0 +1,82 @@
+version: '3'
+services:
+    chainvote.test:
+        build:
+            context: application/vendor/laravel/sail/runtimes/8.2
+            dockerfile: application/vendor/laravel/sail/runtimes/8.2/Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: sail-8.2/app
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        ports:
+            - '${APP_PORT:-8080}:80'
+            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            DB_HOST: ${DB_HOST:-chainvote.db}
+            DB_DATABASE: '${DB_DATABASE:-governor}'
+            DB_USERNAME: '${DB_USERNAME:-cardano}'
+            DB_PASSWORD: '${DB_PASSWORD:-MdT6Sc7XfrpCMJw4D}'
+        volumes:
+            - './application:/var/www/html'
+        networks:
+            - chainvote
+        depends_on:
+            - chainvote.db
+            - chainvote.redis
+    chainvote.db:
+        image: postgres:15.2-alpine3.17
+        container_name: chainvotedb
+        environment:
+            POSTGRES_LOGGING: true
+            POSTGRES_DB: '${POSTGRES_DATABASE:-governor}'
+            POSTGRES_USER: '${POSTGRES_USERNAME:-cardano}'
+            POSTGRES_PASSWORD: '${POSTGRES_PASSWORD:-MdT6Sc7XfrpCMJw4D}'
+            POSTGRES_POSTGRES_PASSWORD: '${POSTGRES_ROOT_PASSWORD:-bVd95i3mUPLKYqGVCRtN}'
+        ports:
+            - "${POSTGRES_PORT:-5436}:5432"
+        healthcheck:
+            test: pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
+            interval: 10s
+            timeout: 2s
+            retries: 10
+        volumes:
+            - type: volume
+              source: chainvote-db
+              target: /var/lib/postgresql/data
+              volume:
+                  nocopy: true
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200k"
+                max-file: "10"
+        networks:
+        - chainvote
+    chainvote.redis:
+        image: 'redis:alpine'
+        ports:
+            - '${FORWARD_REDIS_PORT:-6379}:6379'
+        volumes:
+            - 'chainvote-redis:/data'
+        networks:
+            - chainvote
+        healthcheck:
+            test:
+                - CMD
+                - redis-cli
+                - ping
+            retries: 3
+            timeout: 5s
+networks:
+    chainvote:
+        driver: bridge
+volumes:
+    chainvote-db:
+        driver: local
+    chainvote-redis:
+        driver: local
