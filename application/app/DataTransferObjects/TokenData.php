@@ -5,14 +5,16 @@ namespace App\DataTransferObjects;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
 
-class RegistrationData extends Data
+class TokenData extends Data
 {
     public function __construct(
         public string $hash,
 
-        public int $power,
+        public string $policyId,
 
         #[TypescriptOptional]
-        public ?TokenData $token,
+        public ?BallotData $ballot,
+
+        public VoterData $voter,
     ) {}
 }
