@@ -35,8 +35,6 @@ modify, adapt, and redistribute the code in any way you see fit. The only thing 
 derivative works or implementations. You may attribute either this repository or [DripDropz Team](https://dripdropz.io).
 Please see [LICENSE](LICENSE.md) for the full details of the license.
 
-
-
 ## Other Ecosystem Developers and Participants ##
 
 - **DripDropz**: This platform was built out of the work performed on behalf of DripDropz to conduct on-chain governance
@@ -59,3 +57,68 @@ Please see [LICENSE](LICENSE.md) for the full details of the license.
   - Github: [https://github.com/SPOCRA/onchain-voting](https://github.com/SPOCRA/onchain-voting)
 - We are happy to add any other community-driven projects developing on-chain voting for the Cardano ecosystem. Please
   let us know about them in the GitHub Issues tab above, so we can add them!
+
+
+# Makefile Commands
+* [dev](#dev)
+
+* [watch](#watch)
+
+* [docker-setup](#docker-setup)
+
+* [backend-setup](#backend-setup)
+
+* [backend-install](#backend-install)
+
+* [frontend-install](#frontend-install)
+
+* [frontend-clean](#frontend-clean)
+
+* [rm](#rm)
+ 
+* [down](#down)
+
+* [up](#up)
+
+## dev
+`make dev`  
+Runs docker services in the background, 
+installs composer dependencies, and generates application key.
+
+## watch
+`make watch`  
+Starts vite dev server and watches for changes.
+
+## docker-setup
+`make docker-setup`  
+Runs docker services in the background.
+
+## backend-setup
+`make backend-setup`  
+Installs laravel composer dependencies,
+and generates application key.
+
+## backend-install
+`make backend-install`  
+Installs laravel composer dependencies.
+
+## frontend-install
+`make frontend-install`  
+Delete and reinstall node_modules.
+
+## frontend-clean
+`make frontend-clean`  
+Delete node_modules, lock files and yarn cache.
+
+## rm
+`make rm`  
+remove all docker containers and volumes.
+
+## down
+`make down`  
+shutdown all docker containers but keep volumes.
+
+## up
+`make up`  
+start docker containers.
+
