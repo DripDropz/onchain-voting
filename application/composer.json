@@ -13,6 +13,7 @@
         "laravel/tinker": "^2.8",
         "sammyjo20/saloon": "^2.0",
         "spatie/laravel-data": "^3.4",
+        "spatie/laravel-permission": "^5.10",
         "spatie/laravel-typescript-transformer": "^2.2",
         "tightenco/ziggy": "^1.0",
         "vinkla/hashids": "^11.0"

@@ -43,11 +43,26 @@ dev:
 	make backend-setup
 	make frontend-install
 
+.PHONY: up
+up:
+	$(sail) up -d
+
 .PHONY: watch
 watch:
 	$(sail) npx vite
 
+.PHONY: build
+build:
+	$(sail) npx vite build
 
 .PHONY: down
 down:
 	$(sail) down
+
+.PHONY: sh
+sh:
+	$(sail) shell $(filter-out $@,$(MAKECMDGOALS))
+
+.PHONY: artisan
+artisan:
+	$(sail) artisan $(filter-out $@,$(MAKECMDGOALS))
