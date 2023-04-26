@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Ballot;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Vinkla\Hashids\Facades\Hashids;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,10 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
+        Route::bind('ballot', function ($value, $route) {
+            return $this->getModel(Ballot::class, $value);
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')
@@ -44,5 +50,13 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+    }
+
+    private function getModel($model, $routeKey)
+    {
+        $id = Hashids::connection($model)->decode($routeKey)[0] ?? null;
+        $modelInstance = resolve($model);
+
+        return $modelInstance->findOrFail($id);
     }
 }

@@ -66,3 +66,7 @@ sh:
 .PHONY: artisan
 artisan:
 	$(sail) artisan $(filter-out $@,$(MAKECMDGOALS))
+
+.PHONY: test-backend
+test-backend:
+	$(sail) php ./vendor/bin/pest

@@ -79,6 +79,8 @@ Please see [LICENSE](LICENSE.md) for the full details of the license.
 * [down](#down)
 
 * [up](#up)
+* 
+* [test](#test)
 
 ## dev
 `make dev`  
@@ -121,4 +123,9 @@ shutdown all docker containers but keep volumes.
 ## up
 `make up`  
 start docker containers.
+
+
+## test-backend
+`make test-backend`  
+Run pest php tests.
 
