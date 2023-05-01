@@ -8,13 +8,14 @@ init:
 	docker run --rm --interactive --tty \
           --volume ${PWD}/application:/app \
           composer install --ignore-platform-reqs
-	cp application/.env.example application/.env
+	cp ./application/.env.example ./application/.env
 	make up
 	sleep 20
 	make backend-install
 	make frontend-install
 	$(sail) artisan key:generate
 	make migrate
+	make seed
 
 .PHONY: backend-install
 backend-install:
@@ -29,9 +30,13 @@ frontend-install:
 up:
 	$(sail) up -d
 
+.PHONY: seed
+seed:
+	$(sail) artisan db:seed
+
 .PHONY: migrate
 migrate:
-	$(sail) artisan migrate --seed
+	$(sail) artisan migrate
 
 .PHONY: watch
 watch:

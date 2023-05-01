@@ -80,7 +80,7 @@ const form = useForm({
             </p>
         </header>
 
-        <form @submit.prevent="form.post(route('ballot.store'))" class="relative">
+        <form @submit.prevent="form.post(route('ballots.store'))" class="relative">
             <div class="overflow-hidden rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus-within:border-indigo-500 dark:focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-500 dark:focus-within:ring-indigo-500">
                 <label for="title" class="sr-only">Title</label>
                 <input type="text" name="title" id="title" v-model="form.title"

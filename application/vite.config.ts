@@ -19,7 +19,10 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@inertiajs/inertia-vue': '/node_modules/@inertiajs/inertia-vue/src/index.js'
+            '@inertiajs/inertia-vue': '/node_modules/@inertiajs/inertia-vue/src/index.js',
+            'ziggy': '/vendor/tightenco/ziggy/src/js',
+            'ziggy-vue': '/vendor/tightenco/ziggy/dist/vue',
+            '@': '/resources/js',
         }
     }
 });

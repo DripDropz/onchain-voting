@@ -35,22 +35,20 @@ Route::get('/dashboard', function () {
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // Ballot
-    Route::get('/ballots/{ballot:id}', [BallotController::class, 'view'])->name('ballot.view');
-    Route::get('/ballots/create', [BallotController::class, 'create'])->name('ballot.create');
-    Route::get('/ballots/{ballot}/edit', [BallotController::class, 'edit'])->name('ballot.edit');
+    Route::get('/ballots/create', [BallotController::class, 'create'])->name('ballots.create');
+    Route::get('/ballots/{ballot:id}', [BallotController::class, 'view'])->name('ballots.view');
+    Route::get('/ballots/{ballot}/edit', [BallotController::class, 'edit'])->name('ballots.edit');
 
-    Route::post('/ballots/create', [BallotController::class, 'store'])->name('ballot.store');
-    Route::patch('/ballots/{ballot}/update', [BallotController::class, 'update'])->name('ballot.update');
-    Route::delete('/ballots/{ballot}/delete', [BallotController::class, 'destroy'])->name('ballot.destroy');
+    Route::post('/ballots/create', [BallotController::class, 'store'])->name('ballots.store');
+    Route::patch('/ballots/{ballot}/update', [BallotController::class, 'update'])->name('ballots.update');
+    Route::delete('/ballots/{ballot}/delete', [BallotController::class, 'destroy'])->name('ballots.destroy');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-
 });
 
 require __DIR__.'/auth.php';

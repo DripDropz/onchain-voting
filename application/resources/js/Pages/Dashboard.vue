@@ -52,12 +52,12 @@ const statuses = {
                                         <MenuItems
                                             class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-700 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                                             <MenuItem v-slot="{ active }">
-                                                <Link :href="route('ballot.view', ballot.hash)"
+                                                <Link :href="route('ballots.view', ballot.hash)"
                                                    :class="[active ? 'bg-gray-50 dark:bg-gray-900' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300']"
                                                 >View<span class="sr-only">, {{ ballot.title }}</span></Link>
                                             </MenuItem>
                                             <MenuItem v-slot="{ active }">
-                                                <Link :href="route('ballot.edit', ballot.hash)"
+                                                <Link :href="route('ballots.edit', ballot.hash)"
                                                    :class="[active ? 'bg-gray-50 dark:bg-gray-900' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300']"
                                                 >
                                                     Edit<span class="sr-only">, {{ ballot.title }}</span>
@@ -84,8 +84,8 @@ const statuses = {
                         </li>
 
                         <li class="overflow-hidden rounded-xl border border-dashed border-gray-200 dark:border-gray-700 hover:border-indigo-600 py-16">
-                            <Link as="button" :href="route('ballot.create')" class="px-6 py-4 text-md xl:text-xl text-gray-500 dark:text-gray-400 leading-6 flex flex-col justify-center items-center w-full h-full gap-2">
-                                <PlusIcon class="h-6 w-6 "/>
+                            <Link as="button" :href="route('ballots.create')" class="px-6 py-4 text-md xl:text-xl text-gray-500 dark:text-gray-400 leading-6 flex flex-col justify-center items-center w-full h-full gap-2">
+                                <PlusIcon class="h-6 w-6" />
                                 <span>Create Ballot</span>
                             </Link>
                         </li>

@@ -67,8 +67,9 @@ Please see [LICENSE](LICENSE.md) for the full details of the license.
 ### Get up and running
 1) Clone this repository: `git clone https://github.com/DripDropz/onchain-voting.git`    
 2) cd into the project directory: `cd onchain-voting`   
-3) Run `make init` to install all frontend and backend dependencies and start the docker services.   
-4) Navigate to `http://localhost:8080` in your browser.         
+3) Run `make init` to install all frontend and backend dependencies and start the docker services.
+4) Run `make watch` to start the vite dev server and watch for changes.
+5) Navigate to `http://localhost:8080` in your browser.         
 
 
 # Makefile Commands

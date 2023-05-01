@@ -8,6 +8,7 @@ use App\Models\Ballot;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -57,7 +58,7 @@ class BallotController extends Controller
         $ballot->type = $request->type;
         $ballot->save();
 
-        return Redirect::route('ballot.view', ['ballot' => $ballot->hash]);
+        return Redirect::route('ballots.view', ['ballot' => $ballot->hash]);
     }
 
 
@@ -67,7 +68,7 @@ class BallotController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
 
-        return Redirect::route('ballot.edit');
+        return Redirect::route('ballots.edit');
     }
 
     /**
