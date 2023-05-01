@@ -12,7 +12,13 @@
 
         <!-- Scripts -->
         @routes
-        @vite(['resources/js/app.ts', "resources/js/Pages/{$page['component']}.vue"])
+
+        @production
+            {{vite_production_assets()}}
+        @else
+            @vite(['resources/js/app.ts', "resources/js/Pages/{$page['component']}.vue"])
+        @endproduction
+
         @inertiaHead
     </head>
     <body class="font-sans antialiased">

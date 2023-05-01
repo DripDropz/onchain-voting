@@ -58,6 +58,16 @@ Please see [LICENSE](LICENSE.md) for the full details of the license.
 - We are happy to add any other community-driven projects developing on-chain voting for the Cardano ecosystem. Please
   let us know about them in the GitHub Issues tab above, so we can add them!
 
+# Running Locally with docker-compose
+1) Make sure you have docker installed and running.
+2) Make sure you have make installed.
+3) Clone this repository.
+4) Run `make dev` to start the docker services and install composer dependencies.
+5) Run `make watch` to start the vite dev server and watch for changes.
+6) Navigate to `http://localhost:8080` in your browser.
+7) Run `make down` to shutdown all docker containers but keep volumes.
+8) Run `make rm` to remove all docker containers and volumes.  
+
 
 # Makefile Commands
 * [dev](#dev)

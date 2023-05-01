@@ -49,6 +49,7 @@ up:
 
 .PHONY: watch
 watch:
+    $(sail) up -d
 	$(sail) npx vite
 
 .PHONY: build

@@ -17,4 +17,9 @@ export default defineConfig({
             },
         }),
     ],
+    resolve: {
+        alias: {
+            '@inertiajs/inertia-vue': '/node_modules/@inertiajs/inertia-vue/src/index.js'
+        }
+    }
 });
