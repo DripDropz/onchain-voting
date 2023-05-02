@@ -1,6 +1,9 @@
 <?php
 
+use App\DataTransferObjects\BallotData;
+use App\Http\Controllers\BallotController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Ballot;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -26,10 +29,23 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $ballots = BallotData::collection(Ballot::all());
+    return Inertia::render('Dashboard')->with([
+        'ballots' => $ballots
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Ballot
+    Route::get('/ballots/create', [BallotController::class, 'create'])->name('ballots.create');
+    Route::get('/ballots/{ballot:id}', [BallotController::class, 'view'])->name('ballots.view');
+    Route::get('/ballots/{ballot}/edit', [BallotController::class, 'edit'])->name('ballots.edit');
+
+    Route::post('/ballots/create', [BallotController::class, 'store'])->name('ballots.store');
+    Route::patch('/ballots/{ballot}/update', [BallotController::class, 'update'])->name('ballots.update');
+    Route::delete('/ballots/{ballot}/delete', [BallotController::class, 'destroy'])->name('ballots.destroy');
+
+    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

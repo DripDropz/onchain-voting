@@ -3,15 +3,34 @@
 namespace App\DataTransferObjects;
 
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Attributes\MapOutputName;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
+use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
+#[TypeScript]
 class BallotData extends Data
 {
     public function __construct(
         public string $hash,
 
-        public UserData $user,
+        public string $title,
+
+        #[TypescriptOptional]
+        public ?string $description,
+
+        #[TypescriptOptional]
+        public ?string $version,
+
+        public string $status,
+
+        public string $type,
+
+        #[TypeScriptOptional]
+        #[MapOutputName('total_votes')]
+        public mixed $totalVotes,
+
+        public ?UserData $user,
 
         #[TypescriptOptional]
         #[DataCollectionOf(QuestionData::class)]

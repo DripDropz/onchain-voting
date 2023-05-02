@@ -58,6 +58,19 @@ Please see [LICENSE](LICENSE.md) for the full details of the license.
 - We are happy to add any other community-driven projects developing on-chain voting for the Cardano ecosystem. Please
   let us know about them in the GitHub Issues tab above, so we can add them!
 
+# Running Locally with docker-compose
+### Pre-requisites
+* Make sure you have docker installed and running. 
+* Make sure you have make installed.
+
+
+### Get up and running
+1) Clone this repository: `git clone https://github.com/DripDropz/onchain-voting.git`    
+2) cd into the project directory: `cd onchain-voting`   
+3) Run `make init` to install all frontend and backend dependencies and start the docker services.
+4) Run `make watch` to start the vite dev server and watch for changes.
+5) Navigate to `http://localhost:8080` in your browser.         
+
 
 # Makefile Commands
 * [dev](#dev)
@@ -79,6 +92,8 @@ Please see [LICENSE](LICENSE.md) for the full details of the license.
 * [down](#down)
 
 * [up](#up)
+* 
+* [test](#test)
 
 ## dev
 `make dev`  
@@ -121,4 +136,9 @@ shutdown all docker containers but keep volumes.
 ## up
 `make up`  
 start docker containers.
+
+
+## test-backend
+`make test-backend`  
+Run pest php tests.
 
