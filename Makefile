@@ -8,7 +8,6 @@ init:
 	docker run --rm --interactive --tty \
           --volume ${PWD}/application:/app \
           composer install --ignore-platform-reqs
-	cp ./application/.env.example ./application/.env
 	make up
 	sleep 20
 	make backend-install

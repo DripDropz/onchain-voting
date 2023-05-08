@@ -7,6 +7,7 @@
     "devDependencies": {
         "@inertiajs/vue3": "^1.0.0",
         "@tailwindcss/forms": "^0.5.3",
+        "@types/node": "^18.16.3",
         "@vitejs/plugin-vue": "^4.0.0",
         "autoprefixer": "^10.4.12",
         "axios": "^1.1.2",
@@ -19,6 +20,7 @@
     },
     "dependencies": {
         "@headlessui/vue": "^1.7.13",
-        "@heroicons/vue": "^2.0.17"
+        "@heroicons/vue": "^2.0.17",
+        "pinia": "^2.0.35"
     }
 }
