@@ -3,7 +3,7 @@ services:
     chainvote.test:
         build:
             context: application/vendor/laravel/sail/runtimes/8.2
-            dockerfile: application/vendor/laravel/sail/runtimes/8.2/Dockerfile
+            dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
         image: sail-8.2/app

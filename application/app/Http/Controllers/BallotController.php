@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\DataTransferObjects\BallotData;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Ballot;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -50,32 +52,80 @@ class BallotController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $ballot = new Ballot();
-        $ballot->title = $request->title;
-        $ballot->description = $request->description;
-        $ballot->version = $request->version;
-        $ballot->status = $request->status;
-        $ballot->type = $request->type;
-        $ballot->save();
+        try{
+            $request->validate([
+                'title' => 'required',
+                'description' => 'nullable',
+                'version' => 'required',
+                'status' => 'required',
+                'type' => 'required',
+            ]);
 
-        return Redirect::route('ballots.view', ['ballot' => $ballot->hash]);
+            $user = Auth::user();
+
+            if ($user->hasRole('super-admin') == true) {
+                $ballot = new Ballot();
+                $ballot->title = $request->title;
+                $ballot->description = $request->description;
+                $ballot->version = $request->version;
+                $ballot->status = $request->status;
+                $ballot->type = $request->type;
+                $ballot->save();
+                
+                return Redirect::route('ballots.view', ['ballot' => $ballot->hash]);
+            }
+
+            return redirect()->back();
+        }catch (\Exception $e) {
+            throw new \Exception("Fill all input fields.");
+        }
+
     }
 
 
     /**
      * Update the ballot's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request, $ballot): RedirectResponse
     {
+        $request->validate([
+            'title' => 'required',
+            'description' => 'nullable',
+        ]);
 
-        return Redirect::route('ballots.edit');
+        $user = Auth::user();
+
+        $existingBallot = Ballot::byHash($ballot);
+        $startedDateTime = $existingBallot->started_at ?? null;
+        $currentDateTime = Carbon::now($tz='UTC');
+        
+        if(($startedDateTime == null || $startedDateTime > $currentDateTime) && $user->hasRole('super-admin')) {
+            $existingBallot->insert([
+                'title' => $request->title,
+                'description' => $request->description,
+                'version' => $request->version,
+            ]);
+
+            return Redirect::route('ballots.view', ['ballot' => $existingBallot->hash]);
+        }
+
+        return Redirect::route('ballots.edit', ['ballot' => $ballot]);
     }
 
     /**
      * Delete the ballot's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, $ballot): RedirectResponse
     {
-        return Redirect::to('/');
+        $user = Auth::user();
+
+        if ($user->hasRole('super-admin') == true) {
+            $existingBallot = Ballot::byHash($ballot);
+            $existingBallot->delete();
+
+            return Redirect::to('/');
+        }
+
+        return Redirect::route('ballots.view', ['ballot' => $ballot]);
     }
 }

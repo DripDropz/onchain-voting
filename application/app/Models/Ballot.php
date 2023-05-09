@@ -7,10 +7,11 @@ use App\Enums\ModelStatusEnum;
 use App\Http\Traits\HasHashIds;
 use App\Models\Traits\HashIdModel;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Ballot extends Model
 {
-    use HasHashIds, HashIdModel;
+    use HasHashIds, HashIdModel, HasFactory;
 
     protected $fillable = [
         'title',
@@ -18,6 +19,7 @@ class Ballot extends Model
         'version',
         'status',
         'type',
+        'started_at'
     ];
 
     protected $hidden = [
@@ -31,5 +33,6 @@ class Ballot extends Model
     protected $casts = [
         'type' => BallotTypeEnum::class,
         'status' => ModelStatusEnum::class,
+        'started_at' => 'datetime:Y-m-d H:i:s',
     ];
 }
