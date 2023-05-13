@@ -3,16 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\DataTransferObjects\BallotData;
-use App\Http\Requests\ProfileUpdateRequest;
+use App\DataTransferObjects\QuestionData;
+use App\Enums\ModelStatusEnum;
+use App\Enums\QuestionTypeEnum;
+use App\Http\Requests\BallotCreateRequest;
 use App\Models\Ballot;
+use App\Models\Question;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use JetBrains\PhpStorm\NoReturn;
+use Momentum\Modal\Modal;
 
 class BallotController extends Controller
 {
@@ -35,7 +40,6 @@ class BallotController extends Controller
         ]);
     }
 
-
     /**
      * Display the ballot's form.
      */
@@ -46,67 +50,30 @@ class BallotController extends Controller
         ]);
     }
 
-
     /**
      * Store a newly created Ballot in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(BallotData $ballotData): RedirectResponse
     {
-        try{
-            $request->validate([
-                'title' => 'required',
-                'description' => 'nullable',
-                'version' => 'required',
-                'status' => 'required',
-                'type' => 'required',
-            ]);
+        $ballot = new Ballot;
+        $ballot->fill($ballotData->all());
+        $ballot->save();
 
-            $user = Auth::user();
-
-            if ($user->hasRole('super-admin') == true) {
-                $ballot = new Ballot();
-                $ballot->title = $request->title;
-                $ballot->description = $request->description;
-                $ballot->version = $request->version;
-                $ballot->status = $request->status;
-                $ballot->type = $request->type;
-                $ballot->save();
-                
-                return Redirect::route('ballots.view', ['ballot' => $ballot->hash]);
-            }
-
-            return redirect()->back();
-        }catch (\Exception $e) {
-            throw new \Exception("Fill all input fields.");
-        }
-
+        return Redirect::route('ballots.view', ['ballot' => $ballot->hash]);
     }
-
 
     /**
      * Update the ballot's profile information.
      */
-    public function update(Request $request, $ballot): RedirectResponse
+    public function update(BallotData $ballotData, Ballot $ballot): RedirectResponse
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-        ]);
+        $startedDateTime = $ballot->started_at ?? null;
+        $currentDateTime = Carbon::now($tz = 'UTC');
 
-        $user = Auth::user();
+        if (($startedDateTime == null || $startedDateTime > $currentDateTime)) {
+            $ballot->update($ballotData->all());
 
-        $existingBallot = Ballot::byHash($ballot);
-        $startedDateTime = $existingBallot->started_at ?? null;
-        $currentDateTime = Carbon::now($tz='UTC');
-        
-        if(($startedDateTime == null || $startedDateTime > $currentDateTime) && $user->hasRole('super-admin')) {
-            $existingBallot->insert([
-                'title' => $request->title,
-                'description' => $request->description,
-                'version' => $request->version,
-            ]);
-
-            return Redirect::route('ballots.view', ['ballot' => $existingBallot->hash]);
+            return Redirect::route('ballots.view', ['ballot' => $ballot->hash]);
         }
 
         return Redirect::route('ballots.edit', ['ballot' => $ballot]);
@@ -127,5 +94,31 @@ class BallotController extends Controller
         }
 
         return Redirect::route('ballots.view', ['ballot' => $ballot]);
+    }
+
+    public function createQuestion(Request $request, Ballot $ballot): Modal
+    {
+        return Inertia::modal('Question/Create')
+            ->with([
+                'ballot' => BallotData::from($ballot),
+                'questionTypes' => QuestionTypeEnum::values(),
+                'questionsStatuses' => ModelStatusEnum::values(),
+            ])
+            ->baseRoute('ballots.edit', [
+                'ballot' => $ballot->hash
+            ]);
+    }
+
+    /**
+     * Store a newly created Ballot in storage.
+     */
+    #[NoReturn] public function storeQuestion(QuestionData $questionData): RedirectResponse
+    {
+        $question = new Question;
+        $question->fill($questionData->all());
+        $question->ballot_id = decode_model_hash($questionData->ballot->hash, Ballot::class);
+        $question->save();
+
+        return Redirect::route('ballots.edit', ['ballot' => $question?->ballot?->hash]);
     }
 }

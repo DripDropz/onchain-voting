@@ -10,8 +10,7 @@ init:
           composer install --ignore-platform-reqs
 	make up
 	sleep 20
-	make backend-install
-	make frontend-install
+	make -j2 backend-install frontend-install
 	$(sail) artisan key:generate
 	make migrate
 	make seed

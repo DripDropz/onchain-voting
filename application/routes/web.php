@@ -37,13 +37,26 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Ballot
-    Route::get('/ballots/create', [BallotController::class, 'create'])->name('ballots.create');
-    Route::get('/ballots/{ballot:id}', [BallotController::class, 'view'])->name('ballots.view');
-    Route::get('/ballots/{ballot}/edit', [BallotController::class, 'edit'])->name('ballots.edit');
+    Route::prefix('/ballots')->as('ballots.')->group(function () {
+        Route::get('/', [BallotController::class, 'index'])->name('index');
 
-    Route::post('/ballots/create', [BallotController::class, 'store'])->name('ballots.store');
-    Route::patch('/ballots/{ballot}/update', [BallotController::class, 'update'])->name('ballots.update');
-    Route::delete('/ballots/{ballot}/delete', [BallotController::class, 'destroy'])->name('ballots.destroy');
+        Route::get('/create', [BallotController::class, 'create'])->name('create');
+        Route::get('/{ballot:id}', [BallotController::class, 'view'])->name('view');
+        Route::get('/{ballot}/edit', [BallotController::class, 'edit'])->name('edit');
+
+        Route::post('/create', [BallotController::class, 'store'])->name('store');
+        Route::patch('/{ballot}/update', [BallotController::class, 'update'])->name('update');
+        Route::delete('/{ballot}/delete', [BallotController::class, 'destroy'])->name('destroy');
+
+        // Ballot Questions
+        Route::prefix('/ballots/{ballot}/questions')->as('questions.')->group(function () {
+            Route::get('/create', [BallotController::class, 'createQuestion'])->name('create');
+
+            Route::post('/create', [BallotController::class, 'storeQuestion'])->name('store');
+            Route::patch('/{question}/update', [BallotController::class, 'updateQuestion'])
+                ->name('update');
+        });
+    });
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -51,4 +64,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

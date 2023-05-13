@@ -7,6 +7,7 @@ import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import GlobalAlertComponent from '../shared/components/GlobalAlertComponent.vue';
 import { Link } from '@inertiajs/vue3';
+import { Modal } from 'momentum-modal';
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -121,8 +122,16 @@ const showingNavigationDropdown = ref(false);
 
             <!-- Page Content -->
             <main>
+                <div class="z-50 absolute left-0 top-0 w-full h-full flex justify-end items-end pointer-events-none">
+                    <GlobalAlertComponent />
+                </div>
                 <slot />
-                <GlobalAlertComponent />
+
+
+
+                <div class="z-40">
+                    <Modal />
+                </div>
             </main>
         </div>
     </div>
