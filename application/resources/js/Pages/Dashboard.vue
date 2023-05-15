@@ -77,7 +77,7 @@ const statuses = {
                                 <div class="flex justify-between gap-x-4 py-3">
                                     <dt class="text-gray-500">Total Votes</dt>
                                     <dd class="flex items-start gap-x-2">
-                                        <div class="font-medium text-gray-900 dark:text-gray-200">{{ humanNumber(ballot.totalVotes, 4) }}</div>
+                                        <div class="font-medium text-gray-900 dark:text-gray-200">{{ ballot.totalVotes ? humanNumber(ballot.totalVotes, 4) : 0 }}</div>
                                     </dd>
                                 </div>
                             </dl>

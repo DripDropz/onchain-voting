@@ -4,6 +4,12 @@ namespace App\DataTransferObjects;
 
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\MapOutputName;
+use Spatie\LaravelData\Attributes\Validation\IntegerType;
+use Spatie\LaravelData\Attributes\Validation\Max;
+use Spatie\LaravelData\Attributes\Validation\Required;
+use Spatie\LaravelData\Attributes\Validation\Rule;
+use Spatie\LaravelData\Attributes\Validation\StringType;
+use Spatie\LaravelData\Attributes\WithoutValidation;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -12,19 +18,25 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class BallotData extends Data
 {
     public function __construct(
-        public string $hash,
+        #[WithoutValidation]
+        public ?string $hash,
 
+        #[Required, StringType]
         public string $title,
 
         #[TypescriptOptional]
+        #[StringType, Max(400)]
         public ?string $description,
 
         #[TypescriptOptional]
+        #[Required, IntegerType, Max(200)]
         public ?string $version,
 
-        public string $status,
+        #[StringType]
+        public ?string $status,
 
-        public string $type,
+        #[Rule('string')]
+        public ?string $type,
 
         #[TypeScriptOptional]
         #[MapOutputName('total_votes')]
@@ -52,4 +64,12 @@ class BallotData extends Data
         #[DataCollectionOf(TxData::class)]
         public ?array $txs,
     ) {}
+
+    public static function attributes(): array
+    {
+        return [
+            'title' => 'title',
+            'description' => 'description',
+        ];
+    }
 }

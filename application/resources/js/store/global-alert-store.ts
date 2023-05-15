@@ -1,25 +1,25 @@
-import { defineStore } from 'pinia';
-import { computed, ref, Ref } from 'vue';
+import {defineStore} from 'pinia';
+import {computed, ref, Ref} from 'vue';
 import Alert from '@/models/alert';
 
 export const useGlobalAlert = defineStore('global-alert', () => {
-    let alert = ref({} as Alert);
+    let alert: Ref<Alert | null> = ref(null);
 
-    function showAlert(alertModel:Alert){
+    function showAlert(alertModel: Alert) {
         alert.value = alertModel;
         setTimeout(() => {
-            alert.value.show = false;
+            alert.value = null;
         }, 5000);
     }
 
-    function closeAlert(){
-        alert.value.show = false;
+    function closeAlert() {
+        alert.value = null;
     }
 
     return {
         showAlert,
         closeAlert,
-        alert,
+        alert
     }
 });
 
