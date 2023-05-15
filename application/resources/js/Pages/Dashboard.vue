@@ -6,6 +6,7 @@ import {EllipsisHorizontalIcon, PlusIcon} from '@heroicons/vue/20/solid'
 import humanNumber from "@/utils/human-number";
 import { Link } from '@inertiajs/vue3';
 import BallotData = App.DataTransferObjects.BallotData;
+import BallotStatusBadge from "@/Pages/Ballot/Partials/BallotStatusBadge.vue";
 
 defineProps<{
     status?: string;
@@ -24,19 +25,26 @@ const statuses = {
 
     <AuthenticatedLayout>
         <template #header>
-            <h1 class="font-semibold text-xl xl:text-2xl text-gray-800 dark:text-gray-200 leading-tight">Dashboard</h1>
+            <h1 class="font-semibold text-xl xl:text-2xl text-gray-800 dark:text-gray-200 leading-tight">
+                Dashboard
+            </h1>
         </template>
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="overflow-hidden shadow-sm sm:rounded-lg">
-                    <h2 class="font-semibold text-lg xl:text-xl text-gray-800 dark:text-gray-200 leading-tight mb-4">Ballots</h2>
+                    <h2 class="font-semibold text-lg xl:text-xl text-gray-800 dark:text-gray-200 leading-tight mb-4">
+                        Ballots
+                    </h2>
                     <ul role="list" class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
                         <li v-for="ballot in ballots" :key="ballot.hash"
                             class="overflow-hidden rounded-xl border border-gray-200  dark:border-gray-700">
                             <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6 dark:bg-gray-800">
-                                <div class="text-sm font-medium leading-6 text-gray-900 dark:text-gray-200">
-                                    {{ ballot.title }}
+                                <div class="flex flex-fow gap-3">
+                                    <div class="text-sm font-medium leading-6 text-gray-900 dark:text-gray-200">
+                                        {{ ballot.title }}
+                                    </div>
+                                    <BallotStatusBadge :ballot="ballot"></BallotStatusBadge>
                                 </div>
                                 <Menu as="div" class="relative ml-auto">
                                     <MenuButton class="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
@@ -69,9 +77,15 @@ const statuses = {
                             </div>
                             <dl class="-my-3 divide-y divide-gray-100 dark:divide-gray-700 px-6 py-4 text-sm leading-6 bg-gray-100 dark:bg-gray-900">
                                 <div class="flex justify-between gap-x-4 py-3">
+                                    <dt class="text-gray-500 dark:text-gray-200">Ballot Opens</dt>
+                                    <dd class="text-gray-700 dark:text-gray-100">
+                                        <time datetime="2020-01-07">{{ballot.startedAt}}</time>
+                                    </dd>
+                                </div>
+                                <div class="flex justify-between gap-x-4 py-3">
                                     <dt class="text-gray-500 dark:text-gray-200">Ballot Close</dt>
                                     <dd class="text-gray-700 dark:text-gray-100">
-                                        <time datetime="2020-01-07">January 7, 2020</time>
+                                        <time datetime="2020-01-07">{{ballot.endedAt}}</time>
                                     </dd>
                                 </div>
                                 <div class="flex justify-between gap-x-4 py-3">
@@ -90,8 +104,6 @@ const statuses = {
                             </Link>
                         </li>
                     </ul>
-
-
                 </div>
             </div>
         </div>

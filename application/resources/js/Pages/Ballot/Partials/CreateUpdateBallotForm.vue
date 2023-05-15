@@ -23,6 +23,19 @@
 
                 <div class="flex items-center gap-8 px-2 py-4 xl:px-3">
                     <label for="version"
+                           class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300 w-44">State Date & Time</label>
+                    <input type="datetime-local" name="version" id="version" v-model="form.startedAt" placeholder="Datetime"
+                           class="relative block w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-white dark:bg-gray-900 rounded-lg"/>
+                </div>
+                <div class="flex items-center gap-8 px-2 py-4 xl:px-3">
+                    <label for="version"
+                           class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300 w-44">End Date & Time</label>
+                    <input type="datetime-local" name="version" id="version" v-model="form.endedAt" placeholder="Datetime"
+                           class="relative block w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-white dark:bg-gray-900 rounded-lg"/>
+                </div>
+
+                <div class="flex items-center gap-8 px-2 py-4 xl:px-3">
+                    <label for="version"
                            class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300 w-44">Version</label>
                     <input type="text" name="version" id="version" v-model="form.version" placeholder="Version"
                            class="relative block w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-white dark:bg-gray-900 rounded-lg"/>
@@ -283,19 +296,38 @@ const form = useForm({
     description: props?.ballot?.description,
     version: props?.ballot?.version,
     status: props?.ballot?.status ?? ref(ballotStatuses[0].case),
-    type: props?.ballot?.type ?? ref(ballotTypes[0].name)
+    type: props?.ballot?.type ?? ref(ballotTypes[0].name),
+    startedAt: props?.ballot?.startedAt,
+    endedAt: props?.ballot?.endedAt,
 });
 
 const alertStore = useGlobalAlert();
 
 function submitForm() {
-    form.post(route('ballots.create'), {
-        onError: (errors) => {
-            console.log(errors);
-            Object.entries(errors).forEach(([key, value]) => {
-                alertStore.showAlert(setAlert(value, 'info'));
-            });
-        },
-    });
+    if(!props.ballot?.hash){
+        form.post(route('ballots.create'), {
+            onSuccess: () => {
+                alertStore.showAlert(setAlert('Ballot created successfully', 'success'));
+            },
+            onError: (errors) => {
+                console.log(errors);
+                Object.entries(errors).forEach(([key, value]) => {
+                    alertStore.showAlert(setAlert(value, 'info'));
+                });
+            },
+        });
+    } else  {
+        form.patch(route('ballots.update', {ballot: props.ballot?.hash}), {
+            onSuccess: () => {
+                alertStore.showAlert(setAlert('Ballot updated successfully', 'success'));
+            },
+            onError: (errors) => {
+                console.log(errors);
+                Object.entries(errors).forEach(([key, value]) => {
+                    alertStore.showAlert(setAlert(value, 'info'));
+                });
+            },
+        });
+    }
 }
 </script>

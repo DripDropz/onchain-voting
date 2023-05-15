@@ -16,7 +16,7 @@ defineProps<{
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Ballot</h2>
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Editing <b class="font-bold">{{ballot.title}}</b> Ballot</h2>
         </template>
 
         <div class="py-12">
@@ -29,7 +29,7 @@ defineProps<{
                 </div>
 
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                    <BallotQuestions class="max-w-xl"  :ballot="ballot" />
+                    <BallotQuestions class="" :ballot="ballot" />
                 </div>
 
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">

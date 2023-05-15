@@ -8,12 +8,19 @@ module.exports = {
         './resources/views/**/*.blade.php',
         './resources/js/**/*.vue',
     ],
-
+    safelist: [
+        'bg-gray-500/20',
+        'bg-emerald-500/20',
+        'bg-emerald-500',
+    ],
     theme: {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            width: {
+                '128': '32rem',
+            }
         },
     },
 

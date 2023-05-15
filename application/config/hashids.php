@@ -46,6 +46,11 @@ return [
             'length' => 11,
             'alphabet' => 'acdefghiklmnopqrstuvwxyz0123456789',
         ],
+        \App\Models\BallotQuestionChoice::class => [
+            'salt' => \App\Models\BallotQuestionChoice::class . env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'abcdefghiklmnopqrstuvwxz0123456789',
+        ],
 
         //        'main' => [
         //            'salt' =>  env('APP_KEY'),

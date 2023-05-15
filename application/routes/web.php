@@ -49,12 +49,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{ballot}/delete', [BallotController::class, 'destroy'])->name('destroy');
 
         // Ballot Questions
-        Route::prefix('/ballots/{ballot}/questions')->as('questions.')->group(function () {
+        Route::prefix('/{ballot}/questions')->as('questions.')->group(function () {
             Route::get('/create', [BallotController::class, 'createQuestion'])->name('create');
 
             Route::post('/create', [BallotController::class, 'storeQuestion'])->name('store');
             Route::patch('/{question}/update', [BallotController::class, 'updateQuestion'])
                 ->name('update');
+
+            // Ballot Questions Choices
+            Route::prefix('/{question:id}/choices')->as('choices.')->group(function () {
+                Route::get('/create', [BallotController::class, 'createQuestionChoice'])->name('create');
+
+                Route::post('/create', [BallotController::class, 'storeQuestionChoice'])->name('store');
+                Route::patch('/{choice}/update', [BallotController::class, 'updateQuestionChoice'])
+                    ->name('update');
+            });
         });
     });
 

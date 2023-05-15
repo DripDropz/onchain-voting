@@ -1,26 +1,43 @@
 declare namespace App.DataTransferObjects {
 export type BallotData = {
-hash: string;
+hash: string | null;
 title: string;
 description?: string | null;
 version?: string | null;
-status: string;
-type: string;
+status: string | null;
+live: boolean | null;
+type: string | null;
+createdAt?: string | null;
+started_at?: string | null;
+ended_at?: string | null;
 totalVotes?: any;
-user: App.DataTransferObjects.UserData;
-questions?: Array<any> | null;
+user: App.DataTransferObjects.UserData | null;
+questions?: any;
 voters?: Array<any> | null;
-votes?: Array<any> | null;
-tokens?: Array<any> | null;
-txs?: Array<any> | null;
+votes?: any;
+tokens?: any;
+txs?: any;
 };
-export type QuestionChoicesData = {
-hash: string;
-question: App.DataTransferObjects.QuestionData;
+export type QuestionChoiceData = {
+hash: string | null;
+title: string;
+description?: string | null;
+created_at?: number | null;
+question: App.DataTransferObjects.QuestionData | null;
+ballot: App.DataTransferObjects.BallotData | null;
 };
 export type QuestionData = {
-hash: string;
-choices: Array<any>;
+hash: string | null;
+title: string;
+description?: string | null;
+supplemental?: string | null;
+max_choices?: number | null;
+created_at?: number | null;
+status: string;
+type: string;
+user: App.DataTransferObjects.UserData | null;
+ballot: App.DataTransferObjects.BallotData | null;
+choices: Array<any> | null;
 };
 export type RegistrationData = {
 hash: string;
@@ -31,7 +48,7 @@ export type SnapshotData = {
 };
 export type TokenData = {
 hash: string;
-policyId: string;
+policy_id: string;
 ballot?: App.DataTransferObjects.BallotData | null;
 voter: App.DataTransferObjects.VoterData;
 };
@@ -52,8 +69,8 @@ ballot: App.DataTransferObjects.BallotData | null;
 };
 export type VoterData = {
 hash: string;
-stakeKey: string;
-votePower?: string | null;
+stake_key: string;
+vote_power?: string | null;
 votes?: Array<any> | null;
 registrations?: Array<any> | null;
 tokens?: Array<any> | null;

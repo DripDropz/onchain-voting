@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\DataTransferObjects\BallotData;
+use App\DataTransferObjects\QuestionChoiceData;
 use App\DataTransferObjects\QuestionData;
 use App\Enums\ModelStatusEnum;
 use App\Enums\QuestionTypeEnum;
-use App\Http\Requests\BallotCreateRequest;
 use App\Models\Ballot;
+use App\Models\BallotQuestionChoice;
 use App\Models\Question;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -35,6 +36,7 @@ class BallotController extends Controller
      */
     public function view(Request $request, Ballot $ballot): Response
     {
+        $ballot->load(['questions.choices']);
         return Inertia::render('Ballot/View', [
             'ballot' => BallotData::from($ballot)
         ]);
@@ -45,6 +47,7 @@ class BallotController extends Controller
      */
     public function edit(Request $request, Ballot $ballot): Response
     {
+        $ballot->load(['questions.choices']);
         return Inertia::render('Ballot/Edit', [
             'ballot' => BallotData::from($ballot)
         ]);
@@ -71,12 +74,12 @@ class BallotController extends Controller
         $currentDateTime = Carbon::now($tz = 'UTC');
 
         if (($startedDateTime == null || $startedDateTime > $currentDateTime)) {
-            $ballot->update($ballotData->all());
+            $ballot->update($ballotData->transform(transformValues: false, mapPropertyNames: false));
 
             return Redirect::route('ballots.view', ['ballot' => $ballot->hash]);
         }
 
-        return Redirect::route('ballots.edit', ['ballot' => $ballot]);
+        return Redirect::route('ballots.view', ['ballot' => $ballot]);
     }
 
     /**
@@ -120,5 +123,31 @@ class BallotController extends Controller
         $question->save();
 
         return Redirect::route('ballots.edit', ['ballot' => $question?->ballot?->hash]);
+    }
+
+
+    public function createQuestionChoice(Request $request, Ballot $ballot, Question $question): Modal
+    {
+        return Inertia::modal('Question/QuestionChoice/Create')
+            ->with([
+                'question' => QuestionData::from($question),
+                'ballot' => $question?->ballot
+            ])
+            ->baseRoute('ballots.edit', [
+                'ballot' => $question?->ballot->hash
+            ]);
+    }
+
+    /**
+     * Store a newly created Ballot in storage.
+     */
+    #[NoReturn] public function storeQuestionChoice(QuestionChoiceData $choiceData): RedirectResponse
+    {
+        $choice = new BallotQuestionChoice();
+        $choice->fill($choiceData->all());
+        $choice->question_id = decode_model_hash($choiceData->question->hash, Question::class);
+        $choice->save();
+
+        return Redirect::route('ballots.edit', ['ballot' => $choice?->ballot?->hash]);
     }
 }
