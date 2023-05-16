@@ -1,15 +1,14 @@
 <?php
 
 use App\DataTransferObjects\BallotData;
-use App\Http\Controllers\BallotController;
+use App\Http\Controllers\Admin\BallotController;
 use App\Models\Ballot;
-use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use Spatie\Permission\Models\Role;
 use function PHPUnit\Framework\assertEquals;
 use function PHPUnit\Framework\assertTrue;
 

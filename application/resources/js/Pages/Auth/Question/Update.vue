@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BallotData = App.DataTransferObjects.BallotData;
 import ModalRoute from "@/Components/ModalRoute.vue";
-import CreateUpdateQuestionForm from "@/Pages/Question/Partials/CreateUpdateQuestionForm.vue";
+import CreateUpdateQuestionForm from "@/Pages/Auth/Question/Partials/CreateUpdateQuestionForm.vue";
 import QuestionData = App.DataTransferObjects.QuestionData;
 
 defineProps<{

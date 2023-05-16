@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import CreateUpdateBallotForm from "@/Pages/Ballot/Partials/CreateUpdateBallotForm.vue";
+import CreateUpdateBallotForm from "@/Pages/Auth/Ballot/Partials/CreateUpdateBallotForm.vue";
 
 defineProps<{
     status?: string;

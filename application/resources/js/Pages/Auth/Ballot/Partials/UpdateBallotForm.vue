@@ -29,7 +29,7 @@ const form = useForm({
             </p>
         </header>
 
-        <form @submit.prevent="form.patch(route('ballot.update'))" class="mt-6 space-y-6">
+        <form @submit.prevent="form.patch(route('admin.ballot.update'))" class="mt-6 space-y-6">
             <div>
                 <InputLabel for="title" value="Title" />
                 <TextInput

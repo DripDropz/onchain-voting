@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import BallotData = App.DataTransferObjects.BallotData;
 import ModalRoute from "@/Components/ModalRoute.vue";
-import CreateUpdateQuestionForm from "@/Pages/Question/Partials/CreateUpdateQuestionForm.vue";
+import CreateUpdateQuestionForm from "@/Pages/Auth/Question/Partials/CreateUpdateQuestionForm.vue";
+import QuestionData = App.DataTransferObjects.QuestionData;
 
 defineProps<{
     ballot?: BallotData;
-    questionTypes: string[];
-    questionsStatuses: string[];
+    question: QuestionData;
 }>();
 </script>
 
@@ -22,9 +22,9 @@ defineProps<{
             <div class="max-w-7xl space-y-6 p-6">
                 <CreateUpdateQuestionForm
                     :ballot="ballot"
-                    :question-statuses="questionsStatuses"
-                    :question-types="questionTypes"
-                    class="max-w-xl" />
+                    :question="question"
+                    class="max-w-xl"
+                />
             </div>
         </div>
     </ModalRoute>

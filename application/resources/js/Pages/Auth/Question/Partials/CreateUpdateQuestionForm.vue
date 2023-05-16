@@ -181,7 +181,7 @@ const form = useForm({
 const alertStore = useGlobalAlert();
 
 function submit() {
-    form.post(route('ballots.questions.store', {ballot: props.ballot?.hash}), {
+    form.post(route('admin.ballots.questions.store', {ballot: props.ballot?.hash}), {
         preserveScroll: true,
         preserveState: true,
         onSuccess: () => {
