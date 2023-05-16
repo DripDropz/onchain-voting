@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {ArrowLongDownIcon} from '@heroicons/vue/20/solid'
-import {defineProps} from "vue";
 import OpenBallots from "@/Pages/Partials/OpenBallots.vue";
 import BallotData = App.DataTransferObjects.BallotData;
 import VoterLayout from "@/Layouts/VoterLayout.vue";
 import Line from "@/Pages/Partials/Line.vue";
+import BallotSingle from "@/Pages/Ballot/Partials/BallotSingle.vue";
 
 defineProps<{
     canLogin?: boolean;
@@ -13,7 +13,7 @@ defineProps<{
 </script>
 
 <template>
-    <VoterLayout id="open-ballots" page="Home">
+    <VoterLayout page="Home">
         <div class="flex flex-col gap-24">
             <div class="container h-screen flex flex-col justify-end -mt-32">
                 <div class="flex flex-row justify-between items-center">
@@ -23,7 +23,7 @@ defineProps<{
                                         On-Chain Voting
                                     </span>
 
-                            <span class="relative whitespace-nowrap text-indigo-600">
+                                    <span class="relative whitespace-nowrap text-indigo-600">
                                         <svg
                                             aria-hidden="true" viewBox="0 0 418 42"
                                             class="absolute left-0 top-2/3 h-[0.58em] w-full fill-indigo-300/70"
@@ -45,25 +45,26 @@ defineProps<{
                         </div>
                     </div>
                     <div>
-                        <button type="button"
+                        <a href="#open-ballots"  v-if="ballots?.length > 0"
                                 class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-3.5 py-2.5 xl:px-5 xl:py-4 text-sm lg:text-lg xl:text-xl 2xl:text-2xl font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                             Open Ballots
                             <ArrowLongDownIcon class="-mr-0.5 h-5 w-5" aria-hidden="true"/>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <div class="py-24 bg-slate-200 dark:bg-slate-800/20">
-                <div class="container">
+            <div class="py-24 bg-slate-200 dark:bg-slate-800/20"  v-if="ballots?.length > 0" id="open-ballots">
+                <div class="container" v-if="ballots?.length > 1">
                     <h2 class="title2 font-display mb-6 lg:mb-8">
                         <span class="flex">Open Ballots</span>
                         <Line></Line>
                     </h2>
                 </div>
 
-                <div class="container" v-if="ballots">
-                    <OpenBallots :ballots="ballots"></OpenBallots>
+                <div class="container">
+                    <OpenBallots v-if="ballots.length > 1" :ballots="ballots"></OpenBallots>
+                    <BallotSingle v-else :ballot="ballots[0]"></BallotSingle>
                 </div>
             </div>
         </div>

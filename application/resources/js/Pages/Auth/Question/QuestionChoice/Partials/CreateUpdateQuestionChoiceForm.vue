@@ -46,8 +46,6 @@ const form = useForm({
     description: null,
 });
 
-console.log('ballot::', props.ballot);
-
 const alertStore = useGlobalAlert();
 
 function submit() {

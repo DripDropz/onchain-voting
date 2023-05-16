@@ -95,7 +95,7 @@ class BallotController extends Controller
 
     public function createQuestion(Request $request, Ballot $ballot): Modal
     {
-        return Inertia::modal('Question/Create')
+        return Inertia::modal('Auth/Question/Create')
             ->with([
                 'ballot' => BallotData::from($ballot),
                 'questionTypes' => QuestionTypeEnum::values(),
@@ -122,7 +122,7 @@ class BallotController extends Controller
 
     public function createQuestionChoice(Request $request, Ballot $ballot, Question $question): Modal
     {
-        return Inertia::modal('Question/QuestionChoice/Create')
+        return Inertia::modal('Auth/Question/QuestionChoice/Create')
             ->with([
                 'question' => QuestionData::from($question),
                 'ballot' => $question?->ballot

@@ -3,7 +3,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import GlobalAlertComponent from '../shared/components/GlobalAlertComponent.vue';
 import {Link} from '@inertiajs/vue3';
 import {Head} from '@inertiajs/vue3';
-import {defineProps} from "vue";
+import {withDefaults} from "vue";
 import Header from "@/Pages/Partials/Header.vue";
 
 withDefaults(
