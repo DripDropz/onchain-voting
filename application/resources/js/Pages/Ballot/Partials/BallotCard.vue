@@ -40,6 +40,7 @@ import BallotData = App.DataTransferObjects.BallotData;
 import Line from "@/Pages/Partials/Line.vue";
 import BallotStatusBadge from "@/Pages/Auth/Ballot/Partials/BallotStatusBadge.vue";
 import {Link} from "@inertiajs/vue3";
+import {withDefaults} from 'vue';
 
 const props = withDefaults(
     defineProps<{

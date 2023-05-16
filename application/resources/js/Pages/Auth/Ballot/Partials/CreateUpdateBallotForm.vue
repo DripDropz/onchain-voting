@@ -237,7 +237,7 @@
 
 <script setup lang="ts">
 import {Link, router, useForm, usePage} from '@inertiajs/vue3';
-import {ref, watch} from 'vue'
+import {ref, watch, defineProps} from 'vue';
 import {Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions} from '@headlessui/vue'
 import {
     UserCircleIcon,

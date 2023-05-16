@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ArrowLongDownIcon} from '@heroicons/vue/20/solid'
-import Header from "@/Pages/Partials/Header.vue";
+import {defineProps} from "vue";
 import OpenBallots from "@/Pages/Partials/OpenBallots.vue";
 import BallotData = App.DataTransferObjects.BallotData;
 import VoterLayout from "@/Layouts/VoterLayout.vue";

@@ -42,7 +42,6 @@
     </VoterLayout>
 </template>
 <script lang="ts" setup>
-import {defineProps} from "vue";
 import BallotData = App.DataTransferObjects.BallotData;
 import VoterLayout from "@/Layouts/VoterLayout.vue";
 import Line from "@/Pages/Partials/Line.vue";

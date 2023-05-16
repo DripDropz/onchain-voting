@@ -31,6 +31,7 @@
     </div>
 </template>
 <script lang="ts" setup>
+
 import {Head, Link} from '@inertiajs/vue3';
 
 defineProps<{
