@@ -22,9 +22,8 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {Head, Link} from '@inertiajs/vue3';
 import BallotData = App.DataTransferObjects.BallotData;
-import BallotCard from "@/Pages/Ballot/Partisals/BallotCard.vue";
+import BallotCard from "@/Pages/Ballot/Partials/BallotCard.vue";
 
 defineProps<{
     ballots: BallotData[];
