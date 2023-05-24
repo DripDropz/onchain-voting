@@ -5,12 +5,21 @@ namespace App\Models;
 use App\Enums\BallotTypeEnum;
 use App\Enums\ModelStatusEnum;
 use App\Http\Traits\HasHashIds;
+use App\Models\Interfaces\HasUser;
 use App\Models\Traits\HashIdModel;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Carbon;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class Ballot extends Model implements Auditable
+class Ballot extends Model implements Auditable, HasUser
 {
-    use \OwenIt\Auditing\Auditable, HasHashIds, HashIdModel;
+    use \OwenIt\Auditing\Auditable,
+        HasHashIds,
+        HashIdModel,
+        Traits\HasUser;
 
     protected $fillable = [
         'title',
@@ -18,7 +27,8 @@ class Ballot extends Model implements Auditable
         'version',
         'status',
         'type',
-        'started_at'
+        'started_at',
+        'ended_at'
     ];
 
     protected $hidden = [
@@ -27,11 +37,63 @@ class Ballot extends Model implements Auditable
 
     protected $appends = [
         'hash',
+        'live',
+        'publishable',
     ];
 
     protected $casts = [
         'type' => BallotTypeEnum::class,
         'status' => ModelStatusEnum::class,
         'started_at' => 'datetime:Y-m-d H:i:s',
+        'ended_at' => 'datetime:Y-m-d H:i:s',
     ];
+
+    /**
+     * Scope a query to only include active users.
+     */
+    public function scopePublished(Builder $query): void
+    {
+        $query->where('status', 'published');
+    }
+
+    public function live(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => ($this->started_at?->lte(Carbon::now()))
+        );
+    }
+
+    public function questions(): HasMany
+    {
+        return $this->hasMany(Question::class);
+    }
+
+    public function choices(): HasManyThrough
+    {
+        return $this->hasManyThrough(BallotQuestionChoice::class, Question::class, 'ballot_id', 'question_id');
+    }
+
+    public function publishable(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $questions = Question::where('ballot_id', $this->id)->get();
+                $ballotPulishable = $questions->flatMap(function ($question) {
+                    if ($question->status = 'published' and !is_null($this->started_at)) {
+                        return $question->choices;
+                    }
+                });
+
+                return $ballotPulishable->isEmpty() ? false : true;
+            }
+        );
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+//        static::addGlobalScope(new OrderByLiveBallotScope);
+    }
 }

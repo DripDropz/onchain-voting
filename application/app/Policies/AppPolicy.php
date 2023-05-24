@@ -2,6 +2,8 @@
 
 namespace App\Policies;
 
+use App\Enums\RoleEnum;
+use App\Models\Interfaces\HasUser;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -17,17 +19,9 @@ class AppPolicy
      */
     public function before(User $user, $ability)
     {
-        if ($user->hasAnyRole(['super_admin'])) {
+        if ($user->hasAnyRole([RoleEnum::SUPER_ADMIN->value,])) {
             return true;
         }
-    }
-
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function canViewAny(User $user): mixed
-    {
-        return $user->hasAnyRole(['super-admin']);
     }
 
     /**
@@ -36,54 +30,66 @@ class AppPolicy
      *
      * @throws \Exception
      */
-    public function canView(User $user, $model): mixed
+    public function canView(User $user, HasUser $model): bool
     {
-        return $user->hasAnyRole(['super-admin']);
+        return $this->canViewAny($user) || $user->id === $model->user_identifier;
+    }
+
+    /**
+     * Determine whether the user can view any models.
+     */
+    public function canViewAny(User $user): mixed
+    {
+        return $user->hasAnyRole([RoleEnum::SUPER_ADMIN->value,]);
     }
 
     /**
      * Determine whether the user can create models.
      */
-    public function canCreate(User $user): bool
+    public function canCreateAny(User $user): bool
     {
-        return $user->hasAnyRole(['super-admin']);
+        return $user->hasAnyRole([RoleEnum::SUPER_ADMIN->value,]);
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function canUpdate(User $user): mixed
+    public function canUpdate(User $user, HasUser $model): mixed
     {
-        return $user->hasAnyRole(['super-admin']);
+        return $this->canUpdateAny($user) || $user->id === $model->user_identifier;
     }
 
     /**
      * Determine whether the user can update the model.
      *
-     * @return mixed
+     * @param User $user
+     * @return bool
      */
-    public function canUpdateAny(User $user)
+    public function canUpdateAny(User $user): bool
     {
-        return $user->hasAnyRole(['super-admin']);
+        return $user->hasAnyRole([RoleEnum::SUPER_ADMIN->value,]);
     }
 
     /**
      * Determine whether the user can delete the model.
      *
-     * @return mixed
+     * @param User $user
+     * @param HasUser $model
+     * @return bool
      */
-    public function canDelete(User $user)
+    public function canDelete(User $user, HasUser $model): bool
     {
-        return $user->hasAnyRole(['super-admin']);
+        return $this->canDeleteAny($user) || $user->id === $model->user_identifier;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
-     * @return mixed
+     * @param User $user
+     * @return bool
      */
-    public function canDeleteAny(User $user)
+    public function canDeleteAny(User $user): bool
     {
-        return $user->hasAnyRole(['super-admin']);
+        return $user->hasAnyRole([RoleEnum::SUPER_ADMIN->value,]);
     }
 }

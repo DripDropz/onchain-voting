@@ -2,15 +2,23 @@
 
 namespace App\DataTransferObjects;
 
+use Carbon\CarbonImmutable;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\MapName;
 use Spatie\LaravelData\Attributes\MapOutputName;
+use Spatie\LaravelData\Attributes\Validation\BooleanType;
 use Spatie\LaravelData\Attributes\Validation\IntegerType;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Attributes\Validation\StringType;
+use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Attributes\WithoutValidation;
+use Spatie\LaravelData\Casts\DateTimeInterfaceCast;
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
+use Spatie\LaravelData\Mappers\CamelCaseMapper;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -35,41 +43,61 @@ class BallotData extends Data
         #[StringType]
         public ?string $status,
 
+        #[BooleanType]
+        public ?bool $live,
+
         #[Rule('string')]
         public ?string $type,
 
         #[TypeScriptOptional]
-        #[MapOutputName('total_votes')]
-        public mixed $totalVotes,
+        public ?string $created_at,
+
+        #[TypeScriptOptional]
+        public ?string $updated_at,
+
+        #[TypeScriptOptional]
+        #[WithCast(DateTimeInterfaceCast::class, type: CarbonImmutable::class)]
+        public ?CarbonImmutable $started_at,
+
+        #[TypeScriptOptional]
+        #[WithCast(DateTimeInterfaceCast::class, type: CarbonImmutable::class)]
+        public ?CarbonImmutable $ended_at,
+
+        #[TypeScriptOptional]
+        public mixed $total_votes,
 
         public ?UserData $user,
 
         #[TypescriptOptional]
-        #[DataCollectionOf(QuestionData::class)]
-        public ?array $questions,
+        /** @var QuestionData[] */
+        public ?DataCollection $questions,
 
         #[TypescriptOptional]
         #[DataCollectionOf(VoterData::class)]
-        public ?array $voters,
+        /** @var QuestionData[] */
+        public ?DataCollection $voters,
 
         #[TypescriptOptional]
         #[DataCollectionOf(VoteData::class)]
-        public ?array $votes,
+        /** @var QuestionData[] */
+        public ?DataCollection $votes,
 
         #[TypescriptOptional]
         #[DataCollectionOf(TokenData::class)]
-        public ?array $tokens,
+        /** @var QuestionData[] */
+        public ?DataCollection $tokens,
 
         #[TypescriptOptional]
         #[DataCollectionOf(TxData::class)]
-        public ?array $txs,
+        /** @var QuestionData[] */
+        public ?DataCollection $txs,
     ) {}
 
     public static function attributes(): array
     {
         return [
             'title' => 'title',
-            'description' => 'description',
+            'description' => 'description'
         ];
     }
 }

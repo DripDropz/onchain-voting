@@ -3,23 +3,23 @@ import {computed, ref, Ref} from 'vue';
 import Alert from '@/models/alert';
 
 export const useGlobalAlert = defineStore('global-alert', () => {
-    let alert: Ref<Alert | null> = ref(null);
+    let alerts: Ref<Alert[]> = ref([]);
 
     function showAlert(alertModel: Alert) {
-        alert.value = alertModel;
+        alerts.value = [...alerts.value,{...alertModel}];
         setTimeout(() => {
-            alert.value = null;
+            alerts.value = [];
         }, 5000);
     }
 
-    function closeAlert() {
-        alert.value = null;
+    function closeAlert(index:number) {
+        alerts.value.length==1 ? alerts.value = [] : alerts.value.splice(index, 1);
     }
 
     return {
         showAlert,
         closeAlert,
-        alert
+        alerts
     }
 });
 
