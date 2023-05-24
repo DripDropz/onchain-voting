@@ -8,21 +8,32 @@ status: string | null;
 live: boolean | null;
 type: string | null;
 created_at?: string | null;
+updated_at?: string | null;
 started_at?: string | null;
 ended_at?: string | null;
 total_votes?: any;
 user: App.DataTransferObjects.UserData | null;
-questions?: any;
-voters?: Array<any> | null;
-votes?: any;
-tokens?: any;
-txs?: any;
+questions?: Array<App.DataTransferObjects.QuestionData> | null;
+voters?: Array<App.DataTransferObjects.QuestionData> | null;
+votes?: Array<App.DataTransferObjects.QuestionData> | null;
+tokens?: Array<App.DataTransferObjects.QuestionData> | null;
+txs?: Array<App.DataTransferObjects.QuestionData> | null;
+};
+export type BallotResponseData = {
+hash: string | null;
+created_at?: string | null;
+user: App.DataTransferObjects.UserData;
+ballot?: App.DataTransferObjects.BallotData | null;
+question?: App.DataTransferObjects.QuestionData | null;
+choice?: App.DataTransferObjects.QuestionChoiceData | null;
+voting_power?: App.DataTransferObjects.VotingPowerData | null;
 };
 export type QuestionChoiceData = {
 hash: string | null;
 title: string;
 description?: string | null;
-created_at?: number | null;
+selected?: boolean | null;
+created_at?: string | null;
 question: App.DataTransferObjects.QuestionData | null;
 ballot: App.DataTransferObjects.BallotData | null;
 };
@@ -37,7 +48,7 @@ status: string;
 type: string;
 user: App.DataTransferObjects.UserData | null;
 ballot: App.DataTransferObjects.BallotData | null;
-choices: Array<any> | null;
+choices: Array<App.DataTransferObjects.QuestionChoiceData> | null;
 };
 export type RegistrationData = {
 hash: string;
@@ -45,6 +56,15 @@ power: number;
 token?: App.DataTransferObjects.TokenData | null;
 };
 export type SnapshotData = {
+hash: string | null;
+title: string;
+description?: string | null;
+user: App.DataTransferObjects.UserData | null;
+created_at?: string | null;
+updated_at?: string | null;
+policy_id?: string | null;
+type?: string | null;
+status: string;
 };
 export type TokenData = {
 hash: string;
@@ -75,5 +95,12 @@ votes?: Array<any> | null;
 registrations?: Array<any> | null;
 tokens?: Array<any> | null;
 txs?: Array<any> | null;
+};
+export type VotingPowerData = {
+hash: string | null;
+user: App.DataTransferObjects.UserData;
+snapshot: App.DataTransferObjects.SnapshotData;
+voting_power: number;
+created_at?: string | null;
 };
 }

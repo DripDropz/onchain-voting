@@ -8,12 +8,16 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import GlobalAlertComponent from '../shared/components/GlobalAlertComponent.vue';
 import { Link } from '@inertiajs/vue3';
 import { Modal } from 'momentum-modal';
+import { useDarkModeStore } from "@/store/dark-mode-store";
+import { storeToRefs } from 'pinia';
 
 const showingNavigationDropdown = ref(false);
+let darkModeStore = useDarkModeStore();
+let {isDarkMode} = storeToRefs(darkModeStore);
 </script>
 
 <template>
-    <div class="dark">
+    <div :class="{'dark': isDarkMode }" v-if="!!$page.props?.auth?.user">
         <div class="min-h-screen bg-slate-200 dark:bg-gray-900">
             <nav class="bg-white border-b border-gray-100 dark:bg-gray-800 dark:border-gray-700">
                 <!-- Primary Navigation Menu -->
@@ -127,8 +131,6 @@ const showingNavigationDropdown = ref(false);
                 </div>
 
                 <slot />
-
-
 
                 <div class="z-40">
                     <Modal />

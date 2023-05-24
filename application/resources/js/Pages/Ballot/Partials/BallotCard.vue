@@ -19,7 +19,7 @@
                       class="rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm flex flex-row gap-2 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ml-auto">
                     <BallotStatusBadge :ballot="ballot"></BallotStatusBadge>
                     <span>
-                        {{ballot.live ? 'Go Vote' : 'View'}}
+                        {{ballot?.live ? 'Go Vote' : 'View'}}
                     </span>
                 </Link>
             </div>

@@ -19,6 +19,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use JetBrains\PhpStorm\NoReturn;
 use Momentum\Modal\Modal;
+use Illuminate\Support\Facades\Gate;
 
 class BallotController extends Controller
 {
@@ -27,8 +28,7 @@ class BallotController extends Controller
      */
     public function create(Request $request): Response
     {
-        return Inertia::render('Auth/Ballot/Create', [
-        ]);
+        return Inertia::render('Auth/Ballot/Create', []);
     }
 
     /**
@@ -38,7 +38,7 @@ class BallotController extends Controller
     {
         $ballot->load(['questions.choices']);
         return Inertia::render('Auth/Ballot/View', [
-            'ballot' => BallotData::from($ballot)
+            'ballot' => BallotData::from($ballot),
         ]);
     }
 
@@ -58,22 +58,41 @@ class BallotController extends Controller
      */
     public function store(BallotData $ballotData): RedirectResponse
     {
-        $ballot = new Ballot;
-        $ballot->fill($ballotData->all());
-        $ballot->save();
+        $response = Gate::inspect('create', Ballot::class);
 
-        return Redirect::route('admin.ballots.view', ['ballot' => $ballot->hash]);
+        if ($response->allowed()) {
+            $ballot = new Ballot;
+            $ballot->fill($ballotData->all());
+            $ballot->save();
+
+            return Redirect::route('admin.ballots.view', ['ballot' => $ballot->hash]);
+        } else {
+            return Redirect::back()->withErrors(['error' => 'Not authorized to create ballot']);
+        }
     }
 
     /**
      * Update the ballot's profile information.
      */
-    public function update(BallotData $ballotData, Ballot $ballot): RedirectResponse
-    {
-        //@ todo should not be able to update ballot once it's started
-        $ballot->update($ballotData->transform(transformValues: false, mapPropertyNames: false));
+    public function update(Request $request, Ballot $ballot){
 
-        return Redirect::route('admin.ballots.view', ['ballot' => $ballot->hash]);
+        $response = $request->status == 'published' ? Gate::inspect('publish', $ballot) : Gate::inspect('update', $ballot);
+
+        if ($response->allowed()) {
+            $ballot = Ballot::byHash($ballot->hash);
+            $ballot->title = $request->title;
+            $ballot->description = $request->description;
+            $ballot->version = $request->version;
+            $ballot->status = $request->status;
+            $ballot->type = $request->type;
+            $ballot->started_at = $request->started_at;
+            $ballot->ended_at = $request->ended_at;
+            $ballot->update();
+
+            return Redirect::back();
+        }else {
+            return Redirect::back()->withErrors(['error' => 'Not authorized']);;
+        }
     }
 
     /**
@@ -81,47 +100,120 @@ class BallotController extends Controller
      */
     public function destroy(Request $request, $ballot): RedirectResponse
     {
-        $user = Auth::user();
+        $response = Gate::inspect('delete', $ballot);
 
-        if ($user->hasRole('super-admin') == true) {
+        if ($response->allowed()) {
             $existingBallot = Ballot::byHash($ballot);
             $existingBallot->delete();
 
             return Redirect::to('/');
+        } else {
+            return Redirect::route('admin.ballots.view', ['ballot' => $ballot]);
         }
-
-        return Redirect::route('admin.ballots.view', ['ballot' => $ballot]);
     }
 
-    public function createQuestion(Request $request, Ballot $ballot): Modal
+    public function createQuestion(Request $request, Ballot $ballot)
     {
-        return Inertia::modal('Auth/Question/Create')
-            ->with([
-                'ballot' => BallotData::from($ballot),
-                'questionTypes' => QuestionTypeEnum::values(),
-                'questionsStatuses' => ModelStatusEnum::values(),
-            ])
-            ->baseRoute('admin.ballots.edit', [
-                'ballot' => $ballot->hash
+        $response = Gate::inspect('create', Question::class);
+        if ($response->allowed()) {
+            return Inertia::modal('Auth/Question/Create')
+                ->with([
+                    'ballot' => BallotData::from($ballot),
+                    'questionTypes' => QuestionTypeEnum::values(),
+                    'questionsStatuses' => ModelStatusEnum::values(),
+                ])
+                ->baseRoute('admin.ballots.edit', [
+                    'ballot' => $ballot->hash
+                ]);
+        } else {
+            return Redirect::back()->withErrors(['error' => 'Not authorized to create question']);
+        }
+    }
+
+    public function editQuestion(Request $request, Ballot $ballot, Question $question)
+    {
+        $ballot->load(['questions']);
+        return Inertia::render('Auth/Question/Edit', [
+            'ballot' => BallotData::from($ballot),
+            'question' => QuestionData::from($question)
+        ]);
+    }
+
+     /**
+     * Store a newly created Question in storage.
+     */
+    #[NoReturn]
+    public function updateQuestion(Request $request, $ballot, $question): RedirectResponse
+    {
+        $response = Gate::inspect('update', $question);
+
+        if ($response->allowed()) {
+            $question = Question::byHash($question->hash);
+            $question->title = $request->title;
+            $question->description = $request->description;
+            $question->status = $request->status;
+            $question->type = $request->type;
+            $question->max_choices = $request->maxChoices;
+            $question->supplemental = $request->supplemental;
+            $question->update();
+
+            return Redirect::route('admin.ballots.view', ['ballot' => $ballot->hash]);
+        } else {
+            return redirect()->route('admin.ballots.view', ['ballot' => $ballot->hash])->withErrors([
+                'error' => 'Not authorized to update this question!',
             ]);
+        }
+
     }
 
     /**
-     * Store a newly created Ballot in storage.
+     * Store a newly created Question in storage.
      */
-    #[NoReturn] public function storeQuestion(QuestionData $questionData): RedirectResponse
+    #[NoReturn]
+    public function storeQuestion(Request $request, $ballot): RedirectResponse
     {
-        $question = new Question;
-        $question->fill($questionData->all());
-        $question->ballot_id = decode_model_hash($questionData->ballot->hash, Ballot::class);
-        $question->save();
+        $response = Gate::inspect('create', Question::class);
 
-        return Redirect::route('admin.ballots.edit', ['ballot' => $question?->ballot?->hash]);
+        if ($response->allowed()) {
+            $question = new Question;
+            $question->title = $request->title;
+            $question->description = $request->description;
+            $question->status = $request->status;
+            $question->type = $request->type;
+            $question->max_choices = $request->maxChoices;
+            $question->supplemental = $request->supplemental;
+            $question->user_id = Auth::id();
+            $question->ballot_id = decode_model_hash($ballot?->hash, Ballot::class);
+            $question->save();
+
+            return Redirect::route('admin.ballots.view', ['ballot' => $ballot?->hash]);
+        } else {
+            return redirect()->route('admin.ballots.view', ['ballot' => $ballot?->hash])->withErrors([
+                'error' => 'Not authorized to create question!',
+            ]);
+        }
+    }
+
+     /**
+     * Delete the ballot's account.
+     */
+    public function destroyQuestion(Request $request,Ballot $ballot,Question $question)
+    {
+        $response = Gate::inspect('delete', $question);
+
+        if ($response->allowed()) {
+            $queestion = Question::where('id', $question->id)->first();
+            $queestion->choices()->delete();
+            $queestion->delete();
+        } else {
+            return Redirect::back()->withErrors(['error' => 'Not authorized to delete question']);
+        }
     }
 
 
     public function createQuestionChoice(Request $request, Ballot $ballot, Question $question): Modal
     {
+        $question->load('ballot');
         return Inertia::modal('Auth/Question/QuestionChoice/Create')
             ->with([
                 'question' => QuestionData::from($question),

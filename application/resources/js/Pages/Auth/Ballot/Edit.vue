@@ -24,12 +24,12 @@ defineProps<{
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                     <CreateUpdateBallotForm
                         :ballot="ballot"
-                        class="max-w-xl"
+                        class="w-full"
                     />
                 </div>
 
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                    <BallotQuestions class="" :ballot="ballot" />
+                    <BallotQuestions :questions="ballot?.questions" :ballot="ballot" />
                 </div>
 
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">

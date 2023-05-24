@@ -5,7 +5,7 @@
             <label for="title" class="sr-only">Title</label>
             <input type="text" name="title" id="title" v-model="form.title"
                    class="block w-full border-0 pt-2.5 text-lg font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-white dark:bg-gray-900 rounded-lg"
-                   placeholder="Title"/>
+                   placeholder="Title" />
 
             <label for="description" class="sr-only">Description</label>
             <textarea rows="4" name="description" id="description" v-model="form.description"
@@ -31,14 +31,12 @@
 import {useForm} from '@inertiajs/vue3';
 import BallotData = App.DataTransferObjects.BallotData;
 import QuestionData = App.DataTransferObjects.QuestionData;
-import {Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions} from '@headlessui/vue';
-import {ChevronUpDownIcon, CheckIcon} from '@heroicons/vue/20/solid';
 import setAlert from "@/utils/set-alert";
 import {useGlobalAlert} from "@/store/global-alert-store";
 
 const props = defineProps<{
     question: QuestionData;
-    ballot?: BallotData;
+    ballot: BallotData;
 }>();
 
 const form = useForm({

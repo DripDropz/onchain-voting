@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Enums\PermissionEnum;
 use App\Models\Ballot;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
 class BallotPolicy extends AppPolicy
 {
@@ -13,15 +14,16 @@ class BallotPolicy extends AppPolicy
      */
     public function viewAny(User $user): mixed
     {
-        return $user->hasAnyPermission([PermissionEnum::read_ballot()->value]) || $this->canViewAny($user);
+        return $this->canViewAny($user);
     }
 
     /**
      * Determine whether the user can view the model.
+     * @throws \Exception
      */
     public function view(User $user, Ballot $ballot): bool
     {
-        return $user->hasAnyPermission([PermissionEnum::read_ballot()->value]) || $this->canView($user, $post);
+        return $this->canView($user, $ballot);
     }
 
     /**
@@ -30,31 +32,52 @@ class BallotPolicy extends AppPolicy
      *
      * @throws \Exception
      */
-    public function create(User $user, Ballot $ballot): bool
+    public function create(User $user): Response
     {
-        return $user->hasAnyPermission([PermissionEnum::create_ballot()->value]) || $this->canCreate($user);
+        return $this->canCreateAny($user)
+                ? Response::allow()
+                : Response::deny('You are not authorized to create a ballot.');
     }
 
     /**
      * Determine whether the user can update the model.
      *
-     * @return mixed
+     * @param User $user
+     * @param Ballot $ballot
+     * @return Response
      */
-    public function update(User $user, Ballot $ballot)
+    public function update(User $user, Ballot $ballot): Response
     {
-        return $user->hasAnyPermission([PermissionEnum::update_ballot()->value]) || $this->canUpdateAny($user);
+        return $this->canUpdate($user, $ballot)
+                ? Response::allow()
+                : Response::deny('You are not authorized to update this ballot.');
+    }
+
+    /**
+     * Determine whether the user can publish the model.
+     *
+     * @param User $user
+     * @param Ballot $ballot
+     * @return Response
+     */
+    public function publish(User $user, Ballot $ballot): Response
+    {
+        $authorized  = $ballot->publishable && $this->canUpdate($user, $ballot);
+        return $authorized
+                ? Response::allow()
+                : Response::deny('You are not authorized to publish this ballot.');
     }
 
     /**
      * Determine whether the user can delete the post.
      *
-     * @param  \App\User  $user
-     * @param  \App\Post  $post
-     * @return mixed
+     * @param User $user
+     * @param Ballot $ballot
+     * @return bool
      */
-    public function delete(User $user, Ballot $ballot)
+    public function delete(User $user, Ballot $ballot): bool
     {
-        return $user->hasAnyPermission([PermissionEnum::delete_ballot()->value]) || $this->canDeleteAny($user);
-       
+        return $user->hasAnyPermission([PermissionEnum::delete_ballot()->value]) || $this->canDelete($user, $ballot);
+
     }
 }

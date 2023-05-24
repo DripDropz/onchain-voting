@@ -17,6 +17,7 @@ use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Attributes\WithoutValidation;
 use Spatie\LaravelData\Casts\DateTimeInterfaceCast;
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 use Spatie\LaravelData\Mappers\CamelCaseMapper;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -52,6 +53,9 @@ class BallotData extends Data
         public ?string $created_at,
 
         #[TypeScriptOptional]
+        public ?string $updated_at,
+
+        #[TypeScriptOptional]
         #[WithCast(DateTimeInterfaceCast::class, type: CarbonImmutable::class)]
         public ?CarbonImmutable $started_at,
 
@@ -65,24 +69,28 @@ class BallotData extends Data
         public ?UserData $user,
 
         #[TypescriptOptional]
-        #[DataCollectionOf(QuestionData::class)]
-        public $questions,
+        /** @var QuestionData[] */
+        public ?DataCollection $questions,
 
         #[TypescriptOptional]
         #[DataCollectionOf(VoterData::class)]
-        public ?array $voters,
+        /** @var QuestionData[] */
+        public ?DataCollection $voters,
 
         #[TypescriptOptional]
         #[DataCollectionOf(VoteData::class)]
-        public $votes,
+        /** @var QuestionData[] */
+        public ?DataCollection $votes,
 
         #[TypescriptOptional]
         #[DataCollectionOf(TokenData::class)]
-        public $tokens,
+        /** @var QuestionData[] */
+        public ?DataCollection $tokens,
 
         #[TypescriptOptional]
         #[DataCollectionOf(TxData::class)]
-        public $txs,
+        /** @var QuestionData[] */
+        public ?DataCollection $txs,
     ) {}
 
     public static function attributes(): array

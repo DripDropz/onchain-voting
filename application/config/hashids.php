@@ -39,7 +39,7 @@ return [
         \App\Models\Ballot::class => [
             'salt' => \App\Models\Ballot::class . env('APP_KEY'),
             'length' => 11,
-            'alphabet' => 'acdefghijklmnopqrstuvwxyz0123456789',
+            'alphabet' => 'abcdefghijklmnopqrstuvwxyz012345678',
         ],
         \App\Models\Question::class => [
             'salt' => \App\Models\Ballot::class . env('APP_KEY'),
@@ -49,7 +49,17 @@ return [
         \App\Models\BallotQuestionChoice::class => [
             'salt' => \App\Models\BallotQuestionChoice::class . env('APP_KEY'),
             'length' => 11,
-            'alphabet' => 'abcdefghiklmnopqrstuvwxz0123456789',
+            'alphabet' => 'bcdefghiklmnopqrstuvwxz0123456789',
+        ],
+        \App\Models\BallotResponse::class => [
+            'salt' => \App\Models\BallotResponse::class . env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'abcdefghilmnopqrstuvwxz0123456789',
+        ],
+        \App\Models\Snapshot::class => [
+            'salt' => \App\Models\Snapshot::class . env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'abcdefghijklmnoqrstuvwxz0123456789',
         ],
 
         //        'main' => [

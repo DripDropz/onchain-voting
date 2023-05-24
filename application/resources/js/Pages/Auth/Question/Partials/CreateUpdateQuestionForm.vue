@@ -15,7 +15,7 @@
             <div class="flex items-center gap-8 px-2 py-4 xl:px-3">
                 <label for="maxChoices"
                        class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300 w-44">Max Choices</label>
-                <input type="text" name="maxChoices" id="maxChoices" v-model="form.maxChoices" placeholder="1"
+                <input type="text" name="maxChoices" id="maxChoices" v-model="form.maxChoices"
                        class="relative block w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-white dark:bg-gray-900 rounded-lg"/>
             </div>
 
@@ -74,12 +74,12 @@
                                 leave-to-class="opacity-0">
                         <ListboxOptions
                             class="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                            <ListboxOption as="template" :value="type" :key="type" v-for="type in questionTypes"
+                            <ListboxOption as="template" :value="type.name" :key="type.name" v-for="type in questionTypes"
                                            v-slot="{ active, selected }">
                                 <li :class="[active ? 'bg-indigo-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
                                         <span class="capitalize"
                                               :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">{{
-                                                type
+                                                type.name
                                             }}</span>
 
                                     <span v-if="selected"
@@ -111,12 +111,12 @@
                                 leave-to-class="opacity-0">
                         <ListboxOptions
                             class="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                            <ListboxOption as="template" :value="status" :key="status" v-for="status in questionStatuses"
+                            <ListboxOption as="template" :value="status.case" :key="status.case" v-for="status in questionStatuses"
                                            v-slot="{ active, selected }">
                                 <li :class="[active ? 'bg-indigo-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
                                         <span class="capitalize"
                                               :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">{{
-                                                status
+                                                status.value
                                             }}</span>
 
                                     <span v-if="selected"
@@ -146,7 +146,7 @@
             <div class="flex-shrink-0">
                 <button type="submit"
                         class="inline-flex items-center px-3 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                    Create
+                        {{ question ? 'Update' : 'Create' }}
                 </button>
             </div>
         </div>
@@ -162,7 +162,7 @@ import setAlert from "@/utils/set-alert";
 import {useGlobalAlert} from "@/store/global-alert-store";
 
 const props = defineProps<{
-    ballot?: BallotData;
+    ballot: BallotData;
     question?: QuestionData;
     questionTypes: string[];
     questionStatuses: string[];
@@ -170,29 +170,53 @@ const props = defineProps<{
 
 const form = useForm({
     ballot: props.ballot?.hash,
-    title: null,
-    description: null,
+    title: props.question?.title ?? null,
+    description: props.question?.description ?? null,
     status: props.questionStatuses[0],
     type: props.questionTypes[0],
-    maxChoices: 1,
-    supplemental: null,
+    maxChoices: props.question?.maxChoices ?? 1,
+    supplemental: props.question?.supplemental ?? null,
 });
+
+const questionTypes = [
+    {id: 1, name: 'single'},
+    {id: 2, name: 'multiple'},
+    {id: 2, name: 'ranked'},
+];
+
+const questionStatuses = [
+    {case: 'draft', value: 'Draft'},
+    {case: 'pending', value: 'Pending'},
+    {case: 'published', value: 'Published'},
+];
 
 const alertStore = useGlobalAlert();
 
 function submit() {
-    form.post(route('admin.ballots.questions.store', {ballot: props.ballot?.hash}), {
-        preserveScroll: true,
-        preserveState: true,
-        onSuccess: () => {
-            alertStore.showAlert(setAlert('Question created successfully', 'success'));
-        },
-        onError: (errors) => {
-            console.log(errors);
-            Object.entries(errors).forEach(([key, value]) => {
-                alertStore.showAlert(setAlert(value, 'info'));
-            });
-        },
-    });
+    if(!props.question?.hash){
+        form.post(route('admin.ballots.questions.store', {ballot: props.ballot?.hash}), {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                alertStore.showAlert(setAlert('Question created successfully', 'success'));
+            },
+            onError: (errors) => {
+                Object.entries(errors).forEach(([key, value]) => {
+                    alertStore.showAlert(setAlert(value, 'info'));
+                });
+            },
+        });
+    } else  {
+        form.patch(route('admin.ballots.questions.update', {ballot: props.ballot?.hash, question: props.question?.hash}), {
+            onSuccess: () => {
+                alertStore.showAlert(setAlert('Question updated successfully', 'success'));
+            },
+            onError: (errors) => {
+                Object.entries(errors).forEach(([key, value]) => {
+                    alertStore.showAlert(setAlert(value, 'info'));
+                });
+            },
+        });
+    }
 }
 </script>

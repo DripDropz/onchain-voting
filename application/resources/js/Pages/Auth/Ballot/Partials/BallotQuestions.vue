@@ -10,15 +10,17 @@
         </div>
 
         <div class="flex flex-row gap-4 flex-wrap w-full">
-            <div class="w-128" v-if="!!ballot.questions?.length">
+            <div class="w-128" v-if="!!questions?.length">
                 <BallotQuestionCard
-                    v-for="question in ballot.questions"
-                    :key="question.id"
+                    v-for="question in questions"
+                    :key="question.hash"
                     :ballot="ballot"
                     :question="question" />
             </div>
 
-            <NewBallotQuestionButton class="w-96" :ballot="ballot"/>
+            <span  v-if="ballot && !ballot?.live">
+                <NewBallotQuestionButton class="w-96" :ballot="ballot" />
+            </span>
         </div>
     </div>
 </template>
@@ -26,9 +28,10 @@
 import NewBallotQuestionButton from "@/Pages/Auth/Ballot/Partials/NewBallotQuestionButton.vue";
 import BallotData = App.DataTransferObjects.BallotData;
 import BallotQuestionCard from "@/Pages/Auth/Question/Partials/BallotQuestionCard.vue";
+import QuestionData = App.DataTransferObjects.QuestionData;
 
 const props = defineProps<{
     ballot: BallotData;
+    questions: QuestionData[];
 }>();
-
 </script>

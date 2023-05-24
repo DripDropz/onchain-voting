@@ -1,22 +1,27 @@
 <script setup lang="ts">
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import GlobalAlertComponent from '../shared/components/GlobalAlertComponent.vue';
-import {Link} from '@inertiajs/vue3';
-import {Head} from '@inertiajs/vue3';
-import {withDefaults} from "vue";
+import { Head } from '@inertiajs/vue3';
+import { withDefaults } from "vue";
 import Header from "@/Pages/Partials/Header.vue";
+import { useDarkModeStore } from "@/store/dark-mode-store";
+import { storeToRefs } from 'pinia';
 
 withDefaults(
     defineProps<{
         page: string;
         canLogin?: boolean;
     }>(), {
-        canLogin: true
-    });
+    canLogin: true
+});
+
+let darkModeStore = useDarkModeStore();
+let {isDarkMode} = storeToRefs(darkModeStore);
+
 </script>
 
 <template>
-    <div class="dark">
+    <div :class="{'dark': isDarkMode }">
         <div class="min-h-screen bg-slate-200 dark:bg-gray-900">
             <GlobalAlertComponent/>
 

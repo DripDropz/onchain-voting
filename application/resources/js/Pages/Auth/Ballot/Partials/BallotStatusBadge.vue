@@ -9,7 +9,7 @@ const props = defineProps<{
 let status = computed(() => {
     switch (props.ballot.status) {
         case 'published':
-            return props.ballot.live ? 'Live' : 'Published';
+            return props.ballot?.live ? 'Live' : 'Published';
         default:
             return props.ballot.status;
     }

@@ -1,8 +1,15 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import vue from '@vitejs/plugin-vue';
+import { defineConfig } from "vite";
+import laravel from "laravel-vite-plugin";
+import vue from "@vitejs/plugin-vue";
+import topLevelAwait from "vite-plugin-top-level-await";
+import wasm from "vite-plugin-wasm";
 
 export default defineConfig({
+    optimizeDeps: {
+        exclude: [
+            "lucid-cardano"
+        ]
+    },
     server: {
         host: '0.0.0.0',
         hmr: {
@@ -11,7 +18,7 @@ export default defineConfig({
     },
     plugins: [
         laravel({
-            input: 'resources/js/app.ts',
+            input: "resources/js/app.ts",
             refresh: true,
         }),
         vue({
@@ -22,13 +29,20 @@ export default defineConfig({
                 },
             },
         }),
+        wasm(),
+        topLevelAwait()
     ],
+    worker: {
+        format: "es",
+        plugins: [wasm(), topLevelAwait()],
+    },
     resolve: {
         alias: {
-            '@inertiajs/inertia-vue': '/node_modules/@inertiajs/inertia-vue/src/index.js',
-            'ziggy': '/vendor/tightenco/ziggy/src/js',
-            'ziggy-vue': '/vendor/tightenco/ziggy/dist/vue',
-            '@': '/resources/js',
-        }
-    }
+            "@inertiajs/inertia-vue":
+                "/node_modules/@inertiajs/inertia-vue/src/index.js",
+            ziggy: "/vendor/tightenco/ziggy/src/js",
+            "ziggy-vue": "/vendor/tightenco/ziggy/dist/vue",
+            "@": "/resources/js",
+        },
+    },
 });

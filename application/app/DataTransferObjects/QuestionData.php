@@ -10,6 +10,7 @@ use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Attributes\Validation\StringType;
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 use Spatie\LaravelData\Mappers\CamelCaseMapper;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -48,6 +49,7 @@ class QuestionData extends Data
         public ?BallotData $ballot,
 
         #[DataCollectionOf(QuestionChoiceData::class)]
-        public ?array $choices,
+        /** @var QuestionChoiceData[] */
+        public ?DataCollection $choices,
     ) {}
 }

@@ -6,8 +6,8 @@ import CreateUpdateQuestionChoiceForm
 import BallotData = App.DataTransferObjects.BallotData;
 
 defineProps<{
-    question?: QuestionData;
-    ballot?: BallotData;
+    question: QuestionData;
+    ballot: BallotData;
 }>();
 </script>
 

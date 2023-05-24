@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Enums\BallotTypeEnum;
 use App\Enums\ModelStatusEnum;
 use App\Http\Traits\HasHashIds;
-use App\Models\Scopes\OrderByLiveBallotScope;
+use App\Models\Interfaces\HasUser;
 use App\Models\Traits\HashIdModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -14,9 +14,12 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Carbon;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class Ballot extends Model implements Auditable
+class Ballot extends Model implements Auditable, HasUser
 {
-    use \OwenIt\Auditing\Auditable, HasHashIds, HashIdModel;
+    use \OwenIt\Auditing\Auditable,
+        HasHashIds,
+        HashIdModel,
+        Traits\HasUser;
 
     protected $fillable = [
         'title',
@@ -34,7 +37,8 @@ class Ballot extends Model implements Auditable
 
     protected $appends = [
         'hash',
-        'live'
+        'live',
+        'publishable',
     ];
 
     protected $casts = [
@@ -67,6 +71,22 @@ class Ballot extends Model implements Auditable
     public function choices(): HasManyThrough
     {
         return $this->hasManyThrough(BallotQuestionChoice::class, Question::class, 'ballot_id', 'question_id');
+    }
+
+    public function publishable(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $questions = Question::where('ballot_id', $this->id)->get();
+                $ballotPulishable = $questions->flatMap(function ($question) {
+                    if ($question->status = 'published' and !is_null($this->started_at)) {
+                        return $question->choices;
+                    }
+                });
+
+                return $ballotPulishable->isEmpty() ? false : true;
+            }
+        );
     }
 
     /**

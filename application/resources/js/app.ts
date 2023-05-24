@@ -8,7 +8,6 @@ import {createPinia} from "pinia";
 import { modal } from "momentum-modal";
 
 
-
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
 createInertiaApp({

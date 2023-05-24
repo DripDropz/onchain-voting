@@ -5,7 +5,7 @@
                 <BallotCard :ballot="ballots[0]" />
             </div>
 
-            <div class="col-span-1 lg:col-span-4 flex flex-col gap-6" v-if="ballots.length > 1">
+            <div class="col-span-1 lg:col-span-4 flex flex-col gap-6" >
                 <div class="w-full h-64 md:h-72 bg-indigo-600 rounded-lg px-4 py-6 lg:px-5 lg:py-7 xl:px-8 xl:py-9 ">
                     <BallotCard :ballot="ballots[1]" />
                 </div>
@@ -14,7 +14,7 @@
                         <BallotCard :ballot="ballots[2]" size="mini" />
                     </div>
                     <div class="w-full h-44 bg-indigo-600 rounded-lg px-4 py-6 lg:px-5 lg:py-7 xl:px-8 xl:py-9 " v-if="ballots.length > 3">
-
+                        <BallotCard :ballot="ballots[3]" size="mini" />
                     </div>
                 </div>
             </div>

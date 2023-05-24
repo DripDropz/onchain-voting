@@ -4,7 +4,7 @@ import ModalRoute from "@/Components/ModalRoute.vue";
 import CreateUpdateQuestionForm from "@/Pages/Auth/Question/Partials/CreateUpdateQuestionForm.vue";
 
 defineProps<{
-    ballot?: BallotData;
+    ballot: BallotData;
     questionTypes: string[];
     questionsStatuses: string[];
 }>();

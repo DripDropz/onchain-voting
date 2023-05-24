@@ -5,9 +5,9 @@ $(eval export $(shell sed -ne 's/ *#.*$$//; /./ s/=.*$$// p' application/.env))
 
 .PHONY: init
 init:
-	docker run --rm --interactive --tty \
-          --volume ${PWD}/application:/app \
-          composer install --ignore-platform-reqs
+	# docker run --rm --interactive --tty \
+    #       --volume ${PWD}/application:/app \
+    #       composer install --ignore-platform-reqs
 	make up
 	sleep 20
 	make -j2 backend-install frontend-install

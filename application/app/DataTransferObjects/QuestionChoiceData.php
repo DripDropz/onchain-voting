@@ -2,9 +2,9 @@
 
 namespace App\DataTransferObjects;
 
+use Carbon\Carbon;
 use Spatie\LaravelData\Attributes\FromRouteParameter;
 use Spatie\LaravelData\Attributes\MapName;
-use Spatie\LaravelData\Attributes\MapOutputName;
 use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\Validation\StringType;
 use Spatie\LaravelData\Data;
@@ -25,8 +25,11 @@ class QuestionChoiceData extends Data
         #[TypescriptOptional]
         public ?string $description,
 
+        #[TypescriptOptional]
+        public ?bool $selected,
+
         #[TypeScriptOptional]
-        public ?int $created_at,
+        public ?Carbon $created_at,
 
         #[FromRouteParameter('question')]
         public ?QuestionData $question,

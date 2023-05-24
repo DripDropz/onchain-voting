@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Snapshot;
+use App\Observers\SnapshotObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -25,7 +27,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Snapshot::observe(SnapshotObserver::class);
     }
 
     /**
@@ -33,6 +35,6 @@ class EventServiceProvider extends ServiceProvider
      */
     public function shouldDiscoverEvents(): bool
     {
-        return false;
+        return true;
     }
 }

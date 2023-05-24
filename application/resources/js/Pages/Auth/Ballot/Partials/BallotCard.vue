@@ -60,6 +60,15 @@
                     </p>
                 </div>
 
+                <div class="flex items-center gap-8 px-2 py-4 xl:px-3">
+                    <div class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300 w-44">
+                        Last Updated
+                    </div>
+                    <p class="relative block w-full flex flex-1 border-0 p-2.5 sm:text-sm sm:leading-6 capitalize font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-slate-200 dark:bg-gray-900 rounded-lg">
+                        {{ ballot.updated_at }}
+                    </p>
+                </div>
+
                 <div aria-hidden="true">
                     <div class="py-3">
                         <div class="h-10"/>
@@ -73,7 +82,7 @@
                 </div>
             </div>
 
-            <div class="absolute bottom-0 inset-x-px">
+            <div v-if="!ballot?.live" class="absolute bottom-0 inset-x-px">
                 <div
                     class="flex items-center justify-between px-2 py-3 space-x-3 border-t border-gray-200 dark:border-gray-700 sm:px-3">
                     <div class="flex">
@@ -101,7 +110,5 @@ const props = defineProps<{
     status?: String;
     ballot?: BallotData;
 }>();
-
-const user = usePage().props.auth.user;
 
 </script>

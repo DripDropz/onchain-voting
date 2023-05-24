@@ -56,15 +56,19 @@ defineProps<{
 
             <div class="py-24 bg-slate-200 dark:bg-slate-800/20"  v-if="ballots?.length > 0" id="open-ballots">
                 <div class="container" v-if="ballots?.length > 1">
-                    <h2 class="title2 font-display mb-6 lg:mb-8">
+                    <h2 class="title2 font-display mb-6 lg:mb-10">
                         <span class="flex">Open Ballots</span>
                         <Line></Line>
                     </h2>
                 </div>
 
                 <div class="container">
-                    <OpenBallots v-if="ballots.length > 1" :ballots="ballots"></OpenBallots>
-                    <BallotSingle v-else :ballot="ballots[0]"></BallotSingle>
+
+                    <OpenBallots v-if="ballots.length > 3" :ballots="ballots"></OpenBallots>
+
+                    <div class="flex flex-col gap-16" v-else>
+                        <BallotSingle v-for="ballot in ballots" :key="ballot.hash" :ballot="ballot" context="list"></BallotSingle>
+                    </div>
                 </div>
             </div>
         </div>

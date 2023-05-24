@@ -5,14 +5,16 @@ namespace App\Models;
 use App\Enums\ModelStatusEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Http\Traits\HasHashIds;
+use App\Models\Interfaces\HasUser;
 use App\Models\Traits\HashIdModel;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class Question extends Model implements Auditable
+class Question extends Model implements Auditable, HasUser
 {
-    use \OwenIt\Auditing\Auditable, HasHashIds, HashIdModel;
+    use \OwenIt\Auditing\Auditable, HasHashIds, HashIdModel, HasFactory, Traits\HasUser;
 
     protected $fillable = [
         'title',
