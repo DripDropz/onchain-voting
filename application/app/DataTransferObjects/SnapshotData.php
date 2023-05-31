@@ -2,16 +2,21 @@
 
 namespace App\DataTransferObjects;
 
+use Illuminate\Validation\NestedRules;
+use Spatie\LaravelData\Attributes\Validation\Nullable;
+use Spatie\LaravelData\Attributes\Validation\Required;
+use Spatie\LaravelData\Attributes\Validation\Rule;
+use Spatie\LaravelData\Attributes\Validation\Sometimes;
+use Spatie\LaravelData\Attributes\Validation\StringType;
+use Spatie\LaravelData\Attributes\WithoutValidation;
 use Spatie\LaravelData\Data;
+use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
 class SnapshotData extends Data
 {
     public function __construct(
-<<<<<<< Updated upstream
-      //
-=======
         #[WithoutValidation]
         public ?string $hash,
 
@@ -44,6 +49,22 @@ class SnapshotData extends Data
         #[Required]
         #[Rule('string')]
         public string $status
->>>>>>> Stashed changes
     ) {}
+
+    public static function attributes(): array
+    {
+        return [
+            'title' => 'title',
+            'description' => 'description'
+        ];
+    }
+
+    public static function rules(): array
+    {
+        return [
+//            'user.*' => [
+//                new NestedRules(fn() => [new Sometimes(), new Nullable()])
+//            ],
+        ];
+    }
 }

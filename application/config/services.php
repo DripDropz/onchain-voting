@@ -30,5 +30,8 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-
+    'blockfrost' => [
+        'projectId' => env('BLOCKFROST_PROJECT_ID'),
+        'baseUrl' => env('BLOCKFROST_BASE_URL', 'https://cardano-preview.blockfrost.io/api/v0'),
+    ],
 ];

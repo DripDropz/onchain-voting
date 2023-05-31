@@ -3,24 +3,18 @@
 namespace App\DataTransferObjects;
 
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Attributes\MapName;
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\Mappers\CamelCaseMapper;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
+#[MapName(CamelCaseMapper::class)]
 class VoterData extends Data
 {
     public function __construct(
-<<<<<<< Updated upstream
-        public string $hash,
-
-        public string $stakeKey,
-
-        #[TypescriptOptional]
-        public ?string $votePower,
-=======
         public string $voter_id,
->>>>>>> Stashed changes
 
         #[TypescriptOptional]
         #[DataCollectionOf(VoteData::class)]

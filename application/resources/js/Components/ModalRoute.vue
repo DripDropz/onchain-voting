@@ -1,18 +1,18 @@
 <script lang="ts" setup>
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from "@headlessui/vue"
 import { useModal } from "momentum-modal"
-<<<<<<< Updated upstream
-=======
 import { useDarkModeStore } from "@/stores/dark-mode-store";
 import { storeToRefs } from 'pinia';
->>>>>>> Stashed changes
 
 const { show, close, redirect } = useModal()
+let darkModeStore = useDarkModeStore();
+let {isDarkMode} = storeToRefs(darkModeStore);
+
 </script>
 
 <template>
-    <TransitionRoot appear as="template" :show="show">
-        <Dialog as="div" class="relative z-10" @close="close">
+    <TransitionRoot appear as="template" :show="show" :class="{'dark': isDarkMode }">
+        <Dialog as="div" class="relative z-10 dark" @close="close">
             <TransitionChild
                 @after-leave="redirect"
                 as="template"

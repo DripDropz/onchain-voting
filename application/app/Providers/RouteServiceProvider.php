@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Ballot;
+use App\Models\Question;
+use App\Models\Snapshot;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -19,7 +21,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/dashboard';
+    public const HOME = '/admin/dashboard';
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
@@ -30,6 +32,14 @@ class RouteServiceProvider extends ServiceProvider
 
         Route::bind('ballot', function ($value, $route) {
             return $this->getModel(Ballot::class, $value);
+        });
+
+        Route::bind('question', function ($value, $route) {
+            return $this->getModel(Question::class, $value);
+        });
+
+        Route::bind('snapshot', function ($value, $route) {
+            return $this->getModel(Snapshot::class, $value);
         });
 
         $this->routes(function () {

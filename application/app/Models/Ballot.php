@@ -5,21 +5,22 @@ namespace App\Models;
 use App\Enums\BallotTypeEnum;
 use App\Enums\ModelStatusEnum;
 use App\Http\Traits\HasHashIds;
+use App\Models\Interfaces\HasUser;
 use App\Models\Traits\HashIdModel;
-<<<<<<< Updated upstream
-=======
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
->>>>>>> Stashed changes
 use OwenIt\Auditing\Contracts\Auditable;
 
-class Ballot extends Model implements Auditable
+class Ballot extends Model implements Auditable, HasUser
 {
-    use \OwenIt\Auditing\Auditable, HasHashIds, HashIdModel;
+    use \OwenIt\Auditing\Auditable,
+        HasHashIds,
+        HashIdModel,
+        Traits\HasUser;
 
     protected $fillable = [
         'title',
@@ -27,7 +28,8 @@ class Ballot extends Model implements Auditable
         'version',
         'status',
         'type',
-        'started_at'
+        'started_at',
+        'ended_at'
     ];
 
     protected $hidden = [
@@ -36,15 +38,16 @@ class Ballot extends Model implements Auditable
 
     protected $appends = [
         'hash',
+        'live',
+        'publishable',
     ];
 
     protected $casts = [
         'type' => BallotTypeEnum::class,
         'status' => ModelStatusEnum::class,
         'started_at' => 'datetime:Y-m-d H:i:s',
+        'ended_at' => 'datetime:Y-m-d H:i:s',
     ];
-<<<<<<< Updated upstream
-=======
 
     /**
      * Scope a query to only include active users.
@@ -99,5 +102,4 @@ class Ballot extends Model implements Auditable
     {
 //        static::addGlobalScope(new OrderByLiveBallotScope);
     }
->>>>>>> Stashed changes
 }

@@ -9,18 +9,17 @@ import GlobalAlertComponent from '../shared/components/GlobalAlertComponent.vue'
 import DarkModeButton from '@/shared/components/DarkModeButton.vue';
 import { Link } from '@inertiajs/vue3';
 import { Modal } from 'momentum-modal';
-<<<<<<< Updated upstream
-=======
 import { useDarkModeStore } from "@/stores/dark-mode-store";
 import { storeToRefs } from 'pinia';
->>>>>>> Stashed changes
 
 const showingNavigationDropdown = ref(false);
+let darkModeStore = useDarkModeStore();
+let {isDarkMode} = storeToRefs(darkModeStore);
 </script>
 
 <template>
-    <div>
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div :class="{'dark': isDarkMode }" v-if="!!$page.props?.auth?.user">
+        <div class="min-h-screen bg-slate-200 dark:bg-gray-900">
             <nav class="bg-white border-b border-gray-100 dark:bg-gray-800 dark:border-gray-700">
                 <!-- Primary Navigation Menu -->
                 <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -28,14 +27,14 @@ const showingNavigationDropdown = ref(false);
                         <div class="flex">
                             <!-- Logo -->
                             <div class="flex items-center shrink-0">
-                                <Link :href="route('dashboard')">
+                                <Link :href="route('home')">
                                 <ApplicationLogo class="block w-auto text-gray-800 fill-current h-9 dark:text-gray-200" />
                                 </Link>
                             </div>
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                <NavLink :href="route('admin.dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
                             </div>
@@ -61,15 +60,6 @@ const showingNavigationDropdown = ref(false);
                                             </span>
                                         </template>
 
-<<<<<<< Updated upstream
-                                    <template #content>
-                                        <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
-                                        <DropdownLink :href="route('logout')" method="post" as="button">
-                                            Log Out
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
-=======
                                         <template #content>
                                             <DropdownLink :href="route('admin.profile.edit')"> Profile </DropdownLink>
                                             <DropdownLink :href="route('logout')" method="post" as="button">
@@ -81,7 +71,6 @@ const showingNavigationDropdown = ref(false);
                             </div>
                             <div>
                                 <DarkModeButton />
->>>>>>> Stashed changes
                             </div>
                         </div>
                         <!-- Hamburger -->
@@ -108,7 +97,7 @@ const showingNavigationDropdown = ref(false);
                 <!-- Responsive Navigation Menu -->
                 <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }" class="sm:hidden">
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                        <ResponsiveNavLink :href="route('admin.dashboard')" :active="route().current('dashboard')">
                             Dashboard
                         </ResponsiveNavLink>
                     </div>
@@ -123,7 +112,7 @@ const showingNavigationDropdown = ref(false);
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')"> Profile </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('admin.profile.edit')"> Profile </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
                             </ResponsiveNavLink>
@@ -144,9 +133,8 @@ const showingNavigationDropdown = ref(false);
                 <div class="z-50 absolute left-0 top-0 w-full h-full flex justify-end items-end pointer-events-none">
                     <GlobalAlertComponent />
                 </div>
+
                 <slot />
-
-
 
                 <div class="z-40">
                     <Modal />

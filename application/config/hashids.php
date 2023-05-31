@@ -39,10 +39,8 @@ return [
         \App\Models\Ballot::class => [
             'salt' => \App\Models\Ballot::class . env('APP_KEY'),
             'length' => 11,
-            'alphabet' => 'acdefghijklmnopqrstuvwxyz0123456789',
+            'alphabet' => 'abcdefghijklmnopqrstuvwxyz012345678',
         ],
-<<<<<<< Updated upstream
-=======
         \App\Models\BallotQuestionChoice::class => [
             'salt' => \App\Models\BallotQuestionChoice::class . env('APP_KEY'),
             'length' => 11,
@@ -53,20 +51,16 @@ return [
             'length' => 11,
             'alphabet' => 'abcdefghilmnopqrstuvwxz0123456789',
         ],
->>>>>>> Stashed changes
         \App\Models\Question::class => [
             'salt' => \App\Models\Ballot::class . env('APP_KEY'),
             'length' => 11,
             'alphabet' => 'acdefghiklmnopqrstuvwxyz0123456789',
         ],
-<<<<<<< Updated upstream
-=======
         \App\Models\Snapshot::class => [
             'salt' => \App\Models\Snapshot::class . env('APP_KEY'),
             'length' => 11,
             'alphabet' => 'abcdefghijklmnoqrstuvwxz0123456789',
         ],
->>>>>>> Stashed changes
 
         //        'main' => [
         //            'salt' =>  env('APP_KEY'),

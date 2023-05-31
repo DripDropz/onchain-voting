@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +17,15 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/cardano/config', function (Request $request) {
+    $credentials = [
+        'poolId' => env('CARDANO_POOL_HASH'),
+        'blockExplorer' => env('CARDANO_BLOCK_EXPLORER'),
+        'blockfrostUrl' => config('services.blockfrost.baseUrl'),
+        'projectId' => config('services.blockfrost.projectId'),
+    ];
+
+    return json_encode($credentials);
+});
+
