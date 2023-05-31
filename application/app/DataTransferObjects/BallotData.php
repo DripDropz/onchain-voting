@@ -42,6 +42,9 @@ class BallotData extends Data
         #[MapOutputName('total_votes')]
         public mixed $totalVotes,
 
+        #[TypeScriptOptional]
+        public ?SnapshotData $snapshot,
+
         public ?UserData $user,
 
         #[TypescriptOptional]

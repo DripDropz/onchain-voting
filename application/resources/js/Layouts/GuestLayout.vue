@@ -2,6 +2,14 @@
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import GlobalAlertComponent from '../shared/components/GlobalAlertComponent.vue';
 import { Link } from '@inertiajs/vue3';
+<<<<<<< Updated upstream
+=======
+import { useDarkModeStore } from "@/stores/dark-mode-store";
+import { storeToRefs } from 'pinia';
+
+let darkModeStore = useDarkModeStore();
+let {isDarkMode} = storeToRefs(darkModeStore);
+>>>>>>> Stashed changes
 </script>
 
 <template>

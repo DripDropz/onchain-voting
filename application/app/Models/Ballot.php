@@ -6,6 +6,15 @@ use App\Enums\BallotTypeEnum;
 use App\Enums\ModelStatusEnum;
 use App\Http\Traits\HasHashIds;
 use App\Models\Traits\HashIdModel;
+<<<<<<< Updated upstream
+=======
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
+>>>>>>> Stashed changes
 use OwenIt\Auditing\Contracts\Auditable;
 
 class Ballot extends Model implements Auditable
@@ -34,4 +43,61 @@ class Ballot extends Model implements Auditable
         'status' => ModelStatusEnum::class,
         'started_at' => 'datetime:Y-m-d H:i:s',
     ];
+<<<<<<< Updated upstream
+=======
+
+    /**
+     * Scope a query to only include active users.
+     */
+    public function scopePublished(Builder $query): void
+    {
+        $query->where('status', 'published');
+    }
+
+    public function live(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => ($this->started_at?->lte(Carbon::now()))
+        );
+    }
+
+    public function snapshot(): HasOne
+    {
+        return $this->hasOne(Snapshot::class);
+    }
+
+    public function questions(): HasMany
+    {
+        return $this->hasMany(Question::class);
+    }
+
+    public function choices(): HasManyThrough
+    {
+        return $this->hasManyThrough(BallotQuestionChoice::class, Question::class, 'ballot_id', 'question_id');
+    }
+
+    public function publishable(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $questions = Question::where('ballot_id', $this->id)->get();
+                $ballotPulishable = $questions->flatMap(function ($question) {
+                    if ($question->status = 'published' and !is_null($this->started_at)) {
+                        return $question->choices;
+                    }
+                });
+
+                return $ballotPulishable->isEmpty() ? false : true;
+            }
+        );
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+//        static::addGlobalScope(new OrderByLiveBallotScope);
+    }
+>>>>>>> Stashed changes
 }

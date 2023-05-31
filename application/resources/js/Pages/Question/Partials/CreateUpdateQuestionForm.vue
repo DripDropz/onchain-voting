@@ -9,7 +9,7 @@
 
             <label for="description" class="sr-only">Description</label>
             <textarea rows="4" name="description" id="description" v-model="form.description"
-                      class="block w-full resize-none border-0 py-0 text-gray-900 dark:text-gray-100 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                      class="block w-full py-0 text-gray-900 bg-white border-0 resize-none dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 dark:bg-gray-900"
                       placeholder="Write a description..."/>
 
             <div class="flex items-center gap-8 px-2 py-4 xl:px-3">
@@ -158,8 +158,7 @@ import BallotData = App.DataTransferObjects.BallotData;
 import QuestionData = App.DataTransferObjects.QuestionData;
 import {Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions} from '@headlessui/vue';
 import {ChevronUpDownIcon, CheckIcon} from '@heroicons/vue/20/solid';
-import setAlert from "@/utils/set-alert";
-import {useGlobalAlert} from "@/store/global-alert-store";
+import AlertService from '@/shared/Services/alert-service';
 
 const props = defineProps<{
     ballot?: BallotData;
@@ -178,6 +177,7 @@ const form = useForm({
     supplemental: null,
 });
 
+<<<<<<< Updated upstream:application/resources/js/Pages/Question/Partials/CreateUpdateQuestionForm.vue
 const alertStore = useGlobalAlert();
 
 function submit() {
@@ -194,5 +194,49 @@ function submit() {
             });
         },
     });
+=======
+const questionTypes = [
+    {id: 1, name: 'single'},
+    {id: 2, name: 'multiple'},
+    {id: 2, name: 'ranked'},
+];
+
+const questionStatuses = [
+    {case: 'draft', value: 'Draft'},
+    {case: 'pending', value: 'Pending'},
+    {case: 'published', value: 'Published'},
+];
+
+function submit() {
+    if(!props.question?.hash){
+        form.post(route('admin.ballots.questions.store', {ballot: props.ballot?.hash}), {
+            preserveScroll: true,
+            preserveState: true,
+        onSuccess: () => {
+                AlertService.show(['Question created successfully'], 'success');
+            },
+            onError: (errors) => {
+                AlertService.show(
+                    Object
+                    .entries(errors)
+                    .map(([key, value]) => value)
+                );
+            },
+        });
+    } else  {
+        form.patch(route('admin.ballots.questions.update', {ballot: props.ballot?.hash, question: props.question?.hash}), {
+            onSuccess: () => {
+                AlertService.show(['Question updated successfully'], 'success');
+            },
+            onError: (errors) => {
+                AlertService.show(
+                    Object
+                    .entries(errors)
+                    .map(([key, value]) => value)
+                );
+            },
+        });
+    }
+>>>>>>> Stashed changes:application/resources/js/Pages/Auth/Question/Partials/CreateUpdateQuestionForm.vue
 }
 </script>

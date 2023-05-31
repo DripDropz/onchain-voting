@@ -11,28 +11,32 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class VoterData extends Data
 {
     public function __construct(
+<<<<<<< Updated upstream
         public string $hash,
 
         public string $stakeKey,
 
         #[TypescriptOptional]
         public ?string $votePower,
+=======
+        public string $voter_id,
+>>>>>>> Stashed changes
 
         #[TypescriptOptional]
         #[DataCollectionOf(VoteData::class)]
-        public ?array $votes,
+        public ?VoteData $votes,
 
         #[TypescriptOptional]
         #[DataCollectionOf(RegistrationData::class)]
-        public ?array $registrations,
+        public ?RegistrationData $registrations,
 
         #[TypescriptOptional]
         #[DataCollectionOf(TokenData::class)]
-        public ?array $tokens,
+        public ?TokenData $tokens,
 
         #[TypescriptOptional]
         #[DataCollectionOf(TxData::class)]
-        public ?array $txs,
+        public ?TxData $txs,
     )
     {}
 }

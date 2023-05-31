@@ -2,9 +2,14 @@
 
 use App\DataTransferObjects\BallotData;
 use App\Http\Controllers\BallotController;
+<<<<<<< Updated upstream
 use App\Http\Controllers\ProfileController;
 use App\Models\Ballot;
 use Illuminate\Foundation\Application;
+=======
+use App\Http\Controllers\VoterController;
+use App\Http\Controllers\HomeController;
+>>>>>>> Stashed changes
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -28,6 +33,7 @@ Route::get('/', function () {
     ]);
 });
 
+<<<<<<< Updated upstream
 Route::get('/dashboard', function () {
     $ballots = BallotData::collection(Ballot::all());
     return Inertia::render('Dashboard')->with([
@@ -63,5 +69,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+=======
+// Voter
+Route::prefix('/voters')->as('voters.')->group(function () {
+    Route::get('/{voterId}/power/{ballot:id}', [VoterController::class, 'power'])->name('power');
+    Route::get('/{voterId}', [VoterController::class, 'voter'])->name('voter');
+
+    // Voter Ballot Reponses
+    Route::prefix('/{voterId}/ballot-responses')->as('ballot-responses.')->group(function () {
+        Route::post('/save', [VoterController::class, 'saveBallotResponse'])->name('save');
+    });
+});
+
+
+require __DIR__ . '/admin.php';
+>>>>>>> Stashed changes
 
 require __DIR__ . '/auth.php';
