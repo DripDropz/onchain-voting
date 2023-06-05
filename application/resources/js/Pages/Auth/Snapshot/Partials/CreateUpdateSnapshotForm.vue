@@ -76,7 +76,7 @@
                         <div class="relative flex flex-1 mt-2">
                             <ListboxButton
                                 class="relative w-full cursor-default rounded-md bg-white dark:bg-gray-900 py-1.5 pl-3 pr-10 text-left text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-700 sm:text-sm sm:leading-6">
-                                <span class="block truncate capitalize">{{ form.type }}</span>
+                                <span class="block capitalize truncate">{{ form.type }}</span>
                                 <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                   <ChevronUpDownIcon class="w-5 h-5 text-gray-400" aria-hidden="true"/>
                                 </span>
@@ -147,10 +147,9 @@ import {
     ChevronUpDownIcon,
     CheckIcon
 } from '@heroicons/vue/20/solid'
-import {useGlobalAlert} from '@/store/global-alert-store'
-import setAlert from "@/utils/set-alert";
 import SnapshotData = App.DataTransferObjects.SnapshotData;
 import SnapshotService from "@/Pages/Auth/Snapshot/Services/SnapshotService";
+import AlertService from '@/shared/Services/alert-service';
 
 const props = defineProps<{
     snapshot?: SnapshotData;
@@ -176,31 +175,31 @@ const form = useForm({
     type: props?.snapshot?.type ?? 'Select Type'
 });
 
-const alertStore = useGlobalAlert();
-
 function submitForm() {
     if (!props.snapshot?.hash) {
         form.post(route('admin.snapshots.create'), {
             onSuccess: () => {
-                alertStore.showAlert(setAlert('Snapshot created successfully', 'success'));
+                AlertService.show(['Snapshot created successfully'], 'success');
             },
             onError: (errors) => {
-                console.log(errors);
-                Object.entries(errors).forEach(([key, value]) => {
-                    alertStore.showAlert(setAlert(value, 'info'));
-                });
+                AlertService.show(
+                    Object
+                    .entries(errors)
+                    .map(([key, value]) => value)
+                );
             },
         });
     } else {
         form.patch(route('admin.snapshots.update', {snapshot: props.snapshot?.hash}), {
             onSuccess: () => {
-                alertStore.showAlert(setAlert('Snapshot updated successfully', 'success'));
+                AlertService.show(['Snapshot updated successfully'], 'success');
             },
             onError: (errors) => {
-                console.log(errors);
-                Object.entries(errors).forEach(([key, value]) => {
-                    alertStore.showAlert(setAlert(value, 'info'));
-                });
+                AlertService.show(
+                    Object
+                    .entries(errors)
+                    .map(([key, value]) => value)
+                );
             },
         });
     }

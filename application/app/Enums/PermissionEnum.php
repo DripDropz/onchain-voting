@@ -2,18 +2,15 @@
 
 namespace App\Enums;
 
-use Spatie\Enum\Laravel\Enum;
-
-/**
- * @method static self update_ballot()
- * @method static self read_ballot()
- * @method static self create_ballot()
- * @method static self delete_ballot()
- */
-final class PermissionEnum extends Enum
+enum PermissionEnum: string
 {
-    protected static function values(): \Closure
+    case UPDATE_BALLOT = 'update_ballot';
+    case READ_BALLOT = 'read_ballot';
+    case CREATE_BALLOT = 'create_ballot';
+    case DELETE_BALLOT = 'delete_ballot';
+
+    protected static function values(): array
     {
-        return fn (string $name): string|int => str_replace('_', ' ', mb_strtolower($name));
+        return array_column(self::cases(), 'value');
     }
 }

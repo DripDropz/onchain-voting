@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from "@headlessui/vue"
 import { useModal } from "momentum-modal"
-import { useDarkModeStore } from "@/store/dark-mode-store";
+import { useDarkModeStore } from "@/stores/dark-mode-store";
 import { storeToRefs } from 'pinia';
 
 const { show, close, redirect } = useModal()

@@ -74,24 +74,24 @@ class BallotController extends Controller
     /**
      * Update the ballot's profile information.
      */
-    public function update(Request $request, Ballot $ballot){
+    public function update(BallotData $ballotData) {
 
-        $response = $request->status == 'published' ? Gate::inspect('publish', $ballot) : Gate::inspect('update', $ballot);
+        $ballot = Ballot::byHash($ballotData->hash);
+        $response = $ballotData->status == 'published' ? Gate::inspect('publish', $ballot) : Gate::inspect('update', $ballot);
 
         if ($response->allowed()) {
-            $ballot = Ballot::byHash($ballot->hash);
-            $ballot->title = $request->title;
-            $ballot->description = $request->description;
-            $ballot->version = $request->version;
-            $ballot->status = $request->status;
-            $ballot->type = $request->type;
-            $ballot->started_at = $request->started_at;
-            $ballot->ended_at = $request->ended_at;
+            $ballot->title = $ballotData->title;
+            $ballot->description = $ballotData->description;
+            $ballot->version = $ballotData->version;
+            $ballot->status = $ballotData->status;
+            $ballot->type = $ballotData->type;
+            $ballot->started_at = $ballotData->started_at;
+            $ballot->ended_at = $ballotData->ended_at;
             $ballot->update();
 
             return Redirect::back();
         }else {
-            return Redirect::back()->withErrors(['error' => 'Not authorized']);;
+            return Redirect::back()->withErrors(['error' => 'Not authorized']);
         }
     }
 

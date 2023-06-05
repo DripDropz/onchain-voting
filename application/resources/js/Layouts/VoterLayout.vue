@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import GlobalAlertComponent from '../shared/components/GlobalAlertComponent.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import { withDefaults } from "vue";
 import Header from "@/Pages/Partials/Header.vue";
-import { useDarkModeStore } from "@/store/dark-mode-store";
+import { useDarkModeStore } from "@/stores/dark-mode-store";
 import { storeToRefs } from 'pinia';
 
 withDefaults(
@@ -18,6 +18,9 @@ withDefaults(
 let darkModeStore = useDarkModeStore();
 let {isDarkMode} = storeToRefs(darkModeStore);
 
+const user = usePage().props.auth?.user;
+
+
 </script>
 
 <template>
@@ -28,15 +31,15 @@ let {isDarkMode} = storeToRefs(darkModeStore);
             <Head :title="page" />
 
             <div
-                class="relative min-h-screen bg-dots-darker bg-center bg-gray-50 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
-                <div class="p-6 text-right w-full relative z-50 border-b-8 border-indigo-600">
+                class="relative min-h-screen bg-center bg-dots-darker bg-gray-50 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
+                <div class="relative z-50 w-full p-6 text-right border-b-8 border-indigo-600">
                     <div class="container">
                         <Header :can-login="canLogin"/>
                     </div>
                 </div>
 
                 <main class="z-10 ">
-                    <slot/>
+                    <slot />
                 </main>
             </div>
         </div>

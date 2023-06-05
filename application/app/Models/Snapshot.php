@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Http\Traits\HasHashIds;
 use App\Models\Interfaces\HasUser;
 use App\Models\Traits\HashIdModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class Snapshot extends Model implements Auditable, HasUser
@@ -18,6 +19,7 @@ class Snapshot extends Model implements Auditable, HasUser
         'title',
         'description',
         'policy_id',
+        'ballot_id',
         'status',
         'type'
     ];
@@ -25,4 +27,9 @@ class Snapshot extends Model implements Auditable, HasUser
     protected $appends = [
         'hash',
     ];
+
+    public function ballot(): BelongsTo
+    {
+        return $this->belongsTo(Ballot::class);
+    }
 }

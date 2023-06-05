@@ -9,7 +9,7 @@
 
             <label for="description" class="sr-only">Description</label>
             <textarea rows="4" name="description" id="description" v-model="form.description"
-                      class="block w-full resize-none border-0 py-0 text-gray-900 rounded-lg dark:text-gray-100 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                      class="block w-full py-0 text-gray-900 bg-white border-0 rounded-lg resize-none dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 dark:bg-gray-900"
                       placeholder="Write a description..."/>
         </div>
 
@@ -31,8 +31,7 @@
 import {useForm} from '@inertiajs/vue3';
 import BallotData = App.DataTransferObjects.BallotData;
 import QuestionData = App.DataTransferObjects.QuestionData;
-import setAlert from "@/utils/set-alert";
-import {useGlobalAlert} from "@/store/global-alert-store";
+import AlertService from '@/shared/Services/alert-service';
 
 const props = defineProps<{
     question: QuestionData;
@@ -44,20 +43,19 @@ const form = useForm({
     description: null,
 });
 
-const alertStore = useGlobalAlert();
-
 function submit() {
     form.post(route('admin.ballots.questions.choices.store', {ballot: props.ballot?.hash, question: props.question?.hash}), {
         preserveScroll: true,
         preserveState: true,
         onSuccess: () => {
-            alertStore.showAlert(setAlert('Choice added successfully', 'success'));
+            AlertService.show(['Choice added successfully'], 'success');
         },
         onError: (errors) => {
-            console.log(errors);
-            Object.entries(errors).forEach(([key, value]) => {
-                alertStore.showAlert(setAlert(value, 'info'));
-            });
+            AlertService.show(
+                Object
+                .entries(errors)
+                .map(([key, value]) => value)
+            );
         },
     });
 }

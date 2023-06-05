@@ -54,7 +54,7 @@
                         <div class="relative flex flex-1 mt-2">
                             <ListboxButton
                                 class="relative w-full cursor-default rounded-md bg-white dark:bg-gray-900 py-1.5 pl-3 pr-10 text-left text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-700 sm:text-sm sm:leading-6">
-                                <span class="block truncate capitalize">{{ form.status }}</span>
+                                <span class="block capitalize truncate">{{ form.status }}</span>
                                 <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                   <ChevronUpDownIcon class="w-5 h-5 text-gray-400" aria-hidden="true"/>
                                 </span>
@@ -244,7 +244,7 @@
         <div class="w-1/3 p-4 text-white border border-gray-300 dark:border-gray-700">
             <h2 class="text-lg font-medium text-center text-gray-900 dark:text-gray-100">Hint:</h2>
             <div>
-                <ul class="list-disc mt-1 text-sm text-gray-600 dark:text-gray-400">
+                <ul class="mt-1 text-sm text-gray-600 list-disc dark:text-gray-400">
                     <li>Ballot cannot be published until a start date is set.</li>
                     <li v-if="!hasPublishedQuestion">Ballot cannot be published until a question is added and
                         published.
@@ -267,11 +267,10 @@ import {
     ChevronUpDownIcon,
     CheckIcon
 } from '@heroicons/vue/20/solid'
-import {useGlobalAlert} from '@/store/global-alert-store'
 import BallotData = App.DataTransferObjects.BallotData;
-import setAlert from "@/utils/set-alert";
 import {computed} from 'vue';
 import BallotService from "@/Pages/Auth/Ballot/Services/BallotService";
+import AlertService from '@/shared/Services/alert-service';
 
 const props = defineProps<{
     status?: String;
@@ -333,6 +332,7 @@ BallotService.getBallotStatuses().then((statuses) => {
 });
 
 const form = useForm({
+    hash: props?.ballot?.hash,
     title: props?.ballot?.title,
     description: props?.ballot?.description,
     version: props?.ballot?.version,
@@ -342,32 +342,32 @@ const form = useForm({
     ended_at: props?.ballot?.ended_at,
 });
 
-const alertStore = useGlobalAlert();
-
 
 function submitForm() {
     if (!props.ballot?.hash) {
         form.post(route('admin.ballots.create'), {
             onSuccess: () => {
-                alertStore.showAlert(setAlert('Ballot created successfully', 'success'));
+                AlertService.show(['Ballot created successfully'], 'success');
             },
             onError: (errors) => {
-                console.log(errors);
-                Object.entries(errors).forEach(([key, value]) => {
-                    alertStore.showAlert(setAlert(value, 'info'));
-                });
+                AlertService.show(
+                    Object
+                    .entries(errors)
+                    .map(([key, value]) => value)
+                );
             },
         });
     } else {
         form.patch(route('admin.ballots.update', {ballot: props.ballot?.hash}), {
             onSuccess: () => {
-                alertStore.showAlert(setAlert('Ballot updated successfully', 'success'));
+                AlertService.show(['Ballot updated successfully'], 'success');
             },
             onError: (errors) => {
-                console.log(errors);
-                Object.entries(errors).forEach(([key, value]) => {
-                    alertStore.showAlert(setAlert(value, 'info'));
-                });
+                AlertService.show(
+                    Object
+                    .entries(errors)
+                    .map(([key, value]) => value)
+                );
             },
         });
     }

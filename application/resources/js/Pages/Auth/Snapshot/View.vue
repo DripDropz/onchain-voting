@@ -3,19 +3,16 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
-import { useGlobalAlert } from "@/store/global-alert-store";
-import setAlert from "@/utils/set-alert";
 import SnapshotData = App.DataTransferObjects.SnapshotData;
 import SnapshotCard from "@/Pages/Auth/Snapshot/Partials/SnapshotCard.vue";
+import AlertService from '@/shared/Services/alert-service';
 
 defineProps<{
     snapshot: SnapshotData;
 }>();
 
-const alertStore = useGlobalAlert();
-const errors1 = computed(() => usePage().props.errors).value;
-if (errors1.error) {
-    alertStore.showAlert(setAlert(errors1.error, 'info'))
+if (usePage().props?.errors) {
+    AlertService.show(Object.values(usePage().props.errors), 'info');
 }
 </script>
 

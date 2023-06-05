@@ -20,7 +20,7 @@
             </div>
 
             <h1 class="flex flex-row items-center gap-2 title2 font-display">
-                <span>{{ ballot.title }}</span>
+                <span class="text-white">{{ ballot.title }}</span>
                 <Line></Line>
             </h1>
             <div class="mt-3">
@@ -30,15 +30,15 @@
 
         <div class="flex items-center justify-between">
             <div class="relative border-4 border-white rounded-lg px-4 py-5 xl:px-6 xl:py-8 w-full lg:w-auto lg:min-w-[40rem]">
-                <div class="absolute top-0 left-0 w-full h-full bg-indigo-800/50 text-white p-8 flex justify-center items-center rounded-lg" v-if="!wallet">
-                    <span class="text-lg xl:text-text font-bold">Connect Wallet to Vote</span>
+                <div class="absolute top-0 left-0 flex items-center justify-center w-full h-full p-8 text-white rounded-lg bg-indigo-800/50" v-if="!wallet">
+                    <span class="text-lg font-bold xl:text-text">Connect Wallet to Vote</span>
                 </div>
                 <div v-for="question in ballot.questions" :key="question.hash">
-                    <BallotQuestionCard @submitted="onSubmitQuestion($event)" :question="question"></BallotQuestionCard>
+                    <BallotQuestionCard @submitted="onSubmitQuestion($event)" :question="question" :ballot="ballot"></BallotQuestionCard>
                 </div>
             </div>
             <div class="items-center title2">
-                Live Metrics here
+                <span class="text-white">Live Results</span>
             </div>
         </div>
     </div>
@@ -52,6 +52,7 @@ import BallotQuestionCard from "@/Pages/Ballot/Partials/BallotQuestionCard.vue";
 import {useWalletStore} from "@/cardano/stores/wallet-store";
 import {storeToRefs} from "pinia";
 import QuestionChoiceData = App.DataTransferObjects.QuestionChoiceData;
+import VoterService from "@/Pages/Voter/Services/voter-service";
 
 const props = withDefaults(defineProps<{
     ballot: BallotData;
@@ -64,13 +65,16 @@ const walletStore = useWalletStore();
 const {walletData: wallet} = storeToRefs(walletStore);
 
 let onSubmitQuestion = (choice: QuestionChoiceData) => {
+    if ( !(wallet.value?.stakeAddress && choice.hash && props.ballot.hash) ) {
+        return;
+    }
+
     const response = {
-        choice: choice.hash,
-        question: choice.question?.hash,
-        ballot: props.ballot?.hash
+        choice_hash: choice.hash,
+        ballot_hash: props.ballot.hash
     };
 
-    console.log(({response}));
+    VoterService.saveBallotResponse(wallet.value?.stakeAddress, response);
 }
 
 </script>

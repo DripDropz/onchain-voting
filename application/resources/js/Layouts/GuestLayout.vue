@@ -2,7 +2,7 @@
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import GlobalAlertComponent from '../shared/components/GlobalAlertComponent.vue';
 import { Link } from '@inertiajs/vue3';
-import { useDarkModeStore } from "@/store/dark-mode-store";
+import { useDarkModeStore } from "@/stores/dark-mode-store";
 import { storeToRefs } from 'pinia';
 
 let darkModeStore = useDarkModeStore();

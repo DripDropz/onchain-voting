@@ -19,16 +19,12 @@ class BallotResponseData extends Data
 
         public UserData $user,
 
-        #[TypescriptOptional]
-        public ?BallotData $ballot,
+        public BallotData $ballot,
 
-        #[TypescriptOptional]
-        public ?QuestionData $question,
+        public QuestionData $question,
 
-        #[TypescriptOptional]
-        public ?QuestionChoiceData $choice,
+        public QuestionChoiceData $choice,
 
-        #[TypescriptOptional]
-        public ?VotingPowerData $voting_power,
+        public VotingPowerData $voting_power,
     ) {}
 }

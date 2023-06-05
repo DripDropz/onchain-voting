@@ -40,18 +40,17 @@
         </div>
     </div>
 </template>
-  
-  
+
+
 <script lang="ts" setup>
 import { ref } from "vue";
 import { CheckCircleIcon } from "@heroicons/vue/24/outline";
 import { XCircleIcon } from "@heroicons/vue/24/outline";
 import { XMarkIcon } from "@heroicons/vue/20/solid";
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
-import { useGlobalAlert } from "@/store/global-alert-store";
+import { useGlobalAlert } from "@/stores/global-alert-store";
 import { storeToRefs } from "pinia";
 
 const alertStore = useGlobalAlert();
 let { alerts } = storeToRefs(alertStore);
 </script>
-  

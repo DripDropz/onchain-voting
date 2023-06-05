@@ -6,9 +6,10 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import GlobalAlertComponent from '../shared/components/GlobalAlertComponent.vue';
+import DarkModeButton from '@/shared/components/DarkModeButton.vue';
 import { Link } from '@inertiajs/vue3';
 import { Modal } from 'momentum-modal';
-import { useDarkModeStore } from "@/store/dark-mode-store";
+import { useDarkModeStore } from "@/stores/dark-mode-store";
 import { storeToRefs } from 'pinia';
 
 const showingNavigationDropdown = ref(false);
@@ -38,37 +39,40 @@ let {isDarkMode} = storeToRefs(darkModeStore);
                                 </NavLink>
                             </div>
                         </div>
-
-                        <div class="hidden sm:flex sm:items-center sm:ml-6">
+                        <div class="flex items-center gap-4">
+                            <div class="hidden sm:flex sm:items-center sm:ml-6">
                             <!-- Settings Dropdown -->
-                            <div class="relative ml-3">
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <button type="button"
-                                                class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
-                                                {{ $page.props.auth.user.name }}
+                                <div class="relative ml-3">
+                                    <Dropdown align="right" width="48">
+                                        <template #trigger>
+                                            <span class="inline-flex rounded-md">
+                                                <button type="button"
+                                                    class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
+                                                    {{ $page.props.auth.user.name }}
 
-                                                <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </template>
+                                                    <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd"
+                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        </template>
 
-                                    <template #content>
-                                        <DropdownLink :href="route('admin.profile.edit')"> Profile </DropdownLink>
-                                        <DropdownLink :href="route('logout')" method="post" as="button">
-                                            Log Out
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
+                                        <template #content>
+                                            <DropdownLink :href="route('admin.profile.edit')"> Profile </DropdownLink>
+                                            <DropdownLink :href="route('logout')" method="post" as="button">
+                                                Log Out
+                                            </DropdownLink>
+                                        </template>
+                                    </Dropdown>
+                                </div>
+                            </div>
+                            <div>
+                                <DarkModeButton />
                             </div>
                         </div>
-
                         <!-- Hamburger -->
                         <div class="flex items-center -mr-2 sm:hidden">
                             <button @click="showingNavigationDropdown = !showingNavigationDropdown"

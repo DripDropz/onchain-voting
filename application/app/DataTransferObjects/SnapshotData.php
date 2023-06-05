@@ -31,6 +31,9 @@ class SnapshotData extends Data
         public ?UserData $user,
 
         #[TypeScriptOptional]
+        public ?BallotData $ballot,
+
+        #[TypeScriptOptional]
         public ?string $created_at,
 
         #[TypeScriptOptional]

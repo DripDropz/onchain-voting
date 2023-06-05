@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->nullOnDelete();
             $table->foreignId('ballot_id')->constrained('ballots')->nullOnDelete();
             $table->foreignId('question_id')->constrained('questions')->nullOnDelete();
-            $table->foreignId('voting_power')->constrained('voting_powers')->nullOnDelete();
+            $table->foreignId('voting_power_id')->constrained('voting_powers')->nullOnDelete();
             $table->foreignId('ballot_question_choice_id')->constrained('ballot_question_choices')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();

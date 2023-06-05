@@ -1,9 +1,9 @@
 <template>
     <ul role="list" class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
         <li v-for="ballot in ballots" :key="ballot.hash"
-            class="overflow-hidden rounded-xl border border-gray-200  dark:border-gray-700">
-            <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6 dark:bg-gray-800">
-                <div class="flex flex-fow gap-3">
+            class="overflow-hidden border border-gray-200 rounded-xl dark:border-gray-700">
+            <div class="flex items-center p-6 border-b gap-x-4 border-gray-900/5 bg-gray-50 dark:bg-gray-800">
+                <div class="flex gap-3 flex-fow">
                     <div class="text-sm font-medium leading-6 text-gray-900 dark:text-gray-200">
                         {{ ballot.title }}
                     </div>
@@ -13,14 +13,14 @@
                 <Menu as="div" class="relative ml-auto">
                     <MenuButton class="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
                         <span class="sr-only">Open options</span>
-                        <EllipsisHorizontalIcon class="h-5 w-5" aria-hidden="true"/>
+                        <EllipsisHorizontalIcon class="w-5 h-5" aria-hidden="true"/>
                     </MenuButton>
-                    <transition enter-active-class="transition ease-out duration-100"
-                                enter-from-class="transform opacity-0 scale-95"
-                                enter-to-class="transform opacity-100 scale-100"
-                                leave-active-class="transition ease-in duration-75"
-                                leave-from-class="transform opacity-100 scale-100"
-                                leave-to-class="transform opacity-0 scale-95">
+                    <transition enter-active-class="transition duration-100 ease-out"
+                                enter-from-class="transform scale-95 opacity-0"
+                                enter-to-class="transform scale-100 opacity-100"
+                                leave-active-class="transition duration-75 ease-in"
+                                leave-from-class="transform scale-100 opacity-100"
+                                leave-to-class="transform scale-95 opacity-0">
                         <MenuItems
                             class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-700 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                             <MenuItem v-slot="{ active }">
@@ -44,21 +44,21 @@
                     </transition>
                 </Menu>
             </div>
-            <dl class="-my-3 divide-y divide-gray-100 dark:divide-gray-700 px-6 py-4 text-sm leading-6 bg-gray-100 dark:bg-gray-900">
-                <div class="flex justify-between gap-x-4 py-3">
+            <dl class="px-6 py-4 -my-3 text-sm leading-6 bg-gray-100 divide-y divide-gray-100 dark:divide-gray-700 dark:bg-gray-900">
+                <div class="flex justify-between py-3 gap-x-4">
                     <dt class="text-gray-600 dark:text-gray-200">Ballot Opens</dt>
                     <dd class="text-gray-700 dark:text-gray-100">
                         <time datetime="2020-01-07">{{ballot.started_at}}</time>
                     </dd>
                 </div>
-                <div class="flex justify-between gap-x-4 py-3">
+                <div class="flex justify-between py-3 gap-x-4">
                     <dt class="text-gray-600 dark:text-gray-200">Ballot Close</dt>
                     <dd class="text-gray-700 dark:text-gray-100">
                         <time datetime="2020-01-07">{{ballot.ended_at}}</time>
                     </dd>
                 </div>
-                <div class="flex justify-between gap-x-4 py-3">
-                    <dt class="text-gray-600  dark:text-gray-200">Total Votes</dt>
+                <div class="flex justify-between py-3 gap-x-4">
+                    <dt class="text-gray-600 dark:text-gray-200">Total Votes</dt>
                     <dd class="flex items-start gap-x-2">
                         <div class="font-medium text-gray-900 dark:text-gray-200">{{ ballot.totalVotes ? humanNumber(ballot.totalVotes, 4) : 0 }}</div>
                     </dd>
@@ -66,9 +66,9 @@
             </dl>
         </li>
 
-        <li class="overflow-hidden rounded-xl border border-dashed border-gray-400 dark:border-gray-700 hover:border-indigo-600 py-16">
-            <Link as="button" :href="route('admin.ballots.create')" class="px-6 py-4 text-md xl:text-xl text-gray-500 dark:text-gray-400 leading-6 flex flex-col justify-center items-center w-full h-full gap-2">
-                <PlusIcon class="h-6 w-6" />
+        <li class="py-16 overflow-hidden border border-gray-400 border-dashed rounded-xl dark:border-gray-700 hover:border-indigo-600">
+            <Link as="button" :href="route('admin.ballots.create')" class="flex flex-col items-center justify-center w-full h-full gap-2 px-6 py-4 leading-6 text-gray-500 text-md xl:text-xl dark:text-gray-400">
+                <PlusIcon class="w-6 h-6" />
                 <span>Create Ballot</span>
             </Link>
         </li>
@@ -81,9 +81,8 @@ import humanNumber from "@/utils/human-number";
 import {PlusIcon, EllipsisHorizontalIcon} from "@heroicons/vue/20/solid";
 import BallotData = App.DataTransferObjects.BallotData;
 import {Link, useForm} from '@inertiajs/vue3';
-import setAlert from "@/utils/set-alert";
-import {useGlobalAlert} from "@/store/global-alert-store";
 import BallotStatusBadge from "@/Pages/Auth/Ballot/Partials/BallotStatusBadge.vue";
+import AlertService from '@/shared/Services/alert-service';
 
 const props = defineProps<{
     ballots: BallotData[];
@@ -99,18 +98,18 @@ const form = useForm({
     status: 'published',
 });
 
-const alertStore = useGlobalAlert();
-
 let publishBallot = (ballotHash: string) => form.patch(route( 'admin.ballots.update', { ballot: ballotHash}), {
     preserveScroll: true,
     preserveState: true,
     onSuccess: () => {
-        alertStore.showAlert(setAlert('Ballot published', 'success'));
+        AlertService.show(['Ballot published'], 'success')
     },
     onError: (errors) => {
-        Object.entries(errors).forEach(([key, value]) => {
-            alertStore.showAlert(setAlert(value, 'info'));
-        });
+        AlertService.show(
+            Object
+            .entries(errors)
+            .map(([key, value]) => value)
+        );
     }
 });
 </script>

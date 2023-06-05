@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use OwenIt\Auditing\Contracts\Auditable;
 
@@ -61,6 +62,11 @@ class Ballot extends Model implements Auditable, HasUser
         return Attribute::make(
             get: fn() => ($this->started_at?->lte(Carbon::now()))
         );
+    }
+
+    public function snapshot(): HasOne
+    {
+        return $this->hasOne(Snapshot::class);
     }
 
     public function questions(): HasMany

@@ -24,6 +24,12 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified'])->group(f
         Route::patch('/{ballot}/update', [BallotController::class, 'update'])->name('update');
         Route::delete('/{ballot}/delete', [BallotController::class, 'destroy'])->name('destroy');
 
+
+        // Ballot Snapshots
+        Route::prefix('/{ballot}/snapshots')->as('snapshots.')->group(function () {
+            Route::get('/add', [BallotController::class, 'addSnapshot'])->name('add');
+        });
+
         // Ballot Questions
         Route::prefix('/{ballot}/questions')->as('questions.')->group(function () {
             // Views

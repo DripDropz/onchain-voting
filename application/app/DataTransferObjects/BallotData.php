@@ -66,6 +66,9 @@ class BallotData extends Data
         #[TypeScriptOptional]
         public mixed $total_votes,
 
+        #[TypeScriptOptional]
+        public ?SnapshotData $snapshot,
+
         public ?UserData $user,
 
         #[TypescriptOptional]
