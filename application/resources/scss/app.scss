@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "@vueform/multiselect/themes/default.css";
+
 
 .container {
     @apply px-5 lg:px-8 mx-auto max-w-screen-2xl 2xl:px-10 3xl:max-w-screen-3xl;

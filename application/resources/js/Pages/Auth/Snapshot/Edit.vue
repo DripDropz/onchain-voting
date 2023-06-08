@@ -1,18 +1,3 @@
-<script setup lang="ts">
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import SnapshotData = App.DataTransferObjects.SnapshotData;
-import CreateUpdateSnapshotForm from "@/Pages/Auth/Snapshot/Partials/CreateUpdateSnapshotForm.vue";
-import DeleteSnapshotForm from "@/Pages/Auth/Snapshot/Partials/DeleteSnapshotForm.vue";
-import VotingPowerImporter from "@/Pages/Auth/Snapshot/Partials/VotingPowerImporter.vue";
-import VotingPowerList from './Partials/VotingPowerList.vue';
-
-defineProps<{
-    snapshot: SnapshotData;
-}>();
-const votingPower = null; // @todo ref() votign power from snapshot store here
-</script>
-
 <template>
     <Head title="Ballot" />
 
@@ -24,15 +9,12 @@ const votingPower = null; // @todo ref() votign power from snapshot store here
         <div class="py-12">
             <div class="mx-auto space-y-6 max-w-7xl sm:px-6 lg:px-8">
                 <section class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
-                    <CreateUpdateSnapshotForm
-                        :snapshot="snapshot"
-                        class="w-full"
-                    />
+                    <CreateUpdateSnapshotForm :snapshot="snapshot" class="w-full" />
                 </section>
 
                 <section class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
-                    <VotingPowerList v-if="votingPower"></VotingPowerList>
-                    <VotingPowerImporter v-else class="max-w-xl" />
+                    <VotingPowerList :powers="votingPowers" v-if="votingPowers?.length > 0"></VotingPowerList>
+                    <VotingPowerImporter v-else class="max-w-xl" :snapshot="snapshot" :asComponent="true" />
                 </section>
 
                 <section class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
@@ -42,3 +24,27 @@ const votingPower = null; // @todo ref() votign power from snapshot store here
         </div>
     </AuthenticatedLayout>
 </template>
+<script setup lang="ts">
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head } from '@inertiajs/vue3';
+import { computed, defineProps, ref } from "vue";
+import SnapshotData = App.DataTransferObjects.SnapshotData;
+import VotingPowerData = App.DataTransferObjects.VotingPowerData;
+import CreateUpdateSnapshotForm from "@/Pages/Auth/Snapshot/Partials/CreateUpdateSnapshotForm.vue";
+import DeleteSnapshotForm from "@/Pages/Auth/Snapshot/Partials/DeleteSnapshotForm.vue";
+import VotingPowerImporter from "@/Pages/Auth/Snapshot/Partials/VotingPowerImporter.vue";
+import VotingPowerList from './Partials/VotingPowerList.vue';
+import SnapshotService from './Services/SnapshotService';
+
+const props = defineProps<{
+    snapshot: SnapshotData;
+}>();
+
+let votingPowers = ref<VotingPowerData[]>([]);
+if (props.snapshot.hash) {
+    SnapshotService.getSnapshotVotingPowers(props.snapshot.hash)
+    .then((paginatedResponse) => {
+        votingPowers.value = paginatedResponse.data;
+    });
+}
+</script>

@@ -6,7 +6,7 @@ services:
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
-        image: sail-8.2/app
+        image: sail-8.2/chainvote
         container_name: chainvote.test
         extra_hosts:
             - 'host.docker.internal:host-gateway'

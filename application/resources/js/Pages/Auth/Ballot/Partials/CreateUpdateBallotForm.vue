@@ -1,5 +1,5 @@
 <template>
-    <section class="flex items-center gap-4">
+    <section class="flex items-start gap-4">
         <div class="w-2/3">
             <header class="mb-2">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Create Ballot</h2>
@@ -28,7 +28,7 @@
                             Date & Time</label>
                         <input type="datetime-local" name="version" id="version" v-model="form.started_at"
                                placeholder="Datetime"
-                               class="relative block w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-white dark:bg-gray-900 rounded-lg"/>
+                               class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-white dark:bg-gray-900 rounded-lg"/>
                     </div>
                     <div class="flex items-center gap-8 px-2 py-4 xl:px-3">
                         <label for="version"
@@ -36,14 +36,14 @@
                             Date & Time</label>
                         <input type="datetime-local" name="version" id="version" v-model="form.ended_at"
                                placeholder="Datetime"
-                               class="relative block w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-white dark:bg-gray-900 rounded-lg"/>
+                               class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-white dark:bg-gray-900 rounded-lg"/>
                     </div>
 
                     <div class="flex items-center gap-8 px-2 py-4 xl:px-3">
                         <label for="version"
                                class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300 w-44">Version</label>
                         <input type="text" name="version" id="version" v-model="form.version" placeholder="Version"
-                               class="relative block w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-white dark:bg-gray-900 rounded-lg"/>
+                               class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-white dark:bg-gray-900 rounded-lg"/>
                     </div>
 
                     <Listbox as="div" @update:modelValue="value => form.status = value"
@@ -54,6 +54,7 @@
                         <div class="relative flex flex-1 mt-2">
                             <ListboxButton
                                 class="relative w-full cursor-default rounded-md bg-white dark:bg-gray-900 py-1.5 pl-3 pr-10 text-left text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-700 sm:text-sm sm:leading-6">
+                                <span class="block capitalize truncate">{{ form.status }}</span>
                                 <span class="block capitalize truncate">{{ form.status }}</span>
                                 <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                   <ChevronUpDownIcon class="w-5 h-5 text-gray-400" aria-hidden="true"/>
@@ -241,20 +242,7 @@
                 </div>
             </form>
         </div>
-        <div class="w-1/3 p-4 text-white border border-gray-300 dark:border-gray-700">
-            <h2 class="text-lg font-medium text-center text-gray-900 dark:text-gray-100">Hint:</h2>
-            <div>
-                <ul class="mt-1 text-sm text-gray-600 list-disc dark:text-gray-400">
-                    <li>Ballot cannot be published until a start date is set.</li>
-                    <li v-if="!hasPublishedQuestion">Ballot cannot be published until a question is added and
-                        published.
-                    </li>
-                    <li v-if="!hasPublishedQuestionChoice">Ballot cannot be published until a choice is added a
-                        published question
-                    </li>
-                </ul>
-            </div>
-        </div>
+        <BallotPublishChecklist class="sticky mt-16 top-5" :ballot="ballot" :status="status"/>
     </section>
 </template>
 
@@ -269,8 +257,9 @@ import {
 } from '@heroicons/vue/20/solid'
 import BallotData = App.DataTransferObjects.BallotData;
 import {computed} from 'vue';
-import BallotService from "@/Pages/Auth/Ballot/Services/BallotService";
+import BallotService from "@/Pages/Auth/Ballot/Services/ballot-service";
 import AlertService from '@/shared/Services/alert-service';
+import BallotPublishChecklist from './BallotPublishChecklist.vue';
 
 const props = defineProps<{
     status?: String;

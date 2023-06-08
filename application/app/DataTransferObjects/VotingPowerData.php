@@ -16,9 +16,9 @@ class VotingPowerData extends Data
         #[WithoutValidation]
         public ?string $hash,
 
-        public UserData $user,
+        public ?UserData $user,
 
-        public SnapshotData $snapshot,
+        public ?SnapshotData $snapshot,
 
         #[Required, IntegerType]
         public int $voting_power,

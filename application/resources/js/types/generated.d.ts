@@ -12,7 +12,7 @@ updated_at?: string | null;
 started_at?: string | null;
 ended_at?: string | null;
 total_votes?: any;
-snapshot?: App.DataTransferObjects.SnapshotData | null;
+snapshot?: Array<App.DataTransferObjects.SnapshotData> | null;
 user: App.DataTransferObjects.UserData | null;
 questions?: Array<App.DataTransferObjects.QuestionData> | null;
 voters?: Array<App.DataTransferObjects.QuestionData> | null;
@@ -24,10 +24,10 @@ export type BallotResponseData = {
 hash: string | null;
 created_at?: string | null;
 user: App.DataTransferObjects.UserData;
-ballot?: App.DataTransferObjects.BallotData | null;
-question?: App.DataTransferObjects.QuestionData | null;
-choice?: App.DataTransferObjects.QuestionChoiceData | null;
-voting_power?: App.DataTransferObjects.VotingPowerData | null;
+ballot: App.DataTransferObjects.BallotData;
+question: App.DataTransferObjects.QuestionData;
+choice: App.DataTransferObjects.QuestionChoiceData;
+voting_power: App.DataTransferObjects.VotingPowerData;
 };
 export type QuestionChoiceData = {
 hash: string | null;
@@ -67,6 +67,7 @@ updated_at?: string | null;
 policy_id?: string | null;
 type?: string | null;
 status: string;
+voting_powers?: App.DataTransferObjects.VotingPowerData | null;
 };
 export type TokenData = {
 hash: string;
@@ -77,10 +78,10 @@ voter: App.DataTransferObjects.VoterData;
 export type TxData = {
 };
 export type UserData = {
-hash: string;
+hash: string | null;
 name: string;
 hero?: string | null;
-ballots?: Array<any>;
+ballots?: Array<any> | null;
 };
 export type VoteData = {
 hash: string;
@@ -91,6 +92,7 @@ ballot: App.DataTransferObjects.BallotData | null;
 };
 export type VoterData = {
 voter_id: string;
+voting_power: any;
 votes?: App.DataTransferObjects.VoteData | null;
 registrations?: App.DataTransferObjects.RegistrationData | null;
 tokens?: App.DataTransferObjects.TokenData | null;
@@ -98,8 +100,8 @@ txs?: App.DataTransferObjects.TxData | null;
 };
 export type VotingPowerData = {
 hash: string | null;
-user: App.DataTransferObjects.UserData;
-snapshot: App.DataTransferObjects.SnapshotData;
+user: App.DataTransferObjects.UserData | null;
+snapshot: App.DataTransferObjects.SnapshotData | null;
 voting_power: number;
 created_at?: string | null;
 };

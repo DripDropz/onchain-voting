@@ -14,7 +14,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class UserData extends Data
 {
     public function __construct(
-        public string $hash,
+        public ?string $hash,
 
         public string $name,
 
@@ -23,7 +23,7 @@ class UserData extends Data
 
         #[TypescriptOptional]
         #[DataCollectionOf(BallotData::class)]
-        public array  $ballots,
+        public ?array  $ballots,
     )
     {}
 }

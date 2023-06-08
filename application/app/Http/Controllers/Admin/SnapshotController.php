@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\DataTransferObjects\SnapshotData;
 use App\DataTransferObjects\QuestionData;
+use App\DataTransferObjects\VotingPowerData;
 use App\Enums\ModelStatusEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Http\Controllers\Controller;
+use App\Jobs\CreateVotingPowerSnapshotJob;
 use App\Models\Snapshot;
 use App\Models\Question;
 use Illuminate\Http\RedirectResponse;
@@ -83,7 +85,7 @@ class SnapshotController extends Controller
             $snapshot->update();
 
             return Redirect::back();
-        }else {
+        } else {
             return Redirect::back()->withErrors(['error' => 'Not authorized']);
         }
     }
@@ -132,7 +134,7 @@ class SnapshotController extends Controller
         ]);
     }
 
-     /**
+    /**
      * Store a newly created Question in storage.
      */
     #[NoReturn]
@@ -156,7 +158,6 @@ class SnapshotController extends Controller
                 'error' => 'Not authorized to update this question!',
             ]);
         }
-
     }
 
     /**
@@ -187,10 +188,10 @@ class SnapshotController extends Controller
         }
     }
 
-     /**
+    /**
      * Delete the snapshots's account.
      */
-    public function destroyQuestion(Request $request,Snapshot $snapshot,Question $question)
+    public function destroyQuestion(Request $request, Snapshot $snapshot, Question $question)
     {
         $response = Gate::inspect('delete', $question);
 
@@ -201,5 +202,63 @@ class SnapshotController extends Controller
         } else {
             return Redirect::back()->withErrors(['error' => 'Not authorized to delete question']);
         }
+    }
+
+    public function votingPowers(Request $request,)
+    {
+        $response = Gate::inspect('view', Snapshot::class);
+
+        if ($response->allowed()) {
+            return VotingPowerData::collection( $request->snapshot->voting_powers()->with(['user'])->paginate(10) );
+        } else {
+            return Redirect::back()->withErrors(['error' => 'Not authorized to view voting power']);
+        }
+
+    }
+
+    public function uploadCsv(Request $request, Snapshot $snapshot)
+    {
+        $response = Gate::inspect('update', Snapshot::class);
+
+        if ($response->allowed()) {
+            return Inertia::modal('Auth/Snapshot/Partials/VotingPowerImporter')
+                ->with([
+                    'snapshot' => SnapshotData::from($snapshot),
+                ])
+                ->baseRoute('admin.dashboard');
+        } else {
+            return Redirect::back()->withErrors(['error' => 'Not authorized to import voting power']);
+        }
+    }
+
+    public function storeCsv(Request $request, Snapshot $snapshot)
+    {
+        $response = Gate::inspect('update', Snapshot::class);
+
+        $uploadedFile = $request->parsedCsv;
+
+        foreach ($uploadedFile as $voter) {
+            CreateVotingPowerSnapshotJob::dispatch($snapshot->hash, $voter['voter_id'], $voter['voting_power']);
+        }
+
+        if ($response->allowed()) {
+            return redirect()->route('admin.snapshots.view', ['snapshot' => $snapshot->hash]);
+        } else {
+            return Redirect::back()->withErrors(['error' => 'Not authorized to import voting power']);
+        }
+    }
+
+    public function searchSnapshot(Request $request)
+    {
+        $term = $request->input('term');
+
+        $snapshots = Snapshot::where('title', 'iLIKE', "%{$term}%")
+            ->get()
+            ->take(5)
+            ->map(fn($q) => [
+                'title' => $q->title,
+                'hash' => $q->hash,
+            ]);
+        return $snapshots;
     }
 }

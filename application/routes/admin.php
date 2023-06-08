@@ -24,10 +24,9 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified'])->group(f
         Route::patch('/{ballot}/update', [BallotController::class, 'update'])->name('update');
         Route::delete('/{ballot}/delete', [BallotController::class, 'destroy'])->name('destroy');
 
-
         // Ballot Snapshots
         Route::prefix('/{ballot}/snapshots')->as('snapshots.')->group(function () {
-            Route::get('/add', [BallotController::class, 'addSnapshot'])->name('add');
+            Route::post('/{snapshot}/link', [BallotController::class, 'linkSnapshot'])->name('link');
         });
 
         // Ballot Questions
@@ -75,10 +74,18 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified'])->group(f
             Route::get('/{question}/edit', [SnapshotController::class, 'editQuestion'])->name('edit');
 
             // CRUDs
+            Route::get('/', [SnapshotController::class, 'votingPowers'])->name('list');
             Route::post('/create', [SnapshotController::class, 'storeQuestion'])->name('store');
             Route::patch('/{question}/update', [SnapshotController::class, 'updateQuestion'])
                 ->name('update');
             Route::delete('/{question}/delete', [SnapshotController::class, 'destroyQuestion'])->name('destroy');
+
+            // import voting powers from csv
+            Route::prefix('/csv')->as('csv.')->group(function () {
+                Route::get('/upload', [SnapshotController::class, 'uploadCsv'])->name('upload');
+
+                Route::post('/save', [SnapshotController::class, 'storeCsv'])->name('store');
+            });
         });
     });
 

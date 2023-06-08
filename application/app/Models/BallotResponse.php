@@ -7,7 +7,7 @@ use App\Models\Traits\HashIdModel;
 use App\Models\Traits\HasUser;
 use Illuminate\Database\Eloquent\Model;
 
-class BallotResponse extends Model
+class BallotResponse extends Model implements \OwenIt\Auditing\Contracts\Auditable
 {
     use \OwenIt\Auditing\Auditable,
     HasHashIds,
@@ -43,7 +43,7 @@ class BallotResponse extends Model
 
     public function choice()
     {
-        return $this->belongsTo(QuestionChoice::class, 'ballot_question_choice_id');
+        return $this->belongsTo(BallotQuestionChoice::class, 'ballot_question_choice_id');
     }
 
 }

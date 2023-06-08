@@ -28,6 +28,9 @@ module.exports = {
                 '3xl': '1840px',
                 '4xl': '2160px'
             },
+            minHeight: (theme) => ({
+                ...theme('spacing'),
+            }),
         },
     },
 

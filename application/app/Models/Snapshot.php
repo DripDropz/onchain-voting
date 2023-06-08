@@ -32,4 +32,9 @@ class Snapshot extends Model implements Auditable, HasUser
     {
         return $this->belongsTo(Ballot::class);
     }
+
+    public function voting_powers()
+    {
+        return $this->hasMany(VotingPower::class);
+    }
 }

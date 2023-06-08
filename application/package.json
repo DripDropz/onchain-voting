@@ -25,6 +25,8 @@
         "@emurgo/cardano-serialization-lib-browser": "^11.4.0",
         "@headlessui/vue": "^1.7.13",
         "@heroicons/vue": "^2.0.17",
+        "@vueform/multiselect": "^2.6.1",
+        "@vueuse/components": "^10.1.2",
         "@vueuse/core": "^10.1.2",
         "lucid-cardano": "^0.10.4",
         "momentum-modal": "^0.2.1",
