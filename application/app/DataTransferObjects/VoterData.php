@@ -2,6 +2,7 @@
 
 namespace App\DataTransferObjects;
 
+use Brick\Math\BigInteger;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\MapName;
 use Spatie\LaravelData\Data;
@@ -15,6 +16,8 @@ class VoterData extends Data
 {
     public function __construct(
         public string $voter_id,
+
+        public BigInteger $voting_power,
 
         #[TypescriptOptional]
         #[DataCollectionOf(VoteData::class)]

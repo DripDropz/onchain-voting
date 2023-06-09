@@ -8,10 +8,18 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use App\Http\Traits\HasHashIds;
+use App\Models\Traits\HashIdModel;
 
-class User extends Authenticatable
+class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditable
 {
-    use HasApiTokens, HasFactory, HasRoles, Notifiable;
+    use \OwenIt\Auditing\Auditable,
+        HasApiTokens,
+        HasFactory,
+        HasRoles,
+        Notifiable,
+        HasHashIds,
+        HashIdModel;
 
     /**
      * The attributes that are mass assignable.
@@ -22,6 +30,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'voter_id',
+    ];
+
+    protected $appends = [
+        'hash',
     ];
 
     /**

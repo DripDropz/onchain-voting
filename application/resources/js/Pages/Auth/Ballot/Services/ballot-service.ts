@@ -1,4 +1,5 @@
 import AdminService from "@/shared/Services/AdminService";
+import axios from "axios";
 
 export default class BallotService {
     public static async getBallotTypes(): Promise<string[]> {
@@ -8,4 +9,10 @@ export default class BallotService {
     public static async getBallotStatuses(): Promise<string[]> {
         return AdminService.getEnums('model-status');
     }
+
+    public static async linkSnapshot(data: { ballot: string, snapshot: string}): Promise<boolean> {
+        await axios.post(route('admin.ballots.snapshots.link', data), {});
+        return true;
+    }
+
 }

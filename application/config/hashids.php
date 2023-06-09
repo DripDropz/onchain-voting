@@ -61,6 +61,17 @@ return [
             'length' => 11,
             'alphabet' => 'abcdefghijklmnoqrstuvwxz0123456789',
         ],
+        \App\Models\User::class => [
+            'salt' => \App\Models\User::class . env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'abcdefghijklmnoqrstvwxyz0123456789',
+        ],
+
+        \App\Models\VotingPower::class => [
+            'salt' => \App\Models\VotingPower::class . env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'abcdefghijklmnoqrstuwxyz0123456789',
+        ],
 
         //        'main' => [
         //            'salt' =>  env('APP_KEY'),

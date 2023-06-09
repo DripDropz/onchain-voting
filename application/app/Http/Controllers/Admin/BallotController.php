@@ -2,24 +2,25 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\DataTransferObjects\BallotData;
-use App\DataTransferObjects\QuestionChoiceData;
-use App\DataTransferObjects\QuestionData;
-use App\Enums\ModelStatusEnum;
-use App\Enums\QuestionTypeEnum;
-use App\Http\Controllers\Controller;
-use App\Models\Ballot;
-use App\Models\BallotQuestionChoice;
-use App\Models\Question;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
-use JetBrains\PhpStorm\NoReturn;
+use App\Models\Ballot;
+use App\Models\Question;
+use App\Models\Snapshot;
 use Momentum\Modal\Modal;
+use Illuminate\Http\Request;
+use App\Enums\ModelStatusEnum;
+use App\Enums\QuestionTypeEnum;
+use JetBrains\PhpStorm\NoReturn;
+use App\Http\Controllers\Controller;
+use App\Models\BallotQuestionChoice;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\RedirectResponse;
+use App\DataTransferObjects\BallotData;
+use Illuminate\Support\Facades\Redirect;
+use App\DataTransferObjects\QuestionData;
+use App\DataTransferObjects\QuestionChoiceData;
 
 class BallotController extends Controller
 {
@@ -47,7 +48,7 @@ class BallotController extends Controller
      */
     public function edit(Request $request, Ballot $ballot): Response
     {
-        $ballot->load(['questions.choices']);
+        $ballot->load(['questions.choices', 'snapshot']);
         return Inertia::render('Auth/Ballot/Edit', [
             'ballot' => BallotData::from($ballot)
         ]);
@@ -74,7 +75,8 @@ class BallotController extends Controller
     /**
      * Update the ballot's profile information.
      */
-    public function update(BallotData $ballotData) {
+    public function update(BallotData $ballotData)
+    {
 
         $ballot = Ballot::byHash($ballotData->hash);
         $response = $ballotData->status == 'published' ? Gate::inspect('publish', $ballot) : Gate::inspect('update', $ballot);
@@ -90,7 +92,7 @@ class BallotController extends Controller
             $ballot->update();
 
             return Redirect::back();
-        }else {
+        } else {
             return Redirect::back()->withErrors(['error' => 'Not authorized']);
         }
     }
@@ -139,7 +141,7 @@ class BallotController extends Controller
         ]);
     }
 
-     /**
+    /**
      * Store a newly created Question in storage.
      */
     #[NoReturn]
@@ -163,7 +165,6 @@ class BallotController extends Controller
                 'error' => 'Not authorized to update this question!',
             ]);
         }
-
     }
 
     /**
@@ -194,10 +195,10 @@ class BallotController extends Controller
         }
     }
 
-     /**
+    /**
      * Delete the ballot's account.
      */
-    public function destroyQuestion(Request $request,Ballot $ballot,Question $question)
+    public function destroyQuestion(Request $request, Ballot $ballot, Question $question)
     {
         $response = Gate::inspect('delete', $question);
 
@@ -210,7 +211,6 @@ class BallotController extends Controller
         }
     }
 
-
     public function createQuestionChoice(Request $request, Ballot $ballot, Question $question): Modal
     {
         $question->load('ballot');
@@ -222,6 +222,16 @@ class BallotController extends Controller
             ->baseRoute('admin.ballots.edit', [
                 'ballot' => $question?->ballot->hash
             ]);
+    }
+
+    public function linkSnapshot(Ballot $ballot, Snapshot $snapshot)
+    {
+        try {
+            $ballot->snapshot()->save($snapshot);
+            return Redirect::route('admin.ballots.edit', ['ballot' => $ballot?->hash]);
+        } catch (\Exception $e) {
+            return Redirect::back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 
     /**

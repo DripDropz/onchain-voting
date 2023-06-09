@@ -11,8 +11,8 @@ let {isDarkMode} = storeToRefs(darkModeStore);
 </script>
 
 <template>
-    <TransitionRoot appear as="template" :show="show" :class="{'dark': isDarkMode }">
-        <Dialog as="div" class="relative z-10 dark" @close="close">
+    <TransitionRoot appear as="template" :show="show">
+        <Dialog as="div" class="relative z-10" :class="[isDarkMode ? 'dark' : '']" @close="close">
             <TransitionChild
                 @after-leave="redirect"
                 as="template"

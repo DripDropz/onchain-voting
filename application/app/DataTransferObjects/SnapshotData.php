@@ -7,6 +7,7 @@ use Spatie\LaravelData\Attributes\Validation\Nullable;
 use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Attributes\Validation\Sometimes;
+use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\StringType;
 use Spatie\LaravelData\Attributes\WithoutValidation;
 use Spatie\LaravelData\Data;
@@ -48,7 +49,11 @@ class SnapshotData extends Data
 
         #[Required]
         #[Rule('string')]
-        public string $status
+        public string $status,
+
+        #[TypescriptOptional]
+        #[DataCollectionOf(VotingPowerData::class)]
+        public ?VotingPowerData $voting_powers,
     ) {}
 
     public static function attributes(): array

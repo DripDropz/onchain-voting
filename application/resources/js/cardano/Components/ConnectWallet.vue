@@ -3,10 +3,10 @@
         <button @click.prevent="open = !open" :aria-expanded="open" class="flex flex-row p-2 border-none rounded-md"
         :class="[backgroundColor]"
             type="button">
-            <slot></slot>
+            <!-- <slot></slot> -->
             <span v-show="walletLoading"
                 class="flex items-center justify-center w-4 p-1 mt-1 mr-1 bg-white rounded-full bg-opacity-90">
-                <svg aria-hidden="true" 
+                <svg aria-hidden="true"
                     class="w-3 h-3 text-gray-200 animate-spin dark:text-gray-400 fill-indigo-800" viewBox="0 0 100 101" fill="none"
                     xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -38,7 +38,7 @@
             <div class="flex flex-col items-center gap-2 py-1 divide-y divide-slate-800 divide-opacity-40" role="none">
                 <a v-for="wallet in WalletList" href="#"
                     @click.prevent="(open = !open); walletService.supports(wallet?.name) ? enableWallet(wallet?.name) : ''"
-                    class="inline-flex block w-full gap-2 px-4 py-2 text-xl text-gray-700"
+                    class="inline-flex w-full gap-2 px-4 py-2 text-xl text-gray-700"
                     :class="{ 'hidden': !walletService.supports(wallet?.name) }" role="menuitem">
                     <img :alt="wallet?.altText" class="w-6 h-auto" :src="wallet?.imageSrc" />
                     <span>{{ wallet?.walletName }}</span>

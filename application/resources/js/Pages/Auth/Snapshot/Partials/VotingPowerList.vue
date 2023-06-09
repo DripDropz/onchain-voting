@@ -20,4 +20,9 @@
 
 <script lang="ts" setup>
 import { FolderOpenIcon } from '@heroicons/vue/24/outline';
+import VotingPowerData = App.DataTransferObjects.VotingPowerData;
+
+defineProps<{
+    powers: VotingPowerData[];
+}>();
 </script>

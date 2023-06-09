@@ -56,6 +56,6 @@ class VoterController extends Controller
             'ballot_question_choice_id' => $choice->id,
         ]);
 
-        return BallotResponseData::from($ballotResponse);
+        return BallotResponseData::from($ballotResponse->load(['user', 'ballot', 'question', 'choice', 'voting_power']));
     }
 }

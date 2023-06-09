@@ -130,7 +130,7 @@ let {isDarkMode} = storeToRefs(darkModeStore);
 
             <!-- Page Content -->
             <main>
-                <div class="z-50 absolute left-0 top-0 w-full h-full flex justify-end items-end pointer-events-none">
+                <div class="fixed top-0 left-0 z-50 flex items-end justify-end w-full h-full pointer-events-none">
                     <GlobalAlertComponent />
                 </div>
 
