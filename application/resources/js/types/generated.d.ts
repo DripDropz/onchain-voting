@@ -12,7 +12,7 @@ updated_at?: string | null;
 started_at?: string | null;
 ended_at?: string | null;
 total_votes?: any;
-snapshot?: Array<App.DataTransferObjects.SnapshotData> | null;
+snapshot?: App.DataTransferObjects.SnapshotData | null;
 user: App.DataTransferObjects.UserData | null;
 questions?: Array<App.DataTransferObjects.QuestionData> | null;
 voters?: Array<App.DataTransferObjects.QuestionData> | null;

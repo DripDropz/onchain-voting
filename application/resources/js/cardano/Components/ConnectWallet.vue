@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button @click.prevent="open = !open" :aria-expanded="open" class="flex flex-row p-2 border-none rounded-md"
+        <button @click.prevent="open = !open" :aria-expanded="open" class="flex flex-row h-full p-2 border-none"
         :class="[backgroundColor]"
             type="button">
             <!-- <slot></slot> -->
@@ -34,7 +34,7 @@
         </button>
 
         <div v-show="open" style="display: none;" ref="target"
-            class="absolute z-40 justify-center mt-3 overflow-visible bg-white rounded-bl-sm rounded-br-sm shadow-md w-36 ">
+            class="absolute z-40 justify-center w-full overflow-visible bg-white rounded-b-lg shadow-md ">
             <div class="flex flex-col items-center gap-2 py-1 divide-y divide-slate-800 divide-opacity-40" role="none">
                 <a v-for="wallet in WalletList" href="#"
                     @click.prevent="(open = !open); walletService.supports(wallet?.name) ? enableWallet(wallet?.name) : ''"
@@ -63,7 +63,7 @@ const props = withDefaults(
         backgroundColor?: string,
     }>(),
     {
-        backgroundColor: 'bg-indigo-600'
+        backgroundColor: ''
     });
 
 let open: Ref<boolean> = ref(false);
@@ -102,7 +102,7 @@ async function getWalletAddress(): Promise<Wallet> {
     } as Wallet
 }
 
-if (walletName.value) {
+if (walletName.value?.length>0) {
     enableWallet(walletName.value)
 }
 

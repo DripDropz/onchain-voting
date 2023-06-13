@@ -1,5 +1,7 @@
 <?php
 
+use App\DataTransferObjects\Normalizers\ArrayableNormalizer;
+
 return [
     /*
      * The package will use this format when working with dates. If this option
@@ -48,7 +50,8 @@ return [
     'normalizers' => [
         Spatie\LaravelData\Normalizers\ModelNormalizer::class,
         // Spatie\LaravelData\Normalizers\FormRequestNormalizer::class,
-        Spatie\LaravelData\Normalizers\ArrayableNormalizer::class,
+        // Spatie\LaravelData\Normalizers\ArrayableNormalizer::class,
+        ArrayableNormalizer::class,
         Spatie\LaravelData\Normalizers\ObjectNormalizer::class,
         Spatie\LaravelData\Normalizers\ArrayNormalizer::class,
         Spatie\LaravelData\Normalizers\JsonNormalizer::class,

@@ -26,7 +26,7 @@
                 :class="[selectedChoice === null ? 'bg-slate-500 hover:cursor-not-allowed' : 'bg-white hover:bg-indigo-300']"
                 @click="submitVote"
                 class="rounded-full px-8 lg:px-10 py-2.5 lg:py-3 text-md xl:text-xl font-semibold text-indigo-950 shadow-sm">
-            Submit
+            Save
         </button>
     </div>
 </template>
@@ -34,12 +34,16 @@
 import BallotData = App.DataTransferObjects.BallotData;
 import QuestionData = App.DataTransferObjects.QuestionData;
 import QuestionChoiceData = App.DataTransferObjects.QuestionChoiceData;
+import UserData = App.DataTransferObjects.UserData;
 import BallotQuestionChoice from "@/Pages/Ballot/Partials/BallotQuestionChoice.vue";
 import {Ref, ref, watch, computed} from "vue";
 import humanNumber from "@/utils/human-number";
 import { useWalletStore } from "@/cardano/stores/wallet-store";
 import { storeToRefs } from "pinia";
 import { useVoterStore } from "@/Pages/Voter/stores/voter-store";
+import { usePage } from "@inertiajs/vue3";
+
+const user = usePage().props.auth.user;
 
 const walletStore = useWalletStore();
 let {walletData: wallet} = storeToRefs(walletStore);
@@ -87,7 +91,7 @@ function submitVote()
 }
 
 watch(wallet, () => {
-    if ( wallet.value?.stakeAddress && props.ballot?.hash ) {
+    if ( wallet.value?.stakeAddress && props.ballot?.hash && user?.hash ) {
         voterStore.loadVotingPower(wallet.value.stakeAddress, props.ballot?.hash);
     }
 });

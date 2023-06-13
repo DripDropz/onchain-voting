@@ -30,9 +30,8 @@
 
         <div class="flex items-center justify-between">
             <div class="relative border-4 border-white rounded-lg px-4 py-5 xl:px-6 xl:py-8 w-full lg:w-auto lg:min-w-[40rem]">
-                <div class="absolute top-0 left-0 flex items-center justify-center w-full h-full p-8 text-white rounded-lg bg-indigo-800/50" v-if="!wallet">
-                    <span class="text-lg font-bold xl:text-text">Connect Wallet to Vote</span>
-                </div>
+                <ConnectWalletToVote v-if="!wallet"></ConnectWalletToVote>
+                <LoginToVote v-if="wallet && !!wallet && !user?.hash"></LoginToVote>
                 <div v-for="question in ballot.questions" :key="question.hash">
                     <BallotQuestionCard @submitted="onSubmitQuestion($event)" :question="question" :ballot="ballot"></BallotQuestionCard>
                 </div>
@@ -46,25 +45,28 @@
 <script lang="ts" setup>
 import BallotData = App.DataTransferObjects.BallotData;
 import Line from "@/Pages/Partials/Line.vue";
-import {Link} from "@inertiajs/vue3";
+import {Link, usePage} from "@inertiajs/vue3";
 import BallotStatusBadge from "@/Pages/Auth/Ballot/Partials/BallotStatusBadge.vue";
 import BallotQuestionCard from "@/Pages/Ballot/Partials/BallotQuestionCard.vue";
+import ConnectWalletToVote from "@/Pages/Ballot/Partials/ConnectWalletToVote.vue";
+import LoginToVote from "@/Pages/Ballot/Partials/LoginToVote.vue";
 import {useWalletStore} from "@/cardano/stores/wallet-store";
 import {storeToRefs} from "pinia";
 import QuestionChoiceData = App.DataTransferObjects.QuestionChoiceData;
 import VoterService from "@/Pages/Voter/Services/voter-service";
 
+const user = usePage().props.auth.user;
 const props = withDefaults(defineProps<{
     ballot: BallotData;
     context?: string;
 }>(), {
     context: 'full'
 });
-
+console.log('ballot::', props.ballot);
 const walletStore = useWalletStore();
 const {walletData: wallet} = storeToRefs(walletStore);
 
-let onSubmitQuestion = (choice: QuestionChoiceData) => {
+let onSubmitQuestion = async (choice: QuestionChoiceData) => {
     if ( !(wallet.value?.stakeAddress && choice.hash && props.ballot.hash) ) {
         return;
     }
@@ -74,7 +76,8 @@ let onSubmitQuestion = (choice: QuestionChoiceData) => {
         ballot_hash: props.ballot.hash
     };
 
-    VoterService.saveBallotResponse(wallet.value?.stakeAddress, response);
+    const ballotResponse = await VoterService.saveBallotResponse(wallet.value?.stakeAddress, response);
+    console.log('ballotResponse::', ballotResponse);
 }
 
 </script>

@@ -6,6 +6,8 @@ import { withDefaults } from "vue";
 import Header from "@/Pages/Partials/Header.vue";
 import { useDarkModeStore } from "@/stores/dark-mode-store";
 import { storeToRefs } from 'pinia';
+import { Modal } from 'momentum-modal';
+
 
 withDefaults(
     defineProps<{
@@ -40,6 +42,7 @@ const user = usePage().props.auth?.user;
 
                 <main class="z-10 ">
                     <slot />
+                    <Modal/>
                 </main>
             </div>
         </div>

@@ -90,7 +90,6 @@ import AlertService from '@/shared/Services/alert-service';
 
 const props = defineProps<{
     snapshot: SnapshotData;
-    showComponent?: boolean;
 }>();
 
 let parsedFileContent = ref<VoterData[]>([]);

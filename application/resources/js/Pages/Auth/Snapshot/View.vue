@@ -8,7 +8,7 @@ import VotingPowerData = App.DataTransferObjects.VotingPowerData;
 import SnapshotCard from "@/Pages/Auth/Snapshot/Partials/SnapshotCard.vue";
 import AlertService from '@/shared/Services/alert-service';
 import VotingPowerList from './Partials/VotingPowerList.vue';
-import VotingPowerImporter from "@/Pages/Auth/Snapshot/Partials/VotingPowerImporter.vue";
+import VotingPowerImporterComponent from '@/Components/VotingPowerImporterComponent.vue';
 import SnapshotService from './Services/SnapshotService';
 
 const props = defineProps<{
@@ -45,10 +45,10 @@ if (props.snapshot.hash) {
                     <SnapshotCard :snapshot="snapshot" class="max-w-xl" />
                 </div>
 
-                <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
+                <section class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
                     <VotingPowerList :powers="votingPowers" v-if="votingPowers?.length > 0"></VotingPowerList>
-                    <VotingPowerImporter v-else class="max-w-xl" :snapshot="snapshot" :asComponent="true" />
-                </div>
+                    <VotingPowerImporterComponent v-else :snapshot="snapshot"/>
+                </section>
             </div>
         </div>
     </AuthenticatedLayout>

@@ -7,11 +7,11 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div class="flex justify-between gap-x-6 py-5">
+    <div class="flex justify-between py-5 gap-x-6">
         <div class="flex gap-x-4">
-            <div class="min-w-0 flex-auto">
+            <div class="flex-auto min-w-0">
                 <p class="text-sm font-semibold leading-6 text-white">{{ choice.title }}</p>
-                <p class="mt-1 truncate text-xs leading-5 text-gray-400">{{ choice.description }}</p>
+                <p class="mt-1 text-xs leading-5 text-gray-400 truncate">{{ choice.description }}</p>
             </div>
         </div>
 <!--        <div class="hidden sm:flex sm:flex-col sm:items-end">-->

@@ -216,12 +216,12 @@ class SnapshotController extends Controller
 
     }
 
-    public function uploadCsv(Request $request, Snapshot $snapshot)
+    public function uploadVotingPowerCsv(Request $request, Snapshot $snapshot)
     {
         $response = Gate::inspect('update', Snapshot::class);
 
         if ($response->allowed()) {
-            return Inertia::modal('Auth/Snapshot/Partials/VotingPowerImporter')
+            return Inertia::modal('Auth/Snapshot/Partials/VotingPowerImporterModal')
                 ->with([
                     'snapshot' => SnapshotData::from($snapshot),
                 ])
@@ -231,7 +231,7 @@ class SnapshotController extends Controller
         }
     }
 
-    public function storeCsv(Request $request, Snapshot $snapshot)
+    public function storeVotingPowerCsv(Request $request, Snapshot $snapshot)
     {
         $response = Gate::inspect('update', Snapshot::class);
 

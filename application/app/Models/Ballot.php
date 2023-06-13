@@ -64,16 +64,6 @@ class Ballot extends Model implements Auditable, HasUser
         );
     }
 
-    public function snapshot(): HasOne
-    {
-        return $this->hasOne(Snapshot::class);
-    }
-
-    public function questions(): HasMany
-    {
-        return $this->hasMany(Question::class);
-    }
-
     public function choices(): HasManyThrough
     {
         return $this->hasManyThrough(BallotQuestionChoice::class, Question::class, 'ballot_id', 'question_id');
@@ -92,6 +82,28 @@ class Ballot extends Model implements Auditable, HasUser
 
                 return $ballotPulishable->isEmpty() ? false : true;
             }
+        );
+    }
+
+    public function questions(): HasMany
+    {
+        return $this->hasMany(Question::class);
+    }
+
+    public function responses(): HasMany
+    {
+        return $this->hasMany(BallotResponse::class);
+    }
+
+    public function snapshot(): HasOne
+    {
+        return $this->hasOne(Snapshot::class);
+    }
+
+    public function user_response(): HasOne
+    {
+        return $this->responses()->one()->ofMany()->where(
+            'user_id', auth()?->user()?->getAuthIdentifier()
         );
     }
 

@@ -81,6 +81,13 @@ class BallotData extends Data
         public ?DataCollection $voters,
 
         #[TypescriptOptional]
+        #[DataCollectionOf(BallotResponseData::class)]
+        public ?DataCollection $responses,
+
+        #[TypescriptOptional]
+        public ?BallotResponseData $user_response,
+
+        #[TypescriptOptional]
         #[DataCollectionOf(VoteData::class)]
         /** @var QuestionData[] */
         public ?DataCollection $votes,

@@ -4,8 +4,8 @@
             <div
                 class="overflow-hidden border border-gray-300 rounded-lg shadow-sm dark:border-gray-700 focus-within:border-indigo-500 dark:focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-500 dark:focus-within:ring-indigo-500">
                 <header
-                    class="block w-full resize-none border-0 text-gray-900 dark:text-gray-100 p-3 xl:p-4 dark:text-gray-100 sm:text-sm sm:leading-6 bg-slate-200 dark:bg-gray-900">
-                    <div class="flex flex-wrap items-center justify-start sm:flex-nowrap gap-2">
+                    class="block w-full p-3 text-gray-900 border-0 resize-none dark:text-gray-100 xl:p-4 sm:text-sm sm:leading-6 bg-slate-200 dark:bg-gray-900">
+                    <div class="flex flex-wrap items-center justify-start gap-2 sm:flex-nowrap">
                         <h2 class="text-lg font-medium">
                             {{ snapshot.title }}
                         </h2>
@@ -76,8 +76,14 @@
             <div v-if="!snapshot?.live" class="absolute bottom-0 inset-x-px">
                 <div
                     class="flex items-center justify-between px-2 py-3 space-x-3 border-t border-gray-200 dark:border-gray-700 sm:px-3">
-                    <div class="flex">
-
+                    <div class="flex gap-6 items-center">
+                        <DangerButton @click="removeSnapshot"
+                        :disabled="disabled"
+                        :class="{ 'opacity-25': disabled }"
+                        >
+                            Remove
+                        </DangerButton>
+                        <ToolTip type="error" :tip="tipMessage"/>
                     </div>
                     <div class="flex-shrink-0">
                         <Link as="button"
@@ -93,12 +99,33 @@
 </template>
 
 <script setup lang="ts">
-import {Link, usePage} from '@inertiajs/vue3';
+import {Link, router, usePage} from '@inertiajs/vue3';
+import { ref } from "vue";
 import SnapshotData = App.DataTransferObjects.SnapshotData;
+import BallotService from "../../Ballot/Services/ballot-service"
+import DangerButton from '@/Components/DangerButton.vue';
+import ToolTip from '@/Components/ToolTip.vue';
 
 const props = defineProps<{
     status?: String;
     snapshot?: SnapshotData;
+    ballot?: String;
 }>();
 
+let tipMessage = ref(null);
+let disabled = ref(false);
+
+let removeSnapshot = async () => {
+    const data = {
+        snapshot: props.snapshot?.hash,
+        ballot: props.ballot,
+    }
+    const res =await BallotService.unlinkSnapshot(data);
+    if (res){
+        tipMessage.value = res;
+        disabled.value = true;
+    } else{
+        router.reload();
+    }
+}
 </script>

@@ -43,7 +43,6 @@
                             </MenuItems>
                         </transition>
                     </Menu>
-
                 </div>
             </div>
 
@@ -51,7 +50,7 @@
                 <div class="inline-flex rounded-md shadow-sm isolate">
                         <span type="button"
                               class="relative inline-flex items-center gap-x-1.5 rounded-l-md bg-white px-2 py-1 text-sm font-semibold text-slate-900 dark:text-gray-200 ring-1 ring-inset bg-slate-200 dark:bg-gray-700 ring-slate-300 dark:ring-gray-700">
-                          Typee
+                          Type
                         </span>
                     <span
                         class="relative inline-flex items-center px-2 py-1 -ml-px text-sm font-semibold bg-white rounded-r-md dark:bg-gray-500 text-slate-900 dark:text-slate-100 ring-1 ring-inset ring-slate-300 dark:ring-gray-600">
@@ -66,11 +65,18 @@
                 Choices
             </h3>
             <div class="flex flex-col gap-1 mt-4">
-                <QuestionChoiceList :choices="question.choices"/>
+                <div>
+                    <QuestionChoiceList :choices="question.choices" v-if="question?.choices?.length > 0" />
+                    <div v-else class="flex flex-col items-center justify-center gap-2">
+                        <p class="text-sm text-slate-500 dark:text-gray-300">
+                            No choices yet.
+                        </p>
+                    </div>
+                </div>
 
-                <span v-if="! questionWithBallot.ballot?.live">
+                <template v-if="! questionWithBallot.ballot?.live">
                     <NewQuestionChoiceButton :ballot="ballot" :question="questionWithBallot"/>
-                </span>
+                </template>
             </div>
         </div>
     </div>

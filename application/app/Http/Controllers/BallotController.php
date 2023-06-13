@@ -15,7 +15,7 @@ class BallotController extends Controller
      */
     public function view(Request $request, Ballot $ballot): Response
     {
-        $ballot->load(['questions.choices']);
+        $ballot->load(['questions.choices', 'user_response.choice']);
         return Inertia::render('Ballot/View', [
             'ballot' => BallotData::from($ballot)
         ]);

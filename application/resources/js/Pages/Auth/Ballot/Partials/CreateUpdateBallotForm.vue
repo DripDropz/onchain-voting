@@ -181,51 +181,6 @@
                                 </transition>
                             </div>
                         </Listbox>
-
-
-                        <!--                    <Listbox as="div" v-model="labelled" class="flex-shrink-0">-->
-                        <!--                        <ListboxLabel class="sr-only">Add a label</ListboxLabel>-->
-                        <!--                        <div class="relative">-->
-                        <!--                            <ListboxButton class="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 rounded-full whitespace-nowrap bg-gray-50 hover:bg-gray-100 sm:px-3">-->
-                        <!--                                <TagIcon :class="[labelled.value === null ? 'text-gray-300 dark:text-gray-700' : 'text-gray-500 dark:text-gray-200', 'h-5 w-5 flex-shrink-0 sm:-ml-1']" aria-hidden="true" />-->
-                        <!--                                <span :class="[labelled.value === null ? '' : 'text-gray-900  dark:text-gray-300', 'hidden truncate sm:ml-2 sm:block']">{{ labelled.value === null ? 'Label' : labelled.name }}</span>-->
-                        <!--                            </ListboxButton>-->
-
-                        <!--                            <transition leave-active-class="transition duration-100 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">-->
-                        <!--                                <ListboxOptions class="absolute right-0 z-10 py-3 mt-1 overflow-auto text-base bg-white rounded-lg shadow max-h-56 w-52 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">-->
-                        <!--                                    <ListboxOption as="template" v-for="label in labels" :key="label.value" :value="label" v-slot="{ active }">-->
-                        <!--                                        <li :class="[active ? 'bg-gray-100' : 'bg-white', 'relative cursor-default select-none px-3 py-2']">-->
-                        <!--                                            <div class="flex items-center">-->
-                        <!--                                                <span class="block font-medium truncate">{{ label.name }}</span>-->
-                        <!--                                            </div>-->
-                        <!--                                        </li>-->
-                        <!--                                    </ListboxOption>-->
-                        <!--                                </ListboxOptions>-->
-                        <!--                            </transition>-->
-                        <!--                        </div>-->
-                        <!--                    </Listbox>-->
-
-                        <!--                    <Listbox as="div" v-model="dated" class="flex-shrink-0">-->
-                        <!--                        <ListboxLabel class="sr-only">Add a due date</ListboxLabel>-->
-                        <!--                        <div class="relative">-->
-                        <!--                            <ListboxButton class="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 rounded-full whitespace-nowrap bg-gray-50 hover:bg-gray-100 sm:px-3">-->
-                        <!--                                <CalendarIcon :class="[dated.value === null ? 'text-gray-300  dark:text-gray-700' : 'text-gray-500  dark:text-gray-900', 'h-5 w-5 flex-shrink-0 sm:-ml-1']" aria-hidden="true" />-->
-                        <!--                                <span :class="[dated.value === null ? '' : 'text-gray-900  dark:text-gray-300', 'hidden truncate sm:ml-2 sm:block']">{{ dated.value === null ? 'Due date' : dated.name }}</span>-->
-                        <!--                            </ListboxButton>-->
-
-                        <!--                            <transition leave-active-class="transition duration-100 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">-->
-                        <!--                                <ListboxOptions class="absolute right-0 z-10 py-3 mt-1 overflow-auto text-base bg-white rounded-lg shadow max-h-56 w-52 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">-->
-                        <!--                                    <ListboxOption as="template" v-for="dueDate in dueDates" :key="dueDate.value" :value="dueDate" v-slot="{ active }">-->
-                        <!--                                        <li :class="[active ? 'bg-gray-100' : 'bg-white', 'relative cursor-default select-none px-3 py-2']">-->
-                        <!--                                            <div class="flex items-center">-->
-                        <!--                                                <span class="block font-medium truncate">{{ dueDate.name }}</span>-->
-                        <!--                                            </div>-->
-                        <!--                                        </li>-->
-                        <!--                                    </ListboxOption>-->
-                        <!--                                </ListboxOptions>-->
-                        <!--                            </transition>-->
-                        <!--                        </div>-->
-                        <!--                    </Listbox>-->
                     </div>
                     <div
                         class="flex items-center justify-between px-2 py-3 space-x-3 border-t border-gray-200 dark:border-gray-700 sm:px-3">
@@ -260,6 +215,7 @@ import {computed} from 'vue';
 import BallotService from "@/Pages/Auth/Ballot/Services/ballot-service";
 import AlertService from '@/shared/Services/alert-service';
 import BallotPublishChecklist from './BallotPublishChecklist.vue';
+import { Ref } from 'vue';
 
 const props = defineProps<{
     status?: String;
@@ -267,23 +223,27 @@ const props = defineProps<{
 }>();
 
 const user = usePage().props.auth.user;
+const questions = ref(props.ballot?.questions);
 
 const hasPublishedQuestion = computed(() => {
-    const ballotQuestions = props.ballot?.questions?.filter((question, index) => {
+    const ballotQuestions = questions.value?.filter((question, index) => {
         return question.status == 'published';
     });
-
-    return ballotQuestions?.length > 0 ? true : false;
+    const questionsCount = ballotQuestions?.length ?? 0;
+    return questionsCount > 0 ? true : false;
 })
 
 const hasPublishedQuestionChoice = computed(() => {
-    const ballotQuestionsWithChoice = props.ballot?.questions?.filter((question, index) => {
+    const ballotQuestionsWithChoice = questions.value?.filter((question, index) => {
         if (question.status == 'published') {
-            return question.choices.length > 0;
+            let choices = ref(question.choices);
+            let choicesCount = choices.value?.length ?? 0;
+            return choicesCount > 0;
         }
     });
 
-    return ballotQuestionsWithChoice?.length > 0 ? true : false;
+    const questionsCount = ballotQuestionsWithChoice?.length ?? 0;
+    return questionsCount > 0 ? true : false;
 })
 
 

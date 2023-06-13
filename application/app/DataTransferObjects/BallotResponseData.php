@@ -17,14 +17,14 @@ class BallotResponseData extends Data
         #[TypeScriptOptional]
         public ?string $created_at,
 
-        public UserData $user,
+        public ?BallotData $ballot,
 
-        public BallotData $ballot,
-
-        public QuestionData $question,
+        public ?QuestionData $question,
 
         public QuestionChoiceData $choice,
 
-        public VotingPowerData $voting_power,
+        public ?UserData $user,
+
+        public ?VotingPowerData $voting_power,
     ) {}
 }

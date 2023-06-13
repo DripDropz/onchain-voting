@@ -1,5 +1,5 @@
 <template>
-    <ul role="list" class="divide-y divide-gray-800 max-h-80 overflow-auto">
+    <ul role="list" class="overflow-auto divide-y divide-gray-800 max-h-80">
         <QuestionChoiceListItem v-for="choice in choices" :key="choice.title" :choice="choice" />
     </ul>
 </template>
@@ -8,7 +8,7 @@
 import QuestionChoiceData = App.DataTransferObjects.QuestionChoiceData;
 import QuestionChoiceListItem from "@/Pages/Auth/Question/QuestionChoice/Partials/QuestionChoiceListItem.vue";
 
-const props = defineProps<{
-    choices: QuestionChoiceData[];
+defineProps<{
+    choices?: QuestionChoiceData[];
 }>();
 </script>

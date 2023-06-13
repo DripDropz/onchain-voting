@@ -14,7 +14,7 @@
 
                 <section class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
                     <VotingPowerList :powers="votingPowers" v-if="votingPowers?.length > 0"></VotingPowerList>
-                    <VotingPowerImporter v-else class="max-w-xl" :snapshot="snapshot" :asComponent="true" />
+                    <VotingPowerImporterComponent v-else :snapshot="snapshot"/>
                 </section>
 
                 <section class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
@@ -27,14 +27,14 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import { computed, defineProps, ref } from "vue";
+import { computed, ref } from "vue";
 import SnapshotData = App.DataTransferObjects.SnapshotData;
 import VotingPowerData = App.DataTransferObjects.VotingPowerData;
 import CreateUpdateSnapshotForm from "@/Pages/Auth/Snapshot/Partials/CreateUpdateSnapshotForm.vue";
 import DeleteSnapshotForm from "@/Pages/Auth/Snapshot/Partials/DeleteSnapshotForm.vue";
-import VotingPowerImporter from "@/Pages/Auth/Snapshot/Partials/VotingPowerImporter.vue";
 import VotingPowerList from './Partials/VotingPowerList.vue';
 import SnapshotService from './Services/SnapshotService';
+import VotingPowerImporterComponent from '@/Components/VotingPowerImporterComponent.vue';
 
 const props = defineProps<{
     snapshot: SnapshotData;

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\DataTransferObjects\QuestionChoiceData;
 use App\Enums\ModelStatusEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Http\Traits\HasHashIds;
@@ -39,6 +40,7 @@ class Question extends Model implements Auditable, HasUser
         'type' => QuestionTypeEnum::class,
         'status' => ModelStatusEnum::class,
         'created_at' => 'datetime:Y-m-d H:i:s',
+        'choices' => QuestionChoiceData::class,
     ];
 
     public function ballot(): BelongsTo

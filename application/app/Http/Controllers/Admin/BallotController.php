@@ -21,6 +21,7 @@ use App\DataTransferObjects\BallotData;
 use Illuminate\Support\Facades\Redirect;
 use App\DataTransferObjects\QuestionData;
 use App\DataTransferObjects\QuestionChoiceData;
+use Illuminate\Support\Carbon;
 
 class BallotController extends Controller
 {
@@ -37,9 +38,8 @@ class BallotController extends Controller
      */
     public function view(Request $request, Ballot $ballot): Response
     {
-        $ballot->load(['questions.choices']);
         return Inertia::render('Auth/Ballot/View', [
-            'ballot' => BallotData::from($ballot),
+            'ballot' => BallotData::from($ballot->load('snapshot','questions.choices')),
         ]);
     }
 
@@ -224,6 +224,17 @@ class BallotController extends Controller
             ]);
     }
 
+    public function viewLinkSnapshot(Ballot $ballot)
+    {
+        return Inertia::modal('Auth/Snapshot/Partials/SnapshotPicker')
+            ->with([
+                'ballot' => $ballot
+            ])
+            ->baseRoute(previous_route_name(),[
+                'ballot' => $ballot->hash
+            ]);
+    }
+
     public function linkSnapshot(Ballot $ballot, Snapshot $snapshot)
     {
         try {
@@ -231,6 +242,23 @@ class BallotController extends Controller
             return Redirect::route('admin.ballots.edit', ['ballot' => $ballot?->hash]);
         } catch (\Exception $e) {
             return Redirect::back()->withErrors(['error' => $e->getMessage()]);
+        }
+    } 
+
+    public function unLinkSnapShot(Ballot $ballot, Snapshot $snapshot)
+    {
+        $currentDate = Carbon::now();
+        $startDate = Carbon::parse($ballot->started_at);
+
+        if ($currentDate->greaterThanOrEqualTo($startDate)) {
+            throw new \Exception ('Cannot remove snapshot, the ballot has already started!');
+        }
+
+        try {
+            $snapshot->ballot_id = null;
+            $snapshot->save();
+        } catch (\Exception $e) {
+            throw $e;
         }
     }
 
