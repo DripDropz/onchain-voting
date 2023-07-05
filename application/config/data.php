@@ -8,7 +8,7 @@ return [
      * is an array, it will try to convert from the first format that works,
      * and will serialize dates using the first format from the array.
      */
-    'date_format' => ['Y-m-d H:i:s', DATE_ATOM, 'Y-m-d\TH:i', DATE_RFC3339, DATE_W3C, ],
+    'date_format' => ['Y-m-d H:i:s', DATE_ATOM, 'Y-m-d\TH:i', DATE_RFC3339, DATE_W3C],
 
     /*
      * Global transformers will take complex types and transform them into simple

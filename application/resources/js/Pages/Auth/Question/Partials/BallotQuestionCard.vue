@@ -68,7 +68,7 @@
                 <div>
                     <QuestionChoiceList :choices="question.choices" v-if="question?.choices?.length > 0" />
                     <div v-else class="flex flex-col items-center justify-center gap-2">
-                        <p class="text-sm text-slate-500 dark:text-gray-300">
+                        <p class="mb-2 text-sm xl:text-lg text-slate-500 dark:text-gray-300">
                             No choices yet.
                         </p>
                     </div>

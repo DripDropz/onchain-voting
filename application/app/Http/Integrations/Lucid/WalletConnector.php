@@ -11,12 +11,10 @@ class WalletConnector extends Connector
 
     /**
      * The Base URL of the API
-     *
-     * @return string
      */
     public function resolveBaseUrl(): string
     {
-        return 'http://localhost:3001';
+        return config('services.lucid.endpoint');
     }
 
     /**
@@ -41,7 +39,7 @@ class WalletConnector extends Connector
     protected function defaultConfig(): array
     {
         return [
-            'timeout' => 60,
+            'timeout' => 300,
         ];
     }
 }

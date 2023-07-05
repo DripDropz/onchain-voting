@@ -1,12 +1,14 @@
 <template>
     <div
-        class="overflow-hidden rounded-xl border border-dashed border-gray-300 dark:border-gray-700 hover:border-indigo-600">
+        class="overflow-hidden border border-gray-300 border-dashed rounded-xl dark:border-gray-700 hover:border-indigo-600">
         <Link as="button"
-              :href="route(
+            :preserve-scroll="false"
+            :preserve-state="false"
+            :href="route(
                   'admin.ballots.questions.choices.create',
                    { 'ballot': ballot.hash, 'question': question.hash})"
-              class="px-6 py-4 text-md xl:text-xl text-gray-500 dark:text-gray-400 leading-6 flex flex-col justify-center items-center w-full h-28 gap-2">
-            <PlusIcon class="h-6 w-6"/>
+              class="flex flex-col items-center justify-center w-full gap-2 px-6 py-4 leading-6 text-gray-500 text-md xl:text-xl dark:text-gray-400 h-28">
+            <PlusIcon class="w-6 h-6 mb-1"/>
             <span>Add Choice</span>
         </Link>
     </div>
@@ -17,7 +19,7 @@ import {PlusIcon} from '@heroicons/vue/20/solid';
 import QuestionData = App.DataTransferObjects.QuestionData;
 import BallotData = App.DataTransferObjects.BallotData;
 
-const props = defineProps<{
+defineProps<{
     ballot: BallotData;
     question: QuestionData;
 }>();

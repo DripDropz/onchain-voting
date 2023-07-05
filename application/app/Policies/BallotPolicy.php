@@ -19,6 +19,7 @@ class BallotPolicy extends AppPolicy
 
     /**
      * Determine whether the user can view the model.
+     *
      * @throws \Exception
      */
     public function view(User $user, Ballot $ballot): bool
@@ -41,10 +42,6 @@ class BallotPolicy extends AppPolicy
 
     /**
      * Determine whether the user can update the model.
-     *
-     * @param User $user
-     * @param Ballot $ballot
-     * @return Response
      */
     public function update(User $user, Ballot $ballot): Response
     {
@@ -55,14 +52,11 @@ class BallotPolicy extends AppPolicy
 
     /**
      * Determine whether the user can publish the model.
-     *
-     * @param User $user
-     * @param Ballot $ballot
-     * @return Response
      */
     public function publish(User $user, Ballot $ballot): Response
     {
-        $authorized  = $ballot->publishable && $this->canUpdate($user, $ballot);
+        $authorized = $ballot->publishable && $this->canUpdate($user, $ballot);
+
         return $authorized
                 ? Response::allow()
                 : Response::deny('You are not authorized to publish this ballot.');
@@ -70,10 +64,6 @@ class BallotPolicy extends AppPolicy
 
     /**
      * Determine whether the user can delete the post.
-     *
-     * @param User $user
-     * @param Ballot $ballot
-     * @return bool
      */
     public function delete(User $user, Ballot $ballot): bool
     {

@@ -29,7 +29,7 @@ class Ballot extends Model implements Auditable, HasUser
         'status',
         'type',
         'started_at',
-        'ended_at'
+        'ended_at',
     ];
 
     protected $hidden = [
@@ -60,7 +60,7 @@ class Ballot extends Model implements Auditable, HasUser
     public function live(): Attribute
     {
         return Attribute::make(
-            get: fn() => ($this->started_at?->lte(Carbon::now()))
+            get: fn () => ($this->started_at?->lte(Carbon::now()) && $this->status == 'published')
         );
     }
 
@@ -75,7 +75,7 @@ class Ballot extends Model implements Auditable, HasUser
             get: function () {
                 $questions = Question::where('ballot_id', $this->id)->get();
                 $ballotPulishable = $questions->flatMap(function ($question) {
-                    if ($question->status = 'published' and !is_null($this->started_at)) {
+                    if ($question->status = 'published' and ! is_null($this->started_at)) {
                         return $question->choices;
                     }
                 });
@@ -112,6 +112,6 @@ class Ballot extends Model implements Auditable, HasUser
      */
     protected static function booted(): void
     {
-//        static::addGlobalScope(new OrderByLiveBallotScope);
+        //        static::addGlobalScope(new OrderByLiveBallotScope);
     }
 }

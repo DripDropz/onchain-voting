@@ -13,16 +13,14 @@ use Inertia\Response;
 
 class DashboardController extends Controller
 {
-
     public function index(Request $request): Response
     {
         $ballots = BallotData::collection(Ballot::all());
         $snapshots = SnapshotData::collection(Snapshot::all());
+
         return Inertia::render('Auth/Dashboard')->with([
             'ballots' => $ballots,
-            'snapshots' => $snapshots
+            'snapshots' => $snapshots,
         ]);
     }
-
-
 }

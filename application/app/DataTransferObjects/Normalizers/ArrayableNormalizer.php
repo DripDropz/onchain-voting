@@ -1,4 +1,5 @@
 <?php
+
 namespace App\DataTransferObjects\Normalizers;
 
 use Illuminate\Contracts\Support\Arrayable;
@@ -15,4 +16,3 @@ class ArrayableNormalizer implements Normalizer
         return $value->toArray();
     }
 }
-

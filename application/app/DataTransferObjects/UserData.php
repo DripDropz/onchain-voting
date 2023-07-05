@@ -10,13 +10,15 @@ use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
-#[MapName(CamelCaseMapper::class)]
+// #[MapName(CamelCaseMapper::class)]
 class UserData extends Data
 {
     public function __construct(
-        public ?string $hash,
+        public string $hash,
 
         public string $name,
+
+        public ?string $voter_id,
 
         #[TypescriptOptional]
         public ?string $hero,
@@ -24,6 +26,6 @@ class UserData extends Data
         #[TypescriptOptional]
         #[DataCollectionOf(BallotData::class)]
         public ?array $ballots,
-    )
-    {}
+    ) {
+    }
 }

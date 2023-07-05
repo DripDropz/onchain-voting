@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait HasUser
 {
-
     public function userIdentifier(): Attribute
     {
         return Attribute::make(

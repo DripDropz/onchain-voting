@@ -15,15 +15,15 @@ defineProps<{
 <template>
     <VoterLayout page="Home">
         <div class="flex flex-col gap-24">
-            <div class="container h-screen flex flex-col justify-end -mt-32">
-                <div class="flex flex-row justify-between items-center">
+            <div class="container flex flex-col justify-end h-screen pb-16 -mt-32">
+                <div class="flex flex-row items-center justify-between">
                     <div>
-                        <h1 class="font-display text-4xl font-medium tracking-tight text-slate-900 dark:text-slate-200 sm:text-6xl xl:text-7xl mt-auto -mt-16">
+                        <h1 class="mt-auto -mt-16 text-4xl font-medium tracking-tight font-display text-slate-900 dark:text-slate-200 sm:text-6xl xl:text-7xl">
                                     <span class="block text-4xl sm:text-7xl xl:text-8xl">
                                         On-Chain Voting
                                     </span>
 
-                                    <span class="relative whitespace-nowrap text-indigo-600">
+                                    <span class="relative text-indigo-600 whitespace-nowrap">
                                         <svg
                                             aria-hidden="true" viewBox="0 0 418 42"
                                             class="absolute left-0 top-2/3 h-[0.58em] w-full fill-indigo-300/70"
@@ -36,7 +36,7 @@ defineProps<{
                             for everyone.
                         </h1>
                         <div
-                            class="mt-10 lg:max-w-2xl text-lg xl:text-xl tracking-tight text-slate-700 dark:text-slate-300">
+                            class="mt-10 text-lg tracking-tight lg:max-w-2xl xl:text-xl text-slate-700 dark:text-slate-300">
                             <p>
                                 Voting should be easy, secure, and accessible to everyone. With chainvote, you
                                 can
@@ -56,7 +56,7 @@ defineProps<{
 
             <div class="py-24 bg-slate-200 dark:bg-slate-800/20"  v-if="ballots?.length > 0" id="open-ballots">
                 <div class="container" v-if="ballots?.length > 1">
-                    <h2 class="title2 font-display mb-6 lg:mb-10">
+                    <h2 class="mb-6 title2 font-display lg:mb-10">
                         <span class="flex">Open Ballots</span>
                         <Line></Line>
                     </h2>

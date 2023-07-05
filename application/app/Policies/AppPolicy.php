@@ -19,7 +19,7 @@ class AppPolicy
      */
     public function before(User $user, $ability)
     {
-        if ($user->hasAnyRole([RoleEnum::SUPER_ADMIN->value,])) {
+        if ($user->hasAnyRole([RoleEnum::SUPER_ADMIN->value])) {
             return true;
         }
     }
@@ -40,7 +40,7 @@ class AppPolicy
      */
     public function canViewAny(User $user): mixed
     {
-        return $user->hasAnyRole([RoleEnum::SUPER_ADMIN->value,]);
+        return $user->hasAnyRole([RoleEnum::SUPER_ADMIN->value]);
     }
 
     /**
@@ -48,7 +48,7 @@ class AppPolicy
      */
     public function canCreateAny(User $user): bool
     {
-        return $user->hasAnyRole([RoleEnum::SUPER_ADMIN->value,]);
+        return $user->hasAnyRole([RoleEnum::SUPER_ADMIN->value]);
     }
 
     /**
@@ -61,21 +61,14 @@ class AppPolicy
 
     /**
      * Determine whether the user can update the model.
-     *
-     * @param User $user
-     * @return bool
      */
     public function canUpdateAny(User $user): bool
     {
-        return $user->hasAnyRole([RoleEnum::SUPER_ADMIN->value,]);
+        return $user->hasAnyRole([RoleEnum::SUPER_ADMIN->value]);
     }
 
     /**
      * Determine whether the user can delete the model.
-     *
-     * @param User $user
-     * @param HasUser $model
-     * @return bool
      */
     public function canDelete(User $user, HasUser $model): bool
     {
@@ -84,12 +77,9 @@ class AppPolicy
 
     /**
      * Determine whether the user can delete the model.
-     *
-     * @param User $user
-     * @return bool
      */
     public function canDeleteAny(User $user): bool
     {
-        return $user->hasAnyRole([RoleEnum::SUPER_ADMIN->value,]);
+        return $user->hasAnyRole([RoleEnum::SUPER_ADMIN->value]);
     }
 }

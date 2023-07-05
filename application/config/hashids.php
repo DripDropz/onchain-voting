@@ -37,38 +37,38 @@ return [
 
     'connections' => [
         \App\Models\Ballot::class => [
-            'salt' => \App\Models\Ballot::class . env('APP_KEY'),
+            'salt' => \App\Models\Ballot::class.env('APP_KEY'),
             'length' => 11,
             'alphabet' => 'abcdefghijklmnopqrstuvwxyz012345678',
         ],
         \App\Models\BallotQuestionChoice::class => [
-            'salt' => \App\Models\BallotQuestionChoice::class . env('APP_KEY'),
+            'salt' => \App\Models\BallotQuestionChoice::class.env('APP_KEY'),
             'length' => 11,
             'alphabet' => 'bcdefghiklmnopqrstuvwxz0123456789',
         ],
         \App\Models\BallotResponse::class => [
-            'salt' => \App\Models\BallotResponse::class . env('APP_KEY'),
+            'salt' => \App\Models\BallotResponse::class.env('APP_KEY'),
             'length' => 11,
             'alphabet' => 'abcdefghilmnopqrstuvwxz0123456789',
         ],
         \App\Models\Question::class => [
-            'salt' => \App\Models\Ballot::class . env('APP_KEY'),
+            'salt' => \App\Models\Ballot::class.env('APP_KEY'),
             'length' => 11,
             'alphabet' => 'acdefghiklmnopqrstuvwxyz0123456789',
         ],
         \App\Models\Snapshot::class => [
-            'salt' => \App\Models\Snapshot::class . env('APP_KEY'),
+            'salt' => \App\Models\Snapshot::class.env('APP_KEY'),
             'length' => 11,
             'alphabet' => 'abcdefghijklmnoqrstuvwxz0123456789',
         ],
         \App\Models\User::class => [
-            'salt' => \App\Models\User::class . env('APP_KEY'),
+            'salt' => \App\Models\User::class.env('APP_KEY'),
             'length' => 11,
             'alphabet' => 'abcdefghijklmnoqrstvwxyz0123456789',
         ],
 
         \App\Models\VotingPower::class => [
-            'salt' => \App\Models\VotingPower::class . env('APP_KEY'),
+            'salt' => \App\Models\VotingPower::class.env('APP_KEY'),
             'length' => 11,
             'alphabet' => 'abcdefghijklmnoqrstuwxyz0123456789',
         ],

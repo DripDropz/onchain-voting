@@ -7,7 +7,6 @@ use Vinkla\Hashids\Facades\Hashids;
 
 trait HashIdModel
 {
-
     public function hash(): Attribute
     {
         return Attribute::make(

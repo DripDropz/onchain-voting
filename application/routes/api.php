@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\BallotController;
+use App\Http\Controllers\Admin\SnapshotController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\SnapshotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +23,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/cardano/config', function (Request $request) {
     $credentials = [
-        'poolId' => env('CARDANO_POOL_HASH'),
         'blockExplorer' => env('CARDANO_BLOCK_EXPLORER'),
         'blockfrostUrl' => config('services.blockfrost.baseUrl'),
         'projectId' => config('services.blockfrost.projectId'),
@@ -33,10 +33,10 @@ Route::get('/cardano/config', function (Request $request) {
 
 Route::post('/parse/csv', function (Request $request) {
     $response = Gate::inspect('update', Snapshot::class);
-       
+
     $filePath = $request->file('file')->getRealPath();
     $csv = file_get_contents($filePath);
-    $content = array_map("str_getcsv", explode("\n", $csv));
+    $content = array_map('str_getcsv', explode("\n", $csv));
     $headers = ['voter_id', 'voting_power'];
     $json = [];
     foreach ($content as $row_index => $row_data) {
@@ -54,13 +54,15 @@ Route::post('/parse/csv', function (Request $request) {
             }
         }
     }
-    
+
     $partialData = count($json) >= 10 ? array_slice($json, 0, 10) : $json;
     $response = [
         'partialData' => $partialData,
         'data' => $json,
     ];
+
     return json_encode($response);
 });
 
-Route::get('/snapshot', [SnapshotController::class,'searchSnapshot'])->name('searchSnapshot');
+Route::get('/snapshot', [SnapshotController::class, 'searchSnapshot'])->name('searchSnapshot');
+Route::post('/update-position', [BallotController::class, 'updatePosition'])->name('update.position');

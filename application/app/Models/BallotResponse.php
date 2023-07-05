@@ -4,15 +4,14 @@ namespace App\Models;
 
 use App\Http\Traits\HasHashIds;
 use App\Models\Traits\HashIdModel;
-use App\Models\Traits\HasUser;
 use Illuminate\Database\Eloquent\Model;
 
 class BallotResponse extends Model implements \OwenIt\Auditing\Contracts\Auditable
 {
     use \OwenIt\Auditing\Auditable,
-    HasHashIds,
-    HashIdModel,
-    Traits\HasUser;
+        HasHashIds,
+        HashIdModel,
+        Traits\HasUser;
 
     protected $hidden = [
         'id',
@@ -45,5 +44,4 @@ class BallotResponse extends Model implements \OwenIt\Auditing\Contracts\Auditab
     {
         return $this->belongsTo(BallotQuestionChoice::class, 'ballot_question_choice_id');
     }
-
 }

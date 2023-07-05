@@ -3,13 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Http\Traits\HasHashIds;
+use App\Models\Traits\HashIdModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use App\Http\Traits\HasHashIds;
-use App\Models\Traits\HashIdModel;
 
 class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditable
 {

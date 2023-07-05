@@ -7,7 +7,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
-Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified'])->group(function () {
+Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.routes'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Ballot
@@ -99,7 +99,7 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified'])->group(f
     // Utilities
     Route::get('/enums/{collection}', function () {
         $collection = request()->route('collection');
-        $collection = 'App\\Enums\\' . Str::studly($collection) . 'Enum';
+        $collection = 'App\\Enums\\'.Str::studly($collection).'Enum';
 
         return array_column($collection::cases(), 'value', 'name');
     })->name('enums');

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import {Blockfrost, Lucid, Network, Tx} from 'lucid-cardano';
+import {Blockfrost, Lucid, Network, Tx, toHex,C} from 'lucid-cardano';
 import BlockfrostKeysService from './BlockfrostKeysService';
 import CardanoWallet from "@/cardano/interface/Wallets";
 
@@ -10,19 +10,22 @@ declare global {
     }
 }
 
-
-
 export default class WalletService {
     private api: any;
-    private lucid: any;
-    private poolId: any;
+    private lucid: Lucid;
     private blockfrostUrl: any;
     private projectId: any;
+    private walletName: string;
 
-    constructor() {}
+    constructor(walletName?: string) {
+        this.walletName = walletName;
+    }
 
-    public get lucidInstance()
+    public async lucidInstance()
     {
+        if (!this.lucid) {
+            await this.init();
+        }
         return this.lucid;
     }
 
@@ -76,6 +79,44 @@ export default class WalletService {
         return <string>await this.api.signData(addresses[0], msg);
     }
 
+    public async expiredTx(wallet, assets , stakeAddr)
+    {
+        await this.init(wallet);
+        if (!this.api) {
+            return;
+        }
+
+        const addr = await this.getAddress(wallet)
+        return await new Tx(this.lucid).payToAddress(addr,assets).validTo(Date.now() - 1000000).addSigner(stakeAddr).complete();
+    }
+
+    public async getCredential(address){
+        const parsedAddress = C.BaseAddress.from_address(this.addressFromHexOrBech32(address));
+        return toHex(parsedAddress?.stake_cred().to_keyhash()?.to_bytes());
+    }
+
+    public async addressFromHexOrBech32(address: string) {
+        try {
+            return C.Address.from_bytes(fromHex(address));
+        }
+        catch (_e) {
+            try {
+                return C.Address.from_bech32(address);
+            }
+            catch (_e) {
+                throw new Error("Could not deserialize address.");
+            }
+    }}
+
+    public async txData(tx,wallet){
+        await this.init(wallet);
+        if (!this.api) {
+            return;
+        }
+
+       return this.api.discoverOwnUsedTxKeyHashes(tx)
+    }
+
     public async connectWallet(wallet: string) {
         try {
             if (!this.lucid || typeof this.lucid === 'undefined') {
@@ -100,7 +141,7 @@ export default class WalletService {
 
     protected async init(wallet: string) {
         if (!!this.lucid || typeof this.lucid !== 'undefined') {
-            const api = await this.enableWallet(wallet);
+            const api = await this.enableWallet(wallet ?? this.walletName);
             this.lucid.selectWallet(api);
             this.api = api;
 
@@ -109,7 +150,7 @@ export default class WalletService {
         let lucid;
 
         try {
-            const api = await this.enableWallet(wallet);
+            const api = await this.enableWallet(wallet || this.walletName);
 
             if (!api) {
                 console.log(`${wallet} not installed!`);
@@ -125,12 +166,13 @@ export default class WalletService {
                 default:
                     network = 'Mainnet';
             }
+
             const blockfrostKeysService = new BlockfrostKeysService();
             const keys = await blockfrostKeysService.getConfig();
             this.blockfrostUrl = keys?.blockfrostUrl;
             this.projectId = keys?.projectId
 
-            lucid = await Lucid.new(null,
+            lucid = await Lucid.new(
                 new Blockfrost(this.blockfrostUrl, this.projectId),
                 network
             );

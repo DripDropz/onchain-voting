@@ -1,16 +1,14 @@
-FROM node:18-alpine As development
+FROM node:18-alpine
 
 WORKDIR /usr/src/app
 
-COPY --chown=node:node package.json ./
-COPY --chown=node:node yarn.lock ./
+COPY package.json ./
+COPY yarn.lock ./
 
-RUN yarn install --frozen-lockfile
+RUN npm install -g @nestjs/cli && yarn install --frozen-lockfile
 
-COPY --chown=node:node . .
+COPY . .
 
 EXPOSE 3000
-
-USER node
 
 CMD [ "npx", "nest", "start", "--watch" ]

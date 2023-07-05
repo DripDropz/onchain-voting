@@ -21,5 +21,6 @@ class TokenData extends Data
         public ?BallotData $ballot,
 
         public VoterData $voter,
-    ) {}
+    ) {
+    }
 }

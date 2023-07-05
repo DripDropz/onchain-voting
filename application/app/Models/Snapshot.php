@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Http\Traits\HasHashIds;
 use App\Models\Interfaces\HasUser;
 use App\Models\Traits\HashIdModel;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use OwenIt\Auditing\Contracts\Auditable;
 
@@ -21,11 +22,12 @@ class Snapshot extends Model implements Auditable, HasUser
         'policy_id',
         'ballot_id',
         'status',
-        'type'
+        'type',
     ];
 
     protected $appends = [
         'hash',
+        'has_voting_powers',
     ];
 
     public function ballot(): BelongsTo
@@ -35,6 +37,13 @@ class Snapshot extends Model implements Auditable, HasUser
 
     public function voting_powers()
     {
-        return $this->hasMany(VotingPower::class);
+        return $this->hasMany(VotingPower::class, 'snapshot_id');
+    }
+
+    public function hasVotingPowers(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->voting_powers()->count() > 0 ? true : false
+        );
     }
 }

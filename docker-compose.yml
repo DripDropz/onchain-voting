@@ -4,8 +4,11 @@ services:
         image: nextjs/chainvote
         build:
             context: lucid
-            dockerfile: Dockerfile.dev    
+            dockerfile: Dockerfile.dev
         container_name: chainvote.lucid
+        command: npx nest start --watch
+        expose:
+            - "3000"
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         env_file:

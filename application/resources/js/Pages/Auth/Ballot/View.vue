@@ -7,6 +7,7 @@ import BallotCard from "@/Pages/Auth/Ballot/Partials/BallotCard.vue";
 import { usePage } from "@inertiajs/vue3";
 import AlertService from '@/shared/Services/alert-service';
 import BallotSnapshot from './Partials/BallotSnapshot.vue';
+import BallotPublishChecklist from './Partials/BallotPublishChecklist.vue';
 
 defineProps<{
     ballot: BallotData;
@@ -28,12 +29,15 @@ AlertService.show(Object.values(usePage().props.errors), 'info');
 
         <div class="py-12">
             <div class="mx-auto space-y-6 max-w-7xl sm:px-6 lg:px-8">
-                <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
-                    <BallotCard :ballot="ballot" class="max-w-xl" />
+                <div class="flex gap-8 p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
+                    <BallotCard :ballot="ballot" class="w-2/3 max-w-xl" />
+                    <div class="w-1/3 ">
+                        <BallotPublishChecklist :ballot="ballot" class="" />
+                    </div>
                 </div>
 
                 <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
-                    <BallotQuestions class="" :ballot="ballot" :questions="ballot.questions" />
+                    <BallotQuestions class="" :ballot="ballot" :questions="ballot?.questions || []" />
                 </div>
 
                 <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg" >

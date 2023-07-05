@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Route;
-use App\Providers\RouteServiceProvider;
-use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Integrations\Lucid\Requests\AuthenticateWallet;
-use App\Http\Integrations\Lucid\WalletConnector;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -45,36 +42,14 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        $redirectUrl = url()->previous();
+
+        Auth::logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
-    }
-
-    public function showWalletLogin()
-    {
-        return Inertia::modal('Auth/WalletLogin', [
-            'baseUrl' => previous_route_name()
-        ])
-            ->baseRoute(previous_route_name());
-    }
-
-    public function walletLogin(Request $request)
-    {
-
-        $authenticateWallet = new AuthenticateWallet;
-
-        $authenticateWallet->body()->merge([
-            'signature' => $request->get($request->signature),
-            'key' => $request->get($request->key)
-        ]);
-
-        $connector = new WalletConnector;
-        $response = $connector->send($authenticateWallet);
-        dd($response);
-        return $response;
+        return redirect($redirectUrl);
     }
 }

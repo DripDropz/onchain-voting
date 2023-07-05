@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Support\Str;
 use App\Enums\ModelStatusEnum;
 use Illuminate\Support\Facades\DB;
-use PHPUnit\Framework\ExpectationFailedException;
-
+use Illuminate\Support\Str;
 
 test('it checks if all models with status column support ModelStatusEnum', function () {
     $modelsWithTables = (new \App\Invokables\GetModelsWithTables())();
@@ -12,11 +10,11 @@ test('it checks if all models with status column support ModelStatusEnum', funct
     $tablesWithStatusCol = DB::select("
         SELECT table_name, column_name
         FROM information_schema.columns
-        WHERE table_schema = 'public' AND column_name = 'status' AND table_name IN ('" . implode("', '", $tables) . "')
+        WHERE table_schema = 'public' AND column_name = 'status' AND table_name IN ('".implode("', '", $tables)."')
     ");
 
     foreach ($tablesWithStatusCol as $tableWithStatus) {
-        $enumValues =  DB::table($tableWithStatus->table_name)->distinct()
+        $enumValues = DB::table($tableWithStatus->table_name)->distinct()
             ->pluck('status')
             ->toArray();
         $supportedStatusEnumValues = ModelStatusEnum::values();

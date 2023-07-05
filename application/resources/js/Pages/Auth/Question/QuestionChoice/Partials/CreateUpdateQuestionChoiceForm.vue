@@ -32,6 +32,7 @@ import {useForm} from '@inertiajs/vue3';
 import BallotData = App.DataTransferObjects.BallotData;
 import QuestionData = App.DataTransferObjects.QuestionData;
 import AlertService from '@/shared/Services/alert-service';
+import { useModal } from "momentum-modal"
 
 const props = defineProps<{
     question: QuestionData;
@@ -43,12 +44,15 @@ const form = useForm({
     description: null,
 });
 
+const { close } = useModal();
+
 function submit() {
     form.post(route('admin.ballots.questions.choices.store', {ballot: props.ballot?.hash, question: props.question?.hash}), {
-        preserveScroll: true,
-        preserveState: true,
+        preserveScroll: false,
+        preserveState: false,
         onSuccess: () => {
             AlertService.show(['Choice added successfully'], 'success');
+            close();
         },
         onError: (errors) => {
             AlertService.show(

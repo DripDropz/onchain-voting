@@ -2,6 +2,8 @@ import AdminService from "@/shared/Services/AdminService";
 import VotingPowerData = App.DataTransferObjects.VotingPowerData;
 import axios from "axios";
 import PaginatedResponse from "@/types/paginated-response";
+import votingPowerQuery from "@/types/voting-power-query";
+
 
 export default class SnapshotService {
     public static async getSnapshotTypes(): Promise<string[]> {
@@ -17,9 +19,18 @@ export default class SnapshotService {
         return response.data;
     }
 
-    public static async getSnapshotVotingPowers(snapshotHash: string): Promise<PaginatedResponse<VotingPowerData>> {
+    public static async getSnapshotVotingPowers(snapshotHash: string, queryData?: (votingPowerQuery|null)): Promise<PaginatedResponse<VotingPowerData>> {
         try {
-            const response = await axios.get(route('admin.snapshots.powers.list', {snapshot: snapshotHash}));
+            const queryParams = {
+                page: queryData?.p,
+                perPage: queryData?.l,
+                sort: queryData?.st
+            };
+
+            const response = await axios.get(`/admin/snapshots/${snapshotHash}/powers`, {
+                params: queryParams,
+            });
+            
             return response.data;
         } catch (e) {
             console.error(e);

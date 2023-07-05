@@ -75,15 +75,15 @@
 
             <div v-if="!snapshot?.live" class="absolute bottom-0 inset-x-px">
                 <div
-                    class="flex items-center justify-between px-2 py-3 space-x-3 border-t border-gray-200 dark:border-gray-700 sm:px-3">
-                    <div class="flex gap-6 items-center">
-                        <DangerButton @click="removeSnapshot"
-                        :disabled="disabled"
-                        :class="{ 'opacity-25': disabled }"
-                        >
-                            Remove
+                    class="flex items-center justify-end px-2 py-3 space-x-3 border-t border-gray-200 dark:border-gray-700 sm:px-3">
+                    <div class="flex items-center">
+                        <DangerButton class="gap-2">
+                            <ToolTip type="info" :tip="tipMessage"/>
+                            <button @click="removeSnapshot"
+                            :disabled="disabled"
+                            :class="{ 'opacity-25': disabled }"
+                            >Remove</button>
                         </DangerButton>
-                        <ToolTip type="error" :tip="tipMessage"/>
                     </div>
                     <div class="flex-shrink-0">
                         <Link as="button"
@@ -105,6 +105,7 @@ import SnapshotData = App.DataTransferObjects.SnapshotData;
 import BallotService from "../../Ballot/Services/ballot-service"
 import DangerButton from '@/Components/DangerButton.vue';
 import ToolTip from '@/Components/ToolTip.vue';
+import AlertService from '@/shared/Services/alert-service';
 
 const props = defineProps<{
     status?: String;
@@ -112,7 +113,7 @@ const props = defineProps<{
     ballot?: String;
 }>();
 
-let tipMessage = ref(null);
+let tipMessage = ref("Click 'Remove' to remove the snapshot from the ballot.");
 let disabled = ref(false);
 
 let removeSnapshot = async () => {
@@ -125,6 +126,7 @@ let removeSnapshot = async () => {
         tipMessage.value = res;
         disabled.value = true;
     } else{
+        AlertService.show(['Snapshot removed from ballot'], 'success');
         router.reload();
     }
 }

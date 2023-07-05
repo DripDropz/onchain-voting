@@ -12,12 +12,21 @@
             </nav>
         </div>
         <div class="flex flex-row items-center justify-end w-1/3 gap-6 text-white">
-            <div class="relative flex items-center gap-0 py-0.5 bg-indigo-600 rounded-lg flex-nowrap hover:bg-indigo-500">
-                <ConnectWallet></ConnectWallet>
-                <Link :href="route('walletLogin.show')" v-if="!user?.hash"
+            <div class="relative flex items-center gap-0 py-0.5 bg-indigo-700 rounded-lg flex-nowrap hover:bg-indigo-500">
+                <ConnectWallet background-color="bg-indigo-700"></ConnectWallet>
+                <Link :href="route('login.wallet', { hash: pageData?.hash })" v-if="!user?.hash"
                     class="flex items-center h-full gap-2 px-3 py-2 mx-1 bg-indigo-800 rounded-lg hover:bg-indigo-950">
-                    <p>Login</p>
-                    <ArrowRightOnRectangleIcon class="w-5 h-5"></ArrowRightOnRectangleIcon>
+                <p>Login</p>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="relative w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                </svg>
+                </Link>
+                <Link v-if="user?.hash" :href="route('logout')" @click="logout"
+                    class="flex items-center h-full gap-2 px-3 py-2 mx-1 bg-indigo-800 rounded-lg hover:bg-indigo-950">
+                <p>Logout</p>
+                <ArrowRightOnRectangleIcon class="w-5 h-5"></ArrowRightOnRectangleIcon>
                 </Link>
             </div>
             <DarkModeButton />
@@ -26,18 +35,27 @@
 </template>
 <script lang="ts" setup>
 
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import ConnectWallet from "@/cardano/Components/ConnectWallet.vue";
 import { useDarkModeStore } from "@/stores/dark-mode-store";
 import DarkModeButton from '@/shared/components/DarkModeButton.vue';
 import { ArrowRightIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline';
 import { usePage } from "@inertiajs/vue3";
+import axios from 'axios';
+import { useWalletStore } from '@/cardano/stores/wallet-store';
 
 const user = usePage().props.auth.user;
+const walletStore = useWalletStore();
 
-defineProps<{
+withDefaults(defineProps<{
     canLogin?: boolean;
-}>();
+    pageData?: any;
+}>(), {
+    pageData: null
+});
+function logout() {
+    walletStore.disconnect()
 
+}
 
 </script>

@@ -4,9 +4,6 @@ namespace App\DataTransferObjects;
 
 use Carbon\CarbonImmutable;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
-use Spatie\LaravelData\Attributes\MapInputName;
-use Spatie\LaravelData\Attributes\MapName;
-use Spatie\LaravelData\Attributes\MapOutputName;
 use Spatie\LaravelData\Attributes\Validation\BooleanType;
 use Spatie\LaravelData\Attributes\Validation\IntegerType;
 use Spatie\LaravelData\Attributes\Validation\Max;
@@ -18,7 +15,6 @@ use Spatie\LaravelData\Attributes\WithoutValidation;
 use Spatie\LaravelData\Casts\DateTimeInterfaceCast;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\DataCollection;
-use Spatie\LaravelData\Mappers\CamelCaseMapper;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -71,7 +67,6 @@ class BallotData extends Data
 
         public ?UserData $user,
 
-        #[TypescriptOptional]
         /** @var QuestionData[] */
         public ?DataCollection $questions,
 
@@ -101,13 +96,14 @@ class BallotData extends Data
         #[DataCollectionOf(TxData::class)]
         /** @var QuestionData[] */
         public ?DataCollection $txs,
-    ) {}
+    ) {
+    }
 
     public static function attributes(): array
     {
         return [
             'title' => 'title',
-            'description' => 'description'
+            'description' => 'description',
         ];
     }
 }

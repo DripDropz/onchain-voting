@@ -18,6 +18,7 @@
         "sammyjo20/saloon": "^2.0",
         "sammyjo20/saloon-laravel": "^2.0",
         "spatie/enum": "^3.13",
+        "spatie/laravel-ciphersweet": "^1.2",
         "spatie/laravel-data": "^3.4",
         "spatie/laravel-enum": "^3.0",
         "spatie/laravel-permission": "^5.10",
@@ -29,7 +30,7 @@
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
         "laravel/breeze": "^1.20",
-        "laravel/pint": "^1.8",
+        "laravel/pint": "^1.10",
         "laravel/sail": "^1.18",
         "laravel/telescope": "^4.14",
         "mockery/mockery": "^1.4.4",

@@ -35,10 +35,12 @@
                                 </Link>
                             </MenuItem>
                             <MenuItem v-if="!snapshot.live" v-slot="{ active }">
-                                <Link :href="route('admin.snapshots.powers.csv.upload', snapshot.hash)"
-                                      :class="[active ? 'bg-gray-50 dark:bg-gray-900' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300']">
-                                    Import voting power snapshot (CSV)<span class="sr-only">, {{ snapshot.title }}</span>
-                                </Link>
+                                <div :class="{ 'cursor-not-allowed' : snapshot.has_voting_powers}">
+                                    <Link :href="route('admin.snapshots.powers.csv.upload', snapshot.hash)"
+                                          :class="[active && !snapshot.has_voting_powers ? 'bg-gray-50 dark:bg-gray-900' : 'pointer-events-none', 'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300']">
+                                        Import voting power snapshot (CSV)<span class="sr-only">, {{ snapshot.title }}</span>
+                                    </Link>
+                                </div>
                             </MenuItem>
                         </MenuItems>
                     </transition>

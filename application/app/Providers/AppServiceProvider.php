@@ -24,11 +24,11 @@ class AppServiceProvider extends ServiceProvider
     {
         Validator::extend('hashed_exists', function ($attribute, $value, $parameters, $validator) {
             if (is_array($value)) {
-                $value = array_map(fn($item) => (
-                Hashids::connection('App\\Models\\' . Str::studly(Str::singular($parameters[0])))->decode($item)
+                $value = array_map(fn ($item) => (
+                    Hashids::connection('App\\Models\\'.Str::studly(Str::singular($parameters[0])))->decode($item)
                 ), $value);
             } else {
-                $value = Hashids::connection('App\\Models\\' . Str::studly(Str::singular($parameters[0])))->decode($value);
+                $value = Hashids::connection('App\\Models\\'.Str::studly(Str::singular($parameters[0])))->decode($value);
             }
 
             // Delegate to `exists:` validator

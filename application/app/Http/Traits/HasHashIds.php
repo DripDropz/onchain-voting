@@ -29,7 +29,6 @@ trait HasHashIds
      * Get Model by hash.
      *
      *
-     * @param $hash
      * @return HasHashIds|Ballot|null
      */
     public static function byHash($hash): ?self
@@ -49,7 +48,6 @@ trait HasHashIds
      * Get model by hash or fail.
      *
      *
-     * @param $hash
      * @return HasHashIds|Ballot
      *
      * @throw \Illuminate\Database\Eloquent\ModelNotFoundException

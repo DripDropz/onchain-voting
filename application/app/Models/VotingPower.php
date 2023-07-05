@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Http\Traits\HasHashIds;
 use App\Models\Traits\HashIdModel;
 use App\Models\Traits\HasUser;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class VotingPower extends Model implements \OwenIt\Auditing\Contracts\Auditable
 {
@@ -29,8 +31,13 @@ class VotingPower extends Model implements \OwenIt\Auditing\Contracts\Auditable
         'hash',
     ];
 
-    public function snapshot()
+    public function snapshot(): BelongsTo
     {
-        return $this->belongsTo(Snapshot::class);
+        return $this->belongsTo(Snapshot::class, 'snapshot_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

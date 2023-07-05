@@ -8,9 +8,11 @@ use App\Enums\QuestionTypeEnum;
 use App\Http\Traits\HasHashIds;
 use App\Models\Interfaces\HasUser;
 use App\Models\Traits\HashIdModel;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class Question extends Model implements Auditable, HasUser
@@ -24,7 +26,7 @@ class Question extends Model implements Auditable, HasUser
         'max_choices',
         'status',
         'type',
-        'started_at'
+        'started_at',
     ];
 
     protected $hidden = [
@@ -34,6 +36,7 @@ class Question extends Model implements Auditable, HasUser
 
     protected $appends = [
         'hash',
+        'choices_tally',
     ];
 
     protected $casts = [
@@ -51,5 +54,32 @@ class Question extends Model implements Auditable, HasUser
     public function choices(): HasMany
     {
         return $this->hasMany(BallotQuestionChoice::class, 'question_id');
+    }
+
+    public function choicesTally(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $allChoices = BallotQuestionChoice::where('question_id', $this->id)
+                    ->pluck('title')
+                    ->toArray();
+
+                $choices = BallotResponse::where('ballot_responses.question_id', $this->id)
+                    ->join('ballot_question_choices', 'ballot_question_choices.id', '=', 'ballot_responses.ballot_question_choice_id')
+                    ->groupBy('ballot_question_choices.id', 'ballot_question_choices.title')
+                    ->select('ballot_question_choices.title', DB::raw('COUNT(*) as count'))
+                    ->pluck('count', 'title')
+                    ->toArray();
+
+                $choicesWithCounts = array_map(function ($choice) use ($choices) {
+                    return [
+                        'title' => $choice,
+                        'count' => $choices[$choice] ?? 0,
+                    ];
+                }, $allChoices);
+
+                return $choicesWithCounts;
+            }
+        );
     }
 }

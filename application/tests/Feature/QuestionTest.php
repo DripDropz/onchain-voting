@@ -11,11 +11,10 @@ use Illuminate\Http\Request;
 use function PHPUnit\Framework\assertEquals;
 use function PHPUnit\Framework\assertTrue;
 
-
 test('test super-admin can create ballot question', function () {
     $superAdmin = asSuperAdmin('superAdminTestQuestionCreate1', 'superAdminTestQuestionCreate@gmail.com');
     $existingBallot = asExistingBallot(Carbon::now($tz = 'UTC'));
-    
+
     // dd($existingBallot->hash);
     $payload = ['ballot' => $existingBallot, 'ballot_id' => $existingBallot->id, 'title' => 'superAdminTestQuestionCreateTitle', 'status' => ModelStatusEnum::PUBLISHED->value, 'type' => QuestionTypeEnum::SINGLE->value];
     $mockRequest = Request::create('admin/ballots/'.$existingBallot->hash.'/questions/create', 'POST', $payload);
@@ -34,7 +33,7 @@ test('test super-admin can create ballot question', function () {
 test('test admin can create ballot question', function () {
     $admin = asAdmin('adminTestQuestionCreate1', 'adminTestQuestionCreate1@gmail.com');
     $existingBallot = asExistingBallot(Carbon::now($tz = 'UTC'));
-    
+
     $payload = ['ballot' => $existingBallot, 'title' => 'adminTestQuestionCreateTitle', 'status' => ModelStatusEnum::PUBLISHED->value, 'type' => QuestionTypeEnum::SINGLE->value];
     $mockRequest = Request::create('admin/ballots/'.$existingBallot->hash.'/questions/create', 'POST', $payload);
     $response = (new BallotController)->storeQuestion($mockRequest, QuestionData::from($payload));
@@ -75,7 +74,6 @@ test('test super-admin can delete ballot question', function () {
     $mockRequest = Request::create('admin/ballots/'.$existingBallot->hash.'/questions/delete'.$existingQuestion->id, 'DELETE');
     $response = (new BallotController)->destroyQuestion($mockRequest, $existingBallot, $existingQuestion);
 
-
     // test if user is as expected
     assertTrue($superAdmin->hasRole('super-admin'));
     assertEquals($superAdmin->name, 'superAdminTestQuestionDelete');
@@ -92,7 +90,6 @@ test('test admin can delete ballot question', function () {
 
     $mockRequest = Request::create('admin/ballots/'.$existingBallot->hash.'/questions/delete'.$existingQuestion->id, 'DELETE');
     $response = (new BallotController)->destroyQuestion($mockRequest, $existingBallot, $existingQuestion);
-
 
     // test if user is as expected
     assertTrue($admin->hasRole('admin'));
@@ -112,7 +109,6 @@ test('test user can delete ballot question', function () {
     $mockRequest = Request::create('admin/ballots/'.$existingBallot->hash.'/questions/delete'.$existingQuestion->id, 'DELETE');
     $response = (new BallotController)->destroyQuestion($mockRequest, $existingBallot, $existingQuestion);
 
-
     // test if user is as expected
     assertTrue($user->hasRole('user'));
     assertEquals($user->name, 'userTestQuestionDelete');
@@ -129,7 +125,7 @@ test('test ballot question can be edited before started_at date', function () {
     $existingBallot = asExistingBallot(Carbon::now('UTC')->addMonths(2));
     $existingQuestion = Question::where('ballot_id', $existingBallot->id)->first();
 
-    $payload = array_merge($existingQuestion->toArray(), ['title' => "updated Question title", 'description' => 'updated ballot description', 'version' => (string) random_int(1, 199)]);
+    $payload = array_merge($existingQuestion->toArray(), ['title' => 'updated Question title', 'description' => 'updated ballot description', 'version' => (string) random_int(1, 199)]);
     $mockRequest = Request::create('admin/ballots/'.$existingBallot->hash.'/questions/create', 'PATCH', $payload);
     $response = (new BallotController)->updateQuestion($mockRequest, $existingBallot, $existingQuestion);
     $updatedBallot = Question::byHash($existingQuestion->hash);
@@ -146,7 +142,7 @@ test('test ballot question cannot be edited after started_at date', function () 
     $existingBallot = asExistingBallot(Carbon::now('UTC')->subMonths(2));
     $existingQuestion = Question::where('ballot_id', $existingBallot->id)->first();
 
-    $payload = array_merge($existingQuestion->toArray(), ['title' => "updated Question title past", 'description' => 'updated ballot description', 'version' => (string) random_int(1, 199)]);
+    $payload = array_merge($existingQuestion->toArray(), ['title' => 'updated Question title past', 'description' => 'updated ballot description', 'version' => (string) random_int(1, 199)]);
     $mockRequest = Request::create('admin/ballots/'.$existingBallot->hash.'/questions/create', 'PATCH', $payload);
     $response = (new BallotController)->updateQuestion($mockRequest, $existingBallot, $existingQuestion);
     $updatedBallot = Question::byHash($existingQuestion->hash);

@@ -5,7 +5,6 @@ namespace App\DataTransferObjects;
 use Carbon\Carbon;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\FromRouteParameter;
-use Spatie\LaravelData\Attributes\MapName;
 use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Attributes\Validation\StringType;
@@ -13,13 +12,11 @@ use Spatie\LaravelData\Attributes\WithCastable;
 use Spatie\LaravelData\Attributes\WithTransformer;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\DataCollection;
-use Spatie\LaravelData\Mappers\CamelCaseMapper;
+use Spatie\LaravelData\Transformers\ArrayableTransformer;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
-use Spatie\LaravelData\Transformers\ArrayableTransformer;
 
 #[TypeScript]
-#[MapName(CamelCaseMapper::class)]
 class QuestionData extends Data
 {
     public function __construct(
@@ -56,6 +53,8 @@ class QuestionData extends Data
         #[WithTransformer(ArrayableTransformer::class)]
         /** @var QuestionChoiceData[] */
         public ?DataCollection $choices,
+
+        public ?array $choices_tally,
     ) {
     }
 }

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button @click.prevent="open = !open" :aria-expanded="open" class="flex flex-row h-full p-2 border-none"
+        <button @click.prevent="open = !open" :aria-expanded="open" class="flex flex-row h-full px-3 py-2 border-none rounded-lg shadow-sm ring-0"
         :class="[backgroundColor]"
             type="button">
             <!-- <slot></slot> -->
@@ -50,7 +50,7 @@
 
 <script lang="ts" setup>
 import { WalletList } from '../utils/wallet-list';
-import WalletService from '../Services/WalletService';
+import WalletService from '../Services/wallet-service';
 import Wallet from '../models/wallet-data'
 import { ref, Ref } from "vue";
 import { useWalletStore } from "../stores/wallet-store"
@@ -107,6 +107,7 @@ if (walletName.value?.length>0) {
 }
 
 const target = ref(null);
+
 onClickOutside(target, (event) => open.value = false);
 
 </script>

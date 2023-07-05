@@ -1,5 +1,5 @@
 <template>
-    <img v-if="wallet?.name" :alt="`${wallet?.name} wallet logo`" class="max-h-6 2xl:max-h-8" :src="walletSources?.[wallet.name]" />
+    <img v-if="wallet?.name" :alt="`${wallet?.name} wallet logo`" class="shadow-md shadow-inner max-h-6 2xl:max-h-8 rounded-xl" :src="walletSources?.[wallet.name]" />
 </template>
 <script lang="ts" setup>
 import Wallet from '../models/wallet-data';

@@ -3,11 +3,11 @@
 namespace App\DataTransferObjects;
 
 use Illuminate\Validation\NestedRules;
+use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Nullable;
 use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Attributes\Validation\Sometimes;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\StringType;
 use Spatie\LaravelData\Attributes\WithoutValidation;
 use Spatie\LaravelData\Data;
@@ -54,22 +54,25 @@ class SnapshotData extends Data
         #[TypescriptOptional]
         #[DataCollectionOf(VotingPowerData::class)]
         public ?VotingPowerData $voting_powers,
-    ) {}
+
+        public bool $has_voting_powers,
+    ) {
+    }
 
     public static function attributes(): array
     {
         return [
             'title' => 'title',
-            'description' => 'description'
+            'description' => 'description',
         ];
     }
 
     public static function rules(): array
     {
         return [
-//            'user.*' => [
-//                new NestedRules(fn() => [new Sometimes(), new Nullable()])
-//            ],
+            //            'user.*' => [
+            //                new NestedRules(fn() => [new Sometimes(), new Nullable()])
+            //            ],
         ];
     }
 }

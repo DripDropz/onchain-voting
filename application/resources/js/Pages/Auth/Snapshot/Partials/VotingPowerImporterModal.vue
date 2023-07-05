@@ -9,7 +9,7 @@ import ModalRoute from "@/Components/ModalRoute.vue";
 import SnapshotData = App.DataTransferObjects.SnapshotData;
 import VotingPowerImporterComponent from '@/Components/VotingPowerImporterComponent.vue';
 
-const props = defineProps<{
+defineProps<{
     snapshot: SnapshotData;
 }>();
 </script>

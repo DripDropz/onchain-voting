@@ -11,18 +11,43 @@
         </header>
 
         <div class="text-gray-600 col-span-full dark:text-gray-400">
-            <div class="py-16 text-center ">
-                <p>Voting Power Table here</p>
-            </div>
+                <GlobalTableComponent :data="vPValues"
+                        :pagination="votingPowerPagination" 
+                        :columns="vPColumns"
+                        @queryUpdated="(payload: {}) => queryDataRef = payload"
+                        >
+                    <template v-slot:header></template>
+                    <template v-slot:body></template>
+                    <template v-slot:footer></template>
+                </GlobalTableComponent>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { FolderOpenIcon } from '@heroicons/vue/24/outline';
+import GlobalTableComponent from '@/shared/components/GlobalTableComponent.vue';
+import { computed, ref, watch } from 'vue';
 import VotingPowerData = App.DataTransferObjects.VotingPowerData;
+import { useSnapshotStore } from '@/stores/snapshot-store';
+import { storeToRefs } from 'pinia';
+import votingPowerQuery from "@/types/voting-power-query";
 
-defineProps<{
-    powers: VotingPowerData[];
-}>();
+let queryDataRef = ref<votingPowerQuery|null>(null);
+
+let vPColumns = ['Stake Address (voter id)', 'Voting Power'];
+let snapshotStore = useSnapshotStore();
+let { queryData, votingPowersData, votingPowersPagination} = storeToRefs(snapshotStore);
+let votingPowers = computed(() => votingPowersData.value);
+let votingPowerPagination = computed(() => votingPowersPagination.value)
+
+const vPValues = computed(() => 
+    votingPowers.value.map((power: VotingPowerData) => ({
+    voter_id: power.user?.voter_id,
+    voting_power: power.voting_power,
+    }))
+);
+
+watch([queryDataRef], () => {
+    queryData.value = queryDataRef.value;
+})
 </script>

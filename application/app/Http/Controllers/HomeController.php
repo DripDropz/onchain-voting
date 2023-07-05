@@ -11,15 +11,18 @@ class HomeController extends Controller
 {
     public function view()
     {
+
         $ballots = BallotData::collection(
             Ballot::with([
-                'questions.choices'
+                'questions.choices',
+                'user_response.choice',
             ])->orderBy('started_at')->limit(4)->published()->get()
         );
+
         return Inertia::render('Home', [
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
-            'ballots' => $ballots
+            'ballots' => $ballots,
         ]);
     }
 }

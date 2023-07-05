@@ -34,6 +34,6 @@ class VoterData extends Data
         #[TypescriptOptional]
         #[DataCollectionOf(TxData::class)]
         public ?TxData $txs,
-    )
-    {}
+    ) {
+    }
 }

@@ -3,22 +3,22 @@
 use App\Models\Ballot;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Auth;
 
 function asExistingBallot(Carbon $startDateTime)
 {
     return Ballot::factory()->create([
-        'description' => "createdAt description sentence",
-        'version' => "1",
+        'description' => 'createdAt description sentence',
+        'version' => '1',
         'status' => 'published',
         'type' => 'snapshot',
         'started_at' => $startDateTime,
     ]);
 }
 
-function asSuperAdmin(string $name = 'super-adminName', string $email = "super-admin@gmail.com")
+function asSuperAdmin(string $name = 'super-adminName', string $email = 'super-admin@gmail.com')
 {
     Auth::logout();
     $user = User::where('id', asSuperAdminId($name, $email))->first();
@@ -27,7 +27,7 @@ function asSuperAdmin(string $name = 'super-adminName', string $email = "super-a
     return $user;
 }
 
-function asAdmin(string $name = 'adminName', string $email = "admin@gmail.com")
+function asAdmin(string $name = 'adminName', string $email = 'admin@gmail.com')
 {
     Auth::logout();
     $user = User::where('id', asAdminId($name, $email))->first();
@@ -36,7 +36,7 @@ function asAdmin(string $name = 'adminName', string $email = "admin@gmail.com")
     return $user;
 }
 
-function asUser(string $name = 'userName', string $email = "user@gmail.com")
+function asUser(string $name = 'userName', string $email = 'user@gmail.com')
 {
     Auth::logout();
     $user = User::where('id', asUserId($name, $email))->first();
@@ -63,9 +63,7 @@ function asSuperAdminId(string $name, string $email): int
         ]);
 
     return $superAdmin->id;
-}
-
-;
+};
 
 function asAdminId(string $name, string $email): int
 {
