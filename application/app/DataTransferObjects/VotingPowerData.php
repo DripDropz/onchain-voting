@@ -2,6 +2,7 @@
 
 namespace App\DataTransferObjects;
 
+use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\IntegerType;
 use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\WithoutValidation;
@@ -16,6 +17,7 @@ class VotingPowerData extends Data
         #[WithoutValidation]
         public ?string $hash,
 
+        #[DataCollectionOf(UserData::class)]
         public ?UserData $user,
 
         public ?SnapshotData $snapshot,
@@ -25,5 +27,6 @@ class VotingPowerData extends Data
 
         #[TypeScriptOptional]
         public ?string $created_at,
-    ) {}
+    ) {
+    }
 }

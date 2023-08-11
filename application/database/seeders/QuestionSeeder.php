@@ -2,12 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Enums\RoleEnum;
 use App\Models\Question;
-use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
 
 class QuestionSeeder extends Seeder
 {

@@ -1,12 +1,14 @@
 <?php
 
+use App\DataTransferObjects\Normalizers\ArrayableNormalizer;
+
 return [
     /*
      * The package will use this format when working with dates. If this option
      * is an array, it will try to convert from the first format that works,
      * and will serialize dates using the first format from the array.
      */
-    'date_format' => ['Y-m-d H:i:s', DATE_ATOM, 'Y-m-d\TH:i', DATE_RFC3339, DATE_W3C, ],
+    'date_format' => ['Y-m-d H:i:s', DATE_ATOM, 'Y-m-d\TH:i', DATE_RFC3339, DATE_W3C],
 
     /*
      * Global transformers will take complex types and transform them into simple
@@ -48,7 +50,8 @@ return [
     'normalizers' => [
         Spatie\LaravelData\Normalizers\ModelNormalizer::class,
         // Spatie\LaravelData\Normalizers\FormRequestNormalizer::class,
-        Spatie\LaravelData\Normalizers\ArrayableNormalizer::class,
+        // Spatie\LaravelData\Normalizers\ArrayableNormalizer::class,
+        ArrayableNormalizer::class,
         Spatie\LaravelData\Normalizers\ObjectNormalizer::class,
         Spatie\LaravelData\Normalizers\ArrayNormalizer::class,
         Spatie\LaravelData\Normalizers\JsonNormalizer::class,

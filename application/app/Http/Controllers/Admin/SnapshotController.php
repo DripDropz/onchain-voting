@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\DataTransferObjects\SnapshotData;
 use App\DataTransferObjects\QuestionData;
+use App\DataTransferObjects\SnapshotData;
 use App\DataTransferObjects\VotingPowerData;
 use App\Enums\ModelStatusEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Jobs\CreateVotingPowerSnapshotJob;
-use App\Models\Snapshot;
 use App\Models\Question;
+use App\Models\Snapshot;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use JetBrains\PhpStorm\NoReturn;
-use Illuminate\Support\Facades\Gate;
 
 class SnapshotController extends Controller
 {
@@ -46,7 +46,7 @@ class SnapshotController extends Controller
     public function edit(Request $request, Snapshot $snapshot): Response
     {
         return Inertia::render('Auth/Snapshot/Edit', [
-            'snapshot' => SnapshotData::from($snapshot)
+            'snapshot' => SnapshotData::from($snapshot),
         ]);
     }
 
@@ -118,7 +118,7 @@ class SnapshotController extends Controller
                     'questionsStatuses' => ModelStatusEnum::values(),
                 ])
                 ->baseRoute('admin.snapshots.edit', [
-                    'snapshots' => $snapshot->hash
+                    'snapshots' => $snapshot->hash,
                 ]);
         } else {
             return Redirect::back()->withErrors(['error' => 'Not authorized to create question']);
@@ -128,9 +128,10 @@ class SnapshotController extends Controller
     public function editQuestion(Request $request, Snapshot $snapshot, Question $question)
     {
         $snapshot->load(['questions']);
+
         return Inertia::render('Auth/Question/Edit', [
             'snapshots' => SnapshotData::from($snapshot),
-            'question' => QuestionData::from($question)
+            'question' => QuestionData::from($question),
         ]);
     }
 
@@ -204,24 +205,34 @@ class SnapshotController extends Controller
         }
     }
 
-    public function votingPowers(Request $request,)
+    public function votingPowers(Request $request, Snapshot $snapshot)
     {
         $response = Gate::inspect('view', Snapshot::class);
+        $page = $request->query('page') ?? 1;
+        $perPage = $request->query('perPage') ?? 40;
+        $sort = $request->query('sort');
 
         if ($response->allowed()) {
-            return VotingPowerData::collection( $request->snapshot->voting_powers()->with(['user'])->paginate(10) );
+            if (! is_null($sort)) {
+                [$sortColumn, $sortOrder] = explode(':', $sort);
+                $votingPowers = $snapshot->voting_powers()->orderBy($sortColumn, $sortOrder);
+            } else {
+                $votingPowers = $snapshot->voting_powers();
+            }
+
+            return VotingPowerData::collection($votingPowers->with(['user'])->paginate($perPage)->onEachSide($page));
         } else {
             return Redirect::back()->withErrors(['error' => 'Not authorized to view voting power']);
         }
 
     }
 
-    public function uploadCsv(Request $request, Snapshot $snapshot)
+    public function uploadVotingPowerCsv(Request $request, Snapshot $snapshot)
     {
         $response = Gate::inspect('update', Snapshot::class);
 
         if ($response->allowed()) {
-            return Inertia::modal('Auth/Snapshot/Partials/VotingPowerImporter')
+            return Inertia::modal('Auth/Snapshot/Partials/VotingPowerImporterModal')
                 ->with([
                     'snapshot' => SnapshotData::from($snapshot),
                 ])
@@ -231,7 +242,7 @@ class SnapshotController extends Controller
         }
     }
 
-    public function storeCsv(Request $request, Snapshot $snapshot)
+    public function storeVotingPowerCsv(Request $request, Snapshot $snapshot)
     {
         $response = Gate::inspect('update', Snapshot::class);
 
@@ -255,10 +266,11 @@ class SnapshotController extends Controller
         $snapshots = Snapshot::where('title', 'iLIKE', "%{$term}%")
             ->get()
             ->take(5)
-            ->map(fn($q) => [
+            ->map(fn ($q) => [
                 'title' => $q->title,
                 'hash' => $q->hash,
             ]);
+
         return $snapshots;
     }
 }

@@ -12,6 +12,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class TxData extends Data
 {
     public function __construct(
-      //
-    ) {}
+        //
+    ) {
+    }
 }

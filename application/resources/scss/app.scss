@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 @import "@vueform/multiselect/themes/default.css";
+@import "@vueform/toggle/themes/default.css";
 
 
 .container {
@@ -13,9 +14,9 @@
 }
 
 .title2 {
-    @apply text-5xl font-medium tracking-tight text-slate-900 dark:text-slate-200 sm:text-6xl xl:text-7xl mt-auto flex flex-row gap-2 items-center leading-10;
+    @apply text-5xl font-medium tracking-tight text-slate-900 dark:text-slate-200 sm:text-6xl xl:text-7xl flex flex-row gap-2 items-center leading-10;
 }
 
 .title3 {
-    @apply font-medium tracking-tight text-slate-900 dark:text-slate-200 text-2xl sm:text-3xl xl:text-4xl mt-auto flex flex-row gap-2 items-center leading-8;
+    @apply font-medium tracking-tight text-slate-900 dark:text-slate-200 text-2xl sm:text-3xl xl:text-4xl flex flex-row gap-2 items-center leading-8;
 }

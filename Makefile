@@ -24,6 +24,10 @@ frontend-install:
 	make frontend-clean
 	$(sail) yarn install
 
+.PHONY: lucid-install
+lucid-install:
+	docker-compose run chainvote.lucid yarn install
+
 .PHONY: up
 up:
 	$(sail) up -d

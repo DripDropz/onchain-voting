@@ -27,7 +27,7 @@ defineProps<{
                 </div>
 
                 <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
-                    <BallotQuestions :questions="ballot?.questions" :ballot="ballot" />
+                    <BallotQuestions :questions="ballot?.questions || []" :ballot="ballot" />
                 </div>
 
                 <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">

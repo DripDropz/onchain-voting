@@ -6,7 +6,6 @@ use App\Models\Snapshot;
 use App\Models\User;
 use App\Models\VotingPower;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -35,8 +34,8 @@ class CreateVotingPowerSnapshotJob implements ShouldQueue
         if (is_null($user)) {
             $user = $this->createUser($this->voter_id);
         }
-        
-        $powerExists = VotingPower::where('user_id', $user->id)->where('snapshot_id', $snapshot->id)->first();
+
+        $powerExists = VotingPower::where('user_id', $user->id)->where('snapshot_id', $snapshot?->id)->first();
         if (is_null($powerExists)) {
             VotingPower::create([
                 'user_id' => $user->id,
@@ -49,11 +48,11 @@ class CreateVotingPowerSnapshotJob implements ShouldQueue
     protected function createUser($voter_id)
     {
         $newUser = User::create([
-            'name' => substr($voter_id, 0, 5) . '...' . substr($voter_id, -5),
+            'name' => substr($voter_id, 0, 5).'...'.substr($voter_id, -5),
             'voter_id' => $voter_id,
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
         ]);
-        
+
         return $newUser;
     }
 }

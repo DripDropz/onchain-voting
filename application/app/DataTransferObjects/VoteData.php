@@ -5,7 +5,6 @@ namespace App\DataTransferObjects;
 use Spatie\LaravelData\Attributes\MapName;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Mappers\CamelCaseMapper;
-use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
@@ -22,5 +21,6 @@ class VoteData extends Data
         public VoterData $voter,
 
         public ?BallotData $ballot
-    ) {}
+    ) {
+    }
 }

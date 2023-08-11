@@ -21,6 +21,10 @@ return [
         'scheme' => 'https',
     ],
 
+    'lucid' => [
+        'endpoint' => env('CARDANO_LUCID_ENDPOINT', 'http://localhost:3000'),
+    ],
+
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],

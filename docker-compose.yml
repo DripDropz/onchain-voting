@@ -1,5 +1,22 @@
 version: '3'
 services:
+    chainvote.lucid:
+        image: nextjs/chainvote
+        build:
+            context: lucid
+            dockerfile: Dockerfile.dev
+        container_name: chainvote.lucid
+        command: npx nest start --watch
+        expose:
+            - "3000"
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        env_file:
+            -   ./application/.env
+        volumes:
+            - './lucid:/usr/src/app'
+        networks:
+            - chainvote
     chainvote.test:
         build:
             context: application/vendor/laravel/sail/runtimes/8.2
@@ -19,6 +36,33 @@ services:
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1
             APP_SERVICE: ${APP_SERVICE:-chainvote.test}
+            XDEBUG_MODE: ${SAIL_XDEBUG_MODE:-off}
+            XDEBUG_CONFIG: ${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}
+        volumes:
+            - './application:/var/www/html'
+        networks:
+            - chainvote
+        depends_on:
+            - chainvote.lucid
+            - chainvote.db
+            - chainvote.redis
+    chainvote.queue:
+        build:
+            context: application/vendor/laravel/sail/runtimes/8.2
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: sail-8.2/chainvote
+        container_name: chainvote.queue
+        command: 'php artisan horizon'
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'        
+        env_file:
+            -   ./application/.env
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            APP_SERVICE: ${APP_SERVICE:-chainvote.queue}
             XDEBUG_MODE: ${SAIL_XDEBUG_MODE:-off}
             XDEBUG_CONFIG: ${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}
         volumes:

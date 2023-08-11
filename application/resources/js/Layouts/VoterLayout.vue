@@ -6,10 +6,13 @@ import { withDefaults } from "vue";
 import Header from "@/Pages/Partials/Header.vue";
 import { useDarkModeStore } from "@/stores/dark-mode-store";
 import { storeToRefs } from 'pinia';
+import { Modal } from 'momentum-modal';
+
 
 withDefaults(
     defineProps<{
         page: string;
+        pageData?:any;
         canLogin?: boolean;
     }>(), {
     canLogin: true
@@ -34,12 +37,13 @@ const user = usePage().props.auth?.user;
                 class="relative min-h-screen bg-center bg-dots-darker bg-gray-50 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
                 <div class="relative z-50 w-full p-6 text-right border-b-8 border-indigo-600">
                     <div class="container">
-                        <Header :can-login="canLogin"/>
+                        <Header :can-login="canLogin" :pageData="pageData"/>
                     </div>
                 </div>
 
                 <main class="z-10 ">
                     <slot />
+                    <Modal/>
                 </main>
             </div>
         </div>

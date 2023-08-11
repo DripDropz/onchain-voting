@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\HtmlString;
-use Illuminate\Support\Str;
 use Vinkla\Hashids\Facades\Hashids;
 
 if (! function_exists('vite_production_assets')) {
@@ -22,5 +21,19 @@ if (! function_exists('decode_model_hash')) {
     function decode_model_hash($hash, $model): ?int
     {
         return Hashids::connection($model)->decode($hash)[0] ?? null;
+    }
+}
+
+if (! function_exists('previous_route_name')) {
+    function previous_route_name(): string
+    {
+        return app('router')->getRoutes()->match(app('request')->create(url()->previous()))->getName();
+    }
+}
+
+if (! function_exists('previous_route_name_is')) {
+    function previous_route_name_is(string $routeName): bool
+    {
+        return previous_route_name() === $routeName;
     }
 }

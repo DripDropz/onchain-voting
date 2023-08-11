@@ -4,8 +4,8 @@
             <div
                 class="overflow-hidden border border-gray-300 rounded-lg shadow-sm dark:border-gray-700 focus-within:border-indigo-500 dark:focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-500 dark:focus-within:ring-indigo-500">
                 <header
-                    class="block w-full resize-none border-0 text-gray-900 dark:text-gray-100 p-3 xl:p-4 dark:text-gray-100 sm:text-sm sm:leading-6 bg-slate-200 dark:bg-gray-900">
-                    <div class="flex flex-wrap items-center justify-start sm:flex-nowrap gap-2">
+                    class="block w-full p-3 text-gray-900 border-0 resize-none dark:text-gray-100 xl:p-4 sm:text-sm sm:leading-6 bg-slate-200 dark:bg-gray-900">
+                    <div class="flex flex-wrap items-center justify-start gap-2 sm:flex-nowrap">
                         <h2 class="text-lg font-medium">
                             {{ ballot.title }}
                         </h2>
@@ -106,7 +106,7 @@ import {Link, usePage} from '@inertiajs/vue3';
 import BallotData = App.DataTransferObjects.BallotData;
 import BallotStatusBadge from "@/Pages/Auth/Ballot/Partials/BallotStatusBadge.vue";
 
-const props = defineProps<{
+defineProps<{
     status?: String;
     ballot?: BallotData;
 }>();

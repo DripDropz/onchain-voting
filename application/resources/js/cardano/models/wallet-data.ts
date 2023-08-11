@@ -1,6 +1,6 @@
 export default interface Wallet {
-    address?: string;
-    name?:string;
-    stakeAddress?:string;
+    address: string;
+    name:string;
+    stakeAddress:string;
 
 }

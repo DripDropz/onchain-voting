@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\DataTransferObjects\UserData;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
@@ -30,16 +31,17 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = ($request->user())?->load(['roles']);
+
         return array_merge(parent::share($request), [
             'auth' => [
-                'user' => ($request->user())?->load(['roles']),
+                'user' => $user ? UserData::from($user) : null,
             ],
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),
                 ]);
             },
-            'base_url' => config('app.url'),
         ]);
     }
 }

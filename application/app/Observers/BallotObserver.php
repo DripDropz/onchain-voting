@@ -6,8 +6,6 @@ class BallotObserver
 {
     /**
      * Handle events after all transactions are committed.
-     *
-     * @var bool
      */
     public bool $afterCommit = true;
 

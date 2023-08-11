@@ -19,5 +19,6 @@ class RegistrationData extends Data
 
         #[TypescriptOptional]
         public ?TokenData $token,
-    ) {}
+    ) {
+    }
 }

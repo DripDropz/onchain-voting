@@ -4,9 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Ballot;
 use App\Models\Question;
-use Closure;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -38,7 +36,6 @@ class BallotFactory extends Factory
 
     /**
      * Configure the model factory.
-     *
      */
     public function configure(): static
     {

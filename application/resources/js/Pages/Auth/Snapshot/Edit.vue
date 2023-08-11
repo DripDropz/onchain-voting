@@ -13,8 +13,8 @@
                 </section>
 
                 <section class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
-                    <VotingPowerList :powers="votingPowers" v-if="votingPowers?.length > 0"></VotingPowerList>
-                    <VotingPowerImporter v-else class="max-w-xl" :snapshot="snapshot" :asComponent="true" />
+                    <VotingPowerList v-if="votingPowers?.length > 0"/>
+                    <VotingPowerImporterComponent v-else :snapshot="snapshot"/>
                 </section>
 
                 <section class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
@@ -27,24 +27,27 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import { computed, defineProps, ref } from "vue";
+import { usePage } from "@inertiajs/vue3";
+import { computed, ComputedRef} from "vue";
 import SnapshotData = App.DataTransferObjects.SnapshotData;
 import VotingPowerData = App.DataTransferObjects.VotingPowerData;
+import AlertService from '@/shared/Services/alert-service';
 import CreateUpdateSnapshotForm from "@/Pages/Auth/Snapshot/Partials/CreateUpdateSnapshotForm.vue";
 import DeleteSnapshotForm from "@/Pages/Auth/Snapshot/Partials/DeleteSnapshotForm.vue";
-import VotingPowerImporter from "@/Pages/Auth/Snapshot/Partials/VotingPowerImporter.vue";
 import VotingPowerList from './Partials/VotingPowerList.vue';
-import SnapshotService from './Services/SnapshotService';
+import VotingPowerImporterComponent from '@/Components/VotingPowerImporterComponent.vue';
+import { useSnapshotStore } from '@/stores/snapshot-store';
 
 const props = defineProps<{
     snapshot: SnapshotData;
 }>();
 
-let votingPowers = ref<VotingPowerData[]>([]);
-if (props.snapshot.hash) {
-    SnapshotService.getSnapshotVotingPowers(props.snapshot.hash)
-    .then((paginatedResponse) => {
-        votingPowers.value = paginatedResponse.data;
-    });
+let snapshotHash:ComputedRef<any> = computed(() => props.snapshot.hash);
+
+if (usePage().props?.errors) {
+    AlertService.show(Object.values(usePage().props.errors), 'info');
 }
+let snapshotStore = useSnapshotStore();
+snapshotStore.loadVotingPowers(snapshotHash.value);
+const votingPowers: ComputedRef<VotingPowerData[]> = computed(() => snapshotStore.votingPowersData);
 </script>

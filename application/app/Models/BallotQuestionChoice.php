@@ -4,11 +4,12 @@ namespace App\Models;
 
 use App\Http\Traits\HasHashIds;
 use App\Models\Traits\HashIdModel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use OwenIt\Auditing\Auditable as IsAuditable;
 use OwenIt\Auditing\Contracts\Auditable;
-use \OwenIt\Auditing\Auditable as IsAuditable;
 use Znck\Eloquent\Relations\BelongsToThrough;
-use \Znck\Eloquent\Traits\BelongsToThrough as BelongsToThroughTrait;
+use Znck\Eloquent\Traits\BelongsToThrough as BelongsToThroughTrait;
 
 class BallotQuestionChoice extends Model implements Auditable
 {
@@ -18,6 +19,7 @@ class BallotQuestionChoice extends Model implements Auditable
         'title',
         'description',
         'status',
+        'order',
     ];
 
     protected $hidden = [
@@ -32,9 +34,22 @@ class BallotQuestionChoice extends Model implements Auditable
         'created_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    const ORDER_GAP = 60000;
+
+    public static function booted()
+    {
+        static::creating(function ($model) {
+            $model->order = self::query()->where('question_id', $model->question_id)->orderByDesc('order')->first()?->order + self::ORDER_GAP;
+        });
+
+        static::addGlobalScope('order', function (Builder $builder) {
+            $builder->orderBy('order');
+        });
+    }
+
     public function ballot(): BelongsToThrough
     {
-        return $this->belongsToThrough( Ballot::class, Question::class,'id');
+        return $this->belongsToThrough(Ballot::class, Question::class, 'id');
     }
 
     public function question(): BelongsTo

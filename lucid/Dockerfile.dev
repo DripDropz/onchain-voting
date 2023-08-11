@@ -1,0 +1,14 @@
+FROM node:18-alpine
+
+WORKDIR /usr/src/app
+
+COPY package.json ./
+COPY yarn.lock ./
+
+RUN npm install -g @nestjs/cli && yarn install --frozen-lockfile
+
+COPY . .
+
+EXPOSE 3000
+
+CMD [ "npx", "nest", "start", "--watch" ]

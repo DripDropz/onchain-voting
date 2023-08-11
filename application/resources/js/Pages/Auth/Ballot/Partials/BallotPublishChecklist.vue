@@ -1,5 +1,5 @@
 <template>
-  <div class="flow-root w-1/3 text-white border border-gray-300 rounded-lg dark:border-gray-700">
+  <div class="sticky w-full text-white border border-gray-300 rounded-lg top-6 dark:border-gray-700">
     <h2 class="p-4 mb-4 text-lg font-medium text-gray-900 border-b border-b-gray-300 dark:border-b-gray-600 dark:text-gray-100">
       Publish Checklist:
     </h2>
@@ -30,7 +30,7 @@
               </div>
               <div class="text-sm text-right whitespace-nowrap"
                 :class="[event.datetime ? 'text-black dark:text-white' : 'text-gray-500']">
-                <UseTimeAgo v-slot="{ timeAgo }" :time="event.datetime">
+                <UseTimeAgo v-slot="{ timeAgo }" :time="toUserTimezone(event.datetime)">
                   {{ timeAgo }}
                 </UseTimeAgo>
               </div>
@@ -61,25 +61,34 @@ import { HandThumbUpIcon } from "@heroicons/vue/20/solid";
 import { UseTimeAgo } from "@vueuse/components";
 import BallotData = App.DataTransferObjects.BallotData;
 import { ref } from "vue";
+import moment from "moment-timezone";
+
 
 const props = defineProps<{
   ballot?: BallotData;
 }>();
 
 let ballot = ref(props.ballot);
+let userTimeZone = moment.tz.guess();
+
+let toUserTimezone = (targetTime:any) => {
+  return moment.utc(targetTime).tz(userTimeZone).format('YYYY-MM-DD HH:mm:ss');
+}
+
+console.log( ballot.value?.questions);
 
 const timeline = [
   {
     content: "create Ballot",
     target: "Ballot created ",
     datetime: ballot.value?.created_at ?? "",
-    show: true,
+    show: ballot.value?.created_at,
   },
   {
     content: "Create question",
     target: "question was created",
     datetime: ballot.value?.questions?.[0]?.created_at ?? "",
-    show: ballot.value?.questions?.[0]?.created_at,
+    show: ballot.value?.questions && ballot.value?.questions?.length > 0,
   },
   {
     content: "Add choices to question",
@@ -97,4 +106,6 @@ const timeline = [
       ballot.value?.created_at,
   },
 ];
+
+console.log({timeline});
 </script>

@@ -15,7 +15,7 @@ class PermissionSeeder extends Seeder
      */
     public function run()
     {
-        collect(PermissionEnum::toValues())->each(function ($permission) {
+        collect(PermissionEnum::values())->each(function ($permission) {
             Permission::findOrCreate($permission);
         });
     }

@@ -7,7 +7,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
-Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified'])->group(function () {
+Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.routes'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Ballot
@@ -26,7 +26,9 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified'])->group(f
 
         // Ballot Snapshots
         Route::prefix('/{ballot}/snapshots')->as('snapshots.')->group(function () {
+            Route::get('/link', [BallotController::class, 'viewLinkSnapshot'])->name('link.view');
             Route::post('/{snapshot}/link', [BallotController::class, 'linkSnapshot'])->name('link');
+            Route::post('/{snapshot}/unlink', [BallotController::class, 'unLinkSnapShot'])->name('unLink');
         });
 
         // Ballot Questions
@@ -82,9 +84,9 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified'])->group(f
 
             // import voting powers from csv
             Route::prefix('/csv')->as('csv.')->group(function () {
-                Route::get('/upload', [SnapshotController::class, 'uploadCsv'])->name('upload');
+                Route::get('/upload', [SnapshotController::class, 'uploadVotingPowerCsv'])->name('upload');
 
-                Route::post('/save', [SnapshotController::class, 'storeCsv'])->name('store');
+                Route::post('/save', [SnapshotController::class, 'storeVotingPowerCsv'])->name('store');
             });
         });
     });
@@ -97,7 +99,7 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified'])->group(f
     // Utilities
     Route::get('/enums/{collection}', function () {
         $collection = request()->route('collection');
-        $collection = 'App\\Enums\\' . Str::studly($collection) . 'Enum';
+        $collection = 'App\\Enums\\'.Str::studly($collection).'Enum';
 
         return array_column($collection::cases(), 'value', 'name');
     })->name('enums');

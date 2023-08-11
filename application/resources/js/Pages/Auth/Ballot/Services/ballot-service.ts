@@ -15,4 +15,11 @@ export default class BallotService {
         return true;
     }
 
+    public static async unlinkSnapshot(data: { ballot: string, snapshot: string}){
+        try {
+            await axios.post(route('admin.ballots.snapshots.unLink', data), {});
+        } catch(e: any) {
+            return e.response.data.message;
+        }
+    }
 }

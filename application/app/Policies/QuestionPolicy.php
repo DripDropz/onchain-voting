@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-
 use App\Enums\RoleEnum;
 use App\Models\Question;
 use App\Models\User;
@@ -21,6 +20,7 @@ class QuestionPolicy extends AppPolicy
 
     /**
      * Determine whether the user can view the model.
+     *
      * @throws \Exception
      */
     public function view(User $user, Question $question): bool
@@ -45,10 +45,6 @@ class QuestionPolicy extends AppPolicy
 
     /**
      * Determine whether the user can update the model.
-     *
-     * @param User $user
-     * @param Question $question
-     * @return mixed
      */
     public function update(User $user, Question $question): mixed
     {
@@ -64,10 +60,6 @@ class QuestionPolicy extends AppPolicy
 
     /**
      * Determine whether the user can delete the post.
-     *
-     * @param User $user
-     * @param Question $question
-     * @return mixed
      */
     public function delete(User $user, Question $question): mixed
     {

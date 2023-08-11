@@ -1,5 +1,5 @@
 <template>
-    <VoterLayout :page="`${ballot.title} Ballot`">
+    <VoterLayout :page="`${ballot.title} Ballot`" :page-data="ballot">
         <div class="container flex flex-col justify-between h-full mt-16">
            <BallotSingle :ballot="ballot"></BallotSingle>
         </div>
@@ -8,12 +8,9 @@
 <script lang="ts" setup>
 import BallotData = App.DataTransferObjects.BallotData;
 import VoterLayout from "@/Layouts/VoterLayout.vue";
-import Line from "@/Pages/Partials/Line.vue";
-import BallotStatusBadge from "@/Pages/Auth/Ballot/Partials/BallotStatusBadge.vue";
 import BallotSingle from "@/Pages/Ballot/Partials/BallotSingle.vue";
 
-const props = defineProps<{
+defineProps<{
     ballot: BallotData;
 }>();
-
 </script>

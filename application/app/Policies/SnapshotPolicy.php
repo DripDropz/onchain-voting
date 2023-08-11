@@ -19,6 +19,7 @@ class SnapshotPolicy extends AppPolicy
 
     /**
      * Determine whether the user can view the model.
+     *
      * @throws \Exception
      */
     public function view(User $user, Snapshot $snapshot): bool
@@ -41,10 +42,6 @@ class SnapshotPolicy extends AppPolicy
 
     /**
      * Determine whether the user can update the model.
-     *
-     * @param User $user
-     * @param Snapshot $snapshot
-     * @return Response
      */
     public function update(User $user, Snapshot $snapshot): Response
     {
@@ -55,14 +52,11 @@ class SnapshotPolicy extends AppPolicy
 
     /**
      * Determine whether the user can publish the model.
-     *
-     * @param User $user
-     * @param Snapshot $snapshot
-     * @return Response
      */
     public function publish(User $user, Snapshot $snapshot): Response
     {
-        $authorized  = $snapshot->publishable && $this->canUpdate($user, $snapshot);
+        $authorized = $snapshot->publishable && $this->canUpdate($user, $snapshot);
+
         return $authorized
                 ? Response::allow()
                 : Response::deny('You are not authorized to publish this snapshot.');
@@ -70,10 +64,6 @@ class SnapshotPolicy extends AppPolicy
 
     /**
      * Determine whether the user can delete the post.
-     *
-     * @param User $user
-     * @param Snapshot $snapshot
-     * @return bool
      */
     public function delete(User $user, Snapshot $snapshot): bool
     {

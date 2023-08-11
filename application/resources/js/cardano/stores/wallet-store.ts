@@ -4,15 +4,15 @@ import Wallet from '../models/wallet-data';
 import { useStorage } from '@vueuse/core';
 
 interface WalletState {
-    walletData: Ref<Wallet|null>;
-    walletName: Ref<string|null>;
+    walletData: Ref<Wallet>;
+    walletName: Ref<string>;
     saveWallet: (wallet: Wallet) => void;
     disconnect: () => void;
 }
 
 export const useWalletStore = defineStore('wallet', (): WalletState => {
-    let walletData:Ref<Wallet|null> = ref(null);
-    let walletName: Ref<string|null> = useStorage('wallet-name', '', localStorage, {mergeDefaults: true});
+    let walletData:Ref<Wallet> = ref({} as Wallet);
+    let walletName: Ref<string> = useStorage('wallet-name', '', localStorage, {mergeDefaults: true});
 
     function saveWallet(wallet: Wallet) {
         walletData.value = wallet;
@@ -20,8 +20,8 @@ export const useWalletStore = defineStore('wallet', (): WalletState => {
     }
 
     function disconnect() {
-       walletData.value = null;
-       walletName.value = null;
+       walletData.value = {} as Wallet;
+       walletName.value = '';
     }
 
     return {
