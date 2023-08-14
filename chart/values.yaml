@@ -1,0 +1,101 @@
+affinity: {}
+
+app: {
+  ADMIN_EMAIL: "webmaster@raddcreative.io",
+  APP_NAME: "Open Chainvote",
+  APP_ENV: "production",
+  APP_DEBUG: "false",
+  APP_SETUP: "false",
+  APP_URL: "https://www.openchainvote.com",
+  DB_HOST: "db-service",
+}
+
+certmanager:
+  issuer: letsencrypt-prod-issuer
+  email: webmaster@openchainvote.com
+  server: https://acme-staging-v02.api.letsencrypt.org/directory
+
+certificate:
+  secretName: www-openchainvote-tls
+  hosts:
+    - "'*.openchainvote.io'"
+
+image:
+  repository: registry.lidonation.com/openchainvote/www.openchainvote.com
+  tag: stable
+  pullPolicy: IfNotPresent
+  pullSecret: 'gitlab-registry-openchainvote-openchainvote'
+
+imageCredentials:
+  registry: registry.raddcreative.io
+  username: someone
+  password: sillyness
+  email: webmaster@openchainvote.com
+
+ingress:
+  enabled: true
+  controller:
+    headers:
+      HTTPS: "on"
+  annotations: {
+    kubernetes.io/ingress.class: traefik,
+    cert-manager.io/cluster-issuer: letsencrypt-issuer,
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure,web",
+    traefik.ingress.kubernetes.io/router.middlewares: "traefik-redirect-http-to-https@kubernetescrd,traefik-default-headers@kubernetescrd"
+  }
+  path: "/"
+  hosts:
+    - www.openchainvote.com
+    - openchainvote.com
+  tls:
+    - secretName: www-openchainvote-tls
+      hosts:
+        - www.openchainvote.com
+        - openchainvote.com
+
+labels:
+  domain: openchainvote.com
+  service: web
+
+namespace: openchainvote
+
+nodeSelector: {}
+
+persistence:
+  size: 10Gi
+  storageClass: longhorn
+  accessMode: ReadWriteMany
+  subPath: "uploads"
+  mountPath: "/var/www/storage/app"
+
+redis:
+  image: redis:7.2-rc2-alpine
+  password:
+  host: redis-headless
+
+lucid:
+  image:
+    repository: registry.lidonation.com/openchainvote/wallet-backend
+    tag: stable
+  replicaCount: 1
+
+queue:
+  replicaCount: 1
+
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    memory: 1024Mi
+    cpu: 300m
+
+serviceAccount:
+  create: true
+
+service:
+  type: ClusterIP
+  port: 80
+

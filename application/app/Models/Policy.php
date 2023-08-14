@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
+use App\Enums\PolicyTypeEnum;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 
 class Policy extends Model
 {
@@ -13,5 +16,18 @@ class Policy extends Model
 
     protected $casts = [
         'script' => 'json',
+        'context' => PolicyTypeEnum::class,
+
     ];
+
+    public function ballot(): BelongsTo
+    {
+        return $this->belongsTo(Ballot::class);
+    }
+
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class, 'context_id')
+        ->where('context_type', self::class);
+    }
 }

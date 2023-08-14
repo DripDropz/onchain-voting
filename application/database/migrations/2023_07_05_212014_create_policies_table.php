@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use App\Enums\PolicyTypeEnum;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -15,8 +16,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('model_id')->nullable();
-            $table->string('model_type')->nullable();
+            $table->text('model_type')->nullable();
+            $table->enum('context', PolicyTypeEnum::values())->nullable();
             $table->json('script');
+            $table->text('policy_id')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

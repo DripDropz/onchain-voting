@@ -1,6 +1,6 @@
 <template>
     <VoterLayout :page="`${ballot.title} Ballot`" :page-data="ballot">
-        <div class="container flex flex-col justify-between h-full mt-16">
+        <div class="container flex flex-col justify-between h-screen py-16">
            <BallotSingle :ballot="ballot"></BallotSingle>
         </div>
     </VoterLayout>

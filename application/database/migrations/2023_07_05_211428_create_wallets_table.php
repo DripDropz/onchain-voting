@@ -12,13 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('wallets', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('model_id')->nullable();
-            $table->string('model_type')->nullable();
+            $table->text('model_type')->nullable();
+            $table->text('context_id')->nullable();
+            $table->text('context_type')->nullable();
             $table->text('passphrase')->nullable();
             $table->json('verification_key')->nullable();
             $table->json('signing_key')->nullable();
             $table->bigInteger('balance')->nullable();
+
             $table->softDeletes();
             $table->timestamps();
         });

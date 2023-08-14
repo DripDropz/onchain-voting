@@ -5,7 +5,7 @@ namespace App\Enums;
 enum SnapshotTypeEnum: string
 {
     case FILE = 'file';
-    case NETWORK = 'network';
+    // case NETWORK = 'network';
 
     public static function values(): array
     {

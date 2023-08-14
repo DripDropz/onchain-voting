@@ -5,7 +5,7 @@ namespace App\Http\Integrations\Lucid;
 use Saloon\Http\Connector;
 use Saloon\Traits\Plugins\AcceptsJson;
 
-class WalletConnector extends Connector
+class LucidConnector extends Connector
 {
     use AcceptsJson;
 

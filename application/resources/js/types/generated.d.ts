@@ -15,6 +15,7 @@ total_votes?: any;
 snapshot?: App.DataTransferObjects.SnapshotData | null;
 user: App.DataTransferObjects.UserData | null;
 questions: Array<App.DataTransferObjects.QuestionData> | null;
+policies: Array<App.DataTransferObjects.PolicyData> | null;
 voters?: Array<App.DataTransferObjects.QuestionData> | null;
 responses?: any | null;
 user_response?: App.DataTransferObjects.BallotResponseData | null;
@@ -30,6 +31,19 @@ question: App.DataTransferObjects.QuestionData | null;
 choice: App.DataTransferObjects.QuestionChoiceData;
 user: App.DataTransferObjects.UserData | null;
 voting_power: App.DataTransferObjects.VotingPowerData | null;
+submit_tx: string | null;
+};
+export type CardanoKey = {
+type: string;
+description: string;
+cborHex: string;
+};
+export type PolicyData = {
+hash: string | null;
+script: Array<any>;
+policy_id: string | null;
+context: string | null;
+created_at?: string | null;
 };
 export type QuestionChoiceData = {
 hash: string | null;
@@ -39,7 +53,7 @@ selected?: boolean | null;
 created_at?: string | null;
 question: App.DataTransferObjects.QuestionData | null;
 ballot: App.DataTransferObjects.BallotData | null;
-order: number;
+order: number | null;
 };
 export type QuestionData = {
 hash: string | null;
@@ -60,6 +74,11 @@ hash: string;
 power: number;
 token?: App.DataTransferObjects.TokenData | null;
 };
+export type SigningKey = {
+type: string;
+description: string;
+cborHex: string;
+};
 export type SnapshotData = {
 hash: string | null;
 title: string;
@@ -72,7 +91,7 @@ policy_id?: string | null;
 type?: string | null;
 status: string;
 voting_powers?: App.DataTransferObjects.VotingPowerData | null;
-has_voting_powers: boolean;
+has_voting_powers: boolean | null;
 };
 export type TokenData = {
 hash: string;
@@ -88,6 +107,11 @@ name: string;
 voter_id: string | null;
 hero?: string | null;
 ballots?: Array<any> | null;
+};
+export type VerificationKey = {
+type: string;
+description: string;
+cborHex: string;
 };
 export type VoteData = {
 hash: string;

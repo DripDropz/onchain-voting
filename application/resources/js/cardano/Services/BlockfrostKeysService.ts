@@ -8,7 +8,7 @@ export default class BlockfrostKeysService {
 
   public async getConfig() {
       try {
-        return (await axios.get(`${window.location.origin}/api/cardano/config`))?.data;
+        return (await axios.get(route('config.cardano')))?.data;
       } catch (error) {
           throw error;
       }

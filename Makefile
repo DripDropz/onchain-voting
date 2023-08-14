@@ -10,7 +10,7 @@ init:
           composer install --ignore-platform-reqs
 	make up
 	sleep 20
-	make -j2 backend-install frontend-install
+	make -j2 backend-install frontend-install lucid-install
 	$(sail) artisan key:generate
 	make migrate
 	make seed
@@ -22,6 +22,7 @@ backend-install:
 .PHONY: frontend-install
 frontend-install:
 	make frontend-clean
+	make lucid-install
 	$(sail) yarn install
 
 .PHONY: lucid-install
@@ -68,10 +69,16 @@ down:
 
 .PHONY: frontend-clean
 frontend-clean:
-	rm -rf node_modules 2>/dev/null || true
+	rm -rf application/node_modules 2>/dev/null || true
 	rm package-lock.json 2>/dev/null || true
 	rm yarn.lock 2>/dev/null || true
 	$(sail) yarn cache clean
+
+.PHONY: lucid-clean
+lucid-clean:
+	rm -rf lucid/node_modules 2>/dev/null || true
+	rm lucid/package-lock.json 2>/dev/null || true
+	rm lucid/yarn.lock 2>/dev/null || true
 
 .PHONY: rm
 rm:

@@ -1,11 +1,11 @@
 <template>
     <div>
-        <button @click.prevent="open = !open" :aria-expanded="open" class="flex flex-row h-full px-3 py-2 border-none rounded-lg shadow-sm ring-0"
+        <button @click.prevent="open = !open" :aria-expanded="open" class="flex flex-row h-full px-3 py-2 text-white border-none rounded-lg shadow-sm ring-0"
         :class="[backgroundColor]"
             type="button">
             <!-- <slot></slot> -->
             <span v-show="walletLoading"
-                class="flex items-center justify-center w-4 p-1 mt-1 mr-1 bg-white rounded-full bg-opacity-90">
+                class="flex items-center justify-center w-4 p-1 mt-1 mr-1 bg-indigo-100 rounded-full bg-opacity-90">
                 <svg aria-hidden="true"
                     class="w-3 h-3 text-gray-200 animate-spin dark:text-gray-400 fill-indigo-800" viewBox="0 0 100 101" fill="none"
                     xmlns="http://www.w3.org/2000/svg">
@@ -23,7 +23,7 @@
                 </span>
             </span>
 
-            <span class="flex gap-2 tracking-wide" v-show="!walletData?.address && !walletLoading">
+            <span class="flex gap-2 text-sm tracking-wide" v-show="!walletData?.address && !walletLoading">
                 <span>Connect Your Wallet</span>
                 <span class="text-slate-100" aria-hidden="true">&darr;</span>
             </span>
@@ -34,7 +34,7 @@
         </button>
 
         <div v-show="open" style="display: none;" ref="target"
-            class="absolute z-40 justify-center w-full overflow-visible bg-white rounded-b-lg shadow-md ">
+            class="absolute z-40 justify-center w-full overflow-visible bg-indigo-100 rounded-b-lg shadow-md ">
             <div class="flex flex-col items-center gap-2 py-1 divide-y divide-slate-800 divide-opacity-40" role="none">
                 <a v-for="wallet in WalletList" href="#"
                     @click.prevent="(open = !open); walletService.supports(wallet?.name) ? enableWallet(wallet?.name) : ''"

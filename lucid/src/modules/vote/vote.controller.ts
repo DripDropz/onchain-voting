@@ -6,94 +6,116 @@ import {
     Req,
 } from '@nestjs/common';
 import {
-    Blockfrost,
-    Lucid,
-    MintingPolicy,
+  Lucid,
     PolicyId,
+    UTxO,
     Unit,
-    fromText,
-    toHex,
-    toText,
+    toUnit,
 } from 'lucid-cardano';
 import { Request } from 'express';
+import generatePolicy from '../../utils/generatePolicy.js';
+import getConfigs from '../../utils/getConfigs.js';
 
 @Controller('vote')
 export class VoteController {
     @Post('mint')
     public async mintNft(@Req() request: Request) {
-        let lucid;
-        [lucid] = await this.getConfigs(request);
+      if (!request?.body?.votingSeed || !request?.body?.registrationSeed) {
+        throw new HttpException('Invalid Wallet Data. ', HttpStatus.NOT_ACCEPTABLE);
+      }
+      const [voter] = await getConfigs(request);
 
-        lucid.selectWalletFromSeed(request?.body?.seed);
-        lucid.selectWalletFrom;
-        const mintingPolicy = await this.getPolicy(lucid);
-        const policyId: PolicyId = lucid.utils.mintingPolicyToId(mintingPolicy);
-        const unit: Unit = policyId;
-        const metadata = {
-          voter_id: request?.body?.voterId,
-          voter_power: request?.body?.votingPower,
-          ballot_id: request?.body?.ballotId,
-          choices: [[request?.body?.choices]],
-        };
+      const registration: {policyId: string, registration: UTxO} = request?.body?.registration;
+      const assets = Object.keys(registration?.registration?.assets);
+      const registrationToken = assets.find((asset) => asset.includes(registration.policyId));
 
-        const tx = await lucid
-          .newTx()
-          .payToAddress(request?.body?.voterAddress, {
-            lovelace: BigInt(2000000),
-            [unit]: 1n,
-          })
-          .mintAssets({ [unit]: 1n })
-          .validTo(Date.now() + 100000)
-          .attachMintingPolicy(mintingPolicy)
-          .attachMetadata(446, [metadata])
-          .complete();
+      // Registration wallet
+      const [registrationMinter] = await getConfigs(request);
+      registrationMinter.selectWalletFromSeed(request?.body?.registrationSeed);
+      const registrationPolicy = await generatePolicy(registrationMinter);
 
-        const signedTx = await tx.sign().complete();
-        const hash = await signedTx.submit();
+      // Voting wallet
+      const assetName = request?.body?.assetName;
+      const [votingMinter] = await getConfigs(request);
+      votingMinter.selectWalletFromSeed(request?.body?.votingSeed);
+      const votingPolicy = await generatePolicy(votingMinter);
+      const votingPolicyId: PolicyId = votingMinter.utils.mintingPolicyToId(votingPolicy);
+      const votingUnit: Unit = toUnit(votingPolicyId, assetName);
 
-        return hash ;
+       // User wallet
+       const utxos: UTxO[] = request?.body?.utxos;       
+
+       voter.selectWalletFrom({
+           address: registration?.registration?.address,
+           utxos: [registration.registration, ...utxos]
+       });
+      const voterId = request?.body?.voterId;
+     
+      const votingMetadata = {
+        voter_id: voterId,
+        voter_power: request?.body?.votingPower,
+        ballot_id: request?.body?.ballotHash,
+        choices: request?.body?.choices,
+      };
+
+      const tx = await voter
+        .newTx()
+        .readFrom(utxos)
+        .payToAddress((await votingMinter.wallet.address()), {
+          [votingUnit]: 1n,
+        })
+
+        // voting 
+        .attachMintingPolicy(votingPolicy)
+        .mintAssets({ [votingUnit]: 1n })
+        .addSigner(await votingMinter.wallet.address())
+
+        // Registration
+        .attachMintingPolicy(registrationPolicy)
+        .mintAssets({ [registrationToken]: -1n })
+        .addSigner(await registrationMinter.wallet.address())
+        
+        .validTo(Date.now() + 250000)       
+        .attachMetadata(446, [votingMetadata])
+        .complete();
+
+      return {tx: tx.toString()};
     }
 
-    protected async getPolicy(lucid: Lucid) {
-        const { paymentCredential } = lucid.utils.getAddressDetails(
-            await lucid.wallet.address(),
-        );
-        const mintingPolicy: MintingPolicy = lucid.utils.nativeScriptFromJson({
-            type: 'all',
-            scripts: [
-                {
-                    type: 'before',
-                    slot: lucid.utils.unixTimeToSlot(1761942369100),
-                },
-                {
-                    type: 'sig',
-                    keyHash: paymentCredential?.hash!,
-                },
-            ],
-        });
+    @Post('submit')
+    public async submitRegistration(@Req() request: Request) {
+      const [votingMinter] = await getConfigs(request);
+      votingMinter.selectWalletFromSeed(request?.body?.votingSeed);
 
-        return mintingPolicy;
-    }
+      const [registrationMinter] = await getConfigs(request);
+      registrationMinter.selectWalletFromSeed(request?.body?.registrationSeed);
 
-    protected async getConfigs(request: Request) {
-        if (!request?.body?.seed) {
-            throw new HttpException('Invalid Data', HttpStatus.NOT_ACCEPTABLE);
-        }
-        const projectId =
-            process.env.BLOCKFROST_PROJECT_ID ||
-            'preview2QfIR5epKjaFmh54Id75yXAM7yStk3vc';
-        const blockfrostUrl = projectId.includes('preview')
-            ? 'https://cardano-preview.blockfrost.io/api/v0'
-            : 'https://cardano-mainnet.blockfrost.io/api/v0';
-        const cardanoNetwork = projectId.includes('preview')
-            ? 'Preview'
-            : 'Mainnet';
+      // get registration signature for burn tx
+      const registrationTx = registrationMinter.fromTx(request.body?.tx);
+      const registrationWitness = await registrationTx.partialSign();
 
-        const lucid = await Lucid.new(
-            new Blockfrost(blockfrostUrl, projectId),
-            cardanoNetwork,
-        );
+       // deconstruct and validate tx.
+       const voteTx = votingMinter.fromTx(request.body?.tx);
 
-        return [lucid, projectId, blockfrostUrl, cardanoNetwork];
+      // complete signing tx.
+      const multiSignedTx = await (
+        voteTx.assemble([
+          request.body.witnesses,
+          registrationWitness
+        ]).sign()
+      ).complete();
+
+      //submit tx to the network
+      const txHash = await multiSignedTx.submit();
+
+      // process refund
+      const processed =  await votingMinter.awaitTx(txHash);
+      const changeUtxo = await votingMinter.utxosByOutRef([{txHash, outputIndex: 0}]);
+
+      const refundTxComplete = await votingMinter.newTx().payToAddress(request.body.voterAddress, {lovelace: changeUtxo[0].assets.lovelace}).complete();
+      const refundTxSigned = await refundTxComplete.sign().complete();
+      const refundTxHash = await refundTxSigned.submit();
+
+      return txHash;
     }
 }

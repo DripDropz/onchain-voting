@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full flex items-center justify-end mb-4 gap-2">
+    <div class="flex items-center justify-end w-full gap-2 mb-4">
         <div class="text-xs w-[240px] lg:w-[330px] lg:text-base">
             <Multiselect
                 placeholder="Sort"
@@ -18,7 +18,7 @@
             />
         </div>
     </div>
-    <table class="w-full table-auto text-gray-600 dark:text-gray-100">
+    <table class="w-full text-gray-600 table-auto dark:text-gray-100">
         <slot name="header" :columns="props.columns">
             <thead>
                 <tr >
@@ -33,16 +33,16 @@
             <tbody>
                 <tr v-for="(row, index) in props.data" :key="index">
                     <td v-for="colValue in row" class="p-2 border border-slate-300">
-                        {{ colValue }} 
+                        {{ colValue }}
                     </td>
                 </tr>
             </tbody>
         </slot>
     </table>
     <slot name="footer">
-        <div class="w-full pt-4 flex flex-row justify-between items-center">
+        <div class="flex flex-row items-center justify-between w-full pt-4">
             <div class="border-2 border-indigo-600">
-                <p class="text-sm text-gray-900 dark:text-gray-300 p-4">
+                <p class="p-4 text-sm text-gray-900 dark:text-gray-300">
                     {{ `Showing ${props.pagination.from} to ${(props.pagination.to < props.pagination.total) ? props.pagination.to : props.pagination.total} of ${props.pagination.total} results` }}
                 </p>
             </div>
@@ -104,7 +104,7 @@ watch([perPage, selectedSortRef], () => {
 function query() {
     const data = getQueryData();
     emit('query-updated', data);
-   
+
 }
 
 function getQueryData() {
@@ -118,7 +118,7 @@ function getQueryData() {
     if (!!selectedSortRef.value && selectedSortRef.value.length > 3) {
         data[VARIABLES.SORTS] = selectedSortRef.value;
     }
-    
+
     return data;
 }
 </script>

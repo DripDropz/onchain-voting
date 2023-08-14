@@ -19,8 +19,9 @@ class Wallet extends Model implements CipherSweetEncrypted
         SoftDeletes;
 
     protected $casts = [
-        'signing_key' => SigningKeyCast::class,
-        'verification_key' => VerificationKeyCast::class
+        //@todo causes error. Note needed for now.
+        // 'signing_key' => SigningKeyCast::class,
+        // 'verification_key' => VerificationKeyCast::class
     ];
 
     /**
@@ -63,14 +64,26 @@ class Wallet extends Model implements CipherSweetEncrypted
     public static function configureCipherSweet(EncryptedRow $encryptedRow): void
     {
         $encryptedRow
-            ->addTextField('phasephrase')
-            ->addBlindIndex('phasephrase', new BlindIndex('phasephrase_index'));
+            ->addTextField('passphrase')
+            ->addBlindIndex('passphrase', new BlindIndex('passphrase_index'));
 
-        $skMap = (new JsonFieldMap())
-            ->addTextField(['type','description','cborHex']);
+        //@todo causes error. Note needed for now.
+        // $vkMap = (new JsonFieldMap())
+        //     ->addTextField(['type','description','cborHex']);
+        // $encryptedRow
+        //     ->addJsonField('verification_key', $vkMap);
 
-        $encryptedRow
-            ->addJsonField('signing_key', $skMap);
+        //@todo causes error. Note needed for now.
+        // $skMap = (new JsonFieldMap())
+        //     ->addTextField(['type','description','cborHex']);
+        // $encryptedRow
+        //     ->addJsonField('signing_key', $skMap);
+    }
+
+    public function policy()
+    {
+        return $this->belongsTo(Policy::class, 'context_id')
+            ->where('context_type', self::class);
     }
 
 }

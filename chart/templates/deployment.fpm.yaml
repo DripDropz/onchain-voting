@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ $.Chart.Name }}-fpm"
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: "{{ $.Chart.Name }}"
+    service: "{{ $.Chart.Name }}-fpm"
+spec:
+  selector:
+    matchLabels:
+      app: "{{ $.Chart.Name }}"
+      service: "{{ $.Chart.Name }}-fpm"
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: "{{ $.Chart.Name }}"
+        service: "{{ $.Chart.Name }}-fpm"
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      containers:
+      - name: app
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            #!/bin/bash
+            set -xe
+
+            until $(nc -zv $DB_HOST 5432 &>/dev/null); do
+              sleep 2s
+            done
+
+            php artisan package:discover
+
+            php artisan view:clear
+            php artisan storage:link
+
+            php artisan migrate --force --isolated
+
+            php artisan optimize;            
+            php artisan event:cache;
+
+            php-fpm --allow-to-run-as-root -y /etc/php-fpm/php-fpm.conf
+        lifecycle:
+          postStart:
+            exec:
+              command: [
+                "/bin/sh",
+                "-c",
+                "cp /var/{{ $.Chart.Name }}-app-secrets/.env /var/www/.env"
+              ]
+          preStop:
+            exec:
+              command: ["/bin/sleep","5"]
+        resources:
+          limits:
+            memory: 9216Mi
+            cpu: 4
+          requests:
+            cpu: 120m
+            memory: 1024Mi
+        env:
+          - name: CONTAINER_ROLE
+            value: app
+          - name: DB_HOST
+            value: "{{ .Values.app.DB_HOST }}"
+          - name: PHP_MEMORY_LIMIT
+            value: 4096M
+          - name: REDIS_PASSWORD
+            value: "{{ .Values.redis.password }}"
+          - name: REDIS_HOST
+            value: "{{ .Values.redis.host }}"
+          - name: PHP_DISABLED_FUNCTION
+            value: "exec, passthru, proc_open, proc_close, shell_exec, show_source, symlink, system"
+        ports:
+          - name: fpm
+            containerPort: 9000
+            protocol: TCP
+        volumeMounts:
+          - name: "{{ $.Chart.Name }}-app-secrets-volume"
+            readOnly: true
+            mountPath: "/var/{{ $.Chart.Name }}-app-secrets"
+          - name: "{{ .Values.namespace }}-web-storage-pv"
+            mountPath: {{ .Values.persistence.mountPath }}
+            subPath: "storage"
+            readOnly: false
+          - name: "{{ .Values.namespace }}-web-storage-pv"
+            mountPath: /data
+            subPath: data
+            readOnly: false
+        livenessProbe:
+          exec:
+            command:
+              - /opt/php-fpm-healthcheck
+          initialDelaySeconds: 90
+          failureThreshold: 5
+          timeoutSeconds: 60
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+              - /opt/php-fpm-healthcheck
+          initialDelaySeconds: 60
+          timeoutSeconds: 120
+          successThreshold: 1
+          failureThreshold: 5  
+      volumes:
+        - name: "{{ .Values.namespace }}-web-storage-pv"
+          persistentVolumeClaim:
+            claimName: "{{ .Values.namespace }}-web-storage-pvc"
+        - name: "{{ $.Chart.Name }}-app-secrets-volume"
+          secret:
+            secretName: "dotfile-{{ $.Chart.Name }}-secrets"

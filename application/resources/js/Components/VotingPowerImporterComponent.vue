@@ -72,7 +72,7 @@
                         </label>
                         <p class="pl-1">or drag and drop</p>
                     </div>
-                    <p class="text-xs leading-5 text-gray-600 dark:text-gray-100">csv up to 100MB</p>
+                    <p class="text-xs leading-5 text-gray-600 dark:text-gray-100">csv up to 300MB</p>
                 </div>
             </div>
         </div>
@@ -115,6 +115,7 @@ let parseFile =  (fileObject:any) => {
 
     const formData = new FormData();
     formData.append('file', fileObject);
+    formData.append('snapshot', props.snapshot.hash);
 
     axios.post('/api/parse/csv', formData, {
         headers: {
@@ -145,6 +146,9 @@ let confirmParsing = () => {
         preserveScroll: true,
         preserveState: true,
         onSuccess: () => {
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
             AlertService.show(['Voting power added to snapshot successfully'], 'success');
         },
         onError: (errors) => {

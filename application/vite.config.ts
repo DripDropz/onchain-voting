@@ -5,6 +5,14 @@ import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from "vite-plugin-wasm";
 
 export default defineConfig({
+    build: {
+        target: "esnext",
+        rollupOptions: {
+            external: [
+                "lucid-cardano"
+            ]
+        }
+    },
     optimizeDeps: {
         exclude: [
             "lucid-cardano"
@@ -43,6 +51,8 @@ export default defineConfig({
             ziggy: "/vendor/tightenco/ziggy/src/js",
             "ziggy-vue": "/vendor/tightenco/ziggy/dist/vue",
             "@": "/resources/js",
+            "@lucid-cardano": "/node_modules/lucid-cardano/web/mod.js",
+            // "@lucid-cardano": "/node_modules/lucid-cardano/types/src/mod.d.ts",
         },
     },
 });

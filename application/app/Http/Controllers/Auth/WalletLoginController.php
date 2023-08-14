@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Integrations\Lucid\Requests\AuthenticateWallet;
-use App\Http\Integrations\Lucid\WalletConnector;
+use App\Http\Integrations\Lucid\LucidConnector;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
@@ -16,28 +16,29 @@ use Inertia\Inertia;
 
 class WalletLoginController extends Controller
 {
-    public $authenticateWallet;
-
-    public $connector;
-
-    public function __construct()
-    {
-        $this->authenticateWallet = new AuthenticateWallet;
-        $this->connector = new WalletConnector;
-
-    }
+    public function __construct(
+        public AuthenticateWallet $authenticateWallet,
+        public LucidConnector $connector
+    ){}
 
     public function showWalletLogin(Request $request)
     {
+        if (!! $request->hash) {
+            $baseUrl = url()->previous();
+            $baseRoute = previous_route_name();
+        } else {
+            $baseUrl = '/';
+            $baseRoute = 'home';
+        }
+
         return Inertia::modal('Auth/WalletLogin', [
-            'baseUrl' => url()->previous(),
+            'baseUrl' => $baseUrl,
         ])
-            ->baseRoute(previous_route_name(), $request->hash);
+        ->baseRoute($baseRoute, $request->hash);
     }
 
     public function signMessageLogin(Request $request)
     {
-
         $this->authenticateWallet->body()->merge([
             'signature' => $request->get('signature'),
             'key' => $request->get('key'),

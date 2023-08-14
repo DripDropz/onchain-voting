@@ -1,5 +1,5 @@
 // @ts-nocheck
-import {Blockfrost, Lucid, Network, Tx, toHex,C} from 'lucid-cardano';
+import {Blockfrost, Lucid, Tx, toHex,C} from '@lucid-cardano';
 import BlockfrostKeysService from './BlockfrostKeysService';
 import CardanoWallet from "@/cardano/interface/Wallets";
 
@@ -63,11 +63,12 @@ export default class WalletService {
         if (!this.api) {
             return;
         }
-        return <string>await this.lucid.wallet.rewardAddress();
+
+        return <string>await this.lucid?.wallet?.rewardAddress();
     }
 
     public async getAddress() {
-        return <string>await this.lucid.wallet.address();
+        return <string>await this.lucid?.wallet?.address();
     }
 
     public async signMessage(wallet: string, msg: string) {
@@ -147,6 +148,7 @@ export default class WalletService {
 
             return;
         }
+
         let lucid;
 
         try {
@@ -170,7 +172,7 @@ export default class WalletService {
             const blockfrostKeysService = new BlockfrostKeysService();
             const keys = await blockfrostKeysService.getConfig();
             this.blockfrostUrl = keys?.blockfrostUrl;
-            this.projectId = keys?.projectId
+            this.projectId = keys?.projectId;
 
             lucid = await Lucid.new(
                 new Blockfrost(this.blockfrostUrl, this.projectId),

@@ -26,8 +26,19 @@ Route::prefix('/ballots')->as('ballots.')->group(function () {
 Route::prefix('/ballots/{ballot}')->as('ballot.')->group(function () {
     Route::get('/', [BallotController::class, 'view'])->name('view');
 
-    Route::get('/register', [BallotController::class, 'registerView'])->name('register.view');
-    Route::post('/register', [BallotController::class, 'registerStore'])->name('register.store');
+    Route::get('/register', [BallotController::class, 'viewRegistration'])->name('register.view')
+    ->middleware(['snapshot.check', 'auth.voter']);
+
+    Route::post('/registration/start', [BallotController::class, 'startRegistration'])
+    ->name('register.store');
+    Route::post('/registration/submit', [BallotController::class, 'submitRegistration'])
+    ->name('register.submit');
+
+    Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');    Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');
+    Route::get('/policy-id/{policyType}', [BallotController::class, 'policyId'])->name('policyId');
+
+    Route::post('/vote/start', [BallotController::class, 'startVoting'])->name('startVoting');
+    Route::post('/vote/submit', [BallotController::class, 'completeVoting'])->name('completeVoting');
 });
 
 // Voter
@@ -39,7 +50,6 @@ Route::prefix('/voters')->as('voters.')->group(function () {
     Route::prefix('/{voterId}/ballot-responses')->as('ballot-responses.')->group(function () {
         Route::post('/save', [VoterController::class, 'saveBallotResponse'])->name('save');
     });
-    Route::post('/{voterId}/submit-vote', [VoterController::class, 'submitVote'])->name('submitVote');
 
 });
 

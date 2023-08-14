@@ -22,7 +22,7 @@
                                 leave-from-class="transform scale-100 opacity-100"
                                 leave-to-class="transform scale-95 opacity-0">
                         <MenuItems
-                            class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-700 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                            class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-indigo-100 dark:bg-gray-700 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                             <MenuItem v-slot="{ active }">
                                 <Link :href="route('admin.ballots.view', ballot.hash)"
                                       :class="[active ? 'bg-gray-50 dark:bg-gray-900' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300']"

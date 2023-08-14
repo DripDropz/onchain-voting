@@ -23,6 +23,7 @@ class BallotResponse extends Model implements \OwenIt\Auditing\Contracts\Auditab
         'question_id',
         'user_id',
         'voting_power_id',
+        'submit_tx',
     ];
 
     public function voting_power()

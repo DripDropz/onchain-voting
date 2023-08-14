@@ -60,4 +60,10 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
     {
         return $this->hasMany(Question::class);
     }
+
+    public function voting_power()
+    {
+        return $this->hasOne(VotingPower::class);
+    }
+
 }

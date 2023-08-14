@@ -11,8 +11,8 @@ interface WalletState {
 }
 
 export const useWalletStore = defineStore('wallet', (): WalletState => {
-    let walletData:Ref<Wallet> = ref({} as Wallet);
-    let walletName: Ref<string> = useStorage('wallet-name', '', localStorage, {mergeDefaults: true});
+    const walletData: Ref<Wallet> = ref({} as Wallet);
+    const walletName: Ref<string> = useStorage('wallet-name', '', localStorage, {mergeDefaults: true});
 
     function saveWallet(wallet: Wallet) {
         walletData.value = wallet;

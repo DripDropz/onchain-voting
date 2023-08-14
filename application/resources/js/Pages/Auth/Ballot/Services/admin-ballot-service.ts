@@ -1,7 +1,7 @@
 import AdminService from "@/shared/Services/AdminService";
 import axios from "axios";
 
-export default class BallotService {
+export default class AdminBallotService {
     public static async getBallotTypes(): Promise<string[]> {
         return AdminService.getEnums('ballot-type');
     }

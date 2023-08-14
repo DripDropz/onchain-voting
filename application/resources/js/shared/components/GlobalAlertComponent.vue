@@ -29,7 +29,7 @@
                         </div>
                         <div class="flex flex-shrink-0 ml-4">
                             <button type="button" @click="alertStore.closeAlert(index)"
-                                class="inline-flex text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                class="inline-flex text-gray-400 bg-indigo-100 rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                 <span class="sr-only">Close</span>
                                 <XMarkIcon class="w-5 h-5" aria-hidden="true" />
                             </button>

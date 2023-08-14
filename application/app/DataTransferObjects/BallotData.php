@@ -70,6 +70,9 @@ class BallotData extends Data
         /** @var QuestionData[] */
         public ?DataCollection $questions,
 
+        /** @var PolicyData[] */
+        public ?DataCollection $policies,
+
         #[TypescriptOptional]
         #[DataCollectionOf(VoterData::class)]
         /** @var QuestionData[] */

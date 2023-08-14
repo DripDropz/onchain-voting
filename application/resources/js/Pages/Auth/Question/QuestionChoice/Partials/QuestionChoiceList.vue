@@ -10,7 +10,7 @@
         @change="updatePosition"
     >
         <template #item="{ element: questionChoice }">
-            <QuestionChoiceListItem :choice="questionChoice" />
+            <QuestionChoiceListItem :choice="questionChoice" :ballot="ballot" :question="question" />
         </template>
     </draggable>
 </template>
@@ -21,10 +21,14 @@ import draggable from "vuedraggable";
 import axios from "axios";
 import QuestionChoiceData = App.DataTransferObjects.QuestionChoiceData;
 import QuestionChoiceListItem from "@/Pages/Auth/Question/QuestionChoice/Partials/QuestionChoiceListItem.vue";
+import BallotData = App.DataTransferObjects.BallotData;
+import QuestionData = App.DataTransferObjects.QuestionData;
 
 const props = withDefaults(
     defineProps<{
         choices?: QuestionChoiceData[];
+        question: QuestionData;
+        ballot: BallotData;
     }>(),
     {}
 );

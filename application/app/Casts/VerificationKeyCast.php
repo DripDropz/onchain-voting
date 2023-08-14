@@ -31,6 +31,6 @@ class VerificationKeyCast implements CastsAttributes
             throw new InvalidArgumentException('The given value is not an Address instance.');
         }
 
-        return $value->toArray();
+        return $value?->toArray() ?? [];
     }
 }

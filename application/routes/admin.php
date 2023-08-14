@@ -47,12 +47,28 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
             Route::prefix('/{question:id}/choices')->as('choices.')->group(function () {
                 // Views
                 Route::get('/create', [BallotController::class, 'createQuestionChoice'])->name('create');
+                Route::get('/edit', [BallotController::class, 'editQuestionChoice'])->name('choice.edit');
 
                 // CRUDs
                 Route::post('/create', [BallotController::class, 'storeQuestionChoice'])->name('store');
+                Route::post('/edit', [BallotController::class, 'storeEditQuestionChoice'])->name('edit');
                 Route::patch('/{choice}/update', [BallotController::class, 'updateQuestionChoice'])
                     ->name('update');
             });
+        });
+
+        // Ballot Policies
+        Route::prefix('/{ballot}/policies')->as('policies.')->group(function () {
+            // Views
+            Route::get('/create', [BallotController::class, 'createPolicy'])->name('create');
+            Route::get('/{policy}/edit', [BallotController::class, 'editPolicy'])->name('edit');
+
+            // CRUDs
+            Route::post('/create', [BallotController::class, 'storePolicy'])->name('store');
+            Route::patch('/{policy}/update', [BallotController::class, 'updatePolicy'])
+                ->name('update');
+            Route::delete('/{policy}/delete', [BallotController::class, 'destroyPolicy'])->name('destroy');
+
         });
     });
 

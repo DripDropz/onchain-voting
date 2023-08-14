@@ -67,7 +67,7 @@ class SnapshotPolicy extends AppPolicy
      */
     public function delete(User $user, Snapshot $snapshot): bool
     {
-        return $user->hasAnyPermission([PermissionEnum::delete_ballot()->value]) || $this->canDelete($user, $snapshot);
+        return $user->hasAnyPermission([PermissionEnum::DELETE_BALLOT]) || $this->canDelete($user, $snapshot);
 
     }
 }

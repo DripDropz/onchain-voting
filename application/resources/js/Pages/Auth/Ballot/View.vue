@@ -29,18 +29,18 @@ AlertService.show(Object.values(usePage().props.errors), 'info');
 
         <div class="py-12">
             <div class="mx-auto space-y-6 max-w-7xl sm:px-6 lg:px-8">
-                <div class="flex gap-8 p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
+                <div class="flex gap-8 p-4 bg-indigo-200 shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
                     <BallotCard :ballot="ballot" class="w-2/3 max-w-xl" />
                     <div class="w-1/3 ">
                         <BallotPublishChecklist :ballot="ballot" class="" />
                     </div>
                 </div>
 
-                <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
+                <div class="p-4 bg-indigo-200 shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
                     <BallotQuestions class="" :ballot="ballot" :questions="ballot?.questions || []" />
                 </div>
 
-                <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg" >
+                <div class="p-4 bg-indigo-200 shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg" >
                     <BallotSnapshot :ballot="ballot" />
                 </div>
             </div>

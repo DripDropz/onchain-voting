@@ -100,11 +100,31 @@ class Ballot extends Model implements Auditable, HasUser
         return $this->hasOne(Snapshot::class);
     }
 
+    public function registration_policy(): HasOne
+    {
+        return $this->hasOne(Policy::class, 'model_id')->where(
+            'context', 'registration'
+        );
+    }
+
+    public function voting_policy(): HasOne
+    {
+        return $this->hasOne(Policy::class, 'model_id')->where(
+            'context', 'voting'
+        );
+    }
+
     public function user_response(): HasOne
     {
         return $this->responses()->one()->ofMany()->where(
             'user_id', auth()?->user()?->getAuthIdentifier()
         );
+    }
+
+    public function policies(): HasMany
+    {
+        return $this->hasMany(Policy::class, 'model_id')
+        ->where('model_type', static::class);
     }
 
     /**

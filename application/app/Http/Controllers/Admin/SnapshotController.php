@@ -93,15 +93,16 @@ class SnapshotController extends Controller
     /**
      * Delete the snapshots's account.
      */
-    public function destroy(Request $request, $snapshot): RedirectResponse
+    public function destroy(Request $request, Snapshot $snapshot): RedirectResponse
     {
         $response = Gate::inspect('delete', $snapshot);
 
         if ($response->allowed()) {
-            $existingBallot = Snapshot::byHash($snapshot);
-            $existingBallot->delete();
+            $snapshot->load('voting_powers');
+            $snapshot->voting_powers()->delete();
+            $snapshot->delete();
 
-            return Redirect::to('/');
+            return Redirect::back();
         } else {
             return Redirect::route('admin.snapshots.view', ['snapshots' => $snapshot]);
         }

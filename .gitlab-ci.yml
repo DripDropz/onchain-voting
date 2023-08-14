@@ -1,0 +1,268 @@
+variables:
+  AUTO_DEPLOY_IMAGE_VERSION: v2.50.0
+  CI_TEMPLATE_REGISTRY_HOST: registry.gitlab.com
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2  
+  HELM_VERSION: 3.10.2
+  KUBE_CONTEXT: openchainvote/openchainvote:openchainvote
+  KUBERNETES_SERVICE_ACCOUNT_OVERWRITE: gitlab-admin
+  KUBERNETES_VERSION: 1.24.9
+
+stages:
+  - .pre
+  - build
+  - preview
+  - mainnet
+  - .post
+
+before_script:
+  - |
+    export APP_VERSION=$(awk '/version/{gsub(/("|",)/,"",$2);print $2};' application/package.json)
+    export APP_VERSION_AND_BUILD="${APP_VERSION}-${CI_PIPELINE_ID}"
+    export CI_APPLICATION_REPOSITORY=$CI_REGISTRY_IMAGE
+    export CI_APPLICATION_TAG=$APP_VERSION_AND_BUILD
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - ./node_modules
+
+services:
+  - name: docker:dind
+    alias: docker
+    command: ["--tls=false"]
+
+
+########## Helper Scripts ############
+######################################
+.auto-deploy:
+  image: "${CI_TEMPLATE_REGISTRY_HOST}/gitlab-org/cluster-integration/auto-deploy-image:${AUTO_DEPLOY_IMAGE_VERSION}"
+  dependencies: []
+
+.setup: &setup
+  - apk add --no-cache ca-certificates curl bash openssl git
+  - curl -LO https://dl.k8s.io/release/v1.25.9/bin/linux/amd64/kubectl && chmod +x kubectl && mv kubectl /usr/local/bin/kubectl
+  - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && chmod 700 get_helm.sh && DESIRED_VERSION=v$HELM_VERSION ./get_helm.sh
+  - kubectl config get-contexts
+  - kubectl config use-context openchainvote/openchainvote:openchainvote 
+
+.app: &app_template
+  stage: mainnet
+  image: "${CI_TEMPLATE_REGISTRY_HOST}/gitlab-org/cluster-integration/auto-deploy-image:${AUTO_DEPLOY_IMAGE_VERSION}"
+  retry: 0
+  script:
+    - auto-deploy check_kube_domain    
+    - auto-deploy download_chart
+    - auto-deploy create_secret
+    - |      
+      DEPLOYMENT_NAME="www-openchainvote.$CI_ENVIRONMENT_SLUG"      
+      cp $ENV_FILE ./chart/app_env
+      if [ "${CI_ENVIRONMENT_NAME}" == "mainnet" ]; then
+        export ANNOTATIONS='traefik-redirect-http-to-https@kubernetescrd\,traefik-redirect-to-www@kubernetescrd\,traefik-default-headers@kubernetescrd'      
+      else
+        export ANNOTATIONS='traefik-redirect-http-to-https@kubernetescrd\,traefik-default-headers@kubernetescrd'
+      fi
+      helm upgrade $DEPLOYMENT_NAME ./chart --install \
+        -f ./chart/values.yaml \
+        --timeout 300s \
+        --wait \
+        --atomic \
+        --set image.repository=$CI_APPLICATION_REPOSITORY/www.openchainvote.com \
+        --set lucid.image.repository=$CI_APPLICATION_REPOSITORY/wallet-backend \
+        --set image.tag=$CI_APPLICATION_TAG \
+        --set app.DB_HOST=$DB_HOST \
+        --set redis.password=$REDIS_PASSWORD \
+        --set ingress.host="$AUTO_DEVOPS_WEB_HOST" \
+        --set ingress.hosts[0]="$AUTO_DEVOPS_WEB_DOMAIN" \
+        --set ingress.hosts[1]="$AUTO_DEVOPS_DOMAIN" \
+        --set ingress.tls[0].secretName="www-openchainvote-tls" \
+        --set ingress.tls[0].hosts[0]="$AUTO_DEVOPS_WEB_DOMAIN" \
+        --set ingress.tls[0].hosts[1]="$AUTO_DEVOPS_DOMAIN" \
+        --set ingress.annotations."traefik\.ingress\.kubernetes\.io\/router\.middlewares"="$ANNOTATIONS" \
+        --set namespace=${KUBE_NAMESPACE} \
+        --namespace="$KUBE_NAMESPACE" \
+        --create-namespace
+    - auto-deploy persist_environment_url
+  environment:
+    name: mainnet
+    url: https://$CI_PROJECT_PATH_SLUG.$AUTO_DEVOPS_DOMAIN
+  artifacts:
+    paths: [environment_url.txt]
+
+.db: &db_template
+  stage: mainnet
+  image: "${CI_TEMPLATE_REGISTRY_HOST}/gitlab-org/cluster-integration/auto-deploy-image:${AUTO_DEPLOY_IMAGE_VERSION}"
+  retry: 0
+  script:    
+    - auto-deploy download_chart    
+    - |
+      helm repo add bitnami https://charts.bitnami.com/bitnami
+      helm repo update
+
+      echo "install db"
+      helm upgrade --install \
+          --timeout 300s \
+          --wait \
+          --atomic \
+          --namespace="$KUBE_NAMESPACE" \
+          --create-namespace \
+          -f ./chart/values.db.yaml \
+          --set global.postgresql.auth.database="$DB_DATABASE" \
+          --set global.postgresql.auth.username="$DB_USERNAME" \
+          --set global.postgresql.auth.password="$DB_PASSWORD" \
+          --set global.postgresql.auth.postgresPassword="$POSTGRES_PASSWORD" \
+          --set primary.persistence.size="80Gi" \
+          openchainvote-web-db \
+          bitnami/postgresql
+    - auto-deploy persist_environment_url
+  environment:
+    name: mainnet
+    url: https://$CI_PROJECT_PATH_SLUG.$AUTO_DEVOPS_DOMAIN
+  artifacts:
+    paths: [environment_url.txt]
+
+.redis: &redis_template  
+  image: "${CI_TEMPLATE_REGISTRY_HOST}/gitlab-org/cluster-integration/auto-deploy-image:${AUTO_DEPLOY_IMAGE_VERSION}"
+  retry: 0
+  script:    
+    - auto-deploy download_chart    
+    - |
+      helm repo add bitnami https://charts.bitnami.com/bitnami
+      helm repo update
+
+      echo "install redis"
+      helm upgrade --install \
+          --timeout 300s \
+          --wait \
+          --atomic \
+          --namespace="$KUBE_NAMESPACE" \
+          --create-namespace \
+          -f ./chart/values.redis.yaml \
+          --set global.redis.password="$REDIS_PASSWORD" \
+          --set auth.password="$REDIS_PASSWORD" \
+          --set master.persistence.enabled="true" \
+          redis \
+          bitnami/redis
+    - auto-deploy persist_environment_url
+  
+  artifacts:
+    paths: [environment_url.txt]
+
+
+############ Build Jobs ##############
+######################################
+build_web:
+  stage: build
+  image: docker:24.0.2-git
+  artifacts:
+    paths:
+      - application/.env
+    untracked: true
+    when: on_success
+    expire_in: "3 days"
+  retry: 0
+  script:
+    - *setup
+    - |
+      cp $ENV_FILE application/.env
+      docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+      echo "Building Dockerfile with tags $CI_APPLICATION_REPOSITORY/www.openchainvote.com:$CI_APPLICATION_TAG and $CI_APPLICATION_REPOSITORY/www.openchainvote.com:latest ..."
+      docker build --network host -f application/Dockerfile \
+        -t "$CI_APPLICATION_REPOSITORY/www.openchainvote.com:$CI_APPLICATION_TAG" \
+        -t "$CI_APPLICATION_REPOSITORY/www.openchainvote.com:latest" .
+      docker push "$CI_APPLICATION_REPOSITORY/www.openchainvote.com:$CI_APPLICATION_TAG"
+      docker push "$CI_APPLICATION_REPOSITORY/www.openchainvote.com:latest"
+  only:
+    - branches
+
+build_lucid:
+  stage: build
+  image: docker:24.0.2-git  
+  retry: 2
+  script:
+    - *setup
+    - |
+      docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+      echo "Building Dockerfile with tags $CI_APPLICATION_REPOSITORY/wallet-backend:$CI_APPLICATION_TAG and $CI_APPLICATION_REPOSITORY/wallet-backend:latest ..."
+      docker build --network host -f lucid/Dockerfile \
+        -t "$CI_APPLICATION_REPOSITORY/wallet-backend:$CI_APPLICATION_TAG" \
+        -t "$CI_APPLICATION_REPOSITORY/wallet-backend:latest" ./lucid
+      docker push "$CI_APPLICATION_REPOSITORY/wallet-backend:$CI_APPLICATION_TAG"
+      docker push "$CI_APPLICATION_REPOSITORY/wallet-backend:latest"
+  only:
+    - branches
+
+
+
+######## Preview Deployments #########
+######################################
+db_preview:
+  <<: *db_template
+  stage: preview
+  environment:
+    name: preview
+    url: https://$CI_PROJECT_PATH_SLUG.$AUTO_DEVOPS_DOMAIN
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == 'main'
+      when: manual
+
+redis_preview:
+  <<: *redis_template
+  stage: preview
+  environment:
+    name: preview
+    url: https://$CI_PROJECT_PATH_SLUG.$AUTO_DEVOPS_DOMAIN
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == 'main'
+      when: manual
+
+app_preview:
+  <<: *app_template
+  stage: preview
+  environment:
+    name: preview
+    url: https://$CI_PROJECT_PATH_SLUG.$AUTO_DEVOPS_DOMAIN
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == 'main'
+      when: manual
+
+
+
+######## Mainnet Deployments #########
+######################################
+db_mainnet:
+  <<: *db_template
+  stage: mainnet
+  environment:
+    name: mainnet
+    url: https://$CI_PROJECT_PATH_SLUG.$AUTO_DEVOPS_DOMAIN
+  needs:
+    - job: db_preview
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      when: manual
+
+redis_mainnet:
+  <<: *redis_template
+  stage: mainnet
+  environment:
+    name: mainnet
+    url: https://$CI_PROJECT_PATH_SLUG.$AUTO_DEVOPS_DOMAIN
+  needs:
+    - job: redis_preview
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      when: manual
+
+app_mainnet:
+  <<: *app_template
+  stage: mainnet
+  environment:
+    name: mainnet
+    url: https://$CI_PROJECT_PATH_SLUG.$AUTO_DEVOPS_DOMAIN
+  needs:
+    - job: app_preview
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      when: manual  

@@ -2,25 +2,25 @@
 
 namespace App\Http\Integrations\Lucid\Requests;
 
-use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
+use Saloon\Contracts\Body\HasBody;
 use Saloon\Traits\Body\HasJsonBody;
 
-class SubmitVote extends Request implements HasBody
+class GetPolicyId extends Request implements HasBody
 {
     use HasJsonBody;
 
     /**
      * Define the HTTP method
      */
-    protected Method $method = Method::POST;
+    protected Method $method = Method::GET;
 
     /**
      * Define the endpoint for the request
      */
     public function resolveEndpoint(): string
     {
-        return '/vote/mint';
+        return '/wallet/get-policy-id';
     }
 }

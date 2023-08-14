@@ -1,5 +1,5 @@
 {
-  "name": "lucid.lidonation.com",
+  "name": "wallet-backend",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -28,7 +28,7 @@
     "@nestjs/platform-express": "^9.1.2",
     "@types/lodash": "^4.14.191",
     "lodash": "^4.17.21",
-    "lucid-cardano": "0.10.6",
+    "lucid-cardano": "0.10.7",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.5.7"

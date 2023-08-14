@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import GlobalAlertComponent from '../shared/components/GlobalAlertComponent.vue';
-import { Head, usePage } from '@inertiajs/vue3';
-import { withDefaults } from "vue";
+import { Head } from '@inertiajs/vue3';
 import Header from "@/Pages/Partials/Header.vue";
-import { useDarkModeStore } from "@/stores/dark-mode-store";
+import Footer from "@/Pages/Partials/Footer.vue";
+import { useConfigStore } from "@/stores/config-store";
 import { storeToRefs } from 'pinia';
 import { Modal } from 'momentum-modal';
-
 
 withDefaults(
     defineProps<{
@@ -18,23 +16,21 @@ withDefaults(
     canLogin: true
 });
 
-let darkModeStore = useDarkModeStore();
-let {isDarkMode} = storeToRefs(darkModeStore);
-
-const user = usePage().props.auth?.user;
-
+let configStore = useConfigStore();
+let {isDarkMode} = storeToRefs(configStore);
 
 </script>
 
 <template>
     <div :class="{'dark': isDarkMode }">
-        <div class="min-h-screen bg-slate-200 dark:bg-gray-900">
+        <div class="min-h-screen bg-indigo-100 dark:bg-gray-900">
+
             <GlobalAlertComponent/>
 
             <Head :title="page" />
 
             <div
-                class="relative min-h-screen bg-center bg-dots-darker bg-gray-50 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
+                class="relative min-h-screen bg-indigo-100 bg-center bg-dots-darker dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
                 <div class="relative z-50 w-full p-6 text-right border-b-8 border-indigo-600">
                     <div class="container">
                         <Header :can-login="canLogin" :pageData="pageData"/>
@@ -43,8 +39,13 @@ const user = usePage().props.auth?.user;
 
                 <main class="z-10 ">
                     <slot />
+
                     <Modal/>
                 </main>
+
+                <div class="relative z-50 w-full text-right border-t-8 border-indigo-600">
+                    <Footer :pageData="pageData" />
+                </div>
             </div>
         </div>
     </div>

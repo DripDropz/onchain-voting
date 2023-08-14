@@ -15,7 +15,19 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Open Chainvote'),
+
+    'power_by' => env('APP_POWER_BY', 'Open Chainvote'),
+
+    'cardano_network' => env('CARDANO_NETWORK', 0),
+
+    'logo' => env('APP_LOGO'),
+
+    'hosted_by' => env('HOSTED_BY', 'Open Chainvote'),
+
+    'hosted_by_link' => env('HOSTED_BY_LINK', null),
+
+    'show_created_by' => env('SHOW_CREATED_BY', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -28,7 +40,7 @@ return [
     |
     */
 
-    'env' => env('APP_ENV', 'production'),
+    'env' => env('APP_ENV', 'local'),
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +53,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    'debug' => (bool) env('APP_DEBUG', true),
 
     /*
     |--------------------------------------------------------------------------

@@ -7,6 +7,9 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 import {createPinia} from "pinia";
 import { modal } from "momentum-modal";
 
+(BigInt.prototype as any).toJSON = function () {
+    return this.toString();
+};
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 

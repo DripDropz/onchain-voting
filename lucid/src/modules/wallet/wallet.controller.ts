@@ -1,28 +1,59 @@
 import {
     Controller,
-    HttpException,
-    HttpStatus,
+    Get,
     Post,
     Req,
 } from '@nestjs/common';
 import {
-    Blockfrost,
     fromHex,
     fromUnit,
     getAddressDetails,
     Lucid,
     M,
+    MintingPolicy,
     toHex,
     toText,
 } from 'lucid-cardano';
 import { Request } from 'express';
+import getConfigs from '../../utils/getConfigs.js';
 
 @Controller('wallet')
 export class WalletController {
+    @Get('get-policy-id')
+    public async mintPolicyId(@Req() request: Request) {
+        const [lucid] = await getConfigs(request);
+        const policyId = lucid.utils.mintingPolicyToId(
+            await this.mintPolicy(request)
+        );
+        return policyId;
+    }
+    @Get('get-policy')
+    public async mintPolicy(@Req() request: Request) {
+        const [lucid] = await getConfigs(request);
+        lucid.selectWalletFromSeed(request?.body?.seed);
+        return (await this.getPolicy(lucid));
+    }
+  
+    protected async getPolicy(lucid: Lucid) {
+        const { paymentCredential } = lucid.utils.getAddressDetails(
+            await lucid.wallet.address(),
+        );
+        const mintingPolicy: MintingPolicy = lucid.utils.nativeScriptFromJson({
+            type: 'all',
+            scripts: [
+            {
+                type: 'sig',
+                keyHash: paymentCredential?.hash!,
+            },
+            ],
+        });
+  
+        return mintingPolicy;
+    }
+
     @Post('address')
     async wallet(@Req() request: Request) {
-        let lucid;
-        [lucid] = await this.getConfigs(request);
+        const [lucid] = await getConfigs(request);
         lucid.selectWalletFromSeed(request?.body?.seed);
 
         return {
@@ -33,7 +64,7 @@ export class WalletController {
     @Post('balances')
     async balances(@Req() request: Request) {
         let lucid;
-        [lucid] = await this.getConfigs(request);
+        [lucid] = await getConfigs(request);
         lucid.selectWalletFromSeed(request?.body?.seed);
 
         let utxos = await lucid.wallet.getUtxos();
@@ -90,31 +121,7 @@ export class WalletController {
         const txHash = request?.body?.txHash
         const stakeCredential = getAddressDetails(request?.body?.stakeAddr)?.stakeCredential;
 
-        return txHash.includes(stakeCredential.hash)
-
-    }
-
-    protected async getConfigs(request: Request) {
-        if (!request?.body?.seed) {
-            throw new HttpException('Invalid Data', HttpStatus.NOT_ACCEPTABLE);
-        }
-        const projectId =
-            process.env.BLOCKFROST_PROJECT_ID ||
-            'preview2QfIR5epKjaFmh54Id75yXAM7yStk3vc';
-        const blockfrostUrl = projectId.includes('preview')
-            ? 'https://cardano-preview.blockfrost.io/api/v0'
-            : 'https://cardano-mainnet.blockfrost.io/api/v0';
-        const cardanoNetwork = projectId.includes('preview')
-            ? 'Preview'
-            : 'Mainnet';
-
-        const lucid = await Lucid.new(
-            new Blockfrost(blockfrostUrl, projectId),
-            cardanoNetwork,
-        );
-
-
-        return [lucid, projectId, blockfrostUrl, cardanoNetwork];
+        return txHash.includes(stakeCredential.hash);
     }
 
     protected toObject(obj) {

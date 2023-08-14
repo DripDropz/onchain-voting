@@ -22,7 +22,7 @@
                                 leave-from-class="transform scale-100 opacity-100"
                                 leave-to-class="transform scale-95 opacity-0">
                         <MenuItems
-                            class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-700 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                            class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-indigo-100 dark:bg-gray-700 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                             <MenuItem v-slot="{ active }">
                                 <Link :href="route('admin.snapshots.view', snapshot.hash)"
                                       :class="[active ? 'bg-gray-50 dark:bg-gray-900' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300']"
@@ -41,6 +41,12 @@
                                         Import voting power snapshot (CSV)<span class="sr-only">, {{ snapshot.title }}</span>
                                     </Link>
                                 </div>
+                            </MenuItem>
+                            <MenuItem v-if="!snapshot.live && !snapshot.ballot" v-slot="{ active }">
+                                <a @click.prevent="deleteSnapshot(String(snapshot.hash))"
+                                    :class="[active ? 'bg-red-50 dark:bg-red-900 cursor-pointer' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300']">
+                                    Delete<span class="sr-only">, {{ snapshot.title }}</span>
+                                </a>
                             </MenuItem>
                         </MenuItems>
                     </transition>
@@ -89,8 +95,9 @@
 <script setup lang="ts">
 import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue';
 import {PlusIcon, EllipsisHorizontalIcon} from "@heroicons/vue/20/solid";
-import {Link, useForm} from '@inertiajs/vue3';
+import {Link, router, useForm} from '@inertiajs/vue3';
 import SnapshotData = App.DataTransferObjects.SnapshotData;
+import AlertService from '@/shared/Services/alert-service';
 
 const props = defineProps<{
     snapshots: SnapshotData[];
@@ -99,4 +106,22 @@ const props = defineProps<{
 const form = useForm({
     status: 'published',
 });
+
+const deleteSnapshot = (snapshotHash: string) => {
+    form.delete(route('admin.snapshots.destroy', {snapshot: snapshotHash}), {
+        preserveScroll: true,
+        onSuccess: () => {
+            AlertService.show(['Snapshot Deleted successfully'], 'success');
+        },
+        onError: (errors) => {
+            Object.entries(errors).forEach(([key, value]) => {
+                AlertService.show([value], 'info');
+            });
+        },
+        onFinish: () => setTimeout(() => {
+            form.reset()
+            window.location.reload()
+        }, 1000 * 2)
+    });
+};
 </script>

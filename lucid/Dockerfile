@@ -14,7 +14,6 @@ COPY --chown=node:node . .
 
 USER node
 
-
 ###################
 # BUILD FOR PRODUCTION
 ###################
@@ -43,10 +42,12 @@ USER node
 ###################
 FROM node:18-alpine As production
 
-COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+WORKDIR /usr/src/app
 
-COPY --chown=node:node package.json ./dist/
-COPY --chown=node:node yarn.lock ./dist/
+COPY --chown=node:node --from=build /usr/src/app/node_modules /usr/src/app/dist/node_modules
+COPY --chown=node:node --from=build /usr/src/app/dist /usr/src/app/dist
+
+COPY --chown=node:node package.json /usr/src/app/dist/
+COPY --chown=node:node yarn.lock /usr/src/app/dist/
 
 CMD [ "node", "dist/main.js" ]

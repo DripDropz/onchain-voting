@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ $.Chart.Name }}-wallet-backend-service"
+  namespace: {{ .Values.namespace }}
+  labels:
+    service: "{{ $.Chart.Name }}-wallet-backend"
+spec:
+  ports:
+    - port: 3000
+      name: node
+      targetPort: node
+      protocol: TCP
+  selector:
+    service: "{{ $.Chart.Name }}-wallet-backend"

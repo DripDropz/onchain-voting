@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ $.Chart.Name }}-wallet-backend"
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: "{{ $.Chart.Name }}"
+    service: "{{ $.Chart.Name }}-wallet-backend"
+spec:
+  selector:
+    matchLabels:
+      app: "{{ $.Chart.Name }}"
+      service: "{{ $.Chart.Name }}-wallet-backend"
+  replicas: {{ .Values.lucid.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: "{{ $.Chart.Name }}"
+        service: "{{ $.Chart.Name }}-wallet-backend"
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      containers:
+      - name: app
+        image: "{{ .Values.lucid.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        envFrom:
+          - secretRef:
+              name: "dotfile-{{ $.Chart.Name }}-secrets"
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3000
+          initialDelaySeconds: 1
+          periodSeconds: 10
+        resources:
+          limits:
+            memory: 8192Mi
+            cpu: 1
+          requests:
+            cpu: 50m
+            memory: 256Mi
+        lifecycle:
+          postStart:
+            exec:
+              command: [
+                "/bin/sh",
+                "-c",
+                "cp /var/{{ $.Chart.Name }}-app-secrets/.env /usr/src/app/dist/.env"
+              ]
+        ports:
+          - name: node
+            containerPort: 3000
+            protocol: TCP
+        volumeMounts:
+          - name: "{{ $.Chart.Name }}-app-secrets-volume"
+            readOnly: true
+            mountPath: "/var/{{ $.Chart.Name }}-app-secrets"
+      volumes:
+        - name: "{{ $.Chart.Name }}-app-secrets-volume"
+          secret:
+            secretName: "dotfile-{{ $.Chart.Name }}-secrets"

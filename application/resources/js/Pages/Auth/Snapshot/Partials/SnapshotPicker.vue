@@ -1,6 +1,6 @@
 <template>
     <ModalRoute>
-        <div class="p-1 bg-white border-0 rounded-lg dark:bg-gray-700">
+        <div class="p-1 bg-indigo-100 border-0 rounded-lg dark:bg-gray-700">
             <div v-if="!ballot?.snapshot" class="flex flex-col w-full gap-8 min-h-64">
                 <div class="flex flex-col flex-shrink-0 w-full">
                     <div class="inline-flex w-full shadow-slate-300">
@@ -12,7 +12,7 @@
                                     container: 'multiselect border border-lg px-1 py-2 flex-wrap w-full dark:bg-gray-900 dark:border-gray-900 rounded-t-xl',
                                     containerOpen: 'rounded-t-xl',
                                     containerActive: 'shadow-none shadow-transparent box-shadow-none dark:bg-gray-900 rounded-t-xl',
-                                    tagsSearch: 'w-full absolute top-0 left-0 inset-0 outline-none dark:bg-gray-900 dark:text-white focus:ring-0 appearance-none custom-input border-0 text-base font-sans bg-white pl-1 rtl:pl-0 rtl:pr-1',
+                                    tagsSearch: 'w-full absolute top-0 left-0 inset-0 outline-none dark:bg-gray-900 dark:text-white focus:ring-0 appearance-none custom-input border-0 text-base font-sans bg-indigo-100 pl-1 rtl:pl-0 rtl:pr-1',
                                     tag: 'multiselect-tag bg-indigo-700 whitespace-normal ',
                                     tags: 'multiselect-tags px-2',
                                     dropdown: 'w-full dark:bg-gray-700',
@@ -42,11 +42,11 @@ import { ref } from 'vue';
 import { useSnapshotStore } from "../store/snapshot-store"
 import { storeToRefs } from 'pinia';
 import { Ref } from 'vue';
-import BallotService from '../../Ballot/Services/ballot-service';
 import AlertService from '@/shared/Services/alert-service';
 import BallotData = App.DataTransferObjects.BallotData;
 import ModalRoute from '@/Components/ModalRoute.vue';
 import { useModal } from "momentum-modal"
+import AdminBallotService from '../../Ballot/Services/admin-ballot-service';
 
 const props = defineProps<{
     ballot?: BallotData;
@@ -69,9 +69,10 @@ let addSnapshot = async () => {
         snapshot: selectedRef.value?.[0],
         ballot: props.ballot?.hash,
     }
-    await BallotService.linkSnapshot(data);
+    await AdminBallotService.linkSnapshot(data);
     AlertService.show(['Snapshot added successfully'], 'success');
     close();
 }
 
 </script>
+../../Ballot/Services/admin-ballot-service

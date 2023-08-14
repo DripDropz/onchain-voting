@@ -1,4 +1,4 @@
-import { C, fromHex, fromText, getAddressDetails, toHex } from 'lucid-cardano';
+import { C, fromHex, fromText, getAddressDetails, toHex } from '@lucid-cardano';
 import WalletService from './wallet-service';
 
 

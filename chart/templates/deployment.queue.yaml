@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ $.Chart.Name }}-queue"
+  namespace: {{ .Values.namespace }}
+  labels:
+    service: "{{ $.Chart.Name }}-queue"
+    app: "{{ $.Chart.Name }}"
+spec:
+  replicas: {{ .Values.queue.replicaCount}}
+  selector:
+    matchLabels:
+      app: "{{ $.Chart.Name }}"
+      service: "{{ $.Chart.Name }}-queue"
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        service: "{{ $.Chart.Name }}-queue"
+        app: "{{ $.Chart.Name }}"
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      containers:
+      - name: queue
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/bin/bash", "-c"]
+        volumeMounts:
+          - name: "{{ .Values.namespace }}-web-storage-pv"
+            mountPath: {{ .Values.persistence.mountPath }}
+            subPath: "storage"
+            readOnly: false
+          - name: "{{ .Values.namespace }}-web-storage-pv"
+            mountPath: /data
+            subPath: "data"
+            readOnly: false
+        args:
+          - |
+            #!/bin/bash
+            set -xe
+
+            until $(nc -zv $DB_HOST 5432 &>/dev/null); do
+              sleep 2s
+            done
+
+            php /var/www/artisan package:discover;
+
+            php /var/www/artisan horizon
+        lifecycle:
+            preStop:
+              exec:
+                command: ["php", "/var/www/artisan", "horizon:terminate"]
+        resources:
+          limits:
+            memory: 9216Mi
+            cpu: 4
+          requests:
+            cpu: 80m
+            memory: 1024Mi
+        env:
+          - name: CONTAINER_ROLE
+            value: app
+          - name: DB_HOST
+            value: "{{ .Values.app.DB_HOST }}"
+          - name: PHP_MEMORY_LIMIT
+            value: 8192M
+          - name: REDIS_PASSWORD
+            value: "{{ .Values.redis.password }}"
+          - name: REDIS_HOST
+            value: "{{ .Values.redis.host }}"
+          - name: PHP_DISABLED_FUNCTION
+            value: "exec, passthru, proc_open, proc_close, shell_exec, show_source, symlink, system"        
+      volumes:
+        - name: "{{ .Values.namespace }}-web-storage-pv"
+          persistentVolumeClaim:
+            claimName: "{{ .Values.namespace }}-web-storage-pvc"

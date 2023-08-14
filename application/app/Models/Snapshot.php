@@ -25,6 +25,10 @@ class Snapshot extends Model implements Auditable, HasUser
         'type',
     ];
 
+    protected $with = [
+        'ballot',
+    ];
+
     protected $appends = [
         'hash',
         'has_voting_powers',

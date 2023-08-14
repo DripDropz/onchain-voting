@@ -26,6 +26,8 @@ class BallotResponseData extends Data
         public ?UserData $user,
 
         public ?VotingPowerData $voting_power,
+
+        public ?string $submit_tx,
     ) {
     }
 }
