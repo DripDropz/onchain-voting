@@ -1,16 +1,20 @@
-import { Controller, Post, Req} from '@nestjs/common';
+import { Controller, Inject, Post, Req} from '@nestjs/common';
 import {PolicyId, Tx, TxComplete, fromText} from 'lucid-cardano';
 import { Request } from 'express';
-import getConfigs from '../../utils/getConfigs.js';
 import generatePolicy from '../../utils/generatePolicy.js';
 import _ from 'lodash';
+import { AppConfigService } from '../../services/app-config.service.js';
 
 @Controller('registration')
 export class RegistrationController {
+    public constructor(
+        @Inject(AppConfigService) private readonly configService: AppConfigService,
+    ) {}
+    
     @Post('mint')
     public async mintNft(@Req() request: Request) {
-        const [voter] = await getConfigs(request);
-        const [minter] = await getConfigs(request);
+        const [voter] = await this.configService.getConfigs(request);
+        const [minter] = await this.configService.getConfigs(request);
 
         minter.selectWalletFromSeed(request?.body?.seed);
         const mintingPolicy = await generatePolicy(minter);
@@ -47,7 +51,7 @@ export class RegistrationController {
 
     @Post('submit')
     public async submitRegistration(@Req() request: Request) {        
-        const [lucid] = await getConfigs(request);
+        const [lucid] = await this.configService.getConfigs(request);
         lucid.selectWalletFromSeed(request?.body?.seed);
 
         // deconstruct and validate tx.

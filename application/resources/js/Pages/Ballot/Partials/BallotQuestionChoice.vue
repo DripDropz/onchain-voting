@@ -1,10 +1,9 @@
-<style lang="scss"></style>
 <template>
     <li @click="emit('selected', choice)">
         <label class="w-full cursor-pointer">
             <input type="radio" class="sr-only peer" name="choice" :hash="choice.hash" :value="choice.hash" :checked="choice.selected" />
             <div
-                class="w-full p-3 text-white transition-all border-2 border-white rounded-full hover:shadow peer-checked:text-indigo-700 peer-checked:bg-indigo-100 peer-checked:ring-indigo-700 peer-checked:ring-4 peer-checked:border-transparent hover:bg-indigo-700">
+                class="w-full p-3 mb-3 text-white transition-all border-2 border-white rounded-full hover:shadow peer-checked:text-indigo-700 peer-checked:bg-indigo-100 peer-checked:ring-indigo-700 peer-checked:ring-4 peer-checked:border-transparent hover:bg-indigo-700">
                 <div class="flex items-center justify-between ">
                     <p class="pr-8 text-sm font-semibold">{{
                         choice.title

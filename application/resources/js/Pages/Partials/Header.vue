@@ -5,26 +5,34 @@
                 <ul class="flex items-center gap-3 flex-nowrap">
                     <li class="w-auto ocv-link">
                         <Link :href="route('home')">
-                            <img :src="config.logo" alt="Open Chainvote App Logo" class="w-10 h-10">
+                        <img :src="config.logo" alt="Open Chainvote App Logo" class="w-10 h-10">
                         </Link>
                     </li>
                     <li class="w-auto ocv-link">
                         <Link :href="route('home')">
-                            Open Chainvote
+                        <h1
+                            class="font-bold tracking-tight sm:text-2xl xl:text-4xl font-display text-slate-900 dark:text-slate-200">
+                            ChainVote</h1>
                         </Link>
+                    </li>
+                    <li
+                        class="items-end justify-between hidden gap-8 p-1 ml-8 text-lg lg:flex font-display text-slate-900 dark:text-slate-200">
+                        <a v-for="option in menuOptions" :href="option.href" :class="{ 'text-sky-300': option.current }">
+                            {{ option.name }}
+                        </a>
                     </li>
                 </ul>
             </nav>
         </div>
         <div class="flex flex-row items-center justify-end w-1/3 gap-6 text-white">
-            <div class="relative flex items-center gap-0 py-0.5 bg-indigo-700 rounded-lg flex-nowrap hover:bg-indigo-700">
-
+            <div
+                class="relative lg:flex items-center gap-0 py-0.5 pl-1 bg-sky-400 rounded-lg flex-nowrap hover:bg-sky-300 hidden">
                 <div class="hover:text-yellow-400">
-                    <ConnectWallet background-color="bg-indigo-700"></ConnectWallet>
+                    <ConnectWallet background-color="bg-white"></ConnectWallet>
                 </div>
 
                 <Link :href="route('login.wallet', { hash: pageData?.hash })" v-if="!user?.hash"
-                    class="flex items-center h-full gap-2 px-3 py-2 mx-1 bg-indigo-800 rounded-lg hover:bg-indigo-950">
+                    class="flex items-center h-full gap-2 px-3 py-2 mx-1 bg-sky-400 rounde-lg hover:bg-sky-400">
                 <p>Login</p>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="relative w-5 h-5">
@@ -33,10 +41,31 @@
                 </svg>
                 </Link>
                 <Link preserve-state v-if="user?.hash" href="#" @click.prevent="logout"
-                    class="flex items-center h-full gap-2 px-3 py-2 mx-1 bg-indigo-800 rounded-lg hover:bg-indigo-950">
-                    <p>Logout</p>
-                    <ArrowRightOnRectangleIcon class="w-5 h-5"></ArrowRightOnRectangleIcon>
+                    class="flex items-center h-full gap-2 px-3 py-2 mx-1 bg-sky-400 rounde-lg hover:bg-sky-400">
+                <p>Logout</p>
+                <ArrowRightOnRectangleIcon class="w-5 h-5"></ArrowRightOnRectangleIcon>
                 </Link>
+            </div>
+            <div class="lg:hidden">
+                <div class="relative flex flex-col justify-between">
+                    <button @click="showMenu = !showMenu"
+                        class="flex items-end justify-end w-full p-1 text-sm font-medium text-center text-white rounded-lg bg-sky-400 hover:bg-sky-500 focus:ring-4 focus:outline-none focus:ring-sky-300 dark:bg-sky-400 dark:hover:bg-sky-500 dark:focus:ring-sky-700"
+                        type="button">
+                        <Bars3Icon class="w-5 h-5" />
+                    </button>
+
+                    <!-- Dropdown menu -->
+                    <div v-if="showMenu" ref="target"
+                        class="absolute z-40 w-24 mt-12 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700">
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+                            <li v-for="option in menuOptions">
+                                <a :href="option.href"
+                                    class="flex justify-start p-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{{
+                                        option.name }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <DarkModeButton />
         </div>
@@ -46,17 +75,19 @@
 import { Link, router } from '@inertiajs/vue3';
 import ConnectWallet from "@/cardano/Components/ConnectWallet.vue";
 import DarkModeButton from '@/shared/components/DarkModeButton.vue';
-import { ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline';
+import { ArrowRightOnRectangleIcon, Bars3Icon } from '@heroicons/vue/24/outline';
 import { usePage } from "@inertiajs/vue3";
 import { useWalletStore } from '@/cardano/stores/wallet-store';
 import { useConfigStore } from '@/stores/config-store';
 import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
+import { onClickOutside } from '@vueuse/core';
 
 const user = usePage().props.auth.user;
 const walletStore = useWalletStore();
 
 let configStore = useConfigStore();
-let {config} = storeToRefs(configStore);
+let { config } = storeToRefs(configStore);
 
 withDefaults(defineProps<{
     canLogin?: boolean;
@@ -64,10 +95,23 @@ withDefaults(defineProps<{
 }>(), {
     pageData: null
 });
+
+let showMenu = ref(false);
+const menuOptions = [
+    { name: 'Petitions', href: '#', current: true },
+    { name: 'Ballots', href: '#open-ballots', current: false },
+    { name: 'Polls', href: '#', current: false },
+]
+
+
 function logout() {
     router.post(route('logout'));
     walletStore.disconnect();
     window.location.reload();
 }
+
+const target = ref(null);
+
+onClickOutside(target, (event) => showMenu.value = false);
 
 </script>

@@ -45,6 +45,7 @@ class SnapshotController extends Controller
      */
     public function edit(Request $request, Snapshot $snapshot): Response
     {
+        $snapshot->load(['ballot']);
         return Inertia::render('Auth/Snapshot/Edit', [
             'snapshot' => SnapshotData::from($snapshot),
         ]);
@@ -55,7 +56,7 @@ class SnapshotController extends Controller
      */
     public function store(SnapshotData $snapshotData): RedirectResponse
     {
-        $response = Gate::inspect('create', Snapshot::class);
+        $response = Gate::inspect('create', [Snapshot::class]);
 
         if ($response->allowed()) {
             $snapshot = new Snapshot;
@@ -99,10 +100,9 @@ class SnapshotController extends Controller
 
         if ($response->allowed()) {
             $snapshot->load('voting_powers');
-            $snapshot->voting_powers()->delete();
             $snapshot->delete();
 
-            return Redirect::back();
+            return to_route('admin.dashboard');
         } else {
             return Redirect::route('admin.snapshots.view', ['snapshots' => $snapshot]);
         }
@@ -208,7 +208,7 @@ class SnapshotController extends Controller
 
     public function votingPowers(Request $request, Snapshot $snapshot)
     {
-        $response = Gate::inspect('view', Snapshot::class);
+        $response = Gate::inspect('view', [Snapshot::class]);
         $page = $request->query('page') ?? 1;
         $perPage = $request->query('perPage') ?? 40;
         $sort = $request->query('sort');

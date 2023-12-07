@@ -33,7 +33,7 @@
                                         :class="[active ? 'bg-gray-50 dark:bg-gray-900' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300']"
                                     >Edit<span class="sr-only">, {{ ballot?.title }}</span></Link>
                                 </MenuItem>
-                                <MenuItem v-slot="{ active }">
+                                <MenuItem v-slot="{ active }" v-if="question.status !== 'published'">
                                     <a @click.prevent="deleteQuestion()"
                                        :class="[active ? 'bg-red-50 dark:bg-red-900 cursor-pointer' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300']"
                                     >

@@ -80,7 +80,7 @@ lucid:
   replicaCount: 1
 
 queue:
-  replicaCount: 1
+  replicaCount: 4
 
 replicaCount: 1
 

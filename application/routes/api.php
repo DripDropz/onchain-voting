@@ -2,12 +2,9 @@
 
 use App\Http\Controllers\Admin\BallotController;
 use App\Http\Controllers\Admin\SnapshotController;
-use App\Jobs\CreateVotingPowerSnapshotJob;
-use App\Models\Snapshot;
+use App\Http\Controllers\Admin\SnapshotImportController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\LazyCollection;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,30 +45,10 @@ Route::prefix('/ballots')->as('config.')->group(function () {
     })->name('app');
 });
 
-Route::post('/parse/csv', function (Request $request) {
-    $response = Gate::inspect('update', Snapshot::class);
-    LazyCollection::make(function () use ($request) {
-        $filePath = $request->file('file')->getRealPath();
-        $handle = fopen($filePath, 'r');
-
-        while (($line = fgetcsv($handle, null)) !== false) {
-          yield $line;
-        }
-
-        fclose($handle);
-      })
-      ->skip(1)
-      ->chunk(10000)
-      ->each(fn (LazyCollection $chunk)  =>
-        $chunk->each(
-            fn ($row)  => CreateVotingPowerSnapshotJob::dispatch($request->snapshot, $row[0], $row[1])
-        )
-      );
-
-      return Snapshot::whereHash($request->snapshot);
-
-    return json_encode($response);
-});
+Route::post('/parse/csv', [SnapshotImportController::class, 'parseCSV']);
+Route::get('/parsed/csv/{filename}', [SnapshotImportController::class, 'getParsedCSV']);
+Route::post('/parse/csv/cancel', [SnapshotImportController::class, 'cancelParsedCSV']);
+Route::post('/upload/csv/{snapshot}', [SnapshotImportController::class, 'uploadCsv']);
 
 Route::get('/snapshot', [SnapshotController::class, 'searchSnapshot'])->name('searchSnapshot');
 Route::post('/update-position', [BallotController::class, 'updatePosition'])->name('update.position');

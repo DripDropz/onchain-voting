@@ -45,6 +45,10 @@ migrate:
 watch:
 	$(sail) up -d && $(sail) npx vite
 
+.PHONY: vite
+vite:
+	$(sail) npx vite
+
 .PHONY: build
 build:
 	$(sail) npx vite build
@@ -61,6 +65,10 @@ artisan:
 test-backend:
 	$(sail) php ./vendor/bin/pest
 
+.PHONY: wasm
+wasm:
+	cp ./application/node_modules/lucid-cardano/esm/src/core/libs/cardano_message_signing/cardano_message_signing_bg.wasm application/node_modules/.vite/deps/cardano_message_signing_bg.wasm
+	cp ./application/node_modules/lucid-cardano/esm/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib_bg.wasm application/node_modules/.vite/deps/cardano_multiplatform_lib_bg.wasm
 
 .PHONY: down
 down:
@@ -88,3 +96,9 @@ rm:
 .PHONY: logs
 logs:
 	docker logs --follow chainvote.test
+
+.PHONY:deps
+deps:
+	cp -v application/node_modules/lucid-cardano/esm/src/core/libs/cardano_message_signing/cardano_message_signing_bg.wasm \
+	application/node_modules/lucid-cardano/esm/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib_bg.wasm \
+	application/node_modules/.vite/deps

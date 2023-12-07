@@ -35,7 +35,7 @@
             <div class="relative">
                 <div v-for="question in ballot.questions" :key="question?.hash">
                     <BallotQuestionCard :question="question" :ballot="ballot"
-                    :ballotResponse="ballotResponse$ || null" />
+                    :ballotResponse="question.type=='ranked'? null : ballotResponse$  " />
                 </div>
 
                 <ConnectWalletToVote v-if="!wallet" />

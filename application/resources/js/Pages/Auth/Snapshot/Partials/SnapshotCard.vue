@@ -99,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import {Link, router, usePage} from '@inertiajs/vue3';
+import {Link, router } from '@inertiajs/vue3';
 import { ref } from "vue";
 import SnapshotData = App.DataTransferObjects.SnapshotData;
 import DangerButton from '@/Components/DangerButton.vue';
@@ -118,11 +118,12 @@ let disabled = ref(false);
 
 let removeSnapshot = async () => {
     const data = {
-        snapshot: props.snapshot?.hash,
         ballot: props.ballot,
+        snapshot: props.snapshot?.hash,
+
     }
-    const res =await AdminBallotService.unlinkSnapshot(data);
-    if (res){
+    const res = await AdminBallotService.unlinkSnapshot(data);
+    if (res) {
         tipMessage.value = res;
         disabled.value = true;
     } else{
@@ -131,4 +132,3 @@ let removeSnapshot = async () => {
     }
 }
 </script>
-../../Ballot/Services/admin-ballot-service

@@ -23,6 +23,7 @@ class Snapshot extends Model implements Auditable, HasUser
         'ballot_id',
         'status',
         'type',
+        'metadata'
     ];
 
     protected $with = [
@@ -32,6 +33,10 @@ class Snapshot extends Model implements Auditable, HasUser
     protected $appends = [
         'hash',
         'has_voting_powers',
+    ];
+
+    protected $casts = [
+        'metadata' => 'array'
     ];
 
     public function ballot(): BelongsTo

@@ -10,6 +10,7 @@ import BallotPolicies from './Partials/BallotPolicies.vue';
 
 defineProps<{
     ballot: BallotData;
+    addresses: [];
 }>();
 </script>
 
@@ -37,11 +38,11 @@ defineProps<{
 
 
                 <div class="p-4 bg-indigo-200 shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
-                    <BallotPolicies :ballot="ballot" />
+                    <BallotPolicies :ballot="ballot" :address="addresses"/>
                 </div>
 
                 <div class="p-4 bg-indigo-200 shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
-                    <DeleteBallotForm class="max-w-xl" />
+                    <DeleteBallotForm class="max-w-xl" :ballot="ballot" />
                 </div>
             </div>
         </div>

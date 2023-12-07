@@ -2,6 +2,7 @@ import {
     Controller,
     HttpException,
     HttpStatus,
+    Inject,
     Post,
     Req,
 } from '@nestjs/common';
@@ -14,29 +15,33 @@ import {
 } from 'lucid-cardano';
 import { Request } from 'express';
 import generatePolicy from '../../utils/generatePolicy.js';
-import getConfigs from '../../utils/getConfigs.js';
+import { AppConfigService } from '../../services/app-config.service.js';
 
 @Controller('vote')
 export class VoteController {
+  public constructor(
+    @Inject(AppConfigService) private readonly configService: AppConfigService,
+  ) {}
+
     @Post('mint')
     public async mintNft(@Req() request: Request) {
       if (!request?.body?.votingSeed || !request?.body?.registrationSeed) {
         throw new HttpException('Invalid Wallet Data. ', HttpStatus.NOT_ACCEPTABLE);
       }
-      const [voter] = await getConfigs(request);
+      const [voter] = await this.configService.getConfigs(request);
 
       const registration: {policyId: string, registration: UTxO} = request?.body?.registration;
       const assets = Object.keys(registration?.registration?.assets);
       const registrationToken = assets.find((asset) => asset.includes(registration.policyId));
 
       // Registration wallet
-      const [registrationMinter] = await getConfigs(request);
+      const [registrationMinter] = await this.configService.getConfigs(request);
       registrationMinter.selectWalletFromSeed(request?.body?.registrationSeed);
       const registrationPolicy = await generatePolicy(registrationMinter);
 
       // Voting wallet
       const assetName = request?.body?.assetName;
-      const [votingMinter] = await getConfigs(request);
+      const [votingMinter] = await this.configService.getConfigs(request);
       votingMinter.selectWalletFromSeed(request?.body?.votingSeed);
       const votingPolicy = await generatePolicy(votingMinter);
       const votingPolicyId: PolicyId = votingMinter.utils.mintingPolicyToId(votingPolicy);
@@ -84,10 +89,10 @@ export class VoteController {
 
     @Post('submit')
     public async submitRegistration(@Req() request: Request) {
-      const [votingMinter] = await getConfigs(request);
+      const [votingMinter] = await this.configService.getConfigs(request);
       votingMinter.selectWalletFromSeed(request?.body?.votingSeed);
 
-      const [registrationMinter] = await getConfigs(request);
+      const [registrationMinter] = await this.configService.getConfigs(request);
       registrationMinter.selectWalletFromSeed(request?.body?.registrationSeed);
 
       // get registration signature for burn tx

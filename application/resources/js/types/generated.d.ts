@@ -28,10 +28,11 @@ hash: string | null;
 created_at?: string | null;
 ballot: App.DataTransferObjects.BallotData | null;
 question: App.DataTransferObjects.QuestionData | null;
-choice: App.DataTransferObjects.QuestionChoiceData;
+choice: App.DataTransferObjects.QuestionChoiceData | null;
 user: App.DataTransferObjects.UserData | null;
 voting_power: App.DataTransferObjects.VotingPowerData | null;
 submit_tx: string | null;
+rank: number | null;
 };
 export type CardanoKey = {
 type: string;
@@ -67,6 +68,7 @@ type: string;
 user: App.DataTransferObjects.UserData | null;
 ballot: App.DataTransferObjects.BallotData | null;
 choices: Array<App.DataTransferObjects.QuestionChoiceData> | null;
+ranked_user_responses: Array<App.DataTransferObjects.BallotResponseData> | null;
 choices_tally: Array<any> | null;
 };
 export type RegistrationData = {
@@ -92,6 +94,7 @@ type?: string | null;
 status: string;
 voting_powers?: App.DataTransferObjects.VotingPowerData | null;
 has_voting_powers: boolean | null;
+metadata: Array<any> | null;
 };
 export type TokenData = {
 hash: string;

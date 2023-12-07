@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\votingPowersImportedEvent;
 use App\Models\Policy;
 use App\Models\Snapshot;
+use App\Listeners\PublishSnapshotListener;
 use App\Observers\SnapshotObserver;
 use App\Observers\PolicyObserver;
 use Illuminate\Auth\Events\Registered;
@@ -21,6 +23,9 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        votingPowersImportedEvent::class => [
+            PublishSnapshotListener::class
+        ]
     ];
 
     /**

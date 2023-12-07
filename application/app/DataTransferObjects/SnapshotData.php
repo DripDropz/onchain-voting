@@ -53,6 +53,8 @@ class SnapshotData extends Data
         public ?VotingPowerData $voting_powers,
 
         public ?bool $has_voting_powers,
+
+        public ?array $metadata,
     ) {
     }
 

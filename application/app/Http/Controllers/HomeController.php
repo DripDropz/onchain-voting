@@ -16,6 +16,7 @@ class HomeController extends Controller
             Ballot::with([
                 'questions.choices',
                 'user_response.choice',
+                'questions.ranked_user_responses.choice'
             ])->orderBy('started_at')->limit(4)->published()->get()
         );
 

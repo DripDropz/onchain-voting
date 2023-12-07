@@ -10,6 +10,7 @@ use App\Enums\PolicyTypeEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Integrations\Lucid\LucidConnector;
+use App\Http\Integrations\Lucid\Requests\GetAddress;
 use App\Http\Integrations\Lucid\Requests\GetPolicy;
 use App\Http\Integrations\Lucid\Requests\GetPolicyId;
 use App\Models\Ballot;
@@ -56,11 +57,11 @@ class BallotController extends Controller
      */
     public function edit(Request $request, Ballot $ballot): Response
     {
-        $ballot->load(['questions.choices', 'snapshot','policies']);
+        $ballot->load(['questions.choices', 'snapshot', 'policies']);
 
         return Inertia::render('Auth/Ballot/Edit', [
             'ballot' => BallotData::from($ballot),
-
+            'addresses' => $this->policyAddress($ballot),
         ]);
     }
 
@@ -285,22 +286,6 @@ class BallotController extends Controller
         }
     }
 
-    public function unLinkSnapShot(Ballot $ballot, Snapshot $snapshot)
-    {
-        $currentDate = Carbon::now();
-        $startDate = Carbon::parse($ballot->started_at);
-
-        if ($currentDate->greaterThanOrEqualTo($startDate)) {
-            throw new \Exception('Cannot remove snapshot, the ballot has already started!');
-        }
-
-        try {
-            $snapshot->ballot_id = null;
-            $snapshot->save();
-        } catch (\Exception $e) {
-            throw $e;
-        }
-    }
 
     /**
      * Store a newly created Ballot in storage.
@@ -314,7 +299,7 @@ class BallotController extends Controller
         $choice->save();
     }
 
-    public function storeEditQuestionChoice(QuestionChoiceData $choiceData, Request $request,)
+    public function storeEditQuestionChoice(QuestionChoiceData $choiceData, Request $request)
     {
         $choice = BallotQuestionChoice::byHash($request->choice);
 
@@ -322,6 +307,12 @@ class BallotController extends Controller
             'title' => $choiceData->title,
             'description' => $choiceData->description,
         ]);
+    }
+
+    public function deleteQuestionChoice(Request $request)
+    {
+        $choice = BallotQuestionChoice::byHash($request->choice);
+        $choice->delete();
     }
 
     public function updatePosition(Request $request)
@@ -341,13 +332,13 @@ class BallotController extends Controller
         // @todo add similar gate for policies
         // $response = Gate::inspect('create', Policy::class);
         // if ($response->allowed()) {
-            return Inertia::modal('Auth/Policies/Create')
-                ->with([
-                    'ballot' => BallotData::from($ballot),
-                ])
-                ->baseRoute('admin.ballots.edit', [
-                    'ballot' => $ballot->hash,
-                ]);
+        return Inertia::modal('Auth/Policies/Create')
+            ->with([
+                'ballot' => BallotData::from($ballot),
+            ])
+            ->baseRoute('admin.ballots.edit', [
+                'ballot' => $ballot->hash,
+            ]);
         // } else {
         //     return Redirect::back()->withErrors(['error' => 'Not authorized to create question']);
         // }
@@ -355,7 +346,6 @@ class BallotController extends Controller
 
     public function editPolicy(Request $request, Ballot $ballot)
     {
-
     }
 
     /**
@@ -383,7 +373,7 @@ class BallotController extends Controller
         if ($policyResponse->failed()) {
             DB::rollBack();
             return Redirect::back()
-            ->withErrors(['error' => $policyResponse->object()?->message]);
+                ->withErrors(['error' => $policyResponse->object()?->message]);
         }
 
         $policy = new Policy;
@@ -393,7 +383,7 @@ class BallotController extends Controller
         $policy->model_type = Ballot::class;
         $policy->context = $data['context'];
         $policy->save();
-       
+
         // creaet wallet that will be the signer on policy
         $wallet = new Wallet();
         $wallet->user_id = Auth::id();
@@ -418,7 +408,8 @@ class BallotController extends Controller
             $getPolicyIdRequest,
             2,
             300,
-            fn ($exception) => $exception instanceof FatalRequestException);
+            fn ($exception) => $exception instanceof FatalRequestException
+        );
         $policy->policy_id = $response->body();
         $policy->save();
 
@@ -426,13 +417,63 @@ class BallotController extends Controller
         return Redirect::back();
     }
 
-    public function updatePolicy(Request $request, Ballot $ballot)
+    public function policyAddress($ballot)
     {
+        $firstPolicySeed = null;
+        $secondPolicySeed = null;
+        $registrationPolicyAddress = null;
+        $votingPolicyAddress = null;
 
+        foreach ($ballot->policies as $index => $policy) {
+            $seed = $policy->wallet->passphrase ?? null;
+
+            if ($index === 0) {
+                $firstPolicySeed = $seed;
+            } elseif ($index === 1) {
+                $secondPolicySeed = $seed;
+            }
+
+            if ($index >= 1) {
+                break;
+            }
+        }
+        if ($firstPolicySeed) {
+            $policyAddress = new GetAddress;
+            $policyAddress->body()->merge([
+                'seed' => $firstPolicySeed
+            ]);
+            $lucid = new LucidConnector;
+            $policyResponse = $lucid->send($policyAddress);
+
+            $registrationPolicyAddress = $policyResponse->json()['address'];
+        }
+
+        if ($secondPolicySeed) {
+            $policyAddress = new GetAddress;
+            $policyAddress->body()->merge([
+                'seed' => $secondPolicySeed
+            ]);
+            $lucid = new LucidConnector;
+            $policyResponse = $lucid->send($policyAddress);
+
+            $votingPolicyAddress = $policyResponse->json()['address'];
+        }
+
+        $result = [
+            'registrationPolicyAddress' => $registrationPolicyAddress,
+            'votingPolicyAddress' => $votingPolicyAddress,
+        ];
+        return $result;
+    }
+
+    public function addImageLink(Request $request, Ballot $ballot)
+    {
+        $registrationPolicy = $ballot->registration_policy()->first();
+        $registrationPolicy->image_link = $request->link;
+        $registrationPolicy->save();
     }
 
     public function destroyPolicy(Request $request, Ballot $ballot)
     {
-
     }
 }

@@ -18,7 +18,7 @@
                     :question="question" />
             </div>
 
-            <span  v-if="ballot && !ballot?.live">
+            <span  v-if="ballot && !ballot?.live && questions.length === 0">
                 <NewBallotQuestionButton class="w-96" :ballot="ballot" />
             </span>
         </div>

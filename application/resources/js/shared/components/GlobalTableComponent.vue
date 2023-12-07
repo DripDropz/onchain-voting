@@ -8,12 +8,12 @@
                 v-model="selectedSortRef"
                 :options="sorts"
                 :classes="{
-                    container: 'multiselect border-0 p-0.5 flex-wrap rounded-sm text-gray-900 dark:text-gray-100 bg-gray-200 dark:bg-gray-900',
+                    container: 'multiselect border-0 p-0.5 flex-wrap rounded-sm text-gray-900 dark:text-gray-100 bg-indigo-100 dark:bg-gray-900',
                     containerActive: 'shadow-none shadow-transparent box-shadow-none',
                     option: 'border-0 px-4 py-2 bg-gray-0 dark:bg-gray-800',
-                    optionSelected: 'bg-gray-200 dark:text-gray-100 dark:bg-gray-900',
-                    optionSelectedPointed: 'pointer-events-none  bg-gray-200 dark:bg-gray-900',
-                    optionPointed: 'bg-gray-200 dark:bg-gray-900'
+                    optionSelected: 'bg-indigo-100 dark:text-gray-100 dark:bg-gray-900',
+                    optionSelectedPointed: 'pointer-events-none  bg-indigo-100 dark:bg-gray-900',
+                    optionPointed: 'bg-indigo-100 dark:bg-gray-900'
                 }"
             />
         </div>

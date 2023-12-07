@@ -52,6 +52,7 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
                 // CRUDs
                 Route::post('/create', [BallotController::class, 'storeQuestionChoice'])->name('store');
                 Route::post('/edit', [BallotController::class, 'storeEditQuestionChoice'])->name('edit');
+                Route::delete('/delete', [BallotController::class, 'deleteQuestionChoice'])->name('delete');
                 Route::patch('/{choice}/update', [BallotController::class, 'updateQuestionChoice'])
                     ->name('update');
             });
@@ -68,7 +69,7 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
             Route::patch('/{policy}/update', [BallotController::class, 'updatePolicy'])
                 ->name('update');
             Route::delete('/{policy}/delete', [BallotController::class, 'destroyPolicy'])->name('destroy');
-
+            Route::post('/image-link', [BallotController::class, 'addImageLink'])->name('imageLink');
         });
     });
 
@@ -115,7 +116,7 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
     // Utilities
     Route::get('/enums/{collection}', function () {
         $collection = request()->route('collection');
-        $collection = 'App\\Enums\\'.Str::studly($collection).'Enum';
+        $collection = 'App\\Enums\\' . Str::studly($collection). 'Enum';
 
         return array_column($collection::cases(), 'value', 'name');
     })->name('enums');

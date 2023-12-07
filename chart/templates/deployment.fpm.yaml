@@ -51,13 +51,6 @@ spec:
 
             php-fpm --allow-to-run-as-root -y /etc/php-fpm/php-fpm.conf
         lifecycle:
-          postStart:
-            exec:
-              command: [
-                "/bin/sh",
-                "-c",
-                "cp /var/{{ $.Chart.Name }}-app-secrets/.env /var/www/.env"
-              ]
           preStop:
             exec:
               command: ["/bin/sleep","5"]
@@ -68,6 +61,9 @@ spec:
           requests:
             cpu: 120m
             memory: 1024Mi
+        envFrom:
+          - secretRef:
+              name: "{{ $.Chart.Name }}-secrets"
         env:
           - name: CONTAINER_ROLE
             value: app
@@ -86,9 +82,6 @@ spec:
             containerPort: 9000
             protocol: TCP
         volumeMounts:
-          - name: "{{ $.Chart.Name }}-app-secrets-volume"
-            readOnly: true
-            mountPath: "/var/{{ $.Chart.Name }}-app-secrets"
           - name: "{{ .Values.namespace }}-web-storage-pv"
             mountPath: {{ .Values.persistence.mountPath }}
             subPath: "storage"
@@ -117,6 +110,3 @@ spec:
         - name: "{{ .Values.namespace }}-web-storage-pv"
           persistentVolumeClaim:
             claimName: "{{ .Values.namespace }}-web-storage-pvc"
-        - name: "{{ $.Chart.Name }}-app-secrets-volume"
-          secret:
-            secretName: "dotfile-{{ $.Chart.Name }}-secrets"

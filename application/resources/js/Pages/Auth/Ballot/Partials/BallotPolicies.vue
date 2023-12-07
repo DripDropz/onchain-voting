@@ -14,7 +14,8 @@
                 <div class="p-16 border border-gray-300 rounded-l-lg dark:border-gray-700">
                     <div class="flex flex-row flex-wrap w-full gap-4">
                         <div v-if="registrationPolicy">
-                            <BallotPolicyCard :policy="registrationPolicy">
+                            <BallotPolicyCard :policy="registrationPolicy" :address="address['registrationPolicyAddress']"
+                                :ballot="ballot">
                                 Registration Policy
                             </BallotPolicyCard>
                         </div>
@@ -23,10 +24,10 @@
                         </span>
                     </div>
                 </div>
-                <div  class="p-16 -ml-px border border-gray-300 rounded-r-lg dark:border-gray-700">
+                <div class="p-16 -ml-px border border-gray-300 rounded-r-lg dark:border-gray-700">
                     <div class="flex flex-row flex-wrap w-full gap-4">
                         <div v-if="votingPolicy">
-                            <BallotPolicyCard :policy="votingPolicy">
+                            <BallotPolicyCard :policy="votingPolicy" :address="address['votingPolicyAddress']">
                                 Voting Policy
                             </BallotPolicyCard>
                         </div>
@@ -49,16 +50,17 @@ import BallotPolicyCard from "./BallotPolicyCard.vue";
 
 const props = defineProps<{
     ballot: BallotData;
+    address: [];
 }>();
 
-let registrationPolicy: ComputedRef<PolicyData|null> = computed(() => {
+let registrationPolicy: ComputedRef<PolicyData | null> = computed(() => {
     if (props.ballot?.policies?.length === 1 || props.ballot?.policies?.length === 2)
         return props.ballot?.policies[0];
     return null;
 });
 
-let votingPolicy: ComputedRef<PolicyData|null> = computed(() => {
-    if ( props.ballot.policies?.length == 2)
+let votingPolicy: ComputedRef<PolicyData | null> = computed(() => {
+    if (props.ballot.policies?.length == 2)
         return props.ballot?.policies[1];
     return null;
 });
