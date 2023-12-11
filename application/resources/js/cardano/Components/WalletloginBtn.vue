@@ -3,7 +3,7 @@
         <a v-show="walletData?.name"
            href="#"
            @click.prevent="loginUser()"
-           class="flex items-center justify-center gap-3 px-4 py-2 mx-auto text-sm font-medium text-white bg-indigo-700 rounded-lg shadow xl:text-md 2xl:text-lg ">
+           class="flex items-center justify-center gap-3 px-4 py-2 mx-auto text-sm font-medium text-white bg-sky-700 rounded-lg shadow xl:text-md 2xl:text-lg ">
 
            <WalletLogo :wallet="walletData" />
 

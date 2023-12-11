@@ -8,12 +8,12 @@
                 v-model="selectedSortRef"
                 :options="sorts"
                 :classes="{
-                    container: 'multiselect border-0 p-0.5 flex-wrap rounded-sm text-gray-900 dark:text-gray-100 bg-indigo-100 dark:bg-gray-900',
+                    container: 'multiselect border-0 p-0.5 flex-wrap rounded-sm text-gray-900 dark:text-gray-100 bg-sky-100 dark:bg-gray-900',
                     containerActive: 'shadow-none shadow-transparent box-shadow-none',
                     option: 'border-0 px-4 py-2 bg-gray-0 dark:bg-gray-800',
-                    optionSelected: 'bg-indigo-100 dark:text-gray-100 dark:bg-gray-900',
-                    optionSelectedPointed: 'pointer-events-none  bg-indigo-100 dark:bg-gray-900',
-                    optionPointed: 'bg-indigo-100 dark:bg-gray-900'
+                    optionSelected: 'bg-sky-100 dark:text-gray-100 dark:bg-gray-900',
+                    optionSelectedPointed: 'pointer-events-none  bg-sky-100 dark:bg-gray-900',
+                    optionPointed: 'bg-sky-100 dark:bg-gray-900'
                 }"
             />
         </div>
@@ -41,7 +41,7 @@
     </table>
     <slot name="footer">
         <div class="flex flex-row items-center justify-between w-full pt-4">
-            <div class="border-2 border-indigo-600">
+            <div class="border-2 border-sky-600">
                 <p class="p-4 text-sm text-gray-900 dark:text-gray-300">
                     {{ `Showing ${props.pagination.from} to ${(props.pagination.to < props.pagination.total) ? props.pagination.to : props.pagination.total} of ${props.pagination.total} results` }}
                 </p>

@@ -13,7 +13,7 @@
                     </div>
                 </div>
                 <Link :href="route('ballot.view', {ballot: ballot.hash})"
-                      class="rounded-full bg-indigo-100 px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm flex flex-row gap-2 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ml-auto">
+                      class="rounded-full bg-sky-100 px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm flex flex-row gap-2 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ml-auto">
                     <BallotStatusBadge :ballot="ballot"></BallotStatusBadge>
                     <span>
                         {{ballot?.live ? 'Go Vote' : 'View'}}
@@ -21,13 +21,16 @@
                 </Link>
             </div>
         </div>
-        <div :class="{
+        <div class="text-white" :class="{
                 'pt-16': size === 'full'
              }">
             <p class="text-gray-300">Ballot</p>
-            <h3 class="flex flex-row items-center gap-2 title3 font-display">
-                <span>{{ballot.title}}</span>
-                <Line></Line>
+            <h3 class="flex flex-row items-center gap-2 font-display" :class="{
+                'title3': ['full', 'drip'].includes(size),
+                'title4': size === 'mini',
+            }">
+                <span class="line-clamp-2">{{ballot.title}}</span>
+                <Line :classes="['bg-white']"></Line>
             </h3>
         </div>
     </div>

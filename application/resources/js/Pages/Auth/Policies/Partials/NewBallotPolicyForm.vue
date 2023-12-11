@@ -6,7 +6,7 @@
 
         <div v-if="(creatingWallet || importWallet)" >
            <span class="flex my-2 ">
-            <button @click.prevent ="changeOption" class="flex flex-row items-center justify-center font-bold leading-6 text-indigo-600 rounded-md hover:text-indigo-500 xl:text-xl">
+            <button @click.prevent ="changeOption" class="flex flex-row items-center justify-center font-bold leading-6 text-sky-600 rounded-md hover:text-sky-500 xl:text-xl">
                 {{ creatingWallet ? 'Import' : 'Create' }}
             </button>
             <span class="ml-2"> Instead.</span>

@@ -39,6 +39,7 @@ class Ballot extends Model implements Auditable, HasUser
     protected $appends = [
         'hash',
         'live',
+        'open',
         'publishable',
     ];
 
@@ -61,6 +62,13 @@ class Ballot extends Model implements Auditable, HasUser
     {
         return Attribute::make(
             get: fn () => ($this->started_at?->lte(Carbon::now()) && $this->status == 'published')
+        );
+    }
+
+    public function open(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => Carbon::now()->lte($this->ended_at)
         );
     }
 
@@ -116,9 +124,9 @@ class Ballot extends Model implements Auditable, HasUser
         );
     }
 
-    public function user_response(): HasOne
+    public function user_responses(): HasMany
     {
-        return $this->responses()->one()->ofMany()->where(
+        return $this->responses()->where(
             'user_id',
             auth()?->user()?->getAuthIdentifier()
         );

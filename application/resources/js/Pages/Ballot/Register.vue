@@ -1,6 +1,6 @@
 <template>
     <ModalRoute max-width-class="max-w-xl">
-        <div class="container left-0 w-full h-full p-8 bg-slate-50 dark:bg-indigo-900 ">
+        <div class="container left-0 w-full h-full p-8 bg-slate-50 dark:bg-sky-900 ">
             <div class="flex flex-col items-center justify-center gap-3" v-if="registrationComplete">
                 <h2 class="mb-5 title3">
                     Registration complete!
@@ -42,7 +42,7 @@
                         NFT will need to be in your wallet to vote.
                     </p>
                     <div @click="registerToVote"
-                        class="flex flex-col items-center justify-center w-full gap-4 p-4 border border-indigo-400 border-dashed rounded-lg hover:cursor-pointer hover:border-white">
+                        class="flex flex-col items-center justify-center w-full gap-4 p-4 border border-sky-400 border-dashed rounded-lg hover:cursor-pointer hover:border-white">
                         <SignalIcon class="w-16 h-16" />
                         <div class="text-xl lg:text-2xl xl:text-3xl">
                             Register

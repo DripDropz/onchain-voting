@@ -22,7 +22,7 @@
                                 leave-from-class="transform scale-100 opacity-100"
                                 leave-to-class="transform scale-95 opacity-0">
                         <MenuItems
-                            class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-indigo-100 dark:bg-gray-700 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                            class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-sky-100 dark:bg-gray-700 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                             <MenuItem v-slot="{ active }">
                                 <Link :href="route('admin.snapshots.view', snapshot.hash)"
                                       :class="[active ? 'bg-gray-50 dark:bg-gray-900' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300']"
@@ -83,7 +83,7 @@
             </dl>
         </li>
 
-        <li class="py-16 overflow-hidden border border-gray-400 border-dashed rounded-xl dark:border-gray-700 hover:border-indigo-600">
+        <li class="py-16 overflow-hidden border border-gray-400 border-dashed rounded-xl dark:border-gray-700 hover:border-sky-600">
             <Link as="button" :href="route('admin.snapshots.create')" class="flex flex-col items-center justify-center w-full h-full gap-2 px-6 py-4 leading-6 text-gray-500 text-md xl:text-xl dark:text-gray-400">
                 <PlusIcon class="w-6 h-6" />
                 <span>Create Snapshot</span>

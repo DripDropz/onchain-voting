@@ -6,7 +6,6 @@ use App\DataTransferObjects\BallotData;
 use App\DataTransferObjects\QuestionChoiceData;
 use App\DataTransferObjects\QuestionData;
 use App\Enums\ModelStatusEnum;
-use App\Enums\PolicyTypeEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Integrations\Lucid\LucidConnector;
@@ -21,7 +20,6 @@ use App\Models\Snapshot;
 use App\Models\Wallet;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -459,11 +457,10 @@ class BallotController extends Controller
             $votingPolicyAddress = $policyResponse->json()['address'];
         }
 
-        $result = [
+        return [
             'registrationPolicyAddress' => $registrationPolicyAddress,
             'votingPolicyAddress' => $votingPolicyAddress,
         ];
-        return $result;
     }
 
     public function addImageLink(Request $request, Ballot $ballot)
@@ -471,6 +468,7 @@ class BallotController extends Controller
         $registrationPolicy = $ballot->registration_policy()->first();
         $registrationPolicy->image_link = $request->link;
         $registrationPolicy->save();
+        return true;
     }
 
     public function destroyPolicy(Request $request, Ballot $ballot)

@@ -22,10 +22,8 @@ let {isDarkMode} = storeToRefs(configStore);
 </script>
 
 <template>
-    <div :class="{'dark': isDarkMode }">
-        <div class="min-h-screen bg-white dark:bg-gray-900">
-
-            <GlobalAlertComponent/>
+    <div class="h-full overflow-y-auto" :class="{'dark': isDarkMode }">
+        <div class="min-h-screen bg-white dark:bg-gray-900 h-full">
 
             <Head :title="page" />
 
@@ -44,6 +42,10 @@ let {isDarkMode} = storeToRefs(configStore);
                 <div class="relative z-50 w-full text-right border-t border-slate-300 mt-auto">
                     <Footer :pageData="pageData" />
                 </div>
+            </div>
+
+            <div class="fixed top-0 left-0 z-50 flex items-end justify-end w-full h-full pointer-events-none">
+                <GlobalAlertComponent />
             </div>
 
           <Modal/>

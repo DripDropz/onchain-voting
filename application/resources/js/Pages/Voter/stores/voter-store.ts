@@ -1,9 +1,9 @@
 import {defineStore, storeToRefs} from 'pinia';
 import {ref, Ref} from 'vue';
 import humanNumber from "@/utils/human-number";
-import { useWalletStore } from '@/cardano/stores/wallet-store';
+import {useWalletStore} from '@/cardano/stores/wallet-store';
 import WalletService from '@/cardano/Services/wallet-service';
-import { PolicyId, UTxO } from 'lucid-cardano';
+import {PolicyId, UTxO} from 'lucid-cardano';
 import axios from 'axios';
 import BallotService from '@/Pages/Ballot/Services/ballot-service';
 
@@ -14,18 +14,17 @@ export const useVoterStore = defineStore('voter', () => {
 
     function registeredForBallot(ballotHash: string) {
         return !!voterRegistrations.value[ballotHash];
-    };
+    }
 
     function ballotRegistration(ballotHash: string) {
         return voterRegistrations.value[ballotHash];
-    };
+    }
 
     async function loadVotingPower(voterId: string, ballotHash: string) {
         if (voterPowers.value[ballotHash]) {
             return;
         }
-        const voterPower = await BallotService.loadVotingPower(voterId, ballotHash);
-        voterPowers.value[ballotHash] = voterPower;
+        voterPowers.value[ballotHash] = await BallotService.loadVotingPower(voterId, ballotHash);
     }
 
     async function loadRegistration(ballotHash: string) {
@@ -58,8 +57,7 @@ export const useVoterStore = defineStore('voter', () => {
         if (voterPowers.value[ballotHash]) {
             return;
         }
-        const voterPower = await BallotService.loadVotingPower(voterId, ballotHash);
-        voterPowers.value[ballotHash] = voterPower;
+        voterPowers.value[ballotHash] = await BallotService.loadVotingPower(voterId, ballotHash);
     }
 
     const userVotingPower = function(ballotHash: string){

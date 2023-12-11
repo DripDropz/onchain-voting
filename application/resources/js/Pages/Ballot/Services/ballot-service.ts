@@ -20,31 +20,20 @@ export default class BallotService {
 
     static async saveBallotResponse(
         voterId: string,
-        payload: { choice_hash: string; ballot_hash: string } = null,
-        rankedChoices: { choices: []; ballot_hash: string } = null
+        choices: string[],
+        ballot: string
     ) {
         try {
-            let response;
-            if (payload) {
-                response = await axios.post(
-                    route("voters.ballot-responses.save", { voterId }),
-                    payload
-                );
-                return response.data;
-            } else {
-                response = await axios.post(
-                    route("voters.ballot-responses.save", { voterId }),
-                    rankedChoices
-                );
-                return response.data;
-            }
-
+            return await axios.post(
+                route("voters.ballot-responses.save", { voterId }),
+                { choices, ballot}
+            );
         } catch (error) {
             console.log(error);
         }
     }
 
-    static async submitVote(ballotHash: string, choices: string[]) {
+    static async submitVote(ballotHash: string) {
         try {
             // collect registration token
             const voterStore = useVoterStore();
@@ -69,7 +58,6 @@ export default class BallotService {
                     { ballot: ballotHash }
                 ),
                 {
-                    choices,
                     registration,
                     utxos: [...utxos],
                 }

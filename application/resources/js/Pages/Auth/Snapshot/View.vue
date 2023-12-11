@@ -12,11 +12,11 @@
 
         <div class="py-12">
             <div class="mx-auto space-y-6 max-w-7xl sm:px-6 lg:px-8">
-                <div class="p-4 bg-indigo-200 shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
+                <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
                     <SnapshotCard :snapshot="snapshot" class="max-w-xl" />
                 </div>
 
-                <div class="p-4 bg-indigo-200 shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
+                <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
                     <VotingPowerList v-if="votingPowers?.length > 0" :snapshot="snapshot"/>
                     <VotingPowerImporterComponent v-else class="max-w-xl" :snapshot="snapshot"/>
                 </div>

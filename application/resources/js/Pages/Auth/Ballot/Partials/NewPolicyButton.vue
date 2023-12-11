@@ -1,6 +1,6 @@
 <template>
     <div
-        class="py-16 overflow-hidden border border-gray-300 border-dashed rounded-xl dark:border-gray-700 hover:border-indigo-600">
+        class="py-16 overflow-hidden border border-gray-300 border-dashed rounded-xl dark:border-gray-700 hover:border-sky-600">
         <Link as="button" :href="route('admin.ballots.policies.create', {'ballot': ballot.hash})"
               class="flex flex-col items-center justify-center w-full h-full gap-2 px-6 py-4 leading-6 text-gray-500 text-md xl:text-xl dark:text-gray-400">
             <PlusIcon class="w-6 h-6"/>

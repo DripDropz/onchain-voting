@@ -7,13 +7,13 @@
     <ul role="list" class="px-4 mt-8">
       <li v-for="(event, eventIdx) in timeline">
         <div class="relative pb-8">
-          <span v-if="eventIdx !== timeline.length - 1" class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-indigo-600"
+          <span v-if="eventIdx !== timeline.length - 1" class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-sky-600"
             aria-hidden="true" />
           <div class="relative flex space-x-3">
             <div>
               <span class="flex items-center justify-center w-8 h-8 rounded-full ring-2 ring-white" :class="{
                 'bg-green-500': event.stepComplete,
-                'bg-indigo-600': timeline?.[eventIdx - 1]?.stepComplete && !event.stepComplete || !timeline?.[eventIdx - 1]?.stepComplete && eventIdx == 0,
+                'bg-sky-600': timeline?.[eventIdx - 1]?.stepComplete && !event.stepComplete || !timeline?.[eventIdx - 1]?.stepComplete && eventIdx == 0,
                 'bg-gray-500': !timeline?.[eventIdx - 1]?.stepComplete && !event.stepComplete && eventIdx != 0
               }">
                 <HandThumbUpIcon v-if="event.stepComplete" class="w-5 h-5" aria-hidden="true" />
@@ -52,7 +52,7 @@
         <span class="mr-3 text-xs text-gray-500">- Step complete</span>
       </div>
       <div class="flex flex-row items-center">
-        <div class="w-2 h-2 bg-indigo-600" />
+        <div class="w-2 h-2 bg-sky-600" />
         <span class="mr-3 text-xs text-gray-500">- Next Step</span>
       </div>
       <div class="flex flex-row items-center">

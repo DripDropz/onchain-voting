@@ -77,7 +77,7 @@ function submit() {
 <style scoped>
 .drag {
      @apply bg-gray-900;
-     @apply dark:bg-indigo-600;
+     @apply dark:bg-sky-600;
 
 }
 .ghost {

@@ -74,21 +74,23 @@ class Question extends Model implements Auditable, HasUser
                     ->pluck('title')
                     ->toArray();
 
-                $choices = BallotResponse::where('ballot_responses.question_id', $this->id)
-                    ->join('ballot_question_choices', 'ballot_question_choices.id', '=', 'ballot_responses.ballot_question_choice_id')
-                    ->groupBy('ballot_question_choices.id', 'ballot_question_choices.title')
-                    ->select('ballot_question_choices.title', DB::raw('COUNT(*) as count'))
-                    ->pluck('count', 'title')
-                    ->toArray();
+                return [];
 
-                $choicesWithCounts = array_map(function ($choice) use ($choices) {
-                    return [
-                        'title' => $choice,
-                        'count' => $choices[$choice] ?? 0,
-                    ];
-                }, $allChoices);
-
-                return $choicesWithCounts;
+//                $choices = BallotResponse::where('ballot_responses.question_id', $this->id)
+//                    ->join('ballot_question_choices', 'ballot_question_choices.id', '=', 'ballot_responses.ballot_question_choice_id')
+//                    ->groupBy('ballot_question_choices.id', 'ballot_question_choices.title')
+//                    ->select('ballot_question_choices.title', DB::raw('COUNT(*) as count'))
+//                    ->pluck('count', 'title')
+//                    ->toArray();
+//
+//                $choicesWithCounts = array_map(function ($choice) use ($choices) {
+//                    return [
+//                        'title' => $choice,
+//                        'count' => $choices[$choice] ?? 0,
+//                    ];
+//                }, $allChoices);
+//
+//                return $choicesWithCounts;
             }
         );
     }

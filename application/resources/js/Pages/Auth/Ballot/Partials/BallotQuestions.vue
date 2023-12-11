@@ -9,18 +9,17 @@
             </p>
         </div>
 
-        <div class="flex flex-row flex-wrap w-full gap-4">
-            <div class="w-128" v-if="!!questions?.length">
+        <div class="grid grid-cols-1 lg:grid-cols-2 w-full gap-6">
+            <div class="w-full" v-if="!!questions?.length"  v-for="question in questions">
                 <BallotQuestionCard
-                    v-for="question in questions"
                     :key="question.hash"
                     :ballot="ballot"
                     :question="question" />
             </div>
 
-            <span  v-if="ballot && !ballot?.live && questions.length === 0">
+            <div>
                 <NewBallotQuestionButton class="w-96" :ballot="ballot" />
-            </span>
+            </div>
         </div>
     </div>
 </template>

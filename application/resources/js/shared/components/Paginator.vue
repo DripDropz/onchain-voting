@@ -8,12 +8,12 @@
                 :options="[5, 10, 20, 40, 60, 80, 100]"
                 :mode="'single'"
                 :classes="{
-                    container: 'multiselect border-0 px-1 py-1 flex-wrap rounded-sm text-gray-900 dark:text-gray-100 bg-indigo-100 dark:bg-gray-900',
+                    container: 'multiselect border-0 px-1 py-1 flex-wrap rounded-sm text-gray-900 dark:text-gray-100 bg-sky-100 dark:bg-gray-900',
                     containerActive: 'shadow-none shadow-transparent box-shadow-none',
                     option: 'border-0 px-4 py-1 bg-gray-0 dark:bg-gray-800',
-                    optionSelected: 'bg-indigo-100 dark:text-gray-100 dark:bg-gray-900',
-                    optionSelectedPointed: 'pointer-events-none  bg-indigo-100 dark:bg-gray-900',
-                    optionPointed: 'bg-indigo-100 dark:bg-gray-900'
+                    optionSelected: 'bg-sky-100 dark:text-gray-100 dark:bg-gray-900',
+                    optionSelectedPointed: 'pointer-events-none  bg-sky-100 dark:bg-gray-900',
+                    optionPointed: 'bg-sky-100 dark:bg-gray-900'
                 }"
             />
             <p class="text-slate-400 text-sm">{{ 'Per Page' }}</p>
@@ -24,7 +24,7 @@
                 <!-- previous -->
                 <div class="flex" v-if="prev?.available">
                     <a href="#" v-if="prev" @click.prevent="currPage = prev.page"
-                    class="inline-flex items-center border-t-2 border-transparent pt-4 pr-1 text-sm font-medium text-slate-500 hover:border-indigo-500 hover:text-indigo-500">
+                    class="inline-flex items-center border-t-2 border-transparent pt-4 pr-1 text-sm font-medium text-slate-500 hover:border-sky-500 hover:text-sky-500">
                         <svg class="mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                             fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd"
@@ -38,7 +38,7 @@
                 <div class="hidden md:flex" v-if="totalPages > 7">
                     <template v-for="page in pages">
                         <span
-                            class="inline-flex items-center border-t-2 border-indigo-600 px-4 pt-4 text-sm font-medium text-indigo-600"
+                            class="inline-flex items-center border-t-2 border-sky-600 px-4 pt-4 text-sm font-medium text-sky-600"
                             v-if=" page.active">
                                 {{ page.label }}
                         </span>
@@ -47,7 +47,7 @@
                             {{ page.label }}
                         </span>
                         <a href="#" v-else="" @click.prevent="currPage = page.page"
-                            class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-slate-500 hover:border-indigo-500 hover:text-indigo-500">
+                            class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-slate-500 hover:border-sky-500 hover:text-sky-500">
                             {{ page.label }}
                         </a>
                     </template>
@@ -55,12 +55,12 @@
                 <div v-else>
                     <template v-for="page in pages">
                         <span
-                            class="inline-flex items-center border-t-2 border-t-2 px-4 pt-4 text-sm font-medium border-indigo-600 text-indigo-600"
+                            class="inline-flex items-center border-t-2 border-t-2 px-4 pt-4 text-sm font-medium border-sky-600 text-sky-600"
                             v-if=" page.active">
                                 {{ page.label }}
                         </span>
                         <a href="#" v-else @click.prevent="currPage = page.page"
-                        class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-slate-500 hover:border-indigo-500 hover:text-indigo-500">
+                        class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-slate-500 hover:border-sky-500 hover:text-sky-500">
                             {{ page.label }}
                         </a>
                     </template>
@@ -68,7 +68,7 @@
                 <!-- next -->
                 <div class="flex" v-if="next?.available">
                     <a href="#" v-if="next?.available" @click.prevent="currPage = next.page"
-                    class="inline-flex items-center border-t-2 border-transparent pt-4 pl-1 text-sm font-medium text-slate-500 hover:border-indigo-500 hover:text-indigo-500">
+                    class="inline-flex items-center border-t-2 border-transparent pt-4 pl-1 text-sm font-medium text-slate-500 hover:border-sky-500 hover:text-sky-500">
                         {{ 'Next' }}
                         <svg class="ml-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                             fill="currentColor" aria-hidden="true">

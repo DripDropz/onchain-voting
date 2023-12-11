@@ -1,104 +1,227 @@
 <template>
-    <div class="flex flex-col gap-10 px-8 py-10 text-white bg-indigo-600 rounded-lg">
-        <div>
-            <div class="flex flex-row items-center gap-5">
-                <BallotStatusBadge :ballot="ballot"></BallotStatusBadge>
+  <div class="flex flex-col gap-10 px-8 py-10 text-white bg-sky-600 rounded-lg">
+    <div>
+      <div class="flex flex-row items-center gap-5 relative">
+        <BallotStatusBadge :ballot="ballot"></BallotStatusBadge>
 
-                <div class="flex flex-row items-center justify-between gap-2 text-sm font-semibold text-white"
-                    v-if="ballot.started_at">
-                    <div class="text-gray-300">Starts</div>
-                    <div class="text-md">{{ ballot.started_at }}</div>
-                </div>
-                <div class="flex flex-row items-center justify-between gap-2 text-sm font-semibold text-white"
-                    v-if="ballot.ended_at">
-                    <div class="text-gray-300">Ends</div>
-                    <div class="text-md">{{ ballot.ended_at }}</div>
-                </div>
-
-                <Link :href="route('ballot.view', { ballot: ballot.hash })" v-if="context === 'list'"
-                    class="rounded-full bg-indigo-100 px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm flex flex-row gap-2 ring-1 ring-inset ring-gray-300 hover:bg-indigo-100 ml-auto">
-                <span>View</span>
-                </Link>
-            </div>
-
-            <h1 class="flex flex-row items-center gap-2 title2 font-display">
-                <span class="text-white">{{ ballot.title }}</span>
-                <Line></Line>
-            </h1>
-
-            <div class="mt-3">
-                {{ ballot.description }}
-            </div>
+        <div class="flex flex-row items-center justify-between gap-2 text-sm font-semibold text-white"
+             v-if="ballot.started_at">
+          <div class="text-gray-300">Starts</div>
+          <div class="text-md">{{ ballot.started_at }}</div>
+        </div>
+        <div class="flex flex-row items-center justify-between gap-2 text-sm font-semibold text-white"
+             v-if="ballot.ended_at">
+          <div class="text-gray-300">Ends</div>
+          <div class="text-md">{{ ballot.ended_at }}</div>
         </div>
 
-        <div class="flex flex-row justify-between gap-4">
-            <div class="relative">
-                <div v-for="question in ballot.questions" :key="question?.hash">
-                    <BallotQuestionCard :question="question" :ballot="ballot"
-                    :ballotResponse="question.type=='ranked'? null : ballotResponse$  " />
-                </div>
-
-                <ConnectWalletToVote v-if="!wallet" />
-
-                <LoginToVote v-if="!loggedIn" :page-data="ballot" />
-
-                <RegisterToVote v-if="loggedIn && !registeredToVote" :ballot="ballot" />
-            </div>
-
-            <div class="flex flex-col items-center justify-end h-full gap-5">
-                <div v-for="question in ballot.questions" :key="question?.hash"
-                class="relative bg-indigo-700 shadow-sm rounded-lg px-4 py-5 xl:px-6 xl:py-8 w-full lg:w-auto lg:min-w-[36rem] max-w-md flex flex-row h-full">
-                    <QuestionChoicesChart :question="question" />
-                </div>
-
-                <span class="ml-auto text-right text-white title2">Live Results</span>
-            </div>
+        <div class="flex flex-col justify-start absolute right-0 top-0">
+          <div v-if="voterPower"
+               class="relative inline-flex items-center px-2 py-0.5 mr-auto text-xs font-medium text-white bg-sky-900 border border-sky-900 shadow-inner  gap-x-1 rounded-xl">
+            Your Voting Power
+            <span class="font-semibold text-white text-md xl:text-lg">
+                {{ voterPower }}
+            </span>
+          </div>
         </div>
+
+        <Link :href="route('ballot.view', { ballot: ballot.hash })" v-if="context === 'list'"
+              class="rounded-full bg-sky-100 px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm flex flex-row gap-2 ring-1 ring-inset ring-gray-300 hover:bg-sky-100 ml-auto">
+          <span>View</span>
+        </Link>
+      </div>
+
+      <h1 class="flex flex-row items-center gap-2 title2 font-display">
+        <span class="text-white">{{ ballot.title }}</span>
+        <Line :classes="['bg-white']"></Line>
+      </h1>
+
+      <div class="mt-3">
+        {{ ballot.description }}
+      </div>
     </div>
+
+
+    <div class="flex flex-col gap-16">
+      <div class="flex flex-row justify-between items-start gap-4 relative"
+           :class="{
+            'bg-sky-700/50 rounded-t-2xl shadow-inner p-8 -m-8': index % 2 !== 0
+           }"
+           v-for="(question, index) in ballot.questions" :key="question?.hash">
+        <div class="relative">
+          <BallotQuestionCard :question="question" :ballot="ballot"
+                              @save-response="saveBallotResponse($event)"
+                              @record-onchain="submitToChain()"
+                              :userResponse="userResponses$[question.hash]"/>
+
+          <ConnectWalletToVote v-if="!wallet && isBallotOpen"/>
+
+          <LoginToVote v-if="!loggedIn && isBallotOpen" :page-data="ballot"/>
+
+          <RegisterToVote v-if="loggedIn && !registeredToVote && isBallotOpen" :ballot="ballot" :hasVotingPower="(voterPower !== '-')"/>
+        </div>
+
+        <div class="h-full flex flex-col gap-16 pt-1 px-4">
+<!--          <div class="">-->
+<!--            <h3 class="font-bold text-2xl">To Vote </h3>-->
+<!--            <ol class="flex flex-col gap-2 text-lg xl:text-xl list-decimal text-white list-outside ml-5">-->
+<!--              <li class="text-gray-300">Select Choice</li>-->
+<!--              <li class="text-gray-300">Hit Save. You will be given the choice to change your vote or submit on change-->
+<!--              </li>-->
+<!--              <li class="text-gray-300">Submit on chain and Sign Tx.</li>-->
+<!--            </ol>-->
+<!--          </div>-->
+          <div class="flex flex-col items-center justify-end gap-4">
+            <div
+                class="relative bg-sky-700 shadow-sm rounded-lg py-5 xl:px-6 xl:py-8 w-full lg:w-auto lg:min-w-[36rem] max-w-md flex flex-row h-auto">
+              <QuestionChoicesChart :question="question"/>
+            </div>
+
+            <span class="ml-auto text-right text-white title2">{{
+                isBallotOpen ? 'Live Results' : 'Final Results'
+              }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 <script lang="ts" setup>
 import BallotData = App.DataTransferObjects.BallotData;
 import Line from "@/Pages/Partials/Line.vue";
-import { Link, usePage } from "@inertiajs/vue3";
+import {Link, usePage} from "@inertiajs/vue3";
 import BallotStatusBadge from "@/Pages/Auth/Ballot/Partials/BallotStatusBadge.vue";
 import BallotQuestionCard from "@/Pages/Ballot/Partials/BallotQuestionCard.vue";
-import { useWalletStore } from "@/cardano/stores/wallet-store";
-import { storeToRefs } from "pinia";
+import {useWalletStore} from "@/cardano/stores/wallet-store";
+import {storeToRefs} from "pinia";
 import BallotResponseData = App.DataTransferObjects.BallotResponseData;
 import QuestionChoicesChart from "@/Pages/Auth/Question/Partials/QuestionChoicesChart.vue";
-import { ref, computed } from "vue";
+import {ref, computed} from "vue";
 import LoginToVote from "@/Pages/Ballot/Partials/LoginToVote.vue";
 import RegisterToVote from "./RegisterToVote.vue";
 import ConnectWalletToVote from "@/Pages/Ballot/Partials/ConnectWalletToVote.vue";
-import { useVoterStore } from "@/Pages/Voter/stores/voter-store";
+import {useVoterStore} from "@/Pages/Voter/stores/voter-store";
+import BallotService from "@/Pages/Ballot/Services/ballot-service";
+import QuestionChoiceData = App.DataTransferObjects.QuestionChoiceData;
 
 const registeredToVote = ref(false);
 const user = usePage().props.auth.user;
 const props = withDefaults(defineProps<{
-    ballot: BallotData;
-    context?: string;
+  ballot: BallotData;
+  context?: string;
 }>(), {
-    context: 'full'
+  context: 'full'
 });
 
 const voterStore = useVoterStore();
+
 voterStore.loadRegistration(props.ballot.hash).then(() => {
-    registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
+  registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
 });
-let ballotResponse$ = ref<null | BallotResponseData>(props.ballot?.user_response);
+
+// let userResponses$ = ref<null | BallotResponseData[]>(props.ballot?.user_responses);
+const userResponses$ = ref<Record<string, BallotResponseData>>(
+    props?.ballot?.user_responses?.reduce((acc, response) => {
+        acc[response.question?.hash] = response;
+        return acc;
+    }, {})
+);
+const isBallotOpen = ref(props?.ballot.open);
+
+const savingResponse = ref(false);
+const voteSaved = ref(null);
 
 const walletStore = useWalletStore();
-const { walletData: wallet } = storeToRefs(walletStore);
+const {walletData: wallet} = storeToRefs(walletStore);
 
-const loggedIn = computed( () => {
-    if (!user?.hash) {
-        return false;
-    }
+voterStore.loadVotingPower(user?.voter_id, props.ballot.hash);
 
-    if (!wallet) {
-        return false;
-    }
-    return true;
+const voterPower = computed(() => {
+  if (props?.ballot?.hash)
+    return voterStore.userVotingPower(props?.ballot?.hash);
 });
 
+voterStore.loadRegistration(props.ballot.hash).then(() => {
+  registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
+});
+
+const loggedIn = computed(() => {
+  if (!user?.hash) {
+    return false;
+  }
+
+  if (!wallet) {
+    return false;
+  }
+  return true;
+});
+
+async function saveBallotResponse(response: BallotResponseData) {
+        const res = (await BallotService.saveBallotResponse(
+            wallet.value?.stakeAddress,
+            response.choices.map((choice) => choice.hash),
+            props.ballot.hash
+        ));
+}
+
+// ranked choice stuff
+// let rankedChoices = ref(null);
+// let rankedResponse = computed(() => {
+//     if (props.question.type == 'ranked') {
+//         return props.question.ranked_user_responses
+//     }
+// })
+//
+// let rankedResponse$ = ref(rankedResponse.value);
+//
+// let rankedChoicesData = computed(() => {
+//     if (props.question.type != 'ranked') {
+//         return null;
+//     } else if (!rankedResponse$.value) {
+//         return props.question.choices;
+//     } else {
+//         let updatedChoices = [...props.question.choices];
+//
+//         rankedResponse$.value?.forEach((response) => {
+//             const choiceIndex = updatedChoices.findIndex(choice => choice.hash == response.choice.hash);
+//             if (choiceIndex !== -1) {
+//                 updatedChoices[choiceIndex].selected = true;
+//
+//                 const choice = updatedChoices[choiceIndex];
+//                 updatedChoices.splice(choiceIndex, 1);
+//                 updatedChoices.splice(response.rank, 0, choice);
+//             }
+//         });
+//         return updatedChoices;
+//     }
+// });
+
+async function saveResponse(vote) {
+    savingResponse.value = true;
+    const data = await BallotService.submitVote(props.ballot.hash, vote.value);
+    savingResponse.value = false;
+}
+
+async function submitToChain() {
+    savingResponse.value = true;
+    const data = await BallotService.submitVote(props.ballot.hash);
+    savingResponse.value = false;
+}
+
+
+// function saveRankedChoices(choices) {
+//     if (props.question.type == 'ranked') {
+//         rankedChoices.value = choices;
+//     }
+// }
+
+
+function submitVote() {
+    // if (selectedChoice.value === null && !rankedChoices.value) {
+    //     return;
+    // }
+    // emit('submitted', selectedChoice.value);
+    // emit('submitRankedChoices', rankedChoices.value);
+    // onSubmitQuestion(selectedChoice.value, rankedChoices.value);
+}
 </script>
