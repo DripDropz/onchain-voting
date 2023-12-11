@@ -113,9 +113,9 @@
                                            v-slot="{ active, selected }">
                                 <li :class="[active ? 'bg-indigo-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
                                         <span class="capitalize"
-                                              :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">{{
-                                                status.value
-                                            }}</span>
+                                            :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">{{
+                                            status.value
+                                        }}</span>
 
                                     <span v-if="selected"
                                           :class="[active ? 'text-white' : 'text-indigo-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
@@ -171,7 +171,7 @@ const form = useForm({
     ballot: props.ballot?.hash,
     title: props.question?.title ?? null,
     description: props.question?.description ?? '',
-    status: props.questionStatuses[0],
+    status: props.questionStatuses[2],
     type: props.questionTypes[0],
     maxChoices: props.question?.maxChoices ?? 1,
     supplemental: props.question?.supplemental ?? null,

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
 use OwenIt\Auditing\Contracts\Auditable;
 
@@ -54,6 +55,15 @@ class Question extends Model implements Auditable, HasUser
     public function choices(): HasMany
     {
         return $this->hasMany(BallotQuestionChoice::class, 'question_id');
+    }
+
+    public function ranked_user_responses():HasMany
+    {
+       return $this->hasMany(BallotResponse::class)->where(
+            [
+                'user_id' => auth()?->user()?->getAuthIdentifier(),
+            ]
+        )->whereNotNull('rank')->orderBy('rank', 'asc');
     }
 
     public function choicesTally(): Attribute

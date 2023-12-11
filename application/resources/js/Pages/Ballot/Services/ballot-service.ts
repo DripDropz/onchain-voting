@@ -1,7 +1,7 @@
 import axios from "axios";
 import WalletService from "@/cardano/Services/wallet-service";
 import { useWalletStore } from "@/cardano/stores/wallet-store";
-import {C, Lucid, UTxO, Unit, fromHex, toHex, toText} from "lucid-cardano";
+import { C, Lucid, UTxO, Unit, fromHex, toHex, toText } from "lucid-cardano";
 import { useVoterStore } from "@/Pages/Voter/stores/voter-store";
 
 export default class BallotService {
@@ -20,14 +20,25 @@ export default class BallotService {
 
     static async saveBallotResponse(
         voterId: string,
-        payload: { choice_hash: string; ballot_hash: string }
+        payload: { choice_hash: string; ballot_hash: string } = null,
+        rankedChoices: { choices: []; ballot_hash: string } = null
     ) {
         try {
-            let response = await axios.post(
-                route("voters.ballot-responses.save", { voterId }),
-                payload
-            );
-            return response.data;
+            let response;
+            if (payload) {
+                response = await axios.post(
+                    route("voters.ballot-responses.save", { voterId }),
+                    payload
+                );
+                return response.data;
+            } else {
+                response = await axios.post(
+                    route("voters.ballot-responses.save", { voterId }),
+                    rankedChoices
+                );
+                return response.data;
+            }
+
         } catch (error) {
             console.log(error);
         }
@@ -73,7 +84,7 @@ export default class BallotService {
                     ballot: ballotHash
                 }),
                 {
-                    addr:(await lucid.wallet.address()),
+                    addr: (await lucid.wallet.address()),
                     tx: tx.toString(),
                     witnesses
                 }
@@ -95,9 +106,10 @@ export default class BallotService {
                 }),
                 {
                     addr: (await lucid.wallet.address())
+
                 }
             );
-            if (response.data?.existingTx){
+            if (response.data?.existingTx) {
                 return response.data
             }
             const tx = lucid.fromTx(response.data.tx);
@@ -109,7 +121,7 @@ export default class BallotService {
                     ballot: ballotHash
                 }),
                 {
-                    addr:(await lucid.wallet.address()),
+                    addr: (await lucid.wallet.address()),
                     tx: tx.toString(),
                     witnesses
                 }
@@ -125,7 +137,7 @@ export default class BallotService {
         try {
             // get connected wallet form the store
             const walletStore = useWalletStore();
-            const {walletName} = walletStore;
+            const { walletName } = walletStore;
 
             const ws = new WalletService(walletName);
             BallotService.lucid = await ws.lucidInstance();

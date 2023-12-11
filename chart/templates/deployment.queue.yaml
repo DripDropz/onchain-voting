@@ -62,6 +62,10 @@ spec:
           requests:
             cpu: 80m
             memory: 1024Mi
+        
+        envFrom:
+          - secretRef:
+              name: "{{ $.Chart.Name }}-secrets"
         env:
           - name: CONTAINER_ROLE
             value: app

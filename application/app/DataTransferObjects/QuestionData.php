@@ -54,6 +54,11 @@ class QuestionData extends Data
         /** @var QuestionChoiceData[] */
         public ?DataCollection $choices,
 
+        #[TypescriptOptional]
+        #[DataCollectionOf(BallotResponseData::class)]
+        /** @var BallotResponseData[] */
+        public ?DataCollection $ranked_user_responses,
+
         public ?array $choices_tally,
     ) {
     }

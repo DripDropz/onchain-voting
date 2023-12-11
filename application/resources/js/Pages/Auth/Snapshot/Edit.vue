@@ -13,12 +13,12 @@
                 </section>
 
                 <section class="p-4 bg-indigo-200 shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
-                    <VotingPowerList v-if="votingPowers?.length > 0"/>
-                    <VotingPowerImporterComponent v-else :snapshot="snapshot"/>
+                    <VotingPowerList v-if="votingPowers?.length > 0" :snapshot="snapshot"/>
+                    <VotingPowerImporterComponent v-else class="max-w-xl" :snapshot="snapshot"/>
                 </section>
 
                 <section class="p-4 bg-indigo-200 shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
-                    <DeleteSnapshotForm class="max-w-xl" />
+                    <DeleteSnapshotForm :snapshot="snapshot" class="max-w-xl" />
                 </section>
             </div>
         </div>
@@ -37,6 +37,7 @@ import DeleteSnapshotForm from "@/Pages/Auth/Snapshot/Partials/DeleteSnapshotFor
 import VotingPowerList from './Partials/VotingPowerList.vue';
 import VotingPowerImporterComponent from '@/Components/VotingPowerImporterComponent.vue';
 import { useSnapshotStore } from '@/stores/snapshot-store';
+import { storeToRefs } from 'pinia';
 
 const props = defineProps<{
     snapshot: SnapshotData;
@@ -47,7 +48,9 @@ let snapshotHash:ComputedRef<any> = computed(() => props.snapshot.hash);
 if (usePage().props?.errors) {
     AlertService.show(Object.values(usePage().props.errors), 'info');
 }
+
 let snapshotStore = useSnapshotStore();
 snapshotStore.loadVotingPowers(snapshotHash.value);
-const votingPowers: ComputedRef<VotingPowerData[]> = computed(() => snapshotStore.votingPowersData);
+let { votingPowersData} = storeToRefs(snapshotStore);
+const votingPowers: ComputedRef<VotingPowerData[]> = computed(() => votingPowersData.value);
 </script>

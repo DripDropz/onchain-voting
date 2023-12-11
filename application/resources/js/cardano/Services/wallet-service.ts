@@ -23,7 +23,7 @@ export default class WalletService {
 
     public async lucidInstance()
     {
-        if (!this.lucid) {
+        if (!this.lucid || typeof this.lucid === 'undefined') {
             await this.init();
         }
         return this.lucid;
@@ -171,6 +171,7 @@ export default class WalletService {
 
             const blockfrostKeysService = new BlockfrostKeysService();
             const keys = await blockfrostKeysService.getConfig();
+
             this.blockfrostUrl = keys?.blockfrostUrl;
             this.projectId = keys?.projectId;
 

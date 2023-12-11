@@ -29,7 +29,6 @@ defineProps<{
                         :questionStatuses=[question?.status]
                         :questionTypes=[question?.type]
                         class="max-w-xl" />
-                    />
                 </div>
             </div>
         </div>

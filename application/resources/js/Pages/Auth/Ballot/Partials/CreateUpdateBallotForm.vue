@@ -26,7 +26,7 @@
                             Date & Time</label>
                         <input type="datetime-local" name="version" id="version" v-model="form.started_at"
                                placeholder="Datetime"
-                               class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 bg-gray-200 dark:bg-gray-900 ring-1 ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-700 rounded-lg"/>
+                               class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 bg-indigo-100 dark:bg-gray-900 ring-1 ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-700 rounded-lg"/>
                     </div>
                     <div class="flex items-center gap-8 px-2 py-4 xl:px-3">
                         <label for="version"
@@ -34,14 +34,14 @@
                             Date & Time</label>
                         <input type="datetime-local" name="version" id="version" v-model="form.ended_at"
                                placeholder="Datetime"
-                               class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-gray-200 dark:bg-gray-900 ring-1 ring-gray-300 dark:ring-gray-700  focus:ring-indigo-600 dark:focus:ring-indigo-700 rounded-lg"/>
+                               class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-indigo-100 dark:bg-gray-900 ring-1 ring-gray-300 dark:ring-gray-700  focus:ring-indigo-600 dark:focus:ring-indigo-700 rounded-lg"/>
                     </div>
 
                     <div class="flex items-center gap-8 px-2 py-4 xl:px-3">
                         <label for="version"
                                class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300 w-44">Version</label>
                         <input type="text" name="version" id="version" v-model="form.version" placeholder="Version"
-                               class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 bg-gray-200 dark:bg-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-700 rounded-lg"/>
+                               class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 bg-indigo-100 dark:bg-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-700 rounded-lg"/>
                     </div>
 
                     <Listbox as="div" @update:modelValue="value => form.status = value"

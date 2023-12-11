@@ -7,7 +7,7 @@
             <div class="flex flex-col justify-start h-full gap-4 text-center">
                 <h3
                     class="w-full p-3 mx-auto text-xl font-bold text-center border-b-4 border-white border-double md:text-2xl xl:text-3xl">
-                    {{!!submittedvote? 'Vote Successfully recorded' : 'Confirm your vote'}}
+                    {{ !!submittedvote ? 'Vote Successfully recorded' : 'Confirm your vote' }}
                 </h3>
 
                 <template v-if="!submittedvote">
@@ -53,7 +53,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { Ref, computed, ref } from 'vue';
 import BallotData = App.DataTransferObjects.BallotData;
 import BallotResponseData = App.DataTransferObjects.BallotResponseData;
 import { storeToRefs } from 'pinia';
@@ -75,6 +75,20 @@ const choices = props.ballot?.questions?.[0]?.choices || [];
 const choice = (choices.find(choice => choice.hash == choiceHash));
 const submittingVote = ref(false);
 const submittedvote = ref(null);
+let IsRankedVote = computed(() => props.ballot.questions[0].type == 'ranked');
+let choicesRanked = computed(() => {
+    return props.ballot.questions[0].ranked_user_responses.map((res) => {
+        return res.choice.hash
+    })
+})
+
+let vote = computed<string[]>(() => {
+    if (IsRankedVote.value) {
+        return choicesRanked.value;
+    } else {
+        return [choice?.hash];
+    }
+})
 
 if (ballotResponse?.value?.submit_tx) {
     submittedvote.value = ballotResponse?.value?.submit_tx;
@@ -90,8 +104,8 @@ const onChangeChoice = () => {
 
 let submitToChain = async () => {
     submittingVote.value = true;
-    if (props.ballot.hash && choice?.hash) {
-        const data = await BallotService.submitVote(props.ballot.hash, [choice?.hash]);
+    if (props.ballot.hash && vote.value) {
+        const data = await BallotService.submitVote(props.ballot.hash, vote.value);
         submittedvote.value = data?.tx;
     }
     submittingVote.value = false;

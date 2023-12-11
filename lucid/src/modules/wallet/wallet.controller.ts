@@ -1,6 +1,7 @@
 import {
     Controller,
     Get,
+    Inject,
     Post,
     Req,
 } from '@nestjs/common';
@@ -15,13 +16,18 @@ import {
     toText,
 } from 'lucid-cardano';
 import { Request } from 'express';
-import getConfigs from '../../utils/getConfigs.js';
+import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from '../../services/app-config.service.js';
 
 @Controller('wallet')
 export class WalletController {
+    public constructor(
+        @Inject(AppConfigService) private readonly configService: AppConfigService,
+    ) {}
+
     @Get('get-policy-id')
     public async mintPolicyId(@Req() request: Request) {
-        const [lucid] = await getConfigs(request);
+        const [lucid] = await this.configService.getConfigs(request);
         const policyId = lucid.utils.mintingPolicyToId(
             await this.mintPolicy(request)
         );
@@ -29,7 +35,7 @@ export class WalletController {
     }
     @Get('get-policy')
     public async mintPolicy(@Req() request: Request) {
-        const [lucid] = await getConfigs(request);
+        const [lucid] = await this.configService.getConfigs(request);
         lucid.selectWalletFromSeed(request?.body?.seed);
         return (await this.getPolicy(lucid));
     }
@@ -53,7 +59,7 @@ export class WalletController {
 
     @Post('address')
     async wallet(@Req() request: Request) {
-        const [lucid] = await getConfigs(request);
+        const [lucid] = await this.configService.getConfigs(request);
         lucid.selectWalletFromSeed(request?.body?.seed);
 
         return {
@@ -63,12 +69,13 @@ export class WalletController {
 
     @Post('balances')
     async balances(@Req() request: Request) {
-        let lucid;
-        [lucid] = await getConfigs(request);
+        // let lucid;
+        const [lucid] = await this.configService.getConfigs(request);
         lucid.selectWalletFromSeed(request?.body?.seed);
 
-        let utxos = await lucid.wallet.getUtxos();
-        utxos = utxos.map((utxo) => utxo.assets);
+        // let utxos = await lucid.wallet.getUtxos();
+        let utxos = (await lucid.wallet.getUtxos())
+            .map((utxo) => utxo.assets);
 
         const balances = {};
         utxos.forEach((asset) =>

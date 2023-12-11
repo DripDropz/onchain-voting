@@ -13,9 +13,18 @@ return new class extends Migration
     {
         Schema::create('voting_powers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->nullOnDelete();
-            $table->foreignId('snapshot_id')->constrained('snapshots')->nullOnDelete();
-            $table->bigInteger('voting_power')->default(0);
+            $table->foreignId('user_id')
+            ->nullable()
+            ->constrained('users')
+            ->nullOnDelete();
+
+            $table->foreignId('snapshot_id')
+            ->constrained('snapshots')
+            ->cascadeOnDelete();
+
+            $table->bigInteger('voting_power')
+            ->default(0);
+
             $table->timestamps();
             $table->softDeletes();
         });

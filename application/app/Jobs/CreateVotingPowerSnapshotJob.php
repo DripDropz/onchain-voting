@@ -10,6 +10,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class CreateVotingPowerSnapshotJob implements ShouldQueue
 {
@@ -18,10 +21,11 @@ class CreateVotingPowerSnapshotJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(protected $snapshotHash, protected $voter_id, protected $voting_power)
-    {
-        //
-    }
+    public function __construct(
+        protected $snapshotHash,
+        protected $voter_id,
+        protected $voting_power
+    ){}
 
     /**
      * Execute the job.
@@ -35,13 +39,18 @@ class CreateVotingPowerSnapshotJob implements ShouldQueue
             $user = $this->createUser($this->voter_id);
         }
 
-        $powerExists = VotingPower::where('user_id', $user->id)->where('snapshot_id', $snapshot?->id)->first();
+        $powerExists = VotingPower::where('user_id', $user->id)
+        ->where('snapshot_id', $snapshot?->id)
+        ->first();
+
         if (is_null($powerExists)) {
             VotingPower::create([
                 'user_id' => $user->id,
                 'snapshot_id' => $snapshot->id,
                 'voting_power' => $this->voting_power,
             ]);
+        } else {
+            Log::info("voting Power {$powerExists} for user {$powerExists->voter_id} already exists for snapshot {$snapshot->id}");
         }
     }
 
@@ -50,7 +59,7 @@ class CreateVotingPowerSnapshotJob implements ShouldQueue
         $newUser = User::create([
             'name' => substr($voter_id, 0, 5).'...'.substr($voter_id, -5),
             'voter_id' => $voter_id,
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'password' => Hash::make(Str::random(32)),
         ]);
 
         return $newUser;

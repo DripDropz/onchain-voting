@@ -5,13 +5,15 @@ namespace App\Models;
 use App\Http\Traits\HasHashIds;
 use App\Models\Traits\HashIdModel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BallotResponse extends Model implements \OwenIt\Auditing\Contracts\Auditable
 {
     use \OwenIt\Auditing\Auditable,
         HasHashIds,
         HashIdModel,
-        Traits\HasUser;
+        Traits\HasUser,
+        SoftDeletes;
 
     protected $hidden = [
         'id',
@@ -24,6 +26,7 @@ class BallotResponse extends Model implements \OwenIt\Auditing\Contracts\Auditab
         'user_id',
         'voting_power_id',
         'submit_tx',
+        'rank'
     ];
 
     public function voting_power()

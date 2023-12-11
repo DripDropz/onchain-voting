@@ -6,7 +6,7 @@
                     <ul class="flex gap-4 text-lg flex-nowrap">
                         <li class="w-auto ocv-link">
                             <Link :href="route('home')">
-                                Open Chainvote
+                                Home
                             </Link>
                         </li>
 

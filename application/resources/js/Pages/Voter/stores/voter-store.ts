@@ -1,9 +1,9 @@
 import {defineStore, storeToRefs} from 'pinia';
-import {computed, ref, Ref} from 'vue';
+import {ref, Ref} from 'vue';
 import humanNumber from "@/utils/human-number";
 import { useWalletStore } from '@/cardano/stores/wallet-store';
 import WalletService from '@/cardano/Services/wallet-service';
-import { PolicyId, UTxO } from '@lucid-cardano';
+import { PolicyId, UTxO } from 'lucid-cardano';
 import axios from 'axios';
 import BallotService from '@/Pages/Ballot/Services/ballot-service';
 
@@ -44,8 +44,9 @@ export const useVoterStore = defineStore('voter', () => {
         // find policy in user's wallet
         const ws = new WalletService(walletName.value);
         const lucid = await ws.lucidInstance();
-        const utoxs = await lucid.wallet.getUtxos();
-        const registrations = utoxs.filter((utxo: UTxO) =>
+        const utxos = await lucid.wallet.getUtxos();
+
+        const registrations = utxos.filter((utxo: UTxO) =>
          Object.keys(utxo.assets).some(asset => asset.includes(policyId))
         );
         if ( registrations.length > 0 ) {

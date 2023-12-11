@@ -11,9 +11,6 @@
                         <div class="text-gray-300">Ends</div>
                         <div class="text-md">{{ ballot.ended_at }}</div>
                     </div>
-
-<!--                    <div class="pt-4 text-sm font-semibold text-gray-300">Start</div>-->
-<!--                    <div class="pt-4 text-sm font-semibold text-gray-300">End</div>-->
                 </div>
                 <Link :href="route('ballot.view', {ballot: ballot.hash})"
                       class="rounded-full bg-indigo-100 px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm flex flex-row gap-2 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ml-auto">
@@ -40,7 +37,6 @@ import BallotData = App.DataTransferObjects.BallotData;
 import Line from "@/Pages/Partials/Line.vue";
 import BallotStatusBadge from "@/Pages/Auth/Ballot/Partials/BallotStatusBadge.vue";
 import {Link} from "@inertiajs/vue3";
-import {withDefaults} from 'vue';
 
 const props = withDefaults(
     defineProps<{

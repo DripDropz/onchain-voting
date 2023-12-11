@@ -8,12 +8,12 @@
                 :options="[5, 10, 20, 40, 60, 80, 100]"
                 :mode="'single'"
                 :classes="{
-                    container: 'multiselect border-0 px-1 py-1 flex-wrap rounded-sm text-gray-900 dark:text-gray-100 bg-gray-200 dark:bg-gray-900',
+                    container: 'multiselect border-0 px-1 py-1 flex-wrap rounded-sm text-gray-900 dark:text-gray-100 bg-indigo-100 dark:bg-gray-900',
                     containerActive: 'shadow-none shadow-transparent box-shadow-none',
                     option: 'border-0 px-4 py-1 bg-gray-0 dark:bg-gray-800',
-                    optionSelected: 'bg-gray-200 dark:text-gray-100 dark:bg-gray-900',
-                    optionSelectedPointed: 'pointer-events-none  bg-gray-200 dark:bg-gray-900',
-                    optionPointed: 'bg-gray-200 dark:bg-gray-900'
+                    optionSelected: 'bg-indigo-100 dark:text-gray-100 dark:bg-gray-900',
+                    optionSelectedPointed: 'pointer-events-none  bg-indigo-100 dark:bg-gray-900',
+                    optionPointed: 'bg-indigo-100 dark:bg-gray-900'
                 }"
             />
             <p class="text-slate-400 text-sm">{{ 'Per Page' }}</p>
@@ -23,7 +23,7 @@
             <nav class="flex items-center">
                 <!-- previous -->
                 <div class="flex" v-if="prev?.available">
-                    <a href="#" v-if="prev" @click.prevent="currPage = prev.page" 
+                    <a href="#" v-if="prev" @click.prevent="currPage = prev.page"
                     class="inline-flex items-center border-t-2 border-transparent pt-4 pr-1 text-sm font-medium text-slate-500 hover:border-indigo-500 hover:text-indigo-500">
                         <svg class="mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                             fill="currentColor" aria-hidden="true">
@@ -116,7 +116,7 @@ watch(perPage, () => {
 
 const prev = computed(() => {
     let previousPage = props.pagination.current_page - 1 > 0 ? props.pagination.current_page - 1 : null;
-    
+
     if (previousPage) {
         return {
             available: true,
@@ -130,7 +130,7 @@ const prev = computed(() => {
 
 const next = computed(() => {
     const nextPage = props.pagination.current_page != props.pagination.last_page ? props.pagination.current_page + 1 :null
-    
+
     if (nextPage) {
         return {
             available: true,
@@ -144,7 +144,7 @@ const next = computed(() => {
 
 let pages = computed(() => {
     let pagesNumbersArr = ref<(string|number)[]>([]);
-    
+
     switch (totalPages.value > 7) {
         case true:
             if (currPageRef.value <= 4) {
@@ -157,7 +157,7 @@ let pages = computed(() => {
                 }
             }
             break;
-    
+
         case false:
             pagesNumbersArr.value = Array.from({ length: props.pagination.last_page }, (_, index) => index + 1);
             break;

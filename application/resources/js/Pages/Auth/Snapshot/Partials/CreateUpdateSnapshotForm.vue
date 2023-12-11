@@ -170,8 +170,8 @@ const form = useForm({
     title: props?.snapshot?.title,
     description: props?.snapshot?.description ?? '',
     policy_id: props?.snapshot?.policy_id ?? 'lovelace',
-    status: props?.snapshot?.status ?? 'draft',
-    type: props?.snapshot?.type ?? 'Select Type'
+    status: props?.snapshot?.status ?? 'published',
+    type: props?.snapshot?.type ?? 'file'
 });
 
 function submitForm() {

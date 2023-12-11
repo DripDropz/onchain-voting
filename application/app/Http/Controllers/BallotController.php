@@ -28,7 +28,7 @@ class BallotController extends Controller
      */
     public function view(Request $request, Ballot $ballot): Response
     {
-        $ballot->load(['questions.choices', 'user_response.choice']);
+        $ballot->load(['questions.choices', 'user_response.choice', 'questions.ranked_user_responses.choice']);
         return Inertia::render('Ballot/View', [
             'ballot' => BallotData::from($ballot),
         ]);
@@ -74,7 +74,7 @@ class BallotController extends Controller
             'voterAddress' => $request->addr,
             'metadata' => [
                 'name' => $ballot->title,
-                'image' => "ipfs://QmTEpE2XS9KSRy8LMZwKKgTkq4J6uFHMNPEtururByEzuR",
+                'image' => $ballot->registration_policy->image_link,
                 'Powered by' => config('app.power_by'),
                 'Cast Your Vote At' => config('app.url')
             ],
@@ -91,7 +91,7 @@ class BallotController extends Controller
         ]);
     }
 
-    public function checkExistingRegistration($address,$ballot) 
+    public function checkExistingRegistration($address,$ballot)
     {
         $blockfrostConn = new BlockfrostConnector();
         $blockfrostReq = new BlockfrostRequest('/addresses/'.$address.'/total');
@@ -115,6 +115,11 @@ class BallotController extends Controller
                 break;
             }
         }
+
+        if (!isset($assetName)) {
+            return null;
+        }
+
         $blockfrostReq = new BlockfrostRequest('/addresses/'.$address.'/utxos/'.$assetName);
 
         $response = $blockfrostConn->sendAndRetry(
@@ -129,7 +134,7 @@ class BallotController extends Controller
             return null;
         }
         return $response->json()[0]['tx_hash'];
-        
+
     }
 
     public function policyId(Request $request, Ballot $ballot, string $policyType)
@@ -164,14 +169,13 @@ class BallotController extends Controller
             'witnesses' => $request->witnesses,
             'voterStakekey' => $user->voter_id
         ]);
-
         $response = $connector->sendAndRetry(
             $completeRegistration,
             2,
             300,
             fn ($exception) => $exception instanceof FatalRequestException);
 
-            
+
         if($response->body() != null){
             SaveRegistration::dispatch($user->id, $ballot->hash, $response->body()) ->delay(now()->addSeconds(40));
         }

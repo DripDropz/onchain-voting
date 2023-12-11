@@ -28,5 +28,8 @@ class PolicyData extends Data
 
         #[TypeScriptOptional]
         public ?string $created_at,
+
+        #[TypeScriptOptional]
+        public ?string $image_link,
     ) {}
 }

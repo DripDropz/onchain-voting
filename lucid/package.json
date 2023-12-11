@@ -24,6 +24,7 @@
   "dependencies": {
     "@emurgo/cardano-serialization-lib-browser": "^11.4.0",
     "@nestjs/common": "^9.1.2",
+    "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^9.1.2",
     "@nestjs/platform-express": "^9.1.2",
     "@types/lodash": "^4.14.191",

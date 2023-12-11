@@ -26,7 +26,8 @@
     ],
     "paths": {
       "@chainvote/*": ["./src/*"],
-      "@chainvote/modules/*": ["./src/modules/*"]
+      "@chainvote/modules/*": ["./src/modules/*"],
+      "@chainvote/services/*": ["./src/services/*"]
     },
     "main": "./main.js",
     "exports": "./main.js"

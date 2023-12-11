@@ -4,12 +4,17 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import BallotData = App.DataTransferObjects.BallotData;
 import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
 
 const confirmingUserDeletion = ref(false);
 const passwordInput = ref<HTMLInputElement | null>(null);
+
+const props = defineProps<{
+    ballot: BallotData;
+}>();
 
 const form = useForm({
     password: '',
@@ -21,8 +26,8 @@ const confirmUserDeletion = () => {
     nextTick(() => passwordInput.value?.focus());
 };
 
-const deleteUser = () => {
-    form.delete(route('admin.profile.destroy'), {
+function deleteBallot() {
+    form.delete(route('admin.ballots.destroy', {ballot: props.ballot?.hash}), {
         preserveScroll: true,
         onSuccess: () => closeModal(),
         onError: () => passwordInput.value?.focus(),
@@ -69,22 +74,22 @@ const closeModal = () => {
                         ref="passwordInput"
                         v-model="form.password"
                         type="password"
-                        class="mt-1 block w-3/4"
+                        class="block w-3/4 mt-1"
                         placeholder="Password"
-                        @keyup.enter="deleteUser"
+                        @keyup.enter="deleteBallot"
                     />
 
                     <InputError :message="form.errors.password" class="mt-2" />
                 </div>
 
-                <div class="mt-6 flex justify-end">
+                <div class="flex justify-end mt-6">
                     <SecondaryButton @click="closeModal"> Cancel </SecondaryButton>
 
                     <DangerButton
                         class="ml-3"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
-                        @click="deleteUser"
+                        @click="deleteBallot"
                     >
                         Delete Account
                     </DangerButton>
