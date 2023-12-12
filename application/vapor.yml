@@ -26,6 +26,6 @@ environments:
       - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader'
       - 'php artisan optimize'
       - 'php artisan event:cache'
-      - 'npm install --global yarn vite && yarn install && yarn build && rm -rf node_modules'
+      - 'npm install --global yarn && yarn install && yarn build && rm -rf node_modules'
     # deploy:
     #   - 'php artisan migrate'
