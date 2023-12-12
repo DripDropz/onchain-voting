@@ -13,14 +13,29 @@ use Inertia\Response;
 
 class DashboardController extends Controller
 {
+    public  $perPage = 6;
+
+    public $currPage = 1;
+
     public function index(Request $request): Response
     {
-        $ballots = BallotData::collection(Ballot::all());
+        $this->perPage = $request->input('l',6);
+        $this->currPage = $request->input('p',1);
+
+        $ballots = $this->query();
         $snapshots = SnapshotData::collection(Snapshot::all());
 
         return Inertia::render('Auth/Dashboard')->with([
             'ballots' => $ballots,
             'snapshots' => $snapshots,
         ]);
+    }
+
+    public function query()
+    {
+        return BallotData::collection(Ballot::query()
+            ->paginate($this->perPage, ['*'], 'p', $this->currPage)
+            ->setPath('/')
+            ->onEachSide(1));
     }
 }

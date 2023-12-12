@@ -4,10 +4,13 @@ namespace Database\Factories;
 
 use App\Enums\ModelStatusEnum;
 use App\Enums\QuestionTypeEnum;
+use App\Models\Ballot;
+use App\Models\Question;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<Question>
  */
 class QuestionFactory extends Factory
 {
@@ -18,10 +21,18 @@ class QuestionFactory extends Factory
      */
     public function definition(): array
     {
+        $user_ids = User::pluck('id')->toArray();
+        $ballot_ids = Ballot::pluck('id')->toArray();
+
         return [
-            'title' => fake()->words(rand(3, 8)),
-            'status' => ModelStatusEnum::PUBLISHED,
-            'type' => QuestionTypeEnum::SINGLE,
+            'title' => fake()->sentence(3, true),
+            'description' => fake()->paragraphs(random_int(1, 2), true),
+            'status' => fake()->randomElement(ModelStatusEnum::values()),
+            'type' => fake()->randomElement(QuestionTypeEnum::values()),
+            'supplemental' => fake()->url,
+            'max_choices' => fake()->numberBetween(1, 20),
+            'ballot_id' => fake()->randomElement($ballot_ids),
+            'user_id' => fake()->randomElement($user_ids)
         ];
     }
 }

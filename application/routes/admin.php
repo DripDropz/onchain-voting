@@ -24,6 +24,8 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
         Route::patch('/{ballot}/update', [BallotController::class, 'update'])->name('update');
         Route::delete('/{ballot}/delete', [BallotController::class, 'destroy'])->name('destroy');
 
+        Route::patch('/{ballot}/status/update', [BallotController::class, 'statusUpdate'])->name('status.update');
+
         // Ballot Snapshots
         Route::prefix('/{ballot}/snapshots')->as('snapshots.')->group(function () {
             Route::get('/link', [BallotController::class, 'viewLinkSnapshot'])->name('link.view');

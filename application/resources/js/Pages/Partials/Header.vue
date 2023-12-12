@@ -5,14 +5,14 @@
                 <ul class="flex items-center gap-3 flex-nowrap">
                     <li class="w-auto ocv-link">
                         <Link :href="route('home')">
-                        <img :src="config.logo" alt="Open Chainvote App Logo" class="w-10 h-10">
+                        <img :src="config.logo ?? voteAppLogo" alt="Open Chainvote App Logo" class="w-10 h-10">
                         </Link>
                     </li>
                     <li class="w-auto ocv-link">
                         <Link :href="route('home')">
                         <h1
-                            class="font-bold tracking-tight sm:text-2xl xl:text-4xl font-display text-slate-900 dark:text-slate-200">
-                            ChainVote</h1>
+                            class="font-bold tracking-tight sm:text-xl xl:text-3xl font-display text-slate-900 dark:text-slate-200">
+                            Open ChainVote</h1>
                         </Link>
                     </li>
                     <li
@@ -82,6 +82,7 @@ import { useConfigStore } from '@/stores/config-store';
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { onClickOutside } from '@vueuse/core';
+import voteAppLogo from '../../../images/openchainvote.png';
 
 const user = usePage().props.auth.user;
 const walletStore = useWalletStore();
