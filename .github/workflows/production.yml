@@ -1,12 +1,13 @@
-name: Deploy Staging
+name: Deploy Production
 
 on:
   push:
     branches:
-      - staging
+# TODO: update this (replace 'main-xxx' -> 'main' without quotes)
+      - main-xxx
 
 jobs:
-  deploy-staging:
+  deploy-production:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -42,6 +43,6 @@ jobs:
 
       - name: Deploy Environment
         working-directory: ./application
-        run: vapor deploy staging
+        run: vapor deploy production
         env:
           VAPOR_API_TOKEN: ${{ secrets.VAPOR_API_TOKEN }}
