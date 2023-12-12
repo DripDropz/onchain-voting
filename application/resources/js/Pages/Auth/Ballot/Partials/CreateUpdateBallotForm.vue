@@ -43,45 +43,17 @@
                         <input type="text" name="version" id="version" v-model="form.version" placeholder="Version"
                                class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 bg-sky-100 dark:bg-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-sky-600 dark:focus:ring-sky-700 rounded-lg"/>
                     </div>
-
-                    <Listbox as="div" @update:modelValue="value => form.status = value"
-                             class="flex items-center gap-8 px-2 py-2 border-t border-gray-200 xl:px-3 dark:border-gray-700">
-                        <ListboxLabel class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300 w-44">
+                    <div class="flex items-center gap-8 px-2 py-2 border-t border-gray-200 xl:px-3 dark:border-gray-700">
+                        <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300 w-44">
                             Ballot Status
-                        </ListboxLabel>
-                        <div class="relative flex flex-1 mt-2">
-                            <ListboxButton
-                                class="relative w-full cursor-default rounded-md bg-sky-100 dark:bg-gray-900 py-1.5 pl-3 pr-10 text-left text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-600 dark:focus:ring-sky-700 sm:text-sm sm:leading-6">
-                                <span class="block capitalize truncate">{{ form.status }}</span>
-                                <span class="block capitalize truncate">{{ form.status }}</span>
-                                <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                  <ChevronUpDownIcon class="w-5 h-5 text-gray-400" aria-hidden="true"/>
-                                </span>
-                            </ListboxButton>
-
-                            <transition leave-active-class="transition duration-100 ease-in"
-                                        leave-from-class="opacity-100" leave-to-class="opacity-0">
-                                <ListboxOptions
-                                    class="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-sky-100 rounded-md shadow-lg max-h-60 dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                    <ListboxOption as="template" v-for="status in Object.values(ballotStatuses)" :key="status"
-                                                   :value="status" v-slot="{ active, selected }">
-                                        <li :class="[active ? 'bg-sky-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
-                                            <span class="capitalize"
-                                                  :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">
-                                                {{status }}
-                                            </span>
-
-                                            <span v-if="selected"
-                                                  :class="[active ? 'text-white' : 'text-sky-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
-                                                <CheckIcon class="w-5 h-5" aria-hidden="true"/>
-                                          </span>
-                                        </li>
-                                    </ListboxOption>
-                                </ListboxOptions>
-                            </transition>
+                        </label>
+                        <div v-if="props?.ballot?.status" class="relative flex flex-1 mt-2 bg-sky-100 rounded-lg dark:bg-gray-900 py-1.5 pl-3 pr-10 text-left text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-600 dark:focus:ring-sky-700 sm:text-sm sm:leading-6">
+                            <span class="block capitalize truncate">{{ ballot.status }}</span>
                         </div>
-                    </Listbox>
-
+                        <div v-else="props?.ballot?.status" class="relative flex flex-1 mt-2 bg-sky-100 rounded-lg dark:bg-gray-900 py-1.5 pl-3 pr-10 text-left text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-600 dark:focus:ring-sky-700 sm:text-sm sm:leading-6">
+                            <span class="block capitalize truncate">{{ form.status }}</span>
+                        </div>
+                    </div>
                     <Listbox as="div" v-model="form.type"
                              class="flex items-center gap-8 px-2 py-2 border-t border-gray-200 xl:px-3 dark:border-gray-700">
                         <ListboxLabel class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300 w-44">
@@ -89,7 +61,7 @@
                         </ListboxLabel>
                         <div class="relative flex flex-1 mt-2">
                             <ListboxButton
-                                class="relative w-full cursor-default rounded-md bg-sky-100 dark:bg-gray-900 py-1.5 pl-3 pr-10 text-left text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-600 dark:focus:ring-sky-700 sm:text-sm sm:leading-6">
+                                class="relative w-full cursor-default rounded-lg bg-sky-100 dark:bg-gray-900 py-1.5 pl-3 pr-10 text-left text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-600 dark:focus:ring-sky-700 sm:text-sm sm:leading-6">
                                 <span class="block truncate">{{ form.type }}</span>
                                 <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                   <ChevronUpDownIcon class="w-5 h-5 text-gray-400" aria-hidden="true"/>
@@ -286,7 +258,7 @@ const form = useForm({
     title: props?.ballot?.title ?? '',
     description: props?.ballot?.description ?? '',
     version: props?.ballot?.version,
-    status: props?.ballot?.status ?? 'Select Status',
+    status: props?.ballot?.status ?? 'draft',
     type: props?.ballot?.type ?? 'Select Type',
     started_at: props?.ballot?.started_at,
     ended_at: props?.ballot?.ended_at,

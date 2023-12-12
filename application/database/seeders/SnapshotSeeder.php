@@ -2,20 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Ballot;
 use App\Models\Snapshot;
-use App\Models\User;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class BallotSeeder extends Seeder
+class SnapshotSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-
-        Ballot::factory(15)->has(Snapshot::factory()->count(1), 'snapshot')->create();
-
+        Snapshot::factory()->count(5)->create();
     }
 }

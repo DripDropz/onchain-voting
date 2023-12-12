@@ -3,15 +3,14 @@
 namespace Database\Factories;
 
 use App\Enums\ModelStatusEnum;
-use App\Enums\QuestionTypeEnum;
-use App\Models\Ballot;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Auth;
 
 /**
- * @extends Factory<Question>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Snapshot>
  */
-class QuestionFactory extends Factory
+class SnapshotFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -20,17 +19,14 @@ class QuestionFactory extends Factory
      */
     public function definition(): array
     {
-        $user_ids = User::pluck('id')->toArray();
-        $ballot_ids = Ballot::pluck('id')->toArray();
+        $user = User::whereRelation('roles', 'name', 'super-admin')->first();
+        Auth::login($user);
         return [
             'title' => fake()->sentence(3, true),
             'description' => fake()->paragraphs(random_int(1, 2), true),
+            'policy_id' => "lovelace",
             'status' => fake()->randomElement(ModelStatusEnum::values()),
-            'type' => fake()->randomElement(QuestionTypeEnum::values()),
-            'supplemental' => fake()->url,
-            'max_choices' => fake()->numberBetween(1, 20),
-            'ballot_id' => fake()->randomElement($ballot_ids),
-            'user_id' => fake()->randomElement($user_ids)
+            'type' => "file",
         ];
     }
 }

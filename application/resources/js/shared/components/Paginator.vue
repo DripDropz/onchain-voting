@@ -5,7 +5,7 @@
                 :placeholder="perPageRef.toString()"
                 v-model="perPage"
                 :can-clear="false"
-                :options="[5, 10, 20, 40, 60, 80, 100]"
+                :options="[5, 6, 10, 20, 40, 60, 80, 100]"
                 :mode="'single'"
                 :classes="{
                     container: 'multiselect border-0 px-1 py-1 flex-wrap rounded-sm text-gray-900 dark:text-gray-100 bg-sky-100 dark:bg-gray-900',

@@ -94,7 +94,6 @@ class BallotController extends Controller
             $ballot->title = $ballotData->title;
             $ballot->description = $ballotData->description;
             $ballot->version = $ballotData->version;
-            $ballot->status = $ballotData->status;
             $ballot->type = $ballotData->type;
             $ballot->started_at = $ballotData->started_at;
             $ballot->ended_at = $ballotData->ended_at;
@@ -122,6 +121,24 @@ class BallotController extends Controller
             return Redirect::route('admin.ballots.view', ['ballot' => $ballot]);
         }
     }
+
+    /**
+     * Update the ballot's status.
+     */
+    public function statusUpdate(Ballot $ballot)
+    {
+        $ballot = Ballot::byHash($ballot->hash);
+        $response = $ballot->status == 'published' ? Gate::inspect('publish', $ballot) : Gate::inspect('update', $ballot);
+
+        if ($response->allowed()) {
+            $ballot->status = ModelStatusEnum::PUBLISHED;
+            $ballot->update();
+            return Redirect::back();
+        } else {
+            return Redirect::back()->withErrors(['error' => 'Not authorized']);
+        }
+    }
+
 
     /**
      * Create a ballot's question.

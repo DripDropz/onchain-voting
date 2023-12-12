@@ -4,6 +4,7 @@
       class="p-4 mb-4 text-lg font-medium text-gray-900 border-b border-b-gray-300 dark:border-b-gray-600 dark:text-gray-100">
       Publish Checklist:
     </h2>
+    <form @submit.prevent="updateBallotStatus" class="relative">
     <ul role="list" class="px-4 mt-8">
       <li v-for="(event, eventIdx) in timeline">
         <div class="relative pb-8">
@@ -41,11 +42,19 @@
                   {{ timeAgo }}
                 </UseTimeAgo>
               </div>
+              <button
+                v-if="event.content == 'Publish Ballot'"
+                :disabled="!timeline?.[eventIdx - 1]?.stepComplete || ballot.status == 'published'"
+                class="px-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                :class="{'hover:bg-slate-500 bg-slate-500 cursor-not-allowed': !timeline?.[eventIdx - 1]?.stepComplete || ballot.status == 'published'}">
+                Publish
+              </button>
             </div>
           </div>
         </div>
       </li>
     </ul>
+    </form>
     <div class="flex flex-col p-4 text-black lg:flex-row">
       <div class="flex flex-row items-center">
         <div class="w-2 h-2 bg-green-500 border"></div>
@@ -70,11 +79,35 @@ import BallotData = App.DataTransferObjects.BallotData;
 import { computed, ref } from "vue";
 import moment from "moment-timezone";
 import { VARIABLES } from "@/models/variables";
-
+import AlertService from '@/shared/Services/alert-service';
+import { useForm } from "@inertiajs/vue3";
 
 const props = defineProps<{
   ballot?: BallotData;
 }>();
+
+const form = useForm({
+  hash: props?.ballot?.hash,
+  status: props?.ballot?.status ?? 'Select Status',
+});
+
+
+function updateBallotStatus() {
+  form.patch(route('admin.ballots.status.update', { ballot: props.ballot?.hash }), {
+    preserveScroll: true,
+    preserveState: true,
+    onSuccess: () => {
+      AlertService.show(['Ballot published'], 'success')
+    },
+    onError: (errors) => {
+      AlertService.show(
+        Object
+          .entries(errors)
+          .map(([key, value]) => value)
+      );
+    },
+  });
+}
 
 let ballot = ref(props.ballot);
 let userTimeZone = moment.tz.guess();
@@ -136,7 +169,6 @@ const timeline = [
       hasPolicies.value &&
       ballot.value?.status == "published" &&
       ballot.value?.questions?.[0]?.choices?.[0]?.created_at,
-
   },
 ];
 </script>
