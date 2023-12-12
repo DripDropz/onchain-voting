@@ -20,6 +20,7 @@ environments:
     queue-memory: 1024
     queue-timeout: 600
     runtime: 'php-8.2:al2'
+    storage: staging-openchainvote-storage
     database: staging-openchainvote-database
     cache: staging-openchainvote-redis
     build:
