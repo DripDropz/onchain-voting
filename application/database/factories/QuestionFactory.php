@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\ModelStatusEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Models\Ballot;
+use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,6 +23,7 @@ class QuestionFactory extends Factory
     {
         $user_ids = User::pluck('id')->toArray();
         $ballot_ids = Ballot::pluck('id')->toArray();
+
         return [
             'title' => fake()->sentence(3, true),
             'description' => fake()->paragraphs(random_int(1, 2), true),

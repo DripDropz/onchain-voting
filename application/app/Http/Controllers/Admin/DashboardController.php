@@ -21,7 +21,7 @@ class DashboardController extends Controller
     {
         $this->perPage = $request->input('l',6);
         $this->currPage = $request->input('p',1);
-        
+
         $ballots = $this->query();
         $snapshots = SnapshotData::collection(Snapshot::all());
 

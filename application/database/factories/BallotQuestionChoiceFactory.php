@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\BallotQuestionChoice;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BallotQuestionChoice>
+ * @extends Factory<BallotQuestionChoice>
  */
 class BallotQuestionChoiceFactory extends Factory
 {

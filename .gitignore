@@ -3,3 +3,5 @@
 .env.production
 .idea
 .DS_Store
+.vapor/
+.env.staging

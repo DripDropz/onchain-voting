@@ -23,6 +23,7 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
         Route::post('/create', [BallotController::class, 'store'])->name('store');
         Route::patch('/{ballot}/update', [BallotController::class, 'update'])->name('update');
         Route::delete('/{ballot}/delete', [BallotController::class, 'destroy'])->name('destroy');
+
         Route::patch('/{ballot}/status/update', [BallotController::class, 'statusUpdate'])->name('status.update');
 
         // Ballot Snapshots

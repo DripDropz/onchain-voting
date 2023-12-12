@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Snapshot;
 use App\Models\User;
 use App\Models\VotingPower;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class VotingPowerSeeder extends Seeder

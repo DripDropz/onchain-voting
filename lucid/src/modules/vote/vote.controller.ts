@@ -83,6 +83,8 @@ export class VoteController {
         .attachMetadata(446, [votingMetadata])
         .complete();
 
+      console.log({tx: tx.toString()});
+
       return {tx: tx.toString()};
     }
 

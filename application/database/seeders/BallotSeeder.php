@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Ballot;
 use App\Models\Snapshot;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class BallotSeeder extends Seeder
@@ -14,8 +13,8 @@ class BallotSeeder extends Seeder
      */
     public function run(): void
     {
-
-        Ballot::factory(15)->has(Snapshot::factory()->count(1), 'snapshot')->create();
-
+        Ballot::factory(15)
+            ->has(Snapshot::factory()->count(1), 'snapshot')
+            ->create();
     }
 }

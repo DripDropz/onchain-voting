@@ -15,7 +15,7 @@
                         Ballots
                     </h2>
                     <BallotListAdmin :ballots="ballots" @curr-page="(payload) => currPage = payload"
-                        @per-page="(payload) => perPage = payload" />
+                                     @per-page="(payload) => perPage = payload" />
                 </div>
             </div>
         </section>

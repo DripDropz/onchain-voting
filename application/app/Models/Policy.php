@@ -7,13 +7,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Policy extends Model
 {
     use
         HasTimestamps,
-        HasFactory,
         SoftDeletes;
 
     protected $casts = [

@@ -3,12 +3,13 @@
 namespace Database\Factories;
 
 use App\Enums\ModelStatusEnum;
+use App\Models\Snapshot;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Snapshot>
+ * @extends Factory<Snapshot>
  */
 class SnapshotFactory extends Factory
 {

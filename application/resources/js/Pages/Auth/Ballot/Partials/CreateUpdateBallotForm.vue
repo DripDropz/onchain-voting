@@ -274,8 +274,8 @@ function submitForm() {
             onError: (errors) => {
                 AlertService.show(
                     Object
-                    .entries(errors)
-                    .map(([key, value]) => value)
+                        .entries(errors)
+                        .map(([key, value]) => value)
                 );
             },
         });
@@ -287,8 +287,8 @@ function submitForm() {
             onError: (errors) => {
                 AlertService.show(
                     Object
-                    .entries(errors)
-                    .map(([key, value]) => value)
+                        .entries(errors)
+                        .map(([key, value]) => value)
                 );
             },
         });

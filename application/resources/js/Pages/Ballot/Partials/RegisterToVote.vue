@@ -1,6 +1,6 @@
 <template>
     <a :preserve-scroll="true" @click.prevent="registerUser()"
-        class="absolute top-0 left-0 flex items-center justify-center w-full h-full p-8 text-sky-700 rounded-lg bg-sky-800/50 hover:cursor-pointer">
+       class="absolute top-0 left-0 flex items-center justify-center w-full h-full p-8 text-sky-700 rounded-lg bg-sky-800/50 hover:cursor-pointer">
         <span class="px-4 py-2 text-lg font-bold bg-sky-100 rounded-full xl:text-text">
             Register to Vote
         </span>
