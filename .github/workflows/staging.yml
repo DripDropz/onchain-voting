@@ -1,0 +1,48 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches:
+      - staging
+      - devops
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ./application/vendor
+          key: composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          tools: composer:v2
+          coverage: none
+
+      - name: Require Vapor CLI
+        working-directory: ./application
+        run: composer global require laravel/vapor-cli --update-with-dependencies
+
+      - name: Install Project Dependencies
+        working-directory: ./application
+        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-dev
+
+      - name: Deploy Environment
+        working-directory: ./application
+        run: vapor deploy staging
+        env:
+          VAPOR_API_TOKEN: ${{ secrets.VAPOR_API_TOKEN }}

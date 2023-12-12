@@ -1,0 +1,31 @@
+id: 55420
+name: dripdropz-openchainvote
+environments:
+
+#    TODO production setup
+#    production:
+#        memory: 1024
+#        cli-memory: 512
+#        runtime: 'php-8.2:al2'
+#        build:
+#            - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev'
+#            - 'php artisan event:cache'
+#            - 'npm ci && npm run build && rm -rf node_modules'
+
+    staging:
+        # domain: todo-domain.net
+        timeout: 60
+        memory: 1024
+        cli-memory: 1024
+        queue-memory: 1024
+        queue-timeout: 600
+        runtime: 'php-8.2:al2'
+        database: staging-dripdropz-openchainvote
+        cache: staging-openchainvote-redis
+        build:
+            - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader'
+            - 'php artisan optimize'
+            - 'php artisan event:cache'
+            - 'npm ci && npm run build && rm -rf node_modules'
+        # deploy:
+        #   - 'php artisan migrate'

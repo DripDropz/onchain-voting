@@ -15,6 +15,7 @@
         "laravel/sanctum": "^3.2",
         "laravel/telescope": "^4.14",
         "laravel/tinker": "^2.8",
+        "laravel/vapor-core": "^2.33",
         "owen-it/laravel-auditing": "^13.5",
         "sammyjo20/saloon": "^2.0",
         "sammyjo20/saloon-laravel": "^2.0",
