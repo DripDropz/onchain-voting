@@ -19,8 +19,8 @@ let {isDarkMode} = storeToRefs(configStore);
 
 <template>
     <div :class="{'dark': isDarkMode }" v-if="!!$page.props?.auth?.user">
-        <div class="min-h-screen bg-indigo-100 dark:bg-gray-900">
-            <nav class="bg-indigo-100 border-b border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+        <div class="min-h-screen bg-sky-50 dark:bg-gray-900">
+            <nav class="bg-sky-50 border-b border-gray-100 dark:bg-gray-800 dark:border-gray-700">
                 <!-- Primary Navigation Menu -->
                 <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
@@ -47,7 +47,7 @@ let {isDarkMode} = storeToRefs(configStore);
                                         <template #trigger>
                                             <span class="inline-flex rounded-md">
                                                 <button type="button"
-                                                    class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-indigo-100 border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
+                                                    class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-sky-100 border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
                                                     {{ $page.props.auth.user.name }}
 
                                                     <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
@@ -122,7 +122,7 @@ let {isDarkMode} = storeToRefs(configStore);
             </nav>
 
             <!-- Page Heading -->
-            <header class="bg-indigo-100 shadow dark:bg-gray-800" v-if="$slots.header">
+            <header class="bg-white shadow dark:bg-gray-800" v-if="$slots.header">
                 <div class="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>

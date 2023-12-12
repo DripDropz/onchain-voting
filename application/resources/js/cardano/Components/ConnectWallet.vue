@@ -34,7 +34,7 @@
         </button>
 
         <div v-show="open" style="display: none;" ref="target"
-            class="absolute z-40 justify-center w-full overflow-visible bg-indigo-100 rounded-b-lg shadow-md ">
+            class="absolute z-40 justify-center w-full overflow-visible bg-sky-100 rounded-b-lg shadow-md ">
             <div v-if="WalletList.length === 0" class="px-4 py-2 text-center text-gray-700">
                 No wallets found
             </div>

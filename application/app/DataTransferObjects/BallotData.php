@@ -42,6 +42,9 @@ class BallotData extends Data
         #[BooleanType]
         public ?bool $live,
 
+        #[BooleanType]
+        public ?bool $open,
+
         #[Rule('string')]
         public ?string $type,
 
@@ -83,7 +86,9 @@ class BallotData extends Data
         public ?DataCollection $responses,
 
         #[TypescriptOptional]
-        public ?BallotResponseData $user_response,
+        #[DataCollectionOf(BallotResponseData::class)]
+        /** @var BallotResponseData[] */
+        public ?DataCollection $user_responses,
 
         #[TypescriptOptional]
         #[DataCollectionOf(VoteData::class)]

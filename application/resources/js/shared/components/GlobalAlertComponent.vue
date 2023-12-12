@@ -10,10 +10,10 @@
                 leave-to-class="opacity-0">
                 <div v-if="alert?.show" :class="{
                     'bg-yellow-800': alert?.type === 'info',
-                    'bg-teal-600': alert?.type === 'success',
+                    'bg-sky-600': alert?.type === 'success',
                     'bg-red-500': alert?.type === 'error',
                 }"
-                    class="max-w-sm py-6 m-8 overflow-hidden bg-red-400 shadow-lg pointer-events-auto ronded-lg ring-1 ring-black ring-opacity-5">
+                    class="max-w-sm py-6 m-8 overflow-hidden bg-red-400 shadow-lg pointer-events-auto rounded-lg ring-1 ring-black ring-opacity-5">
                     <div class="flex items-start p-4">
                         <div class="flex-shrink-0">
                             <CheckCircleIcon v-if="alert?.type === 'success'" class="w-6 h-6 text-white"
@@ -29,7 +29,7 @@
                         </div>
                         <div class="flex flex-shrink-0 ml-4">
                             <button type="button" @click="alertStore.closeAlert(index)"
-                                class="inline-flex text-gray-400 bg-indigo-100 rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                class="inline-flex text-gray-400 bg-sky-100 rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2">
                                 <span class="sr-only">Close</span>
                                 <XMarkIcon class="w-5 h-5" aria-hidden="true" />
                             </button>

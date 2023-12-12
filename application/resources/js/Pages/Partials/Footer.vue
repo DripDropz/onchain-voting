@@ -1,5 +1,5 @@
 <template>
-    <footer>
+    <footer class="bg-white dark:bg-gray-950/20 relative">
         <section class="container flex flex-row items-center justify-between w-full py-8">
             <div :class="{ 'w-5/6': !$page.props.auth.user }">
                 <nav>
@@ -25,9 +25,9 @@
                 </nav>
             </div>
             <div class="flex flex-row items-center justify-end w-1/3 gap-6 text-white">
-                <div class="relative flex items-center gap-0 py-0.5 bg-indigo-700 rounded-lg flex-nowrap hover:bg-indigo-700">
+                <div class="relative flex items-center gap-0 py-0.5 bg-sky-700 rounded-lg flex-nowrap hover:bg-sky-700">
                     <Link preserve-state v-if="user?.hash" href="#" @click.prevent="logout"
-                        class="flex items-center h-full gap-2 px-3 py-2 mx-1 bg-indigo-800 rounded-lg hover:bg-indigo-950">
+                        class="flex items-center h-full gap-2 px-3 py-2 mx-1 bg-sky-800 rounded-lg hover:bg-sky-950">
                         <p>Logout</p>
                         <ArrowRightOnRectangleIcon class="w-5 h-5"></ArrowRightOnRectangleIcon>
                     </Link>
@@ -36,7 +36,7 @@
                 <DarkModeButton />
             </div>
         </section>
-        <section class="text-indigo-100 dark:bg-indigo-950">
+        <section class="text-slate-600 bg-sky-50 dark:bg-sky-950">
             <div class="container flex justify-between py-2 text-xs">
                 <div v-if="config.show_created_by">
                     Created with ♡ by <a href="https://dripdropz.io/" target="_blank" >DripDropz</a>

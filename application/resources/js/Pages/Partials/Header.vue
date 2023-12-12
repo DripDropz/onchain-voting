@@ -17,9 +17,9 @@
                     </li>
                     <li
                         class="items-end justify-between hidden gap-8 p-1 ml-8 text-lg lg:flex font-display text-slate-900 dark:text-slate-200">
-                        <a v-for="option in menuOptions" :href="option.href" :class="{ 'text-sky-300': option.current }">
+                        <Link v-for="option in menuOptions" :href="option.href" :class="{ 'text-sky-300': option.current }">
                             {{ option.name }}
-                        </a>
+                        </Link>
                     </li>
                 </ul>
             </nav>
@@ -98,8 +98,8 @@ withDefaults(defineProps<{
 
 let showMenu = ref(false);
 const menuOptions = [
-    { name: 'Petitions', href: '#', current: true },
-    { name: 'Ballots', href: '#open-ballots', current: false },
+    { name: 'Petitions', href: '#', current: false },
+    { name: 'Ballots', href: route('ballots.index'), current: false },
     { name: 'Polls', href: '#', current: false },
 ]
 

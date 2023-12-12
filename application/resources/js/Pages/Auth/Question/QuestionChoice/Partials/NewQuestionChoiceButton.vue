@@ -1,6 +1,6 @@
 <template>
     <div
-        class="overflow-hidden border border-gray-300 border-dashed rounded-xl dark:border-gray-700 hover:border-indigo-600">
+        class="overflow-hidden border border-gray-300 border-dashed rounded-xl dark:border-gray-700 hover:border-sky-600">
         <Link as="button"
             :preserve-scroll="false"
             :preserve-state="false"

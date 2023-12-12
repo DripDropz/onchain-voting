@@ -19,7 +19,7 @@ class QuestionFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => fake()->name(),
+            'title' => fake()->words(rand(3, 8)),
             'status' => ModelStatusEnum::PUBLISHED,
             'type' => QuestionTypeEnum::SINGLE,
         ];

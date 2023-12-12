@@ -2,8 +2,10 @@
 
 namespace App\DataTransferObjects;
 
+use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\WithoutValidation;
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -21,7 +23,10 @@ class BallotResponseData extends Data
 
         public ?QuestionData $question,
 
-        public QuestionChoiceData $choice,
+        #[TypescriptOptional]
+        #[DataCollectionOf(QuestionChoiceData::class)]
+        /** @var QuestionChoiceData[] */
+        public ?DataCollection $choices,
 
         public ?UserData $user,
 

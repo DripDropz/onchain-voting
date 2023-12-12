@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full bg-indigo-100 border border-slate-200 dark:bg-gray-900 rounded-xl dark:border-gray-700">
+    <div class="w-full bg-sky-100 border border-slate-200 dark:bg-gray-900 rounded-xl dark:border-gray-700">
         <div class="px-3 dark:bg-gray-800 sm:p-4 rounded-t-xl">
             <div class="flex flex-wrap items-center justify-between sm:flex-nowrap">
                 <div class="">
@@ -26,7 +26,7 @@
                                     leave-from-class="transform scale-100 opacity-100"
                                     leave-to-class="transform scale-95 opacity-0">
                             <MenuItems
-                                class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-indigo-100 dark:bg-gray-700 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                                class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-sky-100 dark:bg-gray-700 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                                 <MenuItem v-slot="{ active }">
                                     <Link
                                         :href="route( 'admin.ballots.questions.edit', { 'ballot': ballot?.hash, 'question': question?.hash})"
@@ -49,11 +49,11 @@
             <div class="flex flex-wrap items-center justify-start gap-4 sm:flex-nowrap">
                 <div class="inline-flex rounded-md shadow-sm isolate">
                         <span type="button"
-                              class="relative inline-flex items-center gap-x-1.5 rounded-l-md bg-indigo-100 px-2 py-1 text-sm font-semibold text-slate-900 dark:text-gray-200 ring-1 ring-inset bg-slate-200 dark:bg-gray-700 ring-slate-300 dark:ring-gray-700">
+                              class="relative inline-flex items-center gap-x-1.5 rounded-l-md bg-sky-100 px-2 py-1 text-sm font-semibold text-slate-900 dark:text-gray-200 ring-1 ring-inset bg-slate-200 dark:bg-gray-700 ring-slate-300 dark:ring-gray-700">
                           Type
                         </span>
                     <span
-                        class="relative inline-flex items-center px-2 py-1 -ml-px text-sm font-semibold bg-indigo-100 rounded-r-md dark:bg-gray-500 text-slate-900 dark:text-slate-100 ring-1 ring-inset ring-slate-300 dark:ring-gray-600">
+                        class="relative inline-flex items-center px-2 py-1 -ml-px text-sm font-semibold bg-sky-100 rounded-r-md dark:bg-gray-500 text-slate-900 dark:text-slate-100 ring-1 ring-inset ring-slate-300 dark:ring-gray-600">
                             {{ question.type }}
                         </span>
                 </div>

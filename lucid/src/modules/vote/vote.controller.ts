@@ -7,7 +7,6 @@ import {
     Req,
 } from '@nestjs/common';
 import {
-  Lucid,
     PolicyId,
     UTxO,
     Unit,
@@ -83,6 +82,8 @@ export class VoteController {
         .validTo(Date.now() + 250000)       
         .attachMetadata(446, [votingMetadata])
         .complete();
+
+      console.log({tx: tx.toString()});
 
       return {tx: tx.toString()};
     }

@@ -12,6 +12,7 @@ class BallotSeeder extends Seeder
      */
     public function run(): void
     {
-        Ballot::factory()->create(4);
+        Ballot::factory()->count(12)
+            ->create();
     }
 }

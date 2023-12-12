@@ -4,10 +4,11 @@ namespace Database\Factories;
 
 use App\Models\Ballot;
 use App\Models\Question;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<Ballot>
  */
 class BallotFactory extends Factory
 {
@@ -15,12 +16,18 @@ class BallotFactory extends Factory
      * Define the model's default state.
      *
      * @return array<string, mixed>
+     * @throws \Exception
      */
     public function definition(): array
     {
+        $started_at = fake()->dateTimeBetween('-1 year', '+1 year');
         return [
             'title' => fake()->sentence(3, true),
-            'version' => fake()->sentence(random_int(1, 3), true),
+            'version' => fake()->semver(),
+            'description' => fake()->sentence(random_int(1, 3), true),
+            'status' => fake()->randomElement(['draft', 'pending', 'published']),
+            'started_at' => $started_at,
+            'ended_at' => fake()->dateTimeBetween($started_at, '+1 year'),
         ];
     }
 

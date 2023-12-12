@@ -11,10 +11,10 @@
 
             <form @submit.prevent="submitForm" class="relative">
                 <div
-                    class="overflow-hidden border border-gray-300 rounded-lg shadow-sm dark:border-gray-700 focus-within:border-indigo-500 dark:focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-500 dark:focus-within:ring-indigo-500">
+                    class="overflow-hidden border border-gray-300 rounded-lg shadow-sm dark:border-gray-700 focus-within:border-sky-500 dark:focus-within:border-sky-600 focus-within:ring-1 focus-within:ring-sky-500 dark:focus-within:ring-sky-500">
                     <label for="title" class="sr-only">Title</label>
                     <input type="text" name="title" id="title" v-model="form.title"
-                           class="block w-full border-0 pt-2.5 text-lg font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-indigo-100 dark:bg-gray-900"
+                           class="block w-full border-0 pt-2.5 text-lg font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-sky-100 dark:bg-gray-900"
                            placeholder="Title"/>
 
                     <label for="description" class="sr-only">Description</label>
@@ -25,7 +25,7 @@
                                class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300 w-44">
                                Policy ID</label>
                         <input type="text" name="policy_id" id="policy_id" v-model="form.policy_id" placeholder="Policy" disabled
-                               class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-indigo-100 dark:bg-gray-900 rounded-lg"/>
+                               class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-0 bg-sky-100 dark:bg-gray-900 rounded-lg"/>
                     </div>
 
                     <Listbox as="div" v-model="form.status"
@@ -35,7 +35,7 @@
                         </ListboxLabel>
                         <div class="relative flex flex-1 mt-2">
                             <ListboxButton
-                                class="relative w-full cursor-default rounded-md bg-indigo-100 dark:bg-gray-900 py-1.5 pl-3 pr-10 text-left text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-700 sm:text-sm sm:leading-6">
+                                class="relative w-full cursor-default rounded-md bg-sky-100 dark:bg-gray-900 py-1.5 pl-3 pr-10 text-left text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-600 dark:focus:ring-sky-700 sm:text-sm sm:leading-6">
                                 <span class="block truncate">{{ form.status }}</span>
                                 <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                   <ChevronUpDownIcon class="w-5 h-5 text-gray-400" aria-hidden="true"/>
@@ -46,17 +46,17 @@
                                         leave-from-class="opacity-100"
                                         leave-to-class="opacity-0">
                                 <ListboxOptions
-                                    class="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-indigo-100 rounded-md shadow-lg max-h-60 dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                    class="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-sky-100 rounded-md shadow-lg max-h-60 dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                     <ListboxOption as="template" v-for="status in Object.values(snapshotStatuses)" :key="status"
                                                    :value="status" v-slot="{ active, selected }">
-                                        <li :class="[active ? 'bg-indigo-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
+                                        <li :class="[active ? 'bg-sky-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
                                             <span class="capitalize"
                                                   :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">{{
                                                     status
                                                 }}</span>
 
                                             <span v-if="selected"
-                                                  :class="[active ? 'text-white' : 'text-indigo-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
+                                                  :class="[active ? 'text-white' : 'text-sky-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
                                                 <CheckIcon class="w-5 h-5" aria-hidden="true"/>
                                           </span>
                                         </li>
@@ -73,7 +73,7 @@
                         </ListboxLabel>
                         <div class="relative flex flex-1 mt-2">
                             <ListboxButton
-                                class="relative w-full cursor-default rounded-md bg-indigo-100 dark:bg-gray-900 py-1.5 pl-3 pr-10 text-left text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-700 sm:text-sm sm:leading-6">
+                                class="relative w-full cursor-default rounded-md bg-sky-100 dark:bg-gray-900 py-1.5 pl-3 pr-10 text-left text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-600 dark:focus:ring-sky-700 sm:text-sm sm:leading-6">
                                 <span class="block capitalize truncate">{{ form.type }}</span>
                                 <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                   <ChevronUpDownIcon class="w-5 h-5 text-gray-400" aria-hidden="true"/>
@@ -84,18 +84,18 @@
                                         leave-from-class="opacity-100"
                                         leave-to-class="opacity-0">
                                 <ListboxOptions
-                                    class="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-indigo-100 rounded-md shadow-lg max-h-60 dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                    class="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-sky-100 rounded-md shadow-lg max-h-60 dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                     <ListboxOption as="template" v-for="type in Object.values(snapshotTypes)" :key="type"
                                                    :value="type"
                                                    v-slot="{ active, selected }">
-                                        <li :class="[active ? 'bg-indigo-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
+                                        <li :class="[active ? 'bg-sky-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
                                             <span class="capitalize"
                                                   :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">{{
                                                     type
                                                 }}</span>
 
                                             <span v-if="selected"
-                                                  :class="[active ? 'text-white' : 'text-indigo-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
+                                                  :class="[active ? 'text-white' : 'text-sky-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
                                                 <CheckIcon class="w-5 h-5" aria-hidden="true"/>
                                           </span>
                                         </li>
@@ -126,7 +126,7 @@
                         </div>
                         <div class="flex-shrink-0">
                             <button type="submit"
-                                    class="inline-flex items-center px-3 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                    class="inline-flex items-center px-3 py-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">
                                 {{ snapshot ? 'Update' : 'Create' }}
                             </button>
                         </div>

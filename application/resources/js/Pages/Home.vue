@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ArrowLongDownIcon } from '@heroicons/vue/20/solid'
-import OpenBallots from "@/Pages/Partials/OpenBallots.vue";
 import BallotData = App.DataTransferObjects.BallotData;
 import VoterLayout from "@/Layouts/VoterLayout.vue";
 import voteSplashImg from '../../images/vote-splash.jpeg';
+import {Link} from "@inertiajs/vue3";
 
 defineProps<{
     canLogin?: boolean;
@@ -43,10 +42,10 @@ defineProps<{
                         </div>
                     </div>
                     <div class="flex items-start w-full gap-6">
-                        <a href="#open-ballots"
+                        <Link :href="route('ballots.index')"
                             class="inline-flex items-center gap-x-2 rounded-md bg-white px-2 py-2.5  font-semibold text-sky-400 shadow-sm hover:bg-sky-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 border border-sky-400">
                             Open Ballots
-                        </a>
+                        </Link>
                         <a href="#"
                             class="inline-flex items-center gap-x-2 rounded-md bg-sky-400 px-2 py-2.5  font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 ">
                             Start a petition
@@ -58,7 +57,7 @@ defineProps<{
                 </div>
             </div>
 
-<!--            <div class="py-24 bg-indigo-200 dark:bg-slate-800/20" v-if="ballots?.length > 0" id="open-ballots">-->
+<!--            <div class="py-24 bg-sky-100 dark:bg-slate-800/20" v-if="ballots?.length > 0" id="open-ballots">-->
 <!--                <div class="container" v-if="ballots?.length > 1">-->
 <!--                    <h2 class="mb-6 title2 font-display lg:mb-10">-->
 <!--                        <span class="flex">Open Ballots</span>-->

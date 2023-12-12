@@ -1,5 +1,5 @@
 <template>
-    <draggable v-model="choices" item-key="choice.hash" group="choice" tag="transition-group" 
+    <draggable v-model="choices" item-key="choice.hash" group="choice" tag="transition-group"
     class="cursor-pointer "
     :component-data="{
         tag: 'ul',
@@ -12,7 +12,7 @@
                     <input type="checkbox" class="opacity-0 peer" name="choice" :checked="choice.selected" :id="choice.hash"
                         @change="toggleCheckbox(choice)" />
                     <div class="w-full p-3 transition-all border-2 border-white rounded-full hover:shadow"
-                        :class="{ 'text-indigo-700 bg-indigo-100 ring-indigo-700 ring-4 border-transparent ': choice.selected, 'text-white hover:bg-indigo-700': !choice.selected }">
+                        :class="{ 'text-sky-700 bg-sky-100 ring-sky-700 ring-4 border-transparent ': choice.selected, 'text-white hover:bg-sky-700': !choice.selected }">
                         <div class="flex items-center justify-between ">
                             <p :for="choice.hash" class="pr-8 text-sm font-semibold">
                                 {{ choice.title }}</p>

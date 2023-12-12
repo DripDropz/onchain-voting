@@ -41,12 +41,12 @@
                      <div class="flex flex-row flex-shrink-0 gap-4">
                          <button
                              @click.prevent="cancelParsing"
-                             class="inline-flex items-center px-3 py-2 text-sm font-semibold text-white bg-red-600 rounded-md shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                             class="inline-flex items-center px-3 py-2 text-sm font-semibold text-white bg-red-600 rounded-md shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">
                              Cancel
                          </button>
                          <button
                              @click.prevent="confirmParsing"
-                             class="inline-flex items-center px-3 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                             class="inline-flex items-center px-3 py-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">
                              Confirm
                          </button>
                      </div>
@@ -54,9 +54,9 @@
              </div>
              <div v-if="uploadingFile" class="flex flex-row justify-center w-full px-6 py-10 mt-2 border border-dashed rounded-lg border-gray-900/25 dark:border-gray-700">
                 <div class="flex flex-col items-center justify-center">
-                     <div class="flex flex-col w-16 bg-indigo-100 rounded-full bg-opacity-90">
+                     <div class="flex flex-col w-16 bg-sky-100 rounded-full bg-opacity-90">
                          <svg aria-hidden="true"
-                             class="w-16 h-16 text-gray-200 animate-spin dark:text-gray-400 fill-indigo-800" viewBox="0 0 100 101" fill="none"
+                             class="w-16 h-16 text-gray-200 animate-spin dark:text-gray-400 fill-sky-800" viewBox="0 0 100 101" fill="none"
                              xmlns="http://www.w3.org/2000/svg">
                              <path
                                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
@@ -89,9 +89,9 @@
          <!-- <div v-if="parsingFile"> -->
              <div v-if="parsingFile" class="flex flex-row justify-center w-full px-6 py-10 mt-2 border border-dashed rounded-lg border-gray-900/25 dark:border-gray-700">
                  <div class="flex flex-col items-center justify-center">
-                     <div class="flex flex-col w-16 bg-indigo-100 rounded-full bg-opacity-90">
+                     <div class="flex flex-col w-16 bg-sky-100 rounded-full bg-opacity-90">
                          <svg aria-hidden="true"
-                             class="w-16 h-16 text-gray-200 animate-spin dark:text-gray-400 fill-indigo-800" viewBox="0 0 100 101" fill="none"
+                             class="w-16 h-16 text-gray-200 animate-spin dark:text-gray-400 fill-sky-800" viewBox="0 0 100 101" fill="none"
                              xmlns="http://www.w3.org/2000/svg">
                              <path
                                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
@@ -114,7 +114,7 @@
                  <div class="text-center ">
                      <FolderOpenIcon class="w-12 h-12 mx-auto text-gray-300" aria-hidden="true" />
                      <div class="flex mt-4 text-sm leading-6 text-gray-600 dark:text-gray-100">
-                         <label for="file-upload" class="relative font-semibold text-indigo-600 rounded-md cursor-pointer focus-within:outline-none focus-within:ring-none hover:text-indigo-500">
+                         <label for="file-upload" class="relative font-semibold text-sky-600 rounded-md cursor-pointer focus-within:outline-none focus-within:ring-none hover:text-sky-500">
                              <span>Upload a file</span>
                              <input id="file-upload" name="file-upload" type="file" class="sr-only" @change="inputFile($event)"/>
                          </label>

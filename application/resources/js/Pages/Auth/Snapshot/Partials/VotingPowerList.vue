@@ -12,20 +12,20 @@
                     </p>
                 </header>
             </div>
-            <div v-if="percentageUploaded < 100" 
+            <div v-if="percentageUploaded < 100"
                 class="w-2/3">
                 <div class="flex justify-between mb-1">
-                    <span class="text-base font-medium text-indigo-700 dark:text-indigo">Uploading...</span>
-                    <span class="text-sm font-medium text-indigo-700 dark:text-indigo">{{ percentageUploaded.toFixed(2) }} %</span>
+                    <span class="text-base font-medium text-sky-700 dark:text-indigo">Uploading...</span>
+                    <span class="text-sm font-medium text-sky-700 dark:text-indigo">{{ percentageUploaded.toFixed(2) }} %</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                    <div class="bg-indigo-600 h-2.5 rounded-full" :style="{ 'width': Math.floor(percentageUploaded) + '%' }" ></div>
+                    <div class="bg-sky-600 h-2.5 rounded-full" :style="{ 'width': Math.floor(percentageUploaded) + '%' }" ></div>
                 </div>
             </div>
         </div>
         <div class="text-gray-600 col-span-full dark:text-gray-400">
                 <GlobalTableComponent :data="vPValues"
-                        :pagination="votingPowerPagination" 
+                        :pagination="votingPowerPagination"
                         :columns="vPColumns"
                         @queryUpdated="(payload: {}) => queryDataRef = payload"
                         >
@@ -63,7 +63,7 @@ let percentageUploaded: ComputedRef<number> = computed(() => {
     return (uploadedVPCount.value / (+expectedVPCount.value)) * 100;
 })
 
-const vPValues = computed(() => 
+const vPValues = computed(() =>
     votingPowers.value.map((power: VotingPowerData) => ({
         voter_id: power.user?.voter_id,
         voting_power: power.voting_power,

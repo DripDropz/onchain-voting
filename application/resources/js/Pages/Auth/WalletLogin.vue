@@ -1,7 +1,7 @@
 <template>
     <ModalRoute>
         <div>
-            <div class="flex flex-col items-center w-full gap-6 p-6 text-center dark:bg-indigo-900">
+            <div class="flex flex-col items-center w-full gap-6 p-6 text-center dark:bg-sky-900">
                 <h1 class="text-2xl font-semibold lg:text-3xl 2xl:text-5xl 3xl:text-6xl text-slate-700 dark:text-white">
                     Login
                 </h1>
@@ -19,11 +19,11 @@
                         offLabel="Use hardware wallet"
                         onLabel="Use hot wallet"
                         :classes="{
-                            container: 'inline-block rounded-xl outline-none focus:ring focus:ring-indigo-500 focus:ring-opacity-40 w-48',
+                            container: 'inline-block rounded-xl outline-none focus:ring focus:ring-sky-500 focus:ring-opacity-40 w-48',
                             toggle: 'flex w-full h-6 rounded-xl relative cursor-pointer transition items-center box-content border-0 text-xs lg:text-sm xl:text-md leading-none',
-                            toggleOn: 'bg-indigo-600 border-indigo-600 justify-start font-semibold text-white',
-                            toggleOff: 'bg-indigo-300 dark:bg-slate-200 border-slate-200 justify-end font-semibold text-slate-700',
-                            handle: 'inline-block bg-indigo-100 dark:bg-indigo-400 w-6 h-6 top-0 rounded-xl absolute transition-all',
+                            toggleOn: 'bg-sky-600 border-sky-600 justify-start font-semibold text-white',
+                            toggleOff: 'bg-sky-300 dark:bg-slate-200 border-slate-200 justify-end font-semibold text-slate-700',
+                            handle: 'inline-block bg-sky-100 dark:bg-sky-400 w-6 h-6 top-0 rounded-xl absolute transition-all',
                             handleOn: 'left-full transform -translate-x-full',
                             handleOff: 'left-0',
                             handleOnDisabled: 'bg-slate-100 left-full transform -translate-x-full',

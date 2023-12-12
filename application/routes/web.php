@@ -20,19 +20,19 @@ Route::get('/', [HomeController::class, 'view'])->name('home');
 
 // Ballot
 Route::prefix('/ballots')->as('ballots.')->group(function () {
-
+    Route::get('/', [BallotController::class, 'index'])->name('index');
 });
 
 Route::prefix('/ballots/{ballot}')->as('ballot.')->group(function () {
     Route::get('/', [BallotController::class, 'view'])->name('view');
 
     Route::get('/register', [BallotController::class, 'viewRegistration'])->name('register.view')
-    ->middleware(['snapshot.check', 'auth.voter']);
+        ->middleware(['snapshot.check', 'auth.voter']);
 
     Route::post('/registration/start', [BallotController::class, 'startRegistration'])
-    ->name('register.store');
+        ->name('register.store');
     Route::post('/registration/submit', [BallotController::class, 'submitRegistration'])
-    ->name('register.submit');
+        ->name('register.submit');
 
     Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');    Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');
     Route::get('/policy-id/{policyType}', [BallotController::class, 'policyId'])->name('policyId');
@@ -40,6 +40,7 @@ Route::prefix('/ballots/{ballot}')->as('ballot.')->group(function () {
     Route::post('/vote/start', [BallotController::class, 'startVoting'])->name('startVoting');
     Route::post('/vote/submit', [BallotController::class, 'completeVoting'])->name('completeVoting');
 });
+
 
 // Voter
 Route::prefix('/voters')->as('voters.')->group(function () {
@@ -50,7 +51,6 @@ Route::prefix('/voters')->as('voters.')->group(function () {
     Route::prefix('/{voterId}/ballot-responses')->as('ballot-responses.')->group(function () {
         Route::post('/save', [VoterController::class, 'saveBallotResponse'])->name('save');
     });
-
 });
 
 require __DIR__.'/admin.php';

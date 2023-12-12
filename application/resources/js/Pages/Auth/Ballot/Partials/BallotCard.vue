@@ -2,7 +2,7 @@
     <section>
         <div class="relative">
             <div
-                class="overflow-hidden border border-gray-300 rounded-lg shadow-sm dark:border-gray-700 focus-within:border-indigo-500 dark:focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-500 dark:focus-within:ring-indigo-500">
+                class="overflow-hidden border border-gray-300 rounded-lg shadow-sm dark:border-gray-700 focus-within:border-sky-500 dark:focus-within:border-sky-600 focus-within:ring-1 focus-within:ring-sky-500 dark:focus-within:ring-sky-500">
                 <header
                     class="block w-full p-3 text-gray-900 border-0 resize-none dark:text-gray-100 xl:p-4 sm:text-sm sm:leading-6 bg-slate-200 dark:bg-gray-900">
                     <div class="flex flex-wrap items-center justify-start gap-2 sm:flex-nowrap">
@@ -91,7 +91,7 @@
                     <div class="flex-shrink-0">
                         <Link as="button"
                               :href="route( 'admin.ballots.edit', { 'ballot': ballot?.hash})"
-                              class="inline-flex items-center px-3 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                              class="inline-flex items-center px-3 py-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">
                             <span>Edit</span>
                         </Link>
                     </div>
