@@ -33,7 +33,7 @@ environments:
     database: staging-openchainvote-database
     cache: staging-openchainvote-redis
     build:
-      - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader'
+      - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-interaction --prefer-dist --optimize-autoloader'
       - 'php artisan optimize'
       - 'php artisan event:cache'
       - 'npm install --global yarn && yarn install && yarn build && rm -rf node_modules'
