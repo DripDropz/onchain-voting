@@ -16,6 +16,7 @@
         "laravel/telescope": "^4.14",
         "laravel/tinker": "^2.8",
         "laravel/vapor-core": "^2.33",
+        "laravel/vapor-ui": "^1.7",
         "owen-it/laravel-auditing": "^13.5",
         "sammyjo20/saloon": "^2.0",
         "sammyjo20/saloon-laravel": "^2.0",
@@ -62,7 +63,8 @@
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan vapor-ui:publish --ansi"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
