@@ -33,6 +33,8 @@ Route::prefix('/ballots/{ballot}')->as('ballot.')->group(function () {
         ->name('register.store');
     Route::post('/registration/submit', [BallotController::class, 'submitRegistration'])
         ->name('register.submit');
+    Route::post('/registration/submit', [BallotController::class, 'saveUpdateRegistration'])
+        ->name('register.save-update');
 
     Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');    Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');
     Route::get('/policy-id/{policyType}', [BallotController::class, 'policyId'])->name('policyId');

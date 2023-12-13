@@ -96,7 +96,7 @@ import {useWalletStore} from "@/cardano/stores/wallet-store";
 import {storeToRefs} from "pinia";
 import BallotResponseData = App.DataTransferObjects.BallotResponseData;
 import QuestionChoicesChart from "@/Pages/Auth/Question/Partials/QuestionChoicesChart.vue";
-import {ref, computed} from "vue";
+import {ref, computed, watch} from "vue";
 import LoginToVote from "@/Pages/Ballot/Partials/LoginToVote.vue";
 import RegisterToVote from "./RegisterToVote.vue";
 import ConnectWalletToVote from "@/Pages/Ballot/Partials/ConnectWalletToVote.vue";
@@ -114,6 +114,7 @@ const props = withDefaults(defineProps<{
 });
 
 const voterStore = useVoterStore();
+const {voterRegistrations} = storeToRefs(voterStore);
 
 voterStore.loadRegistration(props.ballot.hash).then(() => {
   registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
@@ -144,6 +145,10 @@ const voterPower = computed(() => {
 voterStore.loadRegistration(props.ballot.hash).then(() => {
   registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
 });
+
+watch([voterRegistrations.value], () => {
+  registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
+})
 
 const loggedIn = computed(() => {
   if (!user?.hash) {
