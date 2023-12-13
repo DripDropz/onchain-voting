@@ -105,16 +105,14 @@ deps:
 
 .PHONY:lucid-standalone-up
 lucid-standalone-up:
-	@cd lucid && \
-	docker compose -f docker-compose-standalone.yml build && \
-	docker compose -f docker-compose-standalone.yml up -d
+	$(MAKE) lucid-standalone-down
+	docker compose -f lucid/docker-compose-standalone.yml build && \
+	docker compose -f lucid/docker-compose-standalone.yml up -d
 
 .PHONY:lucid-standalone-down
 lucid-standalone-down:
-	@cd lucid && \
-	docker compose -f docker-compose-standalone.yml down --remove-orphans
+	docker compose -f lucid/docker-compose-standalone.yml down --remove-orphans
 
 .PHONY:lucid-standalone-status
 lucid-standalone-status:
-	@cd lucid && \
-	docker compose -f docker-compose-standalone.yml ps
+	docker compose -f lucid/docker-compose-standalone.yml ps

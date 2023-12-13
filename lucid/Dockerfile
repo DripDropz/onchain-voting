@@ -44,6 +44,8 @@ FROM node:18-alpine As production
 
 WORKDIR /usr/src/app
 
+EXPOSE 3000
+
 COPY --chown=node:node --from=build /usr/src/app/node_modules /usr/src/app/dist/node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist /usr/src/app/dist
 
