@@ -13,8 +13,10 @@ export default class BallotService {
                 route("voters.power", { voterId, ballot: ballotHash })
             );
             return response.data;
-        } catch (error) {
-            console.log(error);
+        } catch (error: any) {
+            if(error.response.status = 404){
+                return 0;
+            };
         }
     }
 
