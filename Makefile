@@ -102,3 +102,19 @@ deps:
 	cp -v application/node_modules/lucid-cardano/esm/src/core/libs/cardano_message_signing/cardano_message_signing_bg.wasm \
 	application/node_modules/lucid-cardano/esm/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib_bg.wasm \
 	application/node_modules/.vite/deps
+
+.PHONY:lucid-standalone-up
+lucid-standalone-up:
+	@cd lucid && \
+	docker compose -f docker-compose-standalone.yml build && \
+	docker compose -f docker-compose-standalone.yml up -d
+
+.PHONY:lucid-standalone-down
+lucid-standalone-down:
+	@cd lucid && \
+	docker compose -f docker-compose-standalone.yml down --remove-orphans
+
+.PHONY:lucid-standalone-status
+lucid-standalone-status:
+	@cd lucid && \
+	docker compose -f docker-compose-standalone.yml ps
