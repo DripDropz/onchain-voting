@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Question;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Ballot;
@@ -14,6 +15,7 @@ use App\Http\Integrations\Lucid\LucidConnector;
 use App\Http\Integrations\Blockfrost\BlockfrostConnector;
 use App\Http\Integrations\Blockfrost\Requests\BlockfrostRequest;
 use Illuminate\Http\Response as LaravelResponse;
+use JetBrains\PhpStorm\NoReturn;
 use Saloon\Exceptions\Request\FatalRequestException;
 use App\Http\Integrations\Lucid\Requests\GetPolicyId;
 use App\Http\Integrations\Lucid\Requests\StartVoting;
@@ -46,10 +48,13 @@ class BallotController extends Controller
      */
     public function view(Request $request, Ballot $ballot): Response
     {
+        $questions = Question::with('choices')
+            ->where('ballot_id', $ballot->id)
+            ->get()->append('choices_tally');
         $ballot->load([
-            'questions.choices',
             'user_responses.choices'
         ]);
+        $ballot->questions = $questions;
 
         return Inertia::render('Ballot/View', [
             'ballot' => BallotData::from($ballot),
@@ -207,7 +212,7 @@ class BallotController extends Controller
         ]);
     }
 
-    public function startVoting(Request $request, Ballot $ballot)
+    #[NoReturn] public function startVoting(Request $request, Ballot $ballot)
     {
         $data = $request->validate([
             'registration' => 'required',
@@ -227,6 +232,8 @@ class BallotController extends Controller
                     ];
                 }
             )->collapse()->toArray();
+
+//        dd($choices);
 
         $submitVote = new StartVoting;
         $submitVote->body()->merge([
@@ -255,7 +262,7 @@ class BallotController extends Controller
         $registration = Registration::where('user_id', $user->id)
             ->where('ballot_id', $ballot->id)
             ->first();
-        
+
         if ($registration instanceof Registration) {
             $registration->registration_tx = $request->registration_tx;
 
@@ -268,7 +275,7 @@ class BallotController extends Controller
             $reg->asset_name = md5("{$user->voter_id}{$user->id}");
             $reg->registration_tx = $request->registration_tx;
 
-            $reg->save();            
+            $reg->save();
         }
     }
 

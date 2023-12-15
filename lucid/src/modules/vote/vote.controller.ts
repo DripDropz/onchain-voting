@@ -33,12 +33,12 @@ export class VoteController {
       const assets = Object.keys(registration?.registration?.assets);
       const registrationToken = assets.find((asset) => asset.includes(registration.policyId));
 
-      // Registration wallet
+      // Ballot Registration wallet
       const [registrationMinter] = await this.configService.getConfigs(request);
       registrationMinter.selectWalletFromSeed(request?.body?.registrationSeed);
       const registrationPolicy = await generatePolicy(registrationMinter);
 
-      // Voting wallet
+      // Ballot Voting wallet
       const assetName = request?.body?.assetName;
       const [votingMinter] = await this.configService.getConfigs(request);
       votingMinter.selectWalletFromSeed(request?.body?.votingSeed);
@@ -47,7 +47,7 @@ export class VoteController {
       const votingUnit: Unit = toUnit(votingPolicyId, assetName);
 
        // User wallet
-       const utxos: UTxO[] = request?.body?.utxos;       
+       const utxos: UTxO[] = request?.body?.utxos;
 
        voter.selectWalletFrom({
            address: registration?.registration?.address,

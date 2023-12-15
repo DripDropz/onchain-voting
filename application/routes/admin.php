@@ -84,28 +84,23 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
         Route::get('/{snapshot:id}/edit', [SnapshotController::class, 'edit'])->name('edit');
 
         // CRUDs
-        Route::post('/create', [SnapshotController::class, 'store'])->name('store');
-        Route::patch('/{snapshot}/update', [SnapshotController::class, 'update'])->name('update');
-        Route::delete('/{snapshot}/delete', [SnapshotController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [SnapshotController::class, 'store'])
+            ->name('store');
+        Route::patch('/{snapshot}/update', [SnapshotController::class, 'update'])
+            ->name('update');
+        Route::delete('/{snapshot}/delete', [SnapshotController::class, 'destroy'])
+            ->name('destroy');
 
         // Snapshot Voting Powers
         Route::prefix('/{snapshot}/powers')->as('powers.')->group(function () {
-            // Views
-            Route::get('/create', [SnapshotController::class, 'createQuestion'])->name('create');
-            Route::get('/{question}/edit', [SnapshotController::class, 'editQuestion'])->name('edit');
-
             // CRUDs
-            Route::get('/', [SnapshotController::class, 'votingPowers'])->name('list');
-            Route::post('/create', [SnapshotController::class, 'storeQuestion'])->name('store');
-            Route::patch('/{question}/update', [SnapshotController::class, 'updateQuestion'])
-                ->name('update');
-            Route::delete('/{question}/delete', [SnapshotController::class, 'destroyQuestion'])->name('destroy');
+            Route::get('/', [SnapshotController::class, 'votingPowers'])
+                ->name('list');
 
             // import voting powers from csv
             Route::prefix('/csv')->as('csv.')->group(function () {
-                Route::get('/upload', [SnapshotController::class, 'uploadVotingPowerCsv'])->name('upload');
-
-                Route::post('/save', [SnapshotController::class, 'storeVotingPowerCsv'])->name('store');
+                Route::get('/upload', [SnapshotController::class, 'uploadVotingPowerCsv'])
+                    ->name('upload');
             });
         });
     });

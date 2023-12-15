@@ -12,8 +12,8 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class Question extends Model implements Auditable, HasUser
@@ -37,7 +37,6 @@ class Question extends Model implements Auditable, HasUser
 
     protected $appends = [
         'hash',
-        'choices_tally',
     ];
 
     protected $casts = [
@@ -57,40 +56,54 @@ class Question extends Model implements Auditable, HasUser
         return $this->hasMany(BallotQuestionChoice::class, 'question_id');
     }
 
-    public function ranked_user_responses():HasMany
+    public function ranked_user_responses(): HasMany
     {
-       return $this->hasMany(BallotResponse::class)->where(
+        return $this->hasMany(BallotResponse::class)->where(
             [
                 'user_id' => auth()?->user()?->getAuthIdentifier(),
             ]
         )->whereNotNull('rank')->orderBy('rank', 'asc');
     }
 
+    public function responses(): HasMany
+    {
+        return $this->hasMany(BallotResponse::class);
+    }
+
     public function choicesTally(): Attribute
     {
         return Attribute::make(
             get: function () {
-                $allChoices = BallotQuestionChoice::where('question_id', $this->id)
+                $allChoices = $this->choices()
                     ->pluck('title')
                     ->toArray();
 
-                return [];
+                $query = BallotResponse::query();
 
-//                $choices = BallotResponse::where('ballot_responses.question_id', $this->id)
-//                    ->join('ballot_question_choices', 'ballot_question_choices.id', '=', 'ballot_responses.ballot_question_choice_id')
-//                    ->groupBy('ballot_question_choices.id', 'ballot_question_choices.title')
-//                    ->select('ballot_question_choices.title', DB::raw('COUNT(*) as count'))
-//                    ->pluck('count', 'title')
-//                    ->toArray();
-//
-//                $choicesWithCounts = array_map(function ($choice) use ($choices) {
-//                    return [
-//                        'title' => $choice,
-//                        'count' => $choices[$choice] ?? 0,
-//                    ];
-//                }, $allChoices);
-//
-//                return $choicesWithCounts;
+                foreach ($allChoices as $choice) {
+                    $c = Str::snake(strtolower($choice));
+                    $query->withCount(
+                        [
+                            "choices as {$c}_count" => function ($query) use ($choice) {
+                                $query->where('ballot_question_choices.title', $choice);
+                            }
+                        ]
+                    );
+                }
+                $attributes = collect($query->first()?->attributes);
+                return $attributes
+                    ->filter(
+                        fn($att, $key) => Str::of($key)->contains('count'))
+                    ->map(function($tally, $key) {
+                        return [
+                            'title' => Str::of($key)
+                                ->replace(['_count', '_'], ' ')
+                                ->trim()
+                                ->title(),
+                            'count' => $tally,
+                        ];
+                    })->values()
+                    ->toArray();
             }
         );
     }

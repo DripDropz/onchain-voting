@@ -301,7 +301,6 @@ class BallotController extends Controller
         }
     }
 
-
     /**
      * Store a newly created Ballot in storage.
      */

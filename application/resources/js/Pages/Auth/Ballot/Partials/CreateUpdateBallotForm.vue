@@ -295,4 +295,3 @@ function submitForm() {
     }
 }
 </script>
-@/Pages/Auth/Ballot/Services/admin-ballot-service
