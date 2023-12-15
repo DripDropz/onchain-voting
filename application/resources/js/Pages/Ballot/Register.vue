@@ -43,12 +43,18 @@
                     </p>
                     <div @click="registerToVote"
                         class="flex flex-col items-center justify-center w-full gap-4 p-4 border border-sky-400 border-dashed rounded-lg hover:cursor-pointer hover:border-white">
-                        <SignalIcon class="w-16 h-16" />
-                        <div class="text-xl lg:text-2xl xl:text-3xl">
-                            Register
+                       <div v-if="submittingRegistration" class="relative flex flex-col items-center justify-center w-full py-8">
+                           <Spinner class="z-30" color="yellow" size="30"
+                                :message="'Registering ...'"/>
                         </div>
-                        <div class="flex items-center gap-2 text-sm">
-                            Your Voting Power: <span class="font-black text-md xl:text-lg">{{ votingPower }}</span>
+                        <div v-else class="flex flex-col items-center justify-center w-full">
+                            <SignalIcon class="w-16 h-16" />
+                            <div class="text-xl lg:text-2xl xl:text-3xl">
+                                Register
+                            </div>
+                            <div class="flex items-center gap-2 text-sm">
+                                Your Voting Power: <span class="font-black text-md xl:text-lg">{{ votingPower }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -67,6 +73,9 @@ import BallotService from '../Ballot/Services/ballot-service';
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/stores/config-store';
 import { useModal } from 'momentum-modal';
+import Spinner from '@/Components/Spinner.vue';
+import AlertService from '@/shared/Services/alert-service';
+import axios from 'axios';
 
 const submittingRegistration = ref(false);
 const registrationComplete = ref(null);
@@ -91,13 +100,28 @@ async function registerToVote() {
         const data = await BallotService.register(props.ballot?.hash);
         if (data?.tx) {
             registrationComplete.value = data?.tx;
-        } else {
+            saveUpdateRegistration(data.tx);
+            voterStore.loadRegistration(props.ballot.hash);
+        } else if(data?.existingTx) {
             registrationComplete.value = data?.existingTx
             alreadyRegistered.value = true;
+            saveUpdateRegistration(data.existingTx);
+            voterStore.loadRegistration(props.ballot.hash);
+        } else {
+            let network = (await axios.get(route('config.cardano')))?.data.projectId.includes('preview') ? 'preview' : 'mainnet';
+            let $errorTemplate = `Registration Error, try again.
+            Make sure you wallet is connected to ${network} network`
+            
+            AlertService.show([$errorTemplate], 'error');
         }
 
     }
     submittingRegistration.value = false;
+}
+
+async function saveUpdateRegistration(tx: string){
+    await BallotService.saveUpdateRegistration(props.ballot?.hash, tx);
+    AlertService.show(['Registration succeful'], 'info');
 }
 
 </script>

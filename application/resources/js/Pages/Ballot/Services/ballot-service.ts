@@ -122,6 +122,19 @@ export default class BallotService {
         }
     }
 
+    static async saveUpdateRegistration(ballotHash: string, txHash:string)
+    {
+        await axios.post(
+            route('ballot.register.save-update', {
+                ballot: ballotHash
+            }),
+            {
+                registration_tx: txHash
+
+            }
+        );
+    }
+
     protected static async getLucidInstance() {
         if (BallotService.lucid) { return BallotService.lucid; }
         try {

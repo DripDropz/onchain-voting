@@ -20,7 +20,7 @@ use App\Http\Integrations\Lucid\Requests\StartVoting;
 use App\Http\Integrations\Lucid\Requests\CompleteVoting;
 use App\Http\Integrations\Lucid\Requests\StartRegistration;
 use App\Http\Integrations\Lucid\Requests\CompleteRegistration;
-
+use App\Models\Registration;
 
 class BallotController extends Controller
 {
@@ -247,6 +247,29 @@ class BallotController extends Controller
         });
 
         return $response->body();
+    }
+
+    public function saveUpdateRegistration(Request $request, Ballot $ballot)
+    {
+        $user = Auth::user();
+        $registration = Registration::where('user_id', $user->id)
+            ->where('ballot_id', $ballot->id)
+            ->first();
+        
+        if ($registration instanceof Registration) {
+            $registration->registration_tx = $request->registration_tx;
+
+            $registration->save();
+        } else {
+            $reg = new Registration();
+            $reg->user_id = $user->id;
+            $reg->ballot_id = $ballot->id;
+            $reg->voting_power_id = $user->voting_power->id;
+            $reg->asset_name = md5("{$user->voter_id}{$user->id}");
+            $reg->registration_tx = $request->registration_tx;
+
+            $reg->save();            
+        }
     }
 
     public function completeVoting(Request $request, Ballot $ballot): LaravelResponse
