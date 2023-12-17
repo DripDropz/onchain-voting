@@ -37,7 +37,7 @@
                                     class="block px-3 py-1 text-sm leading-6 " :class="{
                                         'bg-red-50 dark:bg-red-900 cursor-pointer': active && !isBallotPublished,
                                         ' text-gray-900 dark:text-gray-300': !active,
-                                        'cursor-not-allowed ': isBallotPublished
+                                        'cursor-not-allowed opacity-40': isBallotPublished
                                     }">
                                     Delete<span class="sr-only">, {{ ballot?.title }}</span>
                                 </a>

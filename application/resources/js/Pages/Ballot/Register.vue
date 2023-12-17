@@ -111,7 +111,7 @@ async function registerToVote() {
             let network = (await axios.get(route('config.cardano')))?.data.projectId.includes('preview') ? 'preview' : 'mainnet';
             let $errorTemplate = `Registration Error, try again.
             Make sure you wallet is connected to ${network} network`
-            
+
             AlertService.show([$errorTemplate], 'error');
         }
 
@@ -121,7 +121,7 @@ async function registerToVote() {
 
 async function saveUpdateRegistration(tx: string){
     await BallotService.saveUpdateRegistration(props.ballot?.hash, tx);
-    AlertService.show(['Registration succeful'], 'info');
+    AlertService.show(['Registration succeful'], 'success');
 }
 
 </script>

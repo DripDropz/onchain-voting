@@ -46,6 +46,16 @@ class BallotQuestionChoice extends Model implements Auditable
         );
     }
 
+    public function ballot(): BelongsToThrough
+    {
+        return $this->belongsToThrough(Ballot::class, Question::class, 'id');
+    }
+
+    public function question(): BelongsTo
+    {
+        return $this->belongsTo(Question::class, 'question_id');
+    }
+
     public static function booted(): void
     {
         static::creating(function ($model) {
@@ -56,15 +66,5 @@ class BallotQuestionChoice extends Model implements Auditable
         static::addGlobalScope('order', function (Builder $builder) {
             $builder->orderBy('order');
         });
-    }
-
-    public function ballot(): BelongsToThrough
-    {
-        return $this->belongsToThrough(Ballot::class, Question::class, 'id');
-    }
-
-    public function question(): BelongsTo
-    {
-        return $this->belongsTo(Question::class, 'question_id');
     }
 }

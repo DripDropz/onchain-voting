@@ -41,6 +41,7 @@ class BallotResponse extends Model implements \OwenIt\Auditing\Contracts\Auditab
     ];
 
     protected $appends = [
+        'hash',
         'ballot_hash',
         'question_hash',
     ];
