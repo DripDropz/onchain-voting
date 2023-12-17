@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTransferObjects\BallotResponseData;
-use App\DataTransferObjects\QuestionChoiceData;
+use App\DataTransferObjects\BallotData;
 use App\DataTransferObjects\VoterData;
 use App\Models\Ballot;
 use App\Models\BallotQuestionChoice;
 use App\Models\BallotResponse;
+use App\Models\Question;
 use App\Models\User;
 use App\Models\VotingPower;
 use Illuminate\Http\Request;
@@ -61,6 +61,16 @@ class VoterController extends Controller
 
         $ballotResponse->choices()->sync($choices->pluck('id'));
 
-        return BallotResponseData::from($ballotResponse->load(['user', 'ballot', 'question', 'choices', 'voting_power']));
+        $ballot->refresh();
+        $questions = Question::with('choices')
+            ->where('ballot_id', $ballot->id)
+            ->get()->append('choices_tally');
+        $ballot->load([
+            'user_responses.user',
+            'user_responses.choices',
+            'user_responses.voting_power',
+        ]);
+        $ballot->questions = $questions;
+        return BallotData::from($ballot);
     }
 }

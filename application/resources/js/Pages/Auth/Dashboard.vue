@@ -14,7 +14,7 @@
                     <h2 class="font-semibold text-lg xl:text-xl text-gray-800 dark:text-gray-200 leading-tight mb-4">
                         Ballots
                     </h2>
-                    <BallotListAdmin :ballots="ballots" @curr-page="(payload) => currPage = payload"
+                    <BallotListAdmin v-if="ballots" :ballots="ballots" @curr-page="(payload) => currPage = payload"
                                      @per-page="(payload) => perPage = payload" />
                 </div>
             </div>
@@ -26,7 +26,8 @@
                     <h2 class="font-semibold text-lg xl:text-xl text-gray-800 dark:text-gray-200 leading-tight mb-4">
                         Snapshots
                     </h2>
-                    <SnapshotList :snapshots="snapshots" />
+                    <SnapshotList  :snapshots="snapshots" @current-page="(payload) => currPageRef = payload"
+                        @perr-page="(payload) => perPageRef = payload"/>
                 </div>
             </div>
         </section>
@@ -51,15 +52,28 @@ const props = defineProps<{
         links: [];
         meta: Pagination;
     };
-    snapshots: SnapshotData[];
+    snapshots: {
+        data: SnapshotData[];
+        links:[];
+        meta:Pagination;
+    }
 }>();
 
-let currPage = ref<number | null>(props.ballots.meta.current_page);
+let currPage = ref<number | null>(props.ballots.meta.current_page)
 let perPage = ref<number | null>(props.ballots.meta.per_page);
 
+ let currPageRef = ref<number | null>(props.snapshots.meta.current_page);
+ let perPageRef = ref<number | null>(props.snapshots.meta.per_page);
+
+
 let ballots = ref(props.ballots);
+let snapshots = ref(props.snapshots);
 
 watch([currPage,perPage], () => {
+    query();
+})
+
+watch([currPageRef,perPageRef], () => {
     query();
 })
 
@@ -72,6 +86,12 @@ function query() {
     }
     if (perPage.value) {
         data[VARIABLES.PER_PAGE] = perPage.value;
+    }
+    if (currPageRef.value) {
+        data[VARIABLES.THE_PAGE] = currPageRef.value;
+    }
+    if (perPageRef.value) {
+        data[VARIABLES.PER_PAGE] = perPageRef.value;
     }
     router.get(
         route('admin.dashboard'),

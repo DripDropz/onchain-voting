@@ -10,7 +10,7 @@
                     {{ !!voteRecordedOnChain ? 'Vote Successfully recorded' : 'Vote confirmation' }}
                 </h3>
 
-                <template v-if="!voteSaved || !voteRecordedOnChain">
+                <template v-if="!voteSaved || !voteRecordedOnChain || hasUnansweredQuestions">
                     <div class="">
                         <p class="p-3 text-sm font-semibold text-white">
                             <span v-if="!voteSaved">
@@ -42,10 +42,15 @@
                             Save
                         </button>
 
-                        <button v-if="voteSaved && !voteRecordedOnChain" @click="emit('record-onchain')" type="button"
+                        <button v-if="voteSaved && !voteRecordedOnChain && !hasUnansweredQuestions" @click="emit('record-onchain')" type="button"
                                 class="rounded-full px-4 lg:px-6 py-0.5 xl:py-1 text-md xl:text-xl font-semibold text-sky-950 shadow-sm bg-sky-100 hover:bg-sky-300">
                             Record ballot on chain
                         </button>
+
+                        <span v-if="voteSaved && !voteRecordedOnChain && hasUnansweredQuestions"
+                                class="py-0.5 xl:py-1 text-sm xl:text-md font-semibold text-sky-100">
+                            Answer all questions to submit vote on chain.
+                        </span>
                     </div>
                 </template>
                 <template v-else>
@@ -83,7 +88,8 @@ const { config } = storeToRefs(configStore);
 const savingResponse = ref(false);
 const voteSaved = computed(() => !!props.userResponse.hash && props.userResponse?.choices?.length > 0);
 const submittedVote = computed(() => props.userResponse.submit_tx);
-const voteRecordedOnChain = computed(() => !!submittedVote);
+const voteRecordedOnChain = computed(() => !!submittedVote.value);
+const hasUnansweredQuestions = computed(() => props.ballot.user_responses.length < props.ballot.questions.length);
 
 const emit = defineEmits<{
     (e: 'change-choice'): void

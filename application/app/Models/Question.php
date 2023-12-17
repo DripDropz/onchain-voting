@@ -78,7 +78,8 @@ class Question extends Model implements Auditable, HasUser
                     ->pluck('title')
                     ->toArray();
 
-                $query = BallotResponse::query();
+
+                $query = BallotResponse::where('question_id', $this->id);
 
                 foreach ($allChoices as $choice) {
                     $c = Str::snake(strtolower($choice));

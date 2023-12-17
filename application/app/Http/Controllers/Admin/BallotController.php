@@ -59,7 +59,7 @@ class BallotController extends Controller
 
         return Inertia::render('Auth/Ballot/Edit', [
             'ballot' => BallotData::from($ballot),
-            'addresses' => $this->policyAddress($ballot),
+            'addresses' => $this->policyAddresses($ballot),
         ]);
     }
 
@@ -431,7 +431,7 @@ class BallotController extends Controller
         return Redirect::back();
     }
 
-    public function policyAddress($ballot)
+    public function policyAddresses($ballot)
     {
         $firstPolicySeed = null;
         $secondPolicySeed = null;
@@ -479,12 +479,17 @@ class BallotController extends Controller
         ];
     }
 
-    public function addImageLink(Request $request, Ballot $ballot)
+    public function addImageLink(Request $request, Ballot $ballot, Policy $policy)
     {
-        $registrationPolicy = $ballot->registration_policy()->first();
-        $registrationPolicy->image_link = $request->link;
-        $registrationPolicy->save();
-        return true;
+        $response = Gate::inspect('update', $ballot);
+        if ($response->allowed()) {
+            $policy->image_link = $request->link;
+            $policy->save();
+            return true;
+        } else {
+            $this->unauthenticated($request);
+        }
+        return false;
     }
 
     public function destroyPolicy(Request $request, Ballot $ballot)

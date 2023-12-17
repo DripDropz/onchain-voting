@@ -17,13 +17,23 @@ class DashboardController extends Controller
 
     public $currPage = 1;
 
+    public $perPageRef = 6;
+
+    public $currPageRef = 1;
+
     public function index(Request $request): Response
     {
         $this->perPage = $request->input('l',6);
         $this->currPage = $request->input('p',1);
+        $this->perPageRef = $request->input('ep',6);
+        $this->currPageRef = $request->input('tp',1);
+
 
         $ballots = $this->query();
-        $snapshots = SnapshotData::collection(Snapshot::all());
+        $snapshots = SnapshotData::collection(Snapshot::query()
+                   ->paginate($this->perPageRef,['*'],'p', $this->currPageRef)
+                   ->setPath('/')
+                   ->onEachSide(1));
 
         return Inertia::render('Auth/Dashboard')->with([
             'ballots' => $ballots,

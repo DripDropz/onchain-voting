@@ -86,7 +86,7 @@ class SnapshotImportController extends Controller
 
         //save snapshot's metadata about fil
         $this->updateSnapshotModel($snapshot, $storagePath, $fileName);
-        SyncVotingPowersFIleJob::dispatchAfterResponse(
+        SyncVotingPowersFIleJob::dispatch(
             $snapshot,
             $storagePath
         );

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Ballot;
+use App\Models\Policy;
 use App\Models\Question;
 use App\Models\Snapshot;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -49,6 +50,10 @@ class RouteServiceProvider extends ServiceProvider
 
         Route::bind('snapshot', function ($value, $route) {
             return $this->getModel(Snapshot::class, $value);
+        });
+
+        Route::bind('policy', function ($value, $route) {
+            return $this->getModel(Policy::class, $value);
         });
 
         $this->routes(function () {
