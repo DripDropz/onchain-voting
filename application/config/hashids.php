@@ -73,6 +73,12 @@ return [
             'alphabet' => 'abcdefghijklmnoqrstuwxyz0123456789',
         ],
 
+        \App\Models\Policy::class => [
+            'salt' => \App\Models\Policy::class.env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'abcdefghijklmnoqrstuvxyz0123456789',
+        ],
+
         //        'main' => [
         //            'salt' =>  env('APP_KEY'),
         //            'length' => 4,

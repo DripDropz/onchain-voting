@@ -46,9 +46,9 @@
                  :class="{
             'bg-sky-700/50 rounded-t-2xl shadow-inner p-8 -m-8': index % 2 !== 0
            }"
-                 v-for="(question, index) in ballot.questions" :key="question?.hash">
+                 v-for="(question, index) in ballot$.questions" :key="question?.hash">
                 <div class="relative">
-                    <BallotQuestionCard :question="question" :ballot="ballot"
+                    <BallotQuestionCard :question="question" :ballot="ballot$"
                                         @save-response="saveBallotResponse($event)"
                                         @record-onchain="submitToChain()"
                                         :registeredToVote="registeredToVote"
@@ -57,10 +57,10 @@
 
                     <ConnectWalletToVote v-if="!wallet && isBallotOpen"/>
 
-                    <LoginToVote v-if="!loggedIn && isBallotOpen" :page-data="ballot"/>
+                    <LoginToVote v-if="!loggedIn && isBallotOpen" :page-data="ballot$"/>
 
                     <RegisterToVote v-if="loggedIn && !registeredToVote && !voteRecordedOnChain && isBallotOpen"
-                                    :ballot="ballot"
+                                    :ballot="ballot$"
                                     :hasVotingPower="(voterPower !== '-')"/>
                 </div>
 
@@ -135,6 +135,7 @@ voterStore.loadRegistration(props.ballot.hash).then(() => {
 });
 
 // let userResponses$ = ref<null | BallotResponseData[]>(props.ballot?.user_responses);
+const ballot$ = ref<BallotData>(props.ballot);
 const userResponses$ = ref<Record<string, BallotResponseData>>(
     props?.ballot?.user_responses?.reduce((acc, response) => {
         acc[response.question?.hash] = response;
@@ -189,10 +190,11 @@ async function saveBallotResponse(response: BallotResponseData) {
         props.ballot.hash
     ));
     if (res.status == 201) {
-        userResponses$.value = {
-            ...userResponses$.value,
-            [res.data.question.hash]: res.data
-        }
+        ballot$.value = res.data;
+        userResponses$.value = ballot$.value?.user_responses?.reduce((acc, response) => {
+            acc[response.question?.hash] = response;
+            return acc;
+        }, {});
         savingResponse.value = false;
     }
 }

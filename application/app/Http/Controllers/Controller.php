@@ -9,4 +9,13 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
+
+    protected function unauthenticated($request): void
+    {
+        abort(response()->json(
+            [
+                'api_status' => '401',
+                'message' => 'UnAuthenticated',
+            ], 401));
+    }
 }

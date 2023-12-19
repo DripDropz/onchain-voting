@@ -63,15 +63,20 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
         // Ballot Policies
         Route::prefix('/{ballot}/policies')->as('policies.')->group(function () {
             // Views
-            Route::get('/create', [BallotController::class, 'createPolicy'])->name('create');
-            Route::get('/{policy}/edit', [BallotController::class, 'editPolicy'])->name('edit');
+            Route::get('/create', [BallotController::class, 'createPolicy'])
+                ->name('create');
+            Route::get('/{policy}/edit', [BallotController::class, 'editPolicy'])
+                ->name('edit');
 
             // CRUDs
-            Route::post('/create', [BallotController::class, 'storePolicy'])->name('store');
+            Route::post('/create', [BallotController::class, 'storePolicy'])
+                ->name('store');
             Route::patch('/{policy}/update', [BallotController::class, 'updatePolicy'])
                 ->name('update');
-            Route::delete('/{policy}/delete', [BallotController::class, 'destroyPolicy'])->name('destroy');
-            Route::post('/image-link', [BallotController::class, 'addImageLink'])->name('imageLink');
+            Route::delete('/{policy}/delete', [BallotController::class, 'destroyPolicy'])
+                ->name('destroy');
+            Route::post('/{policy}/image-link', [BallotController::class, 'addImageLink'])
+                ->name('imageLink');
         });
     });
 
@@ -113,7 +118,7 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
     // Utilities
     Route::get('/enums/{collection}', function () {
         $collection = request()->route('collection');
-        $collection = 'App\\Enums\\' . Str::studly($collection). 'Enum';
+        $collection = 'App\\Enums\\' . Str::studly($collection) . 'Enum';
 
         return array_column($collection::cases(), 'value', 'name');
     })->name('enums');

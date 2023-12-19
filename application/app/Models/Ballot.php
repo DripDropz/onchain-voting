@@ -61,14 +61,14 @@ class Ballot extends Model implements Auditable, HasUser
     public function live(): Attribute
     {
         return Attribute::make(
-            get: fn () => ($this->started_at?->lte(Carbon::now()) && $this->status == 'published')
+            get: fn() => ($this->started_at?->lte(Carbon::now()) && $this->status == 'published')
         );
     }
 
     public function open(): Attribute
     {
         return Attribute::make(
-            get: fn () => Carbon::now()->lte($this->ended_at)
+            get: fn() => Carbon::now()->lte($this->ended_at)
         );
     }
 
@@ -83,7 +83,7 @@ class Ballot extends Model implements Auditable, HasUser
             get: function () {
                 $questions = Question::where('ballot_id', $this->id)->get();
                 $ballotPulishable = $questions->flatMap(function ($question) {
-                    if ($question->status = 'published' and ! is_null($this->started_at)) {
+                    if ($question->status = 'published' and !is_null($this->started_at)) {
                         return $question->choices;
                     }
                 });
@@ -110,18 +110,20 @@ class Ballot extends Model implements Auditable, HasUser
 
     public function registration_policy(): HasOne
     {
-        return $this->hasOne(Policy::class, 'model_id')->where(
-            'context',
-            'registration'
-        );
+        return $this->hasOne(Policy::class, 'model_id')
+            ->where(
+                'context',
+                'registration'
+            );
     }
 
     public function voting_policy(): HasOne
     {
-        return $this->hasOne(Policy::class, 'model_id')->where(
-            'context',
-            'voting'
-        );
+        return $this->hasOne(Policy::class, 'model_id')
+            ->where(
+                'context',
+                'voting'
+            );
     }
 
     public function user_responses(): HasMany
@@ -135,7 +137,7 @@ class Ballot extends Model implements Auditable, HasUser
     public function policies(): HasMany
     {
         return $this->hasMany(Policy::class, 'model_id')
-        ->where('model_type', static::class);
+            ->where('model_type', static::class);
     }
 
     /**

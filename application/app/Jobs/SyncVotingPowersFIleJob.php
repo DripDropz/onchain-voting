@@ -18,7 +18,7 @@ class SyncVotingPowersFIleJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int|float $timeout = 60 * 3;
+    public int|float $timeout = 900;
 
     /**
      * Create a new job instance.
