@@ -154,11 +154,12 @@ const form = useForm({
 });
 
 let publishBallot = (ballotHash: string) =>
-    form.patch(route("admin.ballots.update", { ballot: ballotHash }), {
+    form.patch(route("admin.ballots.status.update", { ballot: ballotHash }), {
         preserveScroll: true,
         preserveState: true,
         onSuccess: () => {
             AlertService.show(["Ballot published"], "success");
+            router.get(route("admin.dashboard"))
         },
         onError: (errors) => {
             AlertService.show(

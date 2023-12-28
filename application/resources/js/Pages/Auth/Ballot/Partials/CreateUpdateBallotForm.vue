@@ -107,7 +107,7 @@
                 </div>
 
                 <div class="absolute bottom-0 inset-x-px">
-                    <div
+                    <!-- <div
                         class="flex justify-end px-2 py-3 space-x-2 border-t border-gray-200 flex-nowrap sm:px-3 dark:border-gray-700">
                         <Listbox as="div" v-model="assigned" class="flex-shrink-0">
                             <ListboxLabel class="sr-only">Assign</ListboxLabel>
@@ -151,7 +151,7 @@
                                 </transition>
                             </div>
                         </Listbox>
-                    </div>
+                    </div> -->
                     <div
                         class="flex items-center justify-between px-2 py-3 space-x-3 border-t border-gray-200 dark:border-gray-700 sm:px-3">
                         <div class="flex">

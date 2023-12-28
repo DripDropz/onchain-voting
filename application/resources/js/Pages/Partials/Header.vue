@@ -17,7 +17,12 @@
                     </li>
                     <li
                         class="items-end justify-between hidden gap-8 p-1 ml-8 text-lg lg:flex font-display text-slate-900 dark:text-slate-200">
-                        <Link v-for="option in menuOptions" :href="option.href" :class="{ 'text-sky-300': option.current }">
+                        <Link v-for="option in menuOptions" :href="option.href" :class="[
+                            currentUri == option.uri
+                                ? 'border-b-2 border-sky-300 dark:border-sky-500 font-medium text-sky-300 dark:text-sky-300 focus:outline-none focus:border-sky-700'
+                                : 'border-b-2 border-transparent font-medium text-sky-300 hover:text-sky-500 text-slate-900 dark:hover:text-sky-300 dark:text-slate-200 hover:border-sky-500 dark:hover:border-sky-300 focus:text-sky-500 dark:focus:text-sky-300 focus:border-sky-500 dark:focus:border-sky-300',
+                            'block'
+                        ]">
                             {{ option.name }}
                         </Link>
                     </li>
@@ -90,18 +95,19 @@ const walletStore = useWalletStore();
 let configStore = useConfigStore();
 let { config } = storeToRefs(configStore);
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
     canLogin?: boolean;
     pageData?: any;
 }>(), {
     pageData: null
 });
 
+const currentUri =  usePage().props.ziggy.uri;
 let showMenu = ref(false);
 const menuOptions = [
-    { name: 'Petitions', href: '#', current: false },
-    { name: 'Ballots', href: route('ballots.index'), current: false },
-    { name: 'Polls', href: '#', current: false },
+    { name: 'Petitions', href: '#', uri: '/petitons' },
+    { name: 'Ballots', href: route('ballots.index'), uri: '/ballots' },
+    { name: 'Polls', href: '#', uri: '/polls' },
 ]
 
 
