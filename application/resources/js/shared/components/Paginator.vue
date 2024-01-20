@@ -18,7 +18,7 @@
                 <!-- previous -->
                 <div class="flex">
                     <a href="#" @click.prevent="currPage = prev?.page" :class="{
-                        'opacity-50 cursor-not-allowed': !prev?.page,
+                        'opacity-50 cursor-auto': !prev?.page,
                         'hover:border-sky-500 hover:text-sky-500': prev?.page
                     }"
                         class="inline-flex items-center border-t-2 border-transparent pt-4 pr-1 text-sm font-medium text-slate-500">
@@ -64,7 +64,7 @@
                 <!-- next -->
                 <div class="flex">
                     <a href="#" @click.prevent="currPage = next.page" :class="{
-                        'opacity-40 cursor-not-allowed': !next?.page,
+                        'opacity-40 cursor-auto': !next?.page,
                         'hover:border-sky-500 hover:text-sky-500': next?.page
                     }"
                         class="inline-flex items-center border-t-2 border-transparent pt-4 pl-1 text-sm font-medium text-slate-500">

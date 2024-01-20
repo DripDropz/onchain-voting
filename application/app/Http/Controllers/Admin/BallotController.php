@@ -29,6 +29,8 @@ use Inertia\Response;
 use JetBrains\PhpStorm\NoReturn;
 use Momentum\Modal\Modal;
 use Saloon\Exceptions\Request\FatalRequestException;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class BallotController extends Controller
 {
@@ -108,17 +110,26 @@ class BallotController extends Controller
     /**
      * Delete the ballot's account.
      */
-    public function destroy(Request $request, $ballot): RedirectResponse
+    public function destroy(Request $request, Ballot $ballot): RedirectResponse
     {
-        $response = Gate::inspect('delete', $ballot);
+        $password = $request->input('password');
+        if(!$password){
+            return Redirect::back()->withErrors(['password' => 'Password is required.']);
+        }
 
-        if ($response->allowed()) {
-            $existingBallot = Ballot::byHash($ballot);
-            $existingBallot->delete();
+        if (Hash::check($password, Auth::user()->password)) {
+            $response = Gate::inspect('delete', $ballot);
 
-            return Redirect::to('/');
+            if ($response->allowed()) {
+                $existingBallot = Ballot::byHash($ballot->hash);
+                $existingBallot->delete();
+
+                return Redirect::route('admin.dashboard');
+            } else {
+                return Redirect::route('admin.ballots.view', ['ballot' => $ballot]);
+            }
         } else {
-            return Redirect::route('admin.ballots.view', ['ballot' => $ballot]);
+            return Redirect::back()->withErrors(['password' => 'Invalid password for current user.']);
         }
     }
 
@@ -492,7 +503,20 @@ class BallotController extends Controller
         return false;
     }
 
-    public function destroyPolicy(Request $request, Ballot $ballot)
+    public function unLinkSnapShot(Ballot $ballot, Snapshot $snapshot)
     {
+        $currentDate = Carbon::now();
+        $startDate = Carbon::parse($ballot->started_at);
+
+        if ($currentDate->greaterThanOrEqualTo($startDate)) {
+            throw new \Exception ('Cannot remove snapshot, the ballot has already started!');
+        }
+
+        try {
+            $snapshot->ballot_id = null;
+            $snapshot->save();
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 }

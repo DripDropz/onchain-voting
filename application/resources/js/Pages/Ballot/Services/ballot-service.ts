@@ -14,7 +14,7 @@ export default class BallotService {
             );
             return response.data;
         } catch (error: any) {
-            if(error.response.status = 404){
+            if (error.response.status = 404) {
                 return 0;
             };
         }
@@ -28,7 +28,7 @@ export default class BallotService {
         try {
             return await axios.post(
                 route("voters.ballot-responses.save", { voterId }),
-                { choices, ballot}
+                { choices, ballot }
             );
         } catch (error) {
             console.log(error);
@@ -89,6 +89,8 @@ export default class BallotService {
     static async register(ballotHash: string) {
         try {
             // get tx from the backend
+            let onchain = false;
+
             const lucid = await BallotService.getLucidInstance();
             let response = await axios.post(
                 route('ballot.register.store', {
@@ -99,7 +101,9 @@ export default class BallotService {
 
                 }
             );
-            if (response.data?.existingTx) {
+
+            onchain = await lucid.awaitTx(response.data?.existingTx, 200);
+            if (response.data?.existingTx && onchain) {
                 return response.data
             }
             const tx = lucid.fromTx(response.data.tx);
@@ -116,14 +120,17 @@ export default class BallotService {
                     witnesses
                 }
             );
-            return response.data;
+            onchain = await lucid.awaitTx(response.data?.tx, 200);
+            if (onchain) {
+                return response.data;
+            }
+
         } catch (error) {
             console.log(error);
         }
     }
 
-    static async saveUpdateRegistration(ballotHash: string, txHash:string)
-    {
+    static async saveUpdateRegistration(ballotHash: string, txHash: string) {
         await axios.post(
             route('ballot.register.save-update', {
                 ballot: ballotHash

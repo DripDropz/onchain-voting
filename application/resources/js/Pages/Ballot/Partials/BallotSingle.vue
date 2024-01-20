@@ -1,7 +1,7 @@
 <template>
-    <div class="flex flex-col gap-10 px-8 py-10 text-white bg-sky-600 rounded-lg">
+    <div class="flex flex-col gap-10 px-8 py-10 text-white rounded-lg bg-sky-600">
         <div>
-            <div class="flex flex-row items-center gap-5 relative">
+            <div class="relative flex flex-row items-center gap-5">
                 <BallotStatusBadge :ballot="ballot"></BallotStatusBadge>
 
                 <div class="flex flex-row items-center justify-between gap-2 text-sm font-semibold text-white"
@@ -15,7 +15,7 @@
                     <div class="text-md">{{ ballot.ended_at }}</div>
                 </div>
 
-                <div class="flex flex-col justify-start absolute right-0 top-0">
+                <div class="absolute top-0 right-0 flex flex-col justify-start">
                     <div v-if="voterPower"
                          class="relative inline-flex items-center px-2 py-0.5 mr-auto text-xs font-medium text-white bg-sky-900 border border-sky-900 shadow-inner  gap-x-1 rounded-xl">
                         Your Voting Power
@@ -42,7 +42,7 @@
         </div>
 
         <div class="flex flex-col gap-16">
-            <div class="flex flex-row justify-between items-start gap-4 relative"
+            <div class="relative flex flex-row items-start justify-between gap-4"
                  :class="{
             'bg-sky-700/50 rounded-t-2xl shadow-inner p-8 -m-8': index % 2 !== 0
            }"
@@ -62,19 +62,20 @@
                     <RegisterToVote v-if="loggedIn && !registeredToVote && !voteRecordedOnChain && isBallotOpen"
                                     :ballot="ballot$"
                                     :hasVotingPower="(voterPower !== '-')"/>
+                    <ConfirmingOnchainVue v-if="!confirmedOnchain && registeredToVote"/>
                 </div>
 
-                <div class="h-full flex flex-col gap-10 pt-1 px-4">
-                    <div class="rounded-lg ml-auto flex gap-1 border-4 border-white p-2 items-center">
+                <div class="flex flex-col h-full gap-10 px-4 pt-1">
+                    <div class="flex items-center gap-1 p-2 ml-auto border-4 border-white rounded-lg">
                         <Tooltip iconSize="6">
                             <template #trigger>
                                 <span>How to Vote</span>
                             </template>
 
                             <template #content>
-                                <div class="bg-sky-700 p-3">
-                                    <h3 class="font-bold text-2xl">To Vote </h3>
-                                    <ol class="flex flex-col gap-2 text-lg xl:text-xl list-decimal text-white list-outside ml-5">
+                                <div class="p-3 bg-sky-700">
+                                    <h3 class="text-2xl font-bold">To Vote </h3>
+                                    <ol class="flex flex-col gap-2 ml-5 text-lg text-white list-decimal list-outside xl:text-xl">
                                         <li class="text-gray-300">Select Choice</li>
                                         <li class="text-gray-300">Hit Save. You will be given the choice to change your vote or
                                             submit on change
@@ -117,6 +118,7 @@ import Tooltip from "./Tooltip.vue";
 import ConnectWalletToVote from "@/Pages/Ballot/Partials/ConnectWalletToVote.vue";
 import {useVoterStore} from "@/Pages/Voter/stores/voter-store";
 import BallotService from "@/Pages/Ballot/Services/ballot-service";
+import ConfirmingOnchainVue from "./ConfirmingOnchain.vue";
 
 const registeredToVote = ref(false);
 const user = usePage().props.auth.user;
@@ -129,6 +131,7 @@ const props = withDefaults(defineProps<{
 
 const voterStore = useVoterStore();
 const {voterRegistrations} = storeToRefs(voterStore);
+const { confirmedOnchain } = storeToRefs(voterStore);
 
 voterStore.loadRegistration(props.ballot.hash).then(() => {
     registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
@@ -178,9 +181,10 @@ if (props.ballot.hash) {
     registeredToVote.value = false;
 }
 
-watch([voterRegistrations.value], () => {
+watch([()=>voterRegistrations.value], () => {
     registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
-})
+    voterStore.onchainConfirmation(props.ballot.hash);
+},{deep:true})
 
 async function saveBallotResponse(response: BallotResponseData) {
     savingResponse.value = true;

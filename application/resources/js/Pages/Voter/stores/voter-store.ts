@@ -11,6 +11,10 @@ export const useVoterStore = defineStore('voter', () => {
     let voter = ref<Boolean|null>(null);
     const voterPowers: Ref<{[key: string]: BigInt}> = ref({});
     const voterRegistrations: Ref<{[key: string]: {policyId?: PolicyId, registration?: UTxO}}> = ref({});
+    const walletStore = useWalletStore();
+    const { walletName } = storeToRefs(walletStore);
+    const ws = new WalletService(walletName.value);
+    let confirmedOnchain = ref(false);
 
     function registeredForBallot(ballotHash: string) {
         return !!voterRegistrations.value[ballotHash];
@@ -31,8 +35,7 @@ export const useVoterStore = defineStore('voter', () => {
         let policyId: string = '';
         // get policy id
         const policyIdRes = await axios.get(route('ballot.policyId', {policyType: 'registration', ballot: ballotHash}))
-        const walletStore = useWalletStore();
-        const {walletName} = storeToRefs(walletStore);
+
 
         if ( policyIdRes.status === 200) {
             policyId = policyIdRes.data;
@@ -41,13 +44,14 @@ export const useVoterStore = defineStore('voter', () => {
         }
 
         // find policy in user's wallet
-        const ws = new WalletService(walletName.value);
         const lucid = await ws.lucidInstance();
         const utxos = await lucid.wallet.getUtxos();
 
         const registrations = utxos.filter((utxo: UTxO) =>
          Object.keys(utxo.assets).some(asset => asset.includes(policyId))
         );
+        
+        
         if ( registrations.length > 0 ) {
             voterRegistrations.value[ballotHash] = {policyId, registration: registrations[0]};
         }
@@ -58,6 +62,14 @@ export const useVoterStore = defineStore('voter', () => {
             return;
         }
         voterPowers.value[ballotHash] = await BallotService.loadVotingPower(voterId, ballotHash);
+    }
+
+    async function onchainConfirmation(ballotHash:string) {
+        const lucid = await ws.lucidInstance();
+        let txHash = voterRegistrations.value[ballotHash].registration.txHash
+        if (txHash) {
+            confirmedOnchain.value = await lucid.awaitTx(txHash, 200)
+        }
     }
 
     const userVotingPower = function(ballotHash: string){
@@ -76,7 +88,9 @@ export const useVoterStore = defineStore('voter', () => {
         loadVotingPower,
         userVotingPower,
         loadRegistration,
-        registeredForBallot
+        registeredForBallot,
+        confirmedOnchain,
+        onchainConfirmation
     }
 });
 
