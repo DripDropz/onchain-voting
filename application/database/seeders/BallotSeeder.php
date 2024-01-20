@@ -13,8 +13,8 @@ class BallotSeeder extends Seeder
      */
     public function run(): void
     {
-        Ballot::factory(15)
-            ->has(Snapshot::factory()->count(1), 'snapshot')
+        Ballot::factory(25)
+            ->recycle(Snapshot::factory()->count(1), 'snapshot')
             ->create();
     }
 }

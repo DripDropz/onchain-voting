@@ -19,18 +19,46 @@ class SnapshotController extends Controller
     /**
      * Display the new snapshot's form.
      */
+    public function index(Request $request): Response
+    {
+        $crumbs = [
+            ['label' => 'Snapshots', 'link' => route('admin.snapshots.index')],
+            ['label' => 'Create Snapshot', 'link' => route('admin.snapshots.create')],
+        ];
+
+        return Inertia::render('Auth/Snapshot/Index')->with([
+            'crumbs' => $crumbs,
+        ]);
+    }
+
+    /**
+     * Display the new snapshot's form.
+     */
     public function create(Request $request): Response
     {
-        return Inertia::render('Auth/Snapshot/Create', []);
+        $crumbs = [
+            ['label' => 'Snapshots', 'link' => route('admin.snapshots.index')],
+            ['label' => 'Create Snapshot', 'link' => route('admin.snapshots.create')],
+        ];
+
+        return Inertia::render('Auth/Snapshot/Create')->with([
+            'crumbs' => $crumbs,
+        ]);
     }
+
 
     /**
      * Display the snapshot's form.
      */
     public function view(Request $request, Snapshot $snapshot): Response
     {
+        $crumbs = [
+            ['label' => 'Snapshots', 'link' => route('admin.snapshots.index')],
+            ['label' => 'View Snapshot', 'link' => route('admin.snapshots.view', ['snapshot' => $snapshot->hash])],
+        ];
         return Inertia::render('Auth/Snapshot/View', [
             'snapshot' => SnapshotData::from($snapshot),
+            'crumbs' => $crumbs,
         ]);
     }
 
@@ -40,8 +68,13 @@ class SnapshotController extends Controller
     public function edit(Request $request, Snapshot $snapshot): Response
     {
         $snapshot->load(['ballot']);
+        $crumbs = [
+            ['label' => 'Snapshots', 'link' => route('admin.snapshots.index')],
+            ['label' => 'Edit Snapshot', 'link' => route('admin.snapshots.edit', ['snapshot' => $snapshot->hash])],
+        ];
         return Inertia::render('Auth/Snapshot/Edit', [
             'snapshot' => SnapshotData::from($snapshot),
+            'crumbs' => $crumbs,
         ]);
     }
 

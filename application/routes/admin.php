@@ -1,20 +1,21 @@
 <?php
 
-use App\Http\Controllers\Admin\BallotController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\SnapshotController;
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\BallotController;
+use App\Http\Controllers\Admin\PetitionController;
+use App\Http\Controllers\Admin\SnapshotController;
+use App\Http\Controllers\Admin\PollController;
+use App\Http\Controllers\Admin\DashboardController;
 
 Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.routes'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Ballot
     Route::prefix('/ballots')->as('ballots.')->group(function () {
-        Route::get('/', [BallotController::class, 'index'])->name('index');
-
         // Views
+        Route::get('/', [BallotController::class, 'index'])->name('index');
         Route::get('/create', [BallotController::class, 'create'])->name('create');
         Route::get('/{ballot:id}', [BallotController::class, 'view'])->name('view');
         Route::get('/{ballot}/edit', [BallotController::class, 'edit'])->name('edit');
@@ -78,6 +79,39 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
             Route::post('/{policy}/image-link', [BallotController::class, 'addImageLink'])
                 ->name('imageLink');
         });
+    });
+
+
+    // Petition
+    Route::prefix('/petitions')->as('petitions.')->group(function () {
+        // views
+        Route::get('/', [PetitionController::class, 'index'])->name('index');
+
+        Route::match(['get', 'patch'], '/{petition}', [PetitionController::class, 'view'])
+            ->name('view');
+
+        Route::get('/{petition:id}/edit', [PetitionController::class, 'edit'])
+        ->name('edit');
+
+        Route::patch('/{petition:id}/edit', [PetitionController::class, 'update'])
+        ->name('update');
+
+    });
+
+     // Poll
+     Route::prefix('/polls')->as('polls.')->group(function () {
+        // views
+        Route::get('/', [PollController::class, 'index'])->name('index');
+
+        Route::match(['get', 'patch'], '/{poll}', [PollController::class, 'view'])
+            ->name('view');
+
+        Route::get('/{poll:id}/edit', [PollController::class, 'edit'])
+        ->name('edit');
+
+        Route::patch('/{poll:id}/edit', [PollController::class, 'update'])
+        ->name('update');
+
     });
 
     // Snapshot

@@ -21,6 +21,5 @@ class VoteData extends Data
         public VoterData $voter,
 
         public ?BallotData $ballot
-    ) {
-    }
+    ) {}
 }

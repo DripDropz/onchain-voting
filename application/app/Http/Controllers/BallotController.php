@@ -27,7 +27,7 @@ use App\Models\Registration;
 class BallotController extends Controller
 {
     /**
-     * Display the ballot's form.
+     * Display the ballot list.
      */
     public function index(Request $request): Response
     {
@@ -44,7 +44,7 @@ class BallotController extends Controller
     }
 
     /**
-     * Display the ballot's form.
+     * Display a single ballot.
      */
     public function view(Request $request, Ballot $ballot): Response
     {
@@ -197,6 +197,7 @@ class BallotController extends Controller
             'witnesses' => $request->witnesses,
             'voterStakekey' => $user->voter_id
         ]);
+        
         $response = $connector->sendAndRetry(
             $completeRegistration,
             2,
@@ -212,7 +213,8 @@ class BallotController extends Controller
         ]);
     }
 
-    #[NoReturn] public function startVoting(Request $request, Ballot $ballot)
+    #[NoReturn] 
+    public function startVoting(Request $request, Ballot $ballot)
     {
         $data = $request->validate([
             'registration' => 'required',

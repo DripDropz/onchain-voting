@@ -2,8 +2,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import CreateUpdateSnapshotForm from "@/Pages/Auth/Snapshot/Partials/CreateUpdateSnapshotForm.vue";
+import Nav from '../Breadcrumbs.vue';
 
-defineProps<{}>();
+const props = defineProps<{
+    crumbs: []
+}>();
 </script>
 
 <template>
@@ -11,7 +14,7 @@ defineProps<{}>();
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Create Snapshot</h2>
+            <Nav :crumbs="props.crumbs"/>
         </template>
 
         <div class="py-12">
