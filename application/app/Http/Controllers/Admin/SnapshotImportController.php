@@ -24,7 +24,7 @@ class SnapshotImportController extends Controller
     {
         $file = $request->file('file');
         $directory = 'voting_powers';
-        $pathName = "voting_powers/".$file->getClientOriginalName();
+        $pathName = 'voting_powers/' . $file->getClientOriginalName();
 
         //$pathName already exist then delete already existing record
         if ($request->input('count') == '0' && Storage::exists($pathName)) {
@@ -81,12 +81,12 @@ class SnapshotImportController extends Controller
         $response = Gate::inspect('update', Snapshot::class);
 
         $fileName = $request->input('filename');
-        $filePath = 'voting_powers/'.$fileName;
+        $filePath = "voting_powers/{$fileName}";
         $storagePath = Storage::path($filePath);
 
         //save snapshot's metadata about fil
         $this->updateSnapshotModel($snapshot, $storagePath, $fileName);
-        SyncVotingPowersFIleJob::dispatchAfterResponse(
+        SyncVotingPowersFIleJob::dispatch(
             $snapshot,
             $storagePath
         );

@@ -76,7 +76,7 @@
             <div v-if="!snapshot?.live" class="absolute bottom-0 inset-x-px">
                 <div
                     class="flex items-center justify-end px-2 py-3 space-x-3 border-t border-gray-200 dark:border-gray-700 sm:px-3">
-                    <div class="flex items-center">
+                    <div class="flex items-center" v-if="showUnlink">
                         <DangerButton class="gap-2">
                             <ToolTip type="info" :tip="tipMessage"/>
                             <button @click="removeSnapshot"
@@ -107,11 +107,16 @@ import ToolTip from '@/Components/ToolTip.vue';
 import AlertService from '@/shared/Services/alert-service';
 import AdminBallotService from '../../Ballot/Services/admin-ballot-service';
 
-const props = defineProps<{
-    status?: String;
-    snapshot?: SnapshotData;
-    ballot?: String;
-}>();
+
+const props = withDefaults(
+    defineProps<{
+        status?: String;
+        snapshot?: SnapshotData;
+        ballot?: String;
+        showUnlink: boolean;
+    }>(), {
+        showUnlink:false
+    });
 
 let tipMessage = ref("Click 'Remove' to remove the snapshot from the ballot.");
 let disabled = ref(false);
@@ -126,6 +131,7 @@ let removeSnapshot = async () => {
     if (res) {
         tipMessage.value = res;
         disabled.value = true;
+        AlertService.show([res], 'info');
     } else{
         AlertService.show(['Snapshot removed from ballot'], 'success');
         router.reload();

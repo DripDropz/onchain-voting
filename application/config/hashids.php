@@ -41,9 +41,20 @@ return [
             'length' => 11,
             'alphabet' => 'abcdefghijklmnopqrstuvwxyz012345678',
         ],
+        \App\Models\Petition::class => [
+            'salt' => \App\Models\Petition::class.env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'abcdefghijklmnopqrstuvwxyz012345679',
+        ],
+        \App\Models\Poll::class => [
+            'salt' => \App\Models\Poll::class.env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'acdefghijklmnopqrstuvwxyz0123456789',
+        ],
         \App\Models\BallotQuestionChoice::class => [
             'salt' => \App\Models\BallotQuestionChoice::class.env('APP_KEY'),
             'length' => 11,
+            'alphabet' => 'bcdefghiklmnopqrstuvwxz0123456789',
             'alphabet' => 'bcdefghiklmnopqrstuvwxz0123456789',
         ],
         \App\Models\BallotResponse::class => [
@@ -71,6 +82,12 @@ return [
             'salt' => \App\Models\VotingPower::class.env('APP_KEY'),
             'length' => 11,
             'alphabet' => 'abcdefghijklmnoqrstuwxyz0123456789',
+        ],
+
+        \App\Models\Policy::class => [
+            'salt' => \App\Models\Policy::class.env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'abcdefghijklmnoqrstuvxyz0123456789',
         ],
 
         //        'main' => [

@@ -2,7 +2,7 @@
     <div class="flex flex-row items-center justify-between relative">
         <div
             class="relative border-4 border-sky-100 min-h-96 rounded-lg px-4 py-5 xl:px-6 xl:py-8 w-full lg:w-auto lg:min-w-[40rem] max-w-md">
-            <Spinner v-if="registeredToVote === null" />
+            <Spinner v-if="working" />
 
             <BallotConfirmation @change-choice="clearResponses"
                                 @save-choice="emit('save-response', userResponse$)"
@@ -57,41 +57,25 @@ import Spinner from "@/Components/Spinner.vue";
 import {computed, ref, Ref, watch} from "vue";
 import {useWalletStore} from "@/cardano/stores/wallet-store";
 import {storeToRefs} from "pinia";
-import {useVoterStore} from "@/Pages/Voter/stores/voter-store";
 import {usePage} from "@inertiajs/vue3";
 import BallotConfirmation from "@/Pages/Ballot/Partials/BallotConfirmation.vue";
 
 const props = defineProps<{
     ballot: BallotData;
     question: QuestionData;
-    userResponse: BallotResponseData | null;
+    userResponse: BallotResponseData | null
+    registeredToVote: boolean | null,
+    working: boolean
 }>();
 
 const isBallotOpen = ref(props?.ballot.open);
 const userResponse$ = ref<BallotResponseData>(props?.userResponse);
 
 const user = usePage().props.auth.user;
-const registeredToVote: Ref<boolean | null> = ref(null);
-
-const walletStore = useWalletStore();
-let { walletData: wallet } = storeToRefs(walletStore);
 
 let seeConfirmation = computed(() =>  (
-    (userResponse$.value?.choices.length > 0) && registeredToVote.value)
+    (userResponse$.value?.choices.length > 0) && ( props.registeredToVote || !!props.userResponse?.submit_tx))
 );
-
-const voterStore = useVoterStore();
-if (props.ballot.hash) {
-    const ballotHash = props.ballot.hash;
-    voterStore.loadRegistration(ballotHash).then(() => {
-        registeredToVote.value = !!voterStore.registeredForBallot(ballotHash);
-    }).catch((e) => {
-        console.log(e);
-        registeredToVote.value = false;
-    });
-} else {
-    registeredToVote.value = false;
-}
 
 const emit = defineEmits<{
     (e: 'save-response', response?: BallotResponseData): void
@@ -109,11 +93,10 @@ function onChoiceSelected(choices: QuestionChoiceData[]) {
     };
 }
 
-watch(wallet, () => {
-    if (wallet.value?.stakeAddress && props.ballot?.hash && user?.hash) {
-        voterStore.loadVotingPower(wallet.value.stakeAddress, props.ballot?.hash);
-    }
-});
+watch(props, () => {
+    isBallotOpen.value = props?.ballot.open;
+    userResponse$.value = props?.userResponse;
+}, {deep: true});
 
 function clearResponses() {
     userResponse$.value = null

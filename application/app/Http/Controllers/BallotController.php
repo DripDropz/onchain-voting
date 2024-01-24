@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Question;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Ballot;
@@ -14,18 +15,19 @@ use App\Http\Integrations\Lucid\LucidConnector;
 use App\Http\Integrations\Blockfrost\BlockfrostConnector;
 use App\Http\Integrations\Blockfrost\Requests\BlockfrostRequest;
 use Illuminate\Http\Response as LaravelResponse;
+use JetBrains\PhpStorm\NoReturn;
 use Saloon\Exceptions\Request\FatalRequestException;
 use App\Http\Integrations\Lucid\Requests\GetPolicyId;
 use App\Http\Integrations\Lucid\Requests\StartVoting;
 use App\Http\Integrations\Lucid\Requests\CompleteVoting;
 use App\Http\Integrations\Lucid\Requests\StartRegistration;
 use App\Http\Integrations\Lucid\Requests\CompleteRegistration;
-
+use App\Models\Registration;
 
 class BallotController extends Controller
 {
     /**
-     * Display the ballot's form.
+     * Display the ballot list.
      */
     public function index(Request $request): Response
     {
@@ -42,14 +44,17 @@ class BallotController extends Controller
     }
 
     /**
-     * Display the ballot's form.
+     * Display a single ballot.
      */
     public function view(Request $request, Ballot $ballot): Response
     {
+        $questions = Question::with('choices')
+            ->where('ballot_id', $ballot->id)
+            ->get()->append('choices_tally');
         $ballot->load([
-            'questions.choices',
             'user_responses.choices'
         ]);
+        $ballot->questions = $questions;
 
         return Inertia::render('Ballot/View', [
             'ballot' => BallotData::from($ballot),
@@ -192,6 +197,7 @@ class BallotController extends Controller
             'witnesses' => $request->witnesses,
             'voterStakekey' => $user->voter_id
         ]);
+        
         $response = $connector->sendAndRetry(
             $completeRegistration,
             2,
@@ -207,6 +213,7 @@ class BallotController extends Controller
         ]);
     }
 
+    #[NoReturn] 
     public function startVoting(Request $request, Ballot $ballot)
     {
         $data = $request->validate([
@@ -228,6 +235,8 @@ class BallotController extends Controller
                 }
             )->collapse()->toArray();
 
+//        dd($choices);
+
         $submitVote = new StartVoting;
         $submitVote->body()->merge([
             'assetName' => md5("{$user->voter_id}{$user->id}"),
@@ -247,6 +256,29 @@ class BallotController extends Controller
         });
 
         return $response->body();
+    }
+
+    public function saveUpdateRegistration(Request $request, Ballot $ballot)
+    {
+        $user = Auth::user();
+        $registration = Registration::where('user_id', $user->id)
+            ->where('ballot_id', $ballot->id)
+            ->first();
+
+        if ($registration instanceof Registration) {
+            $registration->registration_tx = $request->registration_tx;
+
+            $registration->save();
+        } else {
+            $reg = new Registration();
+            $reg->user_id = $user->id;
+            $reg->ballot_id = $ballot->id;
+            $reg->voting_power_id = $user->voting_power->id;
+            $reg->asset_name = md5("{$user->voter_id}{$user->id}");
+            $reg->registration_tx = $request->registration_tx;
+
+            $reg->save();
+        }
     }
 
     public function completeVoting(Request $request, Ballot $ballot): LaravelResponse

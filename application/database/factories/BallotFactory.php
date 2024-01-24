@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ModelStatusEnum;
 use App\Models\Ballot;
 use App\Models\Question;
 use App\Models\User;
@@ -24,10 +25,11 @@ class BallotFactory extends Factory
         return [
             'title' => fake()->sentence(3, true),
             'version' => fake()->semver(),
-            'description' => fake()->sentence(random_int(1, 3), true),
-            'status' => fake()->randomElement(['draft', 'pending', 'published']),
+            'description' => fake()->paragraphs(random_int(1, 3), true),
+            'status' => fake()->randomElement(ModelStatusEnum::values()),
             'started_at' => $started_at,
             'ended_at' => fake()->dateTimeBetween($started_at, '+1 year'),
+            'user_id' => User::factory(),
         ];
     }
 
@@ -39,17 +41,5 @@ class BallotFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
-    }
-
-    /**
-     * Configure the model factory.
-     */
-    public function configure(): static
-    {
-        return $this->afterCreating(function (Ballot $ballot) {
-            Question::factory()->create([
-                'ballot_id' => $ballot->id,
-            ]);
-        });
     }
 }

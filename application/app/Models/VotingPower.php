@@ -5,12 +5,14 @@ namespace App\Models;
 use App\Http\Traits\HasHashIds;
 use App\Models\Traits\HashIdModel;
 use App\Models\Traits\HasUser;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use OwenIt\Auditing\Auditable;
 
 class VotingPower extends Model implements \OwenIt\Auditing\Contracts\Auditable
 {
-    use HasUser, HasHashIds, HashIdModel, \OwenIt\Auditing\Auditable;
+    use HasUser, HasHashIds, HashIdModel, Auditable, HasFactory;
 
     /**
      * The attributes that are mass assignable.

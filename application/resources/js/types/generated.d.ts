@@ -40,6 +40,28 @@ type: string;
 description: string;
 cborHex: string;
 };
+export type CategoryData = {
+title: string | null;
+description: string | null;
+id: number | null;
+};
+export type CrumbData = {
+label: string | null;
+link: string | null;
+external?: boolean | null;
+};
+export type PetitionData = {
+hash: string | null;
+title: string;
+description?: string | null;
+user: App.DataTransferObjects.UserData | null;
+created_at?: string | null;
+updated_at?: string | null;
+image_url?: string | null;
+signatures_count?: number | null;
+status: string;
+categories: Array<App.DataTransferObjects.CategoryData> | null;
+};
 export type PolicyData = {
 hash: string | null;
 script: Array<any>;
@@ -47,6 +69,15 @@ policy_id: string | null;
 context: string | null;
 created_at?: string | null;
 image_link?: string | null;
+};
+export type PollData = {
+hash: string | null;
+title: string;
+description?: string | null;
+user: App.DataTransferObjects.UserData | null;
+created_at?: string | null;
+updated_at?: string | null;
+status: string;
 };
 export type QuestionChoiceData = {
 hash: string | null;
@@ -77,6 +108,22 @@ export type RegistrationData = {
 hash: string;
 power: number;
 token?: App.DataTransferObjects.TokenData | null;
+};
+export type RuleData = {
+hash: string | null;
+title: string;
+description?: string | null;
+type: string | null;
+operator: string | null;
+};
+export type SignatureData = {
+hash: string;
+email_signature: string | null;
+wallet_signature: string | null;
+voter: App.DataTransferObjects.VoterData | null;
+ballot: App.DataTransferObjects.BallotData | null;
+pollData: App.DataTransferObjects.PollData | null;
+petition: App.DataTransferObjects.PetitionData | null;
 };
 export type SigningKey = {
 type: string;

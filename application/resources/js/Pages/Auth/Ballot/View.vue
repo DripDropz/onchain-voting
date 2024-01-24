@@ -8,9 +8,11 @@ import { usePage } from "@inertiajs/vue3";
 import AlertService from '@/shared/Services/alert-service';
 import BallotSnapshot from './Partials/BallotSnapshot.vue';
 import BallotPublishChecklist from './Partials/BallotPublishChecklist.vue';
+import Nav from '../Breadcrumbs.vue';
 
-defineProps<{
+const props = defineProps<{
     ballot: BallotData;
+    crumbs: []
 }>();
 
 AlertService.show(Object.values(usePage().props.errors), 'info');
@@ -21,10 +23,7 @@ AlertService.show(Object.values(usePage().props.errors), 'info');
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex flex-row justify-between">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Viewing
-                    <b>{{ ballot.title }}</b> Ballot</h2>
-            </div>
+            <Nav :crumbs="props.crumbs"/>
         </template>
 
         <div class="py-12">

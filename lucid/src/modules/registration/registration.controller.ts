@@ -1,16 +1,17 @@
-import { Controller, Inject, Post, Req} from '@nestjs/common';
+import {Controller, Inject, Post, Req} from '@nestjs/common';
 import {PolicyId, Tx, TxComplete, fromText} from 'lucid-cardano';
-import { Request } from 'express';
+import {Request} from 'express';
 import generatePolicy from '../../utils/generatePolicy.js';
 import _ from 'lodash';
-import { AppConfigService } from '../../services/app-config.service.js';
+import {AppConfigService} from '../../services/app-config.service.js';
 
 @Controller('registration')
 export class RegistrationController {
     public constructor(
         @Inject(AppConfigService) private readonly configService: AppConfigService,
-    ) {}
-    
+    ) {
+    }
+
     @Post('mint')
     public async mintNft(@Req() request: Request) {
         const [voter] = await this.configService.getConfigs(request);
@@ -18,7 +19,7 @@ export class RegistrationController {
 
         minter.selectWalletFromSeed(request?.body?.seed);
         const mintingPolicy = await generatePolicy(minter);
-        const policyId: PolicyId = minter.utils.mintingPolicyToId(mintingPolicy);        
+        const policyId: PolicyId = minter.utils.mintingPolicyToId(mintingPolicy);
         const assetName = fromText(request?.body?.assetName);
         const unit = policyId + assetName;
         const metadata = {
@@ -34,23 +35,24 @@ export class RegistrationController {
             address: request?.body?.voterAddress,
             utxos
         });
-      
+
         const tx: TxComplete = await voter
-          .newTx()          
-          .readFrom(utxos)
-          .payToAddress(request?.body?.voterAddress, {
-            [unit]: 1n,
-          })
-          .mintAssets({ [unit]: 1n })
-          .validTo(Date.now() + 250000)
-          .attachMintingPolicy(mintingPolicy)
-          .attachMetadata(721, metadata).complete();
+            .newTx()
+            .readFrom(utxos)
+            .payToAddress(request?.body?.voterAddress, {
+                lovelace: 2000000n,
+                [unit]: 1n,
+            })
+            .mintAssets({[unit]: 1n})
+            .validTo(Date.now() + 250000)
+            .attachMintingPolicy(mintingPolicy)
+            .attachMetadata(721, metadata).complete();
 
         return tx.toString();
     }
 
     @Post('submit')
-    public async submitRegistration(@Req() request: Request) {        
+    public async submitRegistration(@Req() request: Request) {
         const [lucid] = await this.configService.getConfigs(request);
         lucid.selectWalletFromSeed(request?.body?.seed);
 
@@ -61,7 +63,7 @@ export class RegistrationController {
         const multiSignedTx = await (tx.assemble([request.body.witnesses]).sign()).complete();
 
         //submit tx to the network
-        const txId = await multiSignedTx.submit();        
+        const txId = await multiSignedTx.submit();
         return txId;
     }
 }

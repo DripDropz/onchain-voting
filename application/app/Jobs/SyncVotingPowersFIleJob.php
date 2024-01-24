@@ -18,7 +18,7 @@ class SyncVotingPowersFIleJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $timeout = 60 * 3;
+    public int|float $timeout = 900;
 
     /**
      * Create a new job instance.
@@ -43,7 +43,7 @@ class SyncVotingPowersFIleJob implements ShouldQueue
             fclose($handle);
           })
           ->skip(1)
-          ->chunk(500)
+          ->chunk(1000)
           ->each(function (LazyCollection $chunk) {
             $chunk->each(function ($row) {
                 CreateVotingPowerSnapshotJob::dispatch(

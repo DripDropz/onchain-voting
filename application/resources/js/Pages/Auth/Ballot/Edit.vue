@@ -7,10 +7,15 @@ import CreateUpdateBallotForm from "@/Pages/Auth/Ballot/Partials/CreateUpdateBal
 import BallotQuestions from "@/Pages/Auth/Ballot/Partials/BallotQuestions.vue";
 import BallotSnapshot from './Partials/BallotSnapshot.vue';
 import BallotPolicies from './Partials/BallotPolicies.vue';
+import Nav from '../Breadcrumbs.vue';
 
-defineProps<{
+const props = defineProps<{
     ballot: BallotData;
-    addresses: [];
+    addresses: {
+        registrationPolicyAddress: string;
+        votingPolicyAddress: string;
+    };
+    crumbs: []
 }>();
 </script>
 
@@ -19,7 +24,7 @@ defineProps<{
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Editing <b class="font-bold">{{ballot.title}}</b> Ballot</h2>
+            <Nav :crumbs="props.crumbs"/>
         </template>
 
         <div class="py-12">
@@ -38,7 +43,7 @@ defineProps<{
 
 
                 <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
-                    <BallotPolicies :ballot="ballot" :address="addresses"/>
+                    <BallotPolicies :ballot="ballot" :addresses="addresses"/>
                 </div>
 
                 <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">

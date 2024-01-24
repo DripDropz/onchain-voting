@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Ballot;
+use App\Models\Petition;
+use App\Models\Policy;
+use App\Models\Poll;
 use App\Models\Question;
 use App\Models\Snapshot;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -43,12 +46,24 @@ class RouteServiceProvider extends ServiceProvider
             return $this->getModel(Ballot::class, $value);
         });
 
+        Route::bind('petition', function ($value, $route) {
+            return $this->getModel(Petition::class, $value);
+        });
+
+        Route::bind('pool', function ($value, $route) {
+            return $this->getModel(Poll::class, $value);
+        });
+
         Route::bind('question', function ($value, $route) {
             return $this->getModel(Question::class, $value);
         });
 
         Route::bind('snapshot', function ($value, $route) {
             return $this->getModel(Snapshot::class, $value);
+        });
+
+        Route::bind('policy', function ($value, $route) {
+            return $this->getModel(Policy::class, $value);
         });
 
         $this->routes(function () {

@@ -4,6 +4,8 @@ use App\Http\Controllers\BallotController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\VoterController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PetitionController;
+use App\Http\Controllers\PollController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,15 +26,19 @@ Route::prefix('/ballots')->as('ballots.')->group(function () {
 });
 
 Route::prefix('/ballots/{ballot}')->as('ballot.')->group(function () {
-    Route::get('/', [BallotController::class, 'view'])->name('view');
+    Route::get('/', [BallotController::class, 'view'])
+        ->name('view');
 
-    Route::get('/register', [BallotController::class, 'viewRegistration'])->name('register.view')
+    Route::get('/register', [BallotController::class, 'viewRegistration'])
+        ->name('register.view')
         ->middleware(['snapshot.check', 'auth.voter']);
 
     Route::post('/registration/start', [BallotController::class, 'startRegistration'])
         ->name('register.store');
     Route::post('/registration/submit', [BallotController::class, 'submitRegistration'])
         ->name('register.submit');
+    Route::post('/registration/update', [BallotController::class, 'saveUpdateRegistration'])
+        ->name('register.save-update');
 
     Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');    Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');
     Route::get('/policy-id/{policyType}', [BallotController::class, 'policyId'])->name('policyId');
@@ -41,7 +47,6 @@ Route::prefix('/ballots/{ballot}')->as('ballot.')->group(function () {
     Route::post('/vote/submit', [BallotController::class, 'completeVoting'])->name('completeVoting');
 });
 
-
 // Voter
 Route::prefix('/voters')->as('voters.')->group(function () {
     Route::get('/{voterId}/power/{ballot:id}', [VoterController::class, 'power'])->name('power');
@@ -49,9 +54,31 @@ Route::prefix('/voters')->as('voters.')->group(function () {
 
     // Voter Ballot Reponses
     Route::prefix('/{voterId}/ballot-responses')->as('ballot-responses.')->group(function () {
-        Route::post('/save', [VoterController::class, 'saveBallotResponse'])->name('save');
+        Route::post('/save', [VoterController::class, 'saveBallotResponse'])
+            ->name('save');
     });
 });
+
+// Petition
+Route::prefix('/petitions')->as('petitions.')->group(function () {
+    Route::get('/', [PetitionController::class, 'index'])
+        ->name('index');
+    Route::get('/{petition}', [PetitionController::class, 'view'])
+        ->name('view');
+
+    Route::get('/{petition}/manage', [PetitionController::class, 'manage'])
+        ->middleware(['auth', 'verified'])
+        ->name('manage');
+
+    Route::get('/{petition}/edit', [PetitionController::class, 'edit'])->name('edit');
+});
+
+//Polls
+Route::prefix('/polls')->as('polls.')->group(function () {
+    Route::get('/', [PollController::class, 'index'])
+        ->name('index');
+});
+
 
 require __DIR__.'/admin.php';
 

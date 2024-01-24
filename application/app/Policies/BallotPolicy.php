@@ -36,8 +36,8 @@ class BallotPolicy extends AppPolicy
     public function create(User $user): Response
     {
         return $this->canCreateAny($user)
-                ? Response::allow()
-                : Response::deny('You are not authorized to create a ballot.');
+            ? Response::allow()
+            : Response::deny('You are not authorized to create a ballot.');
     }
 
     /**
@@ -46,8 +46,8 @@ class BallotPolicy extends AppPolicy
     public function update(User $user, Ballot $ballot): Response
     {
         return $this->canUpdate($user, $ballot)
-                ? Response::allow()
-                : Response::deny('You are not authorized to update this ballot.');
+            ? Response::allow()
+            : Response::deny('You are not authorized to update this ballot.');
     }
 
     /**
@@ -58,8 +58,8 @@ class BallotPolicy extends AppPolicy
         $authorized = $ballot->publishable && $this->canUpdate($user, $ballot);
 
         return $authorized
-                ? Response::allow()
-                : Response::deny('You are not authorized to publish this ballot.');
+            ? Response::allow()
+            : Response::deny('You are not authorized to publish this ballot.');
     }
 
     /**
@@ -68,6 +68,5 @@ class BallotPolicy extends AppPolicy
     public function delete(User $user, Ballot $ballot): bool
     {
         return $user->hasAnyPermission([PermissionEnum::delete_ballot()->value]) || $this->canDelete($user, $ballot);
-
     }
 }

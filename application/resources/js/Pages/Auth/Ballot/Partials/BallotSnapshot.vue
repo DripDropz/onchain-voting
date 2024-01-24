@@ -11,7 +11,7 @@
         <div class="w-96">
             <NewSnapshotButton :ballot="ballot" v-if="!ballot?.snapshot" />
         </div>
-        <SnapshotCard :snapshot="ballot?.snapshot" v-if="ballot?.snapshot" :ballot="ballot?.hash"/>
+        <SnapshotCard :snapshot="ballot?.snapshot" v-if="ballot?.snapshot" :ballot="ballot?.hash" :showUnlink="true"/>
     </div>
 </template>
 <script setup lang="ts">

@@ -1,0 +1,12 @@
+version: '3'
+services:
+  chainvote.lucid.standalone:
+    image: nextjs/chainvote-standalone
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chainvote.lucid.standalone
+    expose:
+      - "3000:3000"
+    env_file:
+      -   ../application/.env

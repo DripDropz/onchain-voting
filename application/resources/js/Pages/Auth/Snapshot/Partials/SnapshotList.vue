@@ -82,13 +82,6 @@
                 </div>
             </dl>
         </li>
-
-        <li class="py-16 overflow-hidden border border-gray-400 border-dashed rounded-xl dark:border-gray-700 hover:border-sky-600">
-            <Link as="button" :href="route('admin.snapshots.create')" class="flex flex-col items-center justify-center w-full h-full gap-2 px-6 py-4 leading-6 text-gray-500 text-md xl:text-xl dark:text-gray-400">
-                <PlusIcon class="w-6 h-6" />
-                <span>Create Snapshot</span>
-            </Link>
-        </li>
     </ul>
 </template>
 
@@ -100,7 +93,12 @@ import SnapshotData = App.DataTransferObjects.SnapshotData;
 import AlertService from '@/shared/Services/alert-service';
 
 const props = defineProps<{
-    snapshots: SnapshotData[];
+    snapshots:  SnapshotData[];
+}>();
+
+const emit = defineEmits<{
+    (e: 'current-page', page: number): void
+    (e: 'perr-page', perPage: number): void
 }>();
 
 const form = useForm({

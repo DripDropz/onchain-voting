@@ -25,7 +25,7 @@
         "vue": "^3.2.41"
     },
     "dependencies": {
-        "@headlessui/vue": "^1.7.13",
+        "@headlessui/vue": "^1.7.17",
         "@heroicons/vue": "^2.0.17",
         "@vueform/multiselect": "^2.6.1",
         "@vueform/toggle": "^2.1.3",

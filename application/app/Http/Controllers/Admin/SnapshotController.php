@@ -2,52 +2,79 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\DataTransferObjects\QuestionData;
 use App\DataTransferObjects\SnapshotData;
 use App\DataTransferObjects\VotingPowerData;
-use App\Enums\ModelStatusEnum;
-use App\Enums\QuestionTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Jobs\CreateVotingPowerSnapshotJob;
-use App\Models\Question;
 use App\Models\Snapshot;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
-use JetBrains\PhpStorm\NoReturn;
 
 class SnapshotController extends Controller
 {
     /**
-     * Display the new snapshots's form.
+     * Display the new snapshot's form.
      */
-    public function create(Request $request): Response
+    public function index(Request $request): Response
     {
-        return Inertia::render('Auth/Snapshot/Create', []);
-    }
+        $crumbs = [
+            ['label' => 'Snapshots', 'link' => route('admin.snapshots.index')],
+            ['label' => 'Create Snapshot', 'link' => route('admin.snapshots.create')],
+        ];
 
-    /**
-     * Display the snapshots's form.
-     */
-    public function view(Request $request, Snapshot $snapshot): Response
-    {
-        return Inertia::render('Auth/Snapshot/View', [
-            'snapshot' => SnapshotData::from($snapshot),
+        return Inertia::render('Auth/Snapshot/Index')->with([
+            'crumbs' => $crumbs,
         ]);
     }
 
     /**
-     * Display the snapshots's form.
+     * Display the new snapshot's form.
+     */
+    public function create(Request $request): Response
+    {
+        $crumbs = [
+            ['label' => 'Snapshots', 'link' => route('admin.snapshots.index')],
+            ['label' => 'Create Snapshot', 'link' => route('admin.snapshots.create')],
+        ];
+
+        return Inertia::render('Auth/Snapshot/Create')->with([
+            'crumbs' => $crumbs,
+        ]);
+    }
+
+
+    /**
+     * Display the snapshot's form.
+     */
+    public function view(Request $request, Snapshot $snapshot): Response
+    {
+        $crumbs = [
+            ['label' => 'Snapshots', 'link' => route('admin.snapshots.index')],
+            ['label' => 'View Snapshot', 'link' => route('admin.snapshots.view', ['snapshot' => $snapshot->hash])],
+        ];
+        return Inertia::render('Auth/Snapshot/View', [
+            'snapshot' => SnapshotData::from($snapshot),
+            'crumbs' => $crumbs,
+        ]);
+    }
+
+    /**
+     * Display the snapshot's form.
      */
     public function edit(Request $request, Snapshot $snapshot): Response
     {
         $snapshot->load(['ballot']);
+        $crumbs = [
+            ['label' => 'Snapshots', 'link' => route('admin.snapshots.index')],
+            ['label' => 'Edit Snapshot', 'link' => route('admin.snapshots.edit', ['snapshot' => $snapshot->hash])],
+        ];
         return Inertia::render('Auth/Snapshot/Edit', [
             'snapshot' => SnapshotData::from($snapshot),
+            'crumbs' => $crumbs,
         ]);
     }
 
@@ -65,12 +92,12 @@ class SnapshotController extends Controller
 
             return Redirect::route('admin.snapshots.view', ['snapshot' => $snapshot->hash]);
         } else {
-            return Redirect::back()->withErrors(['error' => 'Not authorized to create snapshots']);
+            return Redirect::back()->withErrors(['error' => 'Not authorized to create snapshot']);
         }
     }
 
     /**
-     * Update the snapshots's profile information.
+     * Update the snapshot's profile information.
      */
     public function update(Request $request, Snapshot $snapshot)
     {
@@ -92,7 +119,7 @@ class SnapshotController extends Controller
     }
 
     /**
-     * Delete the snapshots's account.
+     * Delete the snapshot's account.
      */
     public function destroy(Request $request, Snapshot $snapshot): RedirectResponse
     {
@@ -104,105 +131,7 @@ class SnapshotController extends Controller
 
             return to_route('admin.dashboard');
         } else {
-            return Redirect::route('admin.snapshots.view', ['snapshots' => $snapshot]);
-        }
-    }
-
-    public function createQuestion(Request $request, Snapshot $snapshot)
-    {
-        $response = Gate::inspect('create', Question::class);
-        if ($response->allowed()) {
-            return Inertia::modal('Auth/Question/Create')
-                ->with([
-                    'snapshots' => SnapshotData::from($snapshot),
-                    'questionTypes' => QuestionTypeEnum::values(),
-                    'questionsStatuses' => ModelStatusEnum::values(),
-                ])
-                ->baseRoute('admin.snapshots.edit', [
-                    'snapshots' => $snapshot->hash,
-                ]);
-        } else {
-            return Redirect::back()->withErrors(['error' => 'Not authorized to create question']);
-        }
-    }
-
-    public function editQuestion(Request $request, Snapshot $snapshot, Question $question)
-    {
-        $snapshot->load(['questions']);
-
-        return Inertia::render('Auth/Question/Edit', [
-            'snapshots' => SnapshotData::from($snapshot),
-            'question' => QuestionData::from($question),
-        ]);
-    }
-
-    /**
-     * Store a newly created Question in storage.
-     */
-    #[NoReturn]
-    public function updateQuestion(Request $request, $snapshot, $question): RedirectResponse
-    {
-        $response = Gate::inspect('update', $question);
-
-        if ($response->allowed()) {
-            $question = Question::byHash($question->hash);
-            $question->title = $request->title;
-            $question->description = $request->description;
-            $question->status = $request->status;
-            $question->type = $request->type;
-            $question->max_choices = $request->maxChoices;
-            $question->supplemental = $request->supplemental;
-            $question->update();
-
-            return Redirect::route('admin.snapshots.view', ['snapshots' => $snapshot->hash]);
-        } else {
-            return redirect()->route('admin.snapshots.view', ['snapshots' => $snapshot->hash])->withErrors([
-                'error' => 'Not authorized to update this question!',
-            ]);
-        }
-    }
-
-    /**
-     * Store a newly created Question in storage.
-     */
-    #[NoReturn]
-    public function storeQuestion(Request $request, $snapshot): RedirectResponse
-    {
-        $response = Gate::inspect('create', Question::class);
-
-        if ($response->allowed()) {
-            $question = new Question;
-            $question->title = $request->title;
-            $question->description = $request->description;
-            $question->status = $request->status;
-            $question->type = $request->type;
-            $question->max_choices = $request->maxChoices;
-            $question->supplemental = $request->supplemental;
-            $question->user_id = Auth::id();
-            $question->ballot_id = decode_model_hash($snapshot?->hash, Snapshot::class);
-            $question->save();
-
-            return Redirect::route('admin.snapshots.view', ['snapshots' => $snapshot?->hash]);
-        } else {
-            return redirect()->route('admin.snapshots.view', ['snapshots' => $snapshot?->hash])->withErrors([
-                'error' => 'Not authorized to create question!',
-            ]);
-        }
-    }
-
-    /**
-     * Delete the snapshots's account.
-     */
-    public function destroyQuestion(Request $request, Snapshot $snapshot, Question $question)
-    {
-        $response = Gate::inspect('delete', $question);
-
-        if ($response->allowed()) {
-            $que = Question::where('id', $question->id)->first();
-            $que->choices()->delete();
-            $que->delete();
-        } else {
-            return Redirect::back()->withErrors(['error' => 'Not authorized to delete question']);
+            return Redirect::route('admin.snapshots.view', ['snapshot' => $snapshot]);
         }
     }
 
@@ -247,14 +176,14 @@ class SnapshotController extends Controller
     {
         $response = Gate::inspect('update', Snapshot::class);
 
-        $uploadedFile = $request->parsedCsv;
-
-        foreach ($uploadedFile as $voter) {
-            CreateVotingPowerSnapshotJob::dispatch($snapshot->hash, $voter['voter_id'], $voter['voting_power']);
-        }
-
         if ($response->allowed()) {
-            return redirect()->route('admin.snapshots.view', ['snapshot' => $snapshot->hash]);
+            $uploadedFile = $request->parsedCsv;
+
+            foreach ($uploadedFile as $voter) {
+                CreateVotingPowerSnapshotJob::dispatch($snapshot->hash, $voter['voter_id'], $voter['voting_power']);
+            }
+            return redirect()
+                ->route('admin.snapshots.view', ['snapshot' => $snapshot->hash]);
         } else {
             return Redirect::back()->withErrors(['error' => 'Not authorized to import voting power']);
         }
@@ -264,14 +193,12 @@ class SnapshotController extends Controller
     {
         $term = $request->input('term');
 
-        $snapshots = Snapshot::where('title', 'iLIKE', "%{$term}%")
+        return Snapshot::where('title', 'iLIKE', "%{$term}%")
             ->get()
             ->take(5)
             ->map(fn ($q) => [
                 'title' => $q->title,
                 'hash' => $q->hash,
             ]);
-
-        return $snapshots;
     }
 }
