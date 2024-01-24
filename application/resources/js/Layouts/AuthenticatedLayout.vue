@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import {ref} from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -7,10 +7,10 @@ import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import GlobalAlertComponent from '../shared/components/GlobalAlertComponent.vue';
 import DarkModeButton from '@/shared/components/DarkModeButton.vue';
-import { Link } from '@inertiajs/vue3';
-import { Modal } from 'momentum-modal';
-import { useConfigStore } from "@/stores/config-store";
-import { storeToRefs } from 'pinia';
+import {Link} from '@inertiajs/vue3';
+import {Modal} from 'momentum-modal';
+import {useConfigStore} from "@/stores/config-store";
+import {storeToRefs} from 'pinia';
 
 const showingNavigationDropdown = ref(false);
 let configStore = useConfigStore();
@@ -28,40 +28,54 @@ let {isDarkMode} = storeToRefs(configStore);
                             <!-- Logo -->
                             <div class="flex items-center shrink-0">
                                 <Link :href="route('home')">
-                                <ApplicationLogo class="block w-auto text-gray-800 fill-current h-9 dark:text-gray-200" />
+                                    <ApplicationLogo
+                                        class="block w-auto text-gray-800 fill-current h-9 dark:text-gray-200"/>
                                 </Link>
                             </div>
 
                             <!-- Navigation Links -->
-                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('admin.dashboard')" :active="route().current('dashboard')">
+                            <div class="hidden space-x-6 sm:-my-px sm:ml-10 sm:flex">
+                                <NavLink :href="route('admin.dashboard')" :active="route().current('admin.dashboard')">
                                     Dashboard
+                                </NavLink>
+                                <NavLink :href="route('admin.ballots.index')" :active="route().current('admin.ballots.index')">
+                                    Ballots
+                                </NavLink>
+                                <NavLink :href="route('admin.petitions.index')" :active="route().current('admin.petitions.index')">
+                                    Petitions
+                                </NavLink>
+                                <NavLink :href="route('admin.polls.index')" :active="route().current('admin.polls.index')">
+                                    Polls
+                                </NavLink>
+                                <NavLink :href="route('admin.snapshots.index')" :active="route().current('admin.snapshots.index')">
+                                    Snapshots
                                 </NavLink>
                             </div>
                         </div>
+
                         <div class="flex items-center gap-4">
                             <div class="hidden sm:flex sm:items-center sm:ml-6">
-                            <!-- Settings Dropdown -->
+                                <!-- Settings Dropdown -->
                                 <div class="relative ml-3">
                                     <Dropdown align="right" width="48">
                                         <template #trigger>
                                             <span class="inline-flex rounded-md">
                                                 <button type="button"
-                                                    class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-sky-100 border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
+                                                        class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-sky-100 border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
                                                     {{ $page.props.auth.user.name }}
 
                                                     <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                                        viewBox="0 0 20 20" fill="currentColor">
+                                                         viewBox="0 0 20 20" fill="currentColor">
                                                         <path fill-rule="evenodd"
-                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                            clip-rule="evenodd" />
+                                                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                              clip-rule="evenodd"/>
                                                     </svg>
                                                 </button>
                                             </span>
                                         </template>
 
                                         <template #content>
-                                            <DropdownLink :href="route('admin.profile.edit')"> Profile </DropdownLink>
+                                            <DropdownLink :href="route('admin.profile.edit')"> Profile</DropdownLink>
                                             <DropdownLink :href="route('logout')" method="post" as="button">
                                                 Log Out
                                             </DropdownLink>
@@ -70,24 +84,24 @@ let {isDarkMode} = storeToRefs(configStore);
                                 </div>
                             </div>
                             <div>
-                                <DarkModeButton />
+                                <DarkModeButton/>
                             </div>
                         </div>
                         <!-- Hamburger -->
                         <div class="flex items-center -mr-2 sm:hidden">
                             <button @click="showingNavigationDropdown = !showingNavigationDropdown"
-                                class="inline-flex items-center justify-center p-2 text-gray-400 transition duration-150 ease-in-out rounded-md dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400">
+                                    class="inline-flex items-center justify-center p-2 text-gray-400 transition duration-150 ease-in-out rounded-md dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400">
                                 <svg class="w-6 h-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path :class="{
                                         hidden: showingNavigationDropdown,
                                         'inline-flex': !showingNavigationDropdown,
                                     }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16" />
+                                          d="M4 6h16M4 12h16M4 18h16"/>
                                     <path :class="{
                                         hidden: !showingNavigationDropdown,
                                         'inline-flex': showingNavigationDropdown,
                                     }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
+                                          d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
                             </button>
                         </div>
@@ -95,7 +109,8 @@ let {isDarkMode} = storeToRefs(configStore);
                 </div>
 
                 <!-- Responsive Navigation Menu -->
-                <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }" class="sm:hidden">
+                <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
+                     class="sm:hidden">
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink :href="route('admin.dashboard')" :active="route().current('dashboard')">
                             Dashboard
@@ -112,7 +127,7 @@ let {isDarkMode} = storeToRefs(configStore);
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('admin.profile.edit')"> Profile </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('admin.profile.edit')"> Profile</ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
                             </ResponsiveNavLink>
@@ -123,21 +138,21 @@ let {isDarkMode} = storeToRefs(configStore);
 
             <!-- Page Heading -->
             <header class="bg-white shadow dark:bg-gray-800" v-if="$slots.header">
-                <div class="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <slot name="header" />
+                <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <slot name="header"/>
                 </div>
             </header>
 
             <!-- Page Content -->
             <main>
                 <div class="fixed top-0 left-0 z-50 flex items-end justify-end w-full h-full pointer-events-none">
-                    <GlobalAlertComponent />
+                    <GlobalAlertComponent/>
                 </div>
 
-                <slot />
+                <slot/>
 
                 <div class="z-40">
-                    <Modal />
+                    <Modal/>
                 </div>
             </main>
         </div>

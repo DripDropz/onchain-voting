@@ -22,7 +22,6 @@ class BallotFactory extends Factory
     public function definition(): array
     {
         $started_at = fake()->dateTimeBetween('-1 year', '+1 year');
-        $user_ids = User::pluck('id')->toArray();
         return [
             'title' => fake()->sentence(3, true),
             'version' => fake()->semver(),
@@ -30,7 +29,7 @@ class BallotFactory extends Factory
             'status' => fake()->randomElement(ModelStatusEnum::values()),
             'started_at' => $started_at,
             'ended_at' => fake()->dateTimeBetween($started_at, '+1 year'),
-            'user_id' => fake()->randomElement($user_ids)
+            'user_id' => User::factory(),
         ];
     }
 

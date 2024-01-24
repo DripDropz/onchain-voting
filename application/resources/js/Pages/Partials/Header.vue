@@ -105,11 +105,10 @@ const props = withDefaults(defineProps<{
 const currentUri =  usePage().props.ziggy.uri;
 let showMenu = ref(false);
 const menuOptions = [
-    { name: 'Petitions', href: '#', uri: '/petitons' },
     { name: 'Ballots', href: route('ballots.index'), uri: '/ballots' },
-    { name: 'Polls', href: '#', uri: '/polls' },
-]
-
+    { name: 'Petitions', href: route('petitions.index'), uri: '/petitions' },
+    { name: 'Polls', href: route('polls.index'), uri: '/polls' },
+];
 
 function logout() {
     router.post(route('logout'));

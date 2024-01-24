@@ -141,42 +141,51 @@ export default class WalletService {
     }
 
     protected async init(wallet: string) {
-        if (!!this.lucid || typeof this.lucid !== 'undefined') {
-            const api = await this.enableWallet(wallet ?? this.walletName);
+        if (!!this.lucid || typeof this.lucid !== "undefined") {
+            const api = await this.enableWallet(wallet);
             this.lucid.selectWallet(api);
             this.api = api;
-
             return;
         }
-
         let lucid;
 
         try {
-            const api = await this.enableWallet(wallet || this.walletName);
+            const api = await this.enableWallet(wallet);
 
             if (!api) {
-                console.log(`${wallet} not installed!`);
-                return;
+                AlertService.show([`${wallet} not installed!`], 'error')
+                throw new Error(`${wallet} not installed!`);
             }
 
-            const networkId = await  api.getNetworkId();
+            const networkId = await api.getNetworkId();
+            const keys = await (new BlockfrostKeysService).getConfig();
+            const envNetworkId = keys?.network_id;
+            const appUrl = keys?.app_url
             let network;
-            switch (networkId) {
-                case 0:
-                    network = 'Preview';
+            switch (envNetworkId) {
+                case "0":
+                    if (networkId !== 0) {
+                        AlertService.show(["Preview wallet needed"], 'error')
+                        throw new Error("Preview wallet needed");
+                    }
+                    network = "Preview";
                     break;
+
+                case "1":
+                    if (networkId !== 1) {
+                        AlertService.show(["Mainnet wallet needed"], 'error')
+                        throw new Error("Mainnet wallet needed");
+                    }
+                    network = "Mainnet";
+                    break; cardano.network.network_id
+
                 default:
-                    network = 'Mainnet';
+                    AlertService.show(["Invalid network"], 'error')
+                    throw new Error("Invalid network");
             }
-
-            const blockfrostKeysService = new BlockfrostKeysService();
-            const keys = await blockfrostKeysService.getConfig();
-
-            this.blockfrostUrl = keys?.blockfrostUrl;
-            this.projectId = keys?.projectId;
 
             lucid = await Lucid.new(
-                new Blockfrost(this.blockfrostUrl, this.projectId),
+                new Blockfrost(`${appUrl}/api`),
                 network
             );
 
@@ -185,7 +194,8 @@ export default class WalletService {
             this.poolId = keys.poolId;
             this.api = api;
         } catch (e) {
-            throw  e;
+            throw e;
+
         }
     }
 }

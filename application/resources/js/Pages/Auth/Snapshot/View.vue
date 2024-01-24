@@ -4,9 +4,7 @@
     <AuthenticatedLayout>
         <template #header>
             <div class="flex flex-row justify-between">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    {{ 'Viewing ' }}<b>{{ snapshot.title }}</b>{{ ' Snapshot' }}
-                </h2>
+                <Nav :crumbs="props.crumbs"/>
             </div>
         </template>
 
@@ -37,9 +35,11 @@ import VotingPowerList from './Partials/VotingPowerList.vue';
 import VotingPowerImporterComponent from '@/Components/VotingPowerImporterComponent.vue';
 import { useSnapshotStore } from '@/stores/snapshot-store';
 import { storeToRefs } from 'pinia';
+import Nav from '../Breadcrumbs.vue';
 
 const props = defineProps<{
     snapshot: SnapshotData;
+    crumbs: []
 }>();
 
 let snapshotHash:ComputedRef<any> = computed(() => props.snapshot.hash);

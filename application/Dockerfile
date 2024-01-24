@@ -53,8 +53,6 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositorie
     && apk add -Uuv \
     autoconf \
     bash \
-    chromium \
-    ffmpeg \
     fcgi \
     font-noto-emoji \
     freetype \
@@ -64,14 +62,9 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositorie
     g++ \
     git \
     harfbuzz \
-    imagemagick \
-    imagemagick-dev \
-    jpegoptim \
     libstdc++ \
     libtool \
-    libjpeg-turbo-dev \
     libzip-dev \
-    libpng-dev \
     make \
     netcat-openbsd \
     postgresql-dev \
@@ -88,11 +81,9 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositorie
 
 COPY --from=composer:2.3 /usr/bin/composer /usr/bin/composer
 
-RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include
+RUN docker-php-ext-install -j$(nproc) pdo pdo_pgsql pdo_mysql mysqli pgsql opcache pcntl bcmath posix zip exif intl
 
-RUN docker-php-ext-install -j$(nproc) pdo pdo_pgsql pdo_mysql mysqli pgsql opcache pcntl gd bcmath posix zip exif intl
-
-RUN printf "\n" | pecl install redis imagick && docker-php-ext-enable redis imagick
+RUN printf "\n" | pecl install redis && docker-php-ext-enable redis
 
 RUN apk del autoconf g++ libtool make pcre-dev
 

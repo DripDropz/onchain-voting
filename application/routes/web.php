@@ -4,6 +4,8 @@ use App\Http\Controllers\BallotController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\VoterController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PetitionController;
+use App\Http\Controllers\PollController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +58,27 @@ Route::prefix('/voters')->as('voters.')->group(function () {
             ->name('save');
     });
 });
+
+// Petition
+Route::prefix('/petitions')->as('petitions.')->group(function () {
+    Route::get('/', [PetitionController::class, 'index'])
+        ->name('index');
+    Route::get('/{petition}', [PetitionController::class, 'view'])
+        ->name('view');
+
+    Route::get('/{petition}/manage', [PetitionController::class, 'manage'])
+        ->middleware(['auth', 'verified'])
+        ->name('manage');
+
+    Route::get('/{petition}/edit', [PetitionController::class, 'edit'])->name('edit');
+});
+
+//Polls
+Route::prefix('/polls')->as('polls.')->group(function () {
+    Route::get('/', [PollController::class, 'index'])
+        ->name('index');
+});
+
 
 require __DIR__.'/admin.php';
 

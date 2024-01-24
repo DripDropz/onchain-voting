@@ -34,12 +34,54 @@ use Illuminate\Support\Facades\Hash;
 
 class BallotController extends Controller
 {
+    public function index()
+    {
+        $ballots = Ballot::all();
+        $crumbs = [
+
+            [
+                'label' => 'Ballots',
+                'link' => route('admin.ballots.index')
+            ],
+        ];
+
+        return Inertia::render(
+            'Auth/Ballot/Index',
+            [
+                'ballots' => $ballots,
+                'crumbs' => $crumbs,
+            ]
+        );
+    }
+
+    public function ballotsData(Request $request)
+    {
+        $page = $request->query('page') ?? 1;
+        $perPage = $request->query('perPage') ?? 6;
+
+        $ballots = Ballot::paginate($perPage, ['*'], 'page', $page);
+
+        return BallotData::collection($ballots);
+    }
+
     /**
      * Display the new ballot's form.
      */
     public function create(Request $request): Response
     {
-        return Inertia::render('Auth/Ballot/Create', []);
+        $crumbs = [
+            [
+                'label' => 'Ballots',
+                'link' => route('admin.ballots.index')
+            ],
+            [
+                'label' => 'Create Ballot',
+                'link' => route('admin.ballots.create')
+            ],
+        ];
+        return Inertia::render('Auth/Ballot/Create', [
+            'crumbs' => $crumbs,
+        ]);
     }
 
     /**
@@ -47,8 +89,19 @@ class BallotController extends Controller
      */
     public function view(Request $request, Ballot $ballot): Response
     {
+        $crumbs = [
+            [
+                'label' => 'Ballots',
+                'link' => route('admin.ballots.index')
+            ],
+            [
+                'label' => 'View Ballot',
+                'link' => route('admin.ballots.view', ['ballot' => $ballot])
+            ],
+        ];
         return Inertia::render('Auth/Ballot/View', [
             'ballot' => BallotData::from($ballot->load('snapshot', 'questions.choices')),
+            'crumbs' => $crumbs,
         ]);
     }
 
@@ -59,9 +112,20 @@ class BallotController extends Controller
     {
         $ballot->load(['questions.choices', 'snapshot', 'policies']);
 
+        $crumbs = [
+            [
+                'label' => 'Ballots',
+                'link' => route('admin.ballots.index')
+            ],
+            [
+                'label' => 'Edit Ballot',
+                'link' => route('admin.ballots.edit', ['ballot' => $ballot])
+            ],
+        ];
         return Inertia::render('Auth/Ballot/Edit', [
             'ballot' => BallotData::from($ballot),
             'addresses' => $this->policyAddresses($ballot),
+            'crumbs' => $crumbs,
         ]);
     }
 
@@ -161,11 +225,15 @@ class BallotController extends Controller
     {
         $response = Gate::inspect('create', Question::class);
         if ($response->allowed()) {
+            $crumbs = [
+                ['label' => 'Create Question', 'link' => route('admin.ballots.questions.create', ['ballot' => $ballot->hash])],
+            ];
             return Inertia::modal('Auth/Question/Create')
                 ->with([
                     'ballot' => BallotData::from($ballot),
                     'questionTypes' => QuestionTypeEnum::values(),
                     'questionsStatuses' => ModelStatusEnum::values(),
+                    'crumbs' => $crumbs,
                 ])
                 ->baseRoute('admin.ballots.edit', [
                     'ballot' => $ballot->hash,
@@ -184,10 +252,14 @@ class BallotController extends Controller
     public function editQuestion(Request $request, Ballot $ballot, Question $question)
     {
         $ballot->load(['questions']);
+        $crumbs = [
+            ['label' => 'Edit Question', 'link' => route('admin.ballots.questions.edit', ['ballot' => $ballot->hash])],
+        ];
 
         return Inertia::render('Auth/Question/Edit', [
             'ballot' => BallotData::from($ballot),
             'question' => QuestionData::from($question),
+            'crumbs' => $crumbs,
         ]);
     }
 
@@ -470,7 +542,7 @@ class BallotController extends Controller
             $lucid = new LucidConnector;
             $policyResponse = $lucid->send($policyAddress);
 
-            $registrationPolicyAddress = $policyResponse->json()['address'];
+            $registrationPolicyAddress = $policyResponse->json()['address'] ?? null;
         }
 
         if ($secondPolicySeed) {

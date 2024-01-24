@@ -6,6 +6,8 @@ namespace App\Models;
 use App\Http\Traits\HasHashIds;
 use App\Models\Traits\HashIdModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -56,12 +58,12 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
         'email_verified_at' => 'datetime',
     ];
 
-    public function questions()
+    public function questions(): HasMany
     {
         return $this->hasMany(Question::class);
     }
 
-    public function voting_power()
+    public function voting_power(): HasOne
     {
         return $this->hasOne(VotingPower::class);
     }

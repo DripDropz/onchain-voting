@@ -1,6 +1,6 @@
 <template>
     <ul role="list" class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
-        <li v-for="ballot in ballots.data" :key="ballot.hash"
+        <li v-for="ballot in ballots" :key="ballot.hash"
             class="overflow-hidden border border-gray-200 rounded-xl dark:border-gray-700">
             <div class="flex items-center p-6 border-b gap-x-4 border-gray-900/5 bg-gray-50 dark:bg-gray-800">
                 <div class="flex gap-3 flex-fow">
@@ -91,28 +91,7 @@
                 </div>
             </dl>
         </li>
-
-        <li
-            class="py-16 overflow-hidden border border-gray-400 border-dashed rounded-xl dark:border-gray-700 hover:border-sky-600">
-            <Link as="button" :href="route('admin.ballots.create')"
-                class="flex flex-col items-center justify-center w-full h-full gap-2 px-6 py-4 leading-6 text-gray-500 text-md xl:text-xl dark:text-gray-400">
-            <PlusIcon class="w-6 h-6" />
-            <span>Create Ballot</span>
-            </Link>
-        </li>
     </ul>
-    <slot name="footer">
-        <div class="flex flex-row items-center justify-between w-full pt-4">
-            <div class="border-2 border-sky-600">
-                <p class="p-4 text-sm text-gray-900 dark:text-gray-300">
-                    {{ `Showing ${props.ballots.meta.from} to ${(props.ballots.meta.to < props.ballots.meta.total) ?
-                        props.ballots.meta.to : props.ballots.meta.total} of ${props.ballots.meta.total} results` }} </p>
-            </div>
-            <Paginator :pagination="ballots.meta" @paginated="(payload: number) => emit('curr-page', payload)"
-                @perPageUpdated="(payload: number) => emit('per-page', payload)">
-            </Paginator>
-        </div>
-    </slot>
 </template>
 
 <script setup lang="ts">
@@ -123,18 +102,10 @@ import BallotData = App.DataTransferObjects.BallotData;
 import { Link, router, useForm } from "@inertiajs/vue3";
 import BallotStatusBadge from "@/Pages/Auth/Ballot/Partials/BallotStatusBadge.vue";
 import AlertService from "@/shared/Services/alert-service";
-import Paginator from "@/shared/components/Paginator.vue";
-import Pagination from "@/types/pagination";
-
 
 
 const props = defineProps<{
-    ballots: {
-        data: BallotData[];
-        links: [];
-        meta: Pagination;
-
-    };
+    ballots:  BallotData[];
 }>();
 
 const emit = defineEmits<{
