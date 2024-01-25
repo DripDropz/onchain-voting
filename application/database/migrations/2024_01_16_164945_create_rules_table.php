@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->enum('type', RuleTypeEnum::values());
-            $table->enum('operator', RuleOperatorEnum::values());
+            $table->enum('operator', RuleOperatorEnum::values())->nullable();
             $table->text('value1')->nullable();
             $table->text('value2')->nullable();
             $table->timestamps();

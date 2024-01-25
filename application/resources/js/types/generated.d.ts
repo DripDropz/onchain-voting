@@ -57,10 +57,13 @@ description?: string | null;
 user: App.DataTransferObjects.UserData | null;
 created_at?: string | null;
 updated_at?: string | null;
+started_at?: string | null;
+ended_at?: string | null;
 image_url?: string | null;
 signatures_count?: number | null;
 status: string;
 categories: Array<App.DataTransferObjects.CategoryData> | null;
+rules: Array<App.DataTransferObjects.RuleData> | null;
 };
 export type PolicyData = {
 hash: string | null;
@@ -78,6 +81,7 @@ user: App.DataTransferObjects.UserData | null;
 created_at?: string | null;
 updated_at?: string | null;
 status: string;
+rules: Array<App.DataTransferObjects.RuleData> | null;
 };
 export type QuestionChoiceData = {
 hash: string | null;
@@ -115,11 +119,15 @@ title: string;
 description?: string | null;
 type: string | null;
 operator: string | null;
+value1: string | null;
+value2: string | null;
 };
 export type SignatureData = {
 hash: string;
 email_signature: string | null;
 wallet_signature: string | null;
+created_at: string | null;
+stake_address: string | null;
 voter: App.DataTransferObjects.VoterData | null;
 ballot: App.DataTransferObjects.BallotData | null;
 pollData: App.DataTransferObjects.PollData | null;

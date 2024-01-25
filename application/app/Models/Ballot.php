@@ -74,14 +74,21 @@ class Ballot extends Model implements Auditable, HasUser
 
     public function choices(): HasManyThrough
     {
-        return $this->hasManyThrough(BallotQuestionChoice::class, Question::class, 'ballot_id', 'question_id');
+        return $this->hasManyThrough(
+            BallotQuestionChoice::class,
+            Question::class,
+            'model_id',
+            'question_id');
     }
 
     public function publishable(): Attribute
     {
         return Attribute::make(
             get: function () {
-                $questions = Question::where('ballot_id', $this->id)->get();
+                $questions = Question::where([
+                    'model_id' => $this->id,
+                    'model_type' => $this::class,
+                ])->get();
                 $ballotPulishable = $questions->flatMap(function ($question) {
                     if ($question->status = 'published' and !is_null($this->started_at)) {
                         return $question->choices;
@@ -95,7 +102,8 @@ class Ballot extends Model implements Auditable, HasUser
 
     public function questions(): HasMany
     {
-        return $this->hasMany(Question::class);
+        return $this->hasMany(Question::class,'model_id')
+            ->where('model_type', static::class);
     }
 
     public function responses(): HasMany

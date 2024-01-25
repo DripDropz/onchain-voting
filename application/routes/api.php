@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\BallotController;
 use App\Http\Controllers\Admin\PetitionController;
 use App\Http\Controllers\Admin\SnapshotController;
 use App\Http\Controllers\Admin\SnapshotImportController;
+use App\Http\Controllers\BlockfrostLinkController;
 use App\Http\Integrations\Blockfrost\Requests\BlockfrostRequest;
 
 /*
@@ -39,21 +40,27 @@ Route::prefix('/ballots')->as('config.')->group(function () {
 
     Route::get('/app', function (Request $request) {
         return collect(config('app'))
-        ->only([
-            'cardano_network',
-            'hosted_by',
-            'hosted_by_link',
-            'logo',
-            'power_by',
-            'show_created_by'
-        ])->toJson();
+            ->only([
+                'cardano_network',
+                'hosted_by',
+                'hosted_by_link',
+                'logo',
+                'power_by',
+                'show_created_by'
+            ])->toJson();
     })->name('app');
 });
 
+Route::prefix('/query-chain')->as('frost.')->group(
+    function () {
+        Route::get('/',[BlockfrostLinkController::class, 'queryChain'])->name('index');
+        Route::get('/asset-detail', [BlockfrostLinkController::class, 'getAssetDetail'])->name('asset');
+    }
+);
 
-Route::get('/epochs/latest/parameters', function (Request $request) {
-    $blockfrostReq = new BlockfrostRequest('/epochs/latest/parameters');
-    $response = $blockfrostReq->send();
+Route::get('/epochs/latest/parameters', function (Request $request, BlockfrostRequest $frost) {
+    $frost->setEndPoint('/epochs/latest/parameters');
+    $response = $frost->send();
 
     return $response->json();
 })->name('blockfrost-query');
@@ -70,4 +77,3 @@ Route::post('/update-position', [BallotController::class, 'updatePosition'])->na
 Route::get('/ballots', [BallotController::class, 'ballotsData'])->name('ballotsData');
 Route::get('/petitions', [PetitionController::class, 'petitionsData'])->name('petitionsData');
 Route::get('/polls', [PollController::class, 'pollsData'])->name('pollsData');
-

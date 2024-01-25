@@ -18,6 +18,10 @@ class SignatureData extends Data
 
         public ?string $wallet_signature,
 
+        public ?string $created_at,
+
+        public ?string $stake_address,
+
         public ?VoterData $voter,
 
         public ?BallotData $ballot,

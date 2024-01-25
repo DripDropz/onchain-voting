@@ -4,8 +4,7 @@ import VoterLayout from "@/Layouts/VoterLayout.vue";
 import voteSplashImg from '../../images/vote-splash.jpeg';
 import {Link} from "@inertiajs/vue3";
 
-defineProps<{
-    canLogin?: boolean;
+const props = defineProps<{
     ballots: BallotData[];
 }>();
 </script>
@@ -53,7 +52,7 @@ defineProps<{
                     </div>
                 </div>
                 <div class="lg:w-1/2 h-full bg-center"
-                     :style="{ backgroundImage: 'url(' + voteSplashImg + ')' }">
+                     :style="{ backgroundImage: 'url(' + props.voteSplashImg + ')' }">
                 </div>
             </div>
 

@@ -40,6 +40,9 @@ class PollData extends Data
         #[Rule('string')]
         public string $status,
 
+        /** @var RuleData[] */
+        public ?DataCollection $rules,
+
     ) {
     }
 

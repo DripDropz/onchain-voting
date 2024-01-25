@@ -20,8 +20,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->enum('status', ModelStatusEnum::values())->default(ModelStatusEnum::DRAFT->value);
             $table->enum('type', BallotTypeEnum::values())->default(BallotTypeEnum::SNAPSHOT->value);
-            $table->boolean('on_chain')->default(false);
-            $table->boolean('visibility')->default('public');
+            $table->boolean('publish_on_chain')->default(false);
+            $table->text('visibility')->default('public');
             $table->timestamp('started_at')->nullable();
             $table->timestamp('ended_at')->nullable();
             $table->timestamps();

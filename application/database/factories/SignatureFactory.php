@@ -20,6 +20,9 @@ class SignatureFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
+            'wallet_signature' => fake()->text,
+            'email_signature' => fake()->text,
+            'stake_address' => fake()->text,
         ];
     }
 }
