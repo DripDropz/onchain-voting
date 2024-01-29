@@ -90,6 +90,18 @@ return [
             'alphabet' => 'abcdefghijklmnoqrstuvxyz0123456789',
         ],
 
+        \App\Models\Rule::class => [
+            'salt' => \App\Models\Rule::class . env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'abcdefghijklmnoqrstuvxyz0123456789',
+        ],
+
+        \App\Models\Signature::class => [
+            'salt' => \App\Models\Signature::class . env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'abcdefghijklmnoqrstuvxyz0123456789',
+        ],
+
         //        'main' => [
         //            'salt' =>  env('APP_KEY'),
         //            'length' => 4,

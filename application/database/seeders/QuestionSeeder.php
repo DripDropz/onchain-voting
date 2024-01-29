@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\BallotQuestionChoice;
+use App\Models\User;
 use App\Models\Question;
 use Illuminate\Database\Seeder;
+use App\Models\BallotQuestionChoice;
 
 class QuestionSeeder extends Seeder
 {
@@ -13,14 +14,11 @@ class QuestionSeeder extends Seeder
      */
     public function run(): void
     {
-        Question::factory()->count(25)->create()->each(function ($question) {
-            $maxChoices = $question->max_choices;
-
-            $numChoices =  fake()->numberBetween(1, $maxChoices);
-
-            BallotQuestionChoice::factory()->count($numChoices)->create([
-                'question_id' => $question->id,
-            ]);
-        });
+        Question::factory(7)->recycle(User::factory()->count(1), 'user')
+        ->has(
+            BallotQuestionChoice::factory(4),
+            'choices'
+        )
+        ->create();
     }
 }

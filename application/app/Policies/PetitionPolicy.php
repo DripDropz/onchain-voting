@@ -22,9 +22,15 @@ class PetitionPolicy extends AppPolicy
      *
      * @throws \Exception
      */
-    public function view(User $user, Petition $petition): bool
+    public function view(User $user, Petition $petition)
     {
-        return $this->canView($user, $petition);
+        return $this->canView($user, $petition) ? Response::allow()
+            : Response::deny('You are not authorized to create a Petition.');
+    }
+
+    public function sign(User $user): mixed
+    {
+        return !!$user;
     }
 
     /**
@@ -53,7 +59,7 @@ class PetitionPolicy extends AppPolicy
     /**
      * Determine whether the user can publish the model.
      */
-    public function publish(User $user, Petition $petition) 
+    public function publish(User $user, Petition $petition)
     {
         // $authorized = $petition->publishable && $this->canUpdate($user, $petition);
 

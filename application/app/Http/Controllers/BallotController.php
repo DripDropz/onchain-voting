@@ -38,8 +38,17 @@ class BallotController extends Controller
             ])->orderBy('started_at')->published()->get()
         );
 
+        $crumbs = [
+
+            [
+                'label' => 'Ballots',
+                'link' => route('ballots.index')
+            ],
+        ];
+
         return Inertia::render('Ballot/Index', [
             'ballots' => $ballots,
+            'crumbs' => $crumbs,
         ]);
     }
 
@@ -49,15 +58,28 @@ class BallotController extends Controller
     public function view(Request $request, Ballot $ballot): Response
     {
         $questions = Question::with('choices')
-            ->where('ballot_id', $ballot->id)
-            ->get()->append('choices_tally');
+            ->where([
+                'model_id' => $ballot->id,
+                'model_type' => $ballot::class,
+            ])->get()->append('choices_tally');
         $ballot->load([
             'user_responses.choices'
         ]);
         $ballot->questions = $questions;
+        $crumbs = [
+            [
+                'label' => 'Ballots',
+                'link' => route('ballots.index')
+            ],
+            [
+                'label' => 'Ballot Details',
+                'link' => route('ballot.view', ['ballot' => $ballot])
+            ],
+        ];
 
         return Inertia::render('Ballot/View', [
             'ballot' => BallotData::from($ballot),
+            'crumbs' => $crumbs,
         ]);
     }
 
@@ -112,7 +134,8 @@ class BallotController extends Controller
             $startRegistration,
             2,
             300,
-            fn($exception) => $exception instanceof FatalRequestException);
+            fn($exception) => $exception instanceof FatalRequestException
+        );
 
         return response([
             'tx' => $response->body()
@@ -162,7 +185,6 @@ class BallotController extends Controller
             return null;
         }
         return $response->json()[0]['tx_hash'];
-
     }
 
     public function policyId(Request $request, Ballot $ballot, string $policyType)
@@ -177,7 +199,8 @@ class BallotController extends Controller
             $policyRequest,
             2,
             300,
-            fn($exception) => $exception instanceof FatalRequestException);
+            fn($exception) => $exception instanceof FatalRequestException
+        );
         return $response->body();
     }
 
@@ -197,12 +220,13 @@ class BallotController extends Controller
             'witnesses' => $request->witnesses,
             'voterStakekey' => $user->voter_id
         ]);
-        
+
         $response = $connector->sendAndRetry(
             $completeRegistration,
             2,
             300,
-            fn($exception) => $exception instanceof FatalRequestException);
+            fn($exception) => $exception instanceof FatalRequestException
+        );
 
 
         if ($response->body() != null) {
@@ -213,7 +237,7 @@ class BallotController extends Controller
         ]);
     }
 
-    #[NoReturn] 
+    #[NoReturn]
     public function startVoting(Request $request, Ballot $ballot)
     {
         $data = $request->validate([
@@ -228,14 +252,12 @@ class BallotController extends Controller
         // get voter ballot response choices map
         $choices = $ballot->user_responses
             ->map(
-                function($response){
+                function ($response) {
                     return [
                         $response->question_hash => $response->choices->map(fn($choice) => $choice->hash)->toArray()
                     ];
                 }
             )->collapse()->toArray();
-
-//        dd($choices);
 
         $submitVote = new StartVoting;
         $submitVote->body()->merge([
@@ -303,7 +325,8 @@ class BallotController extends Controller
             $completeRegistration,
             2,
             300,
-            fn($exception) => $exception instanceof FatalRequestException);
+            fn($exception) => $exception instanceof FatalRequestException
+        );
 
         if (!$response->successful()) {
             //@todo handle failure
@@ -328,5 +351,4 @@ class BallotController extends Controller
         return Inertia::modal('Ballot/MissingSnapshot')
             ->baseRoute('ballot.view', $ballot->hash);
     }
-
 }

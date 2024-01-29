@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             PetitionSeeder::class,
             AdminUserSeeder::class,
-            QuestionSeeder::class,
+            // QuestionSeeder::class,
             VotingPowerSeeder::class,
             PolicySeeder::class,
             BallotSeeder::class,

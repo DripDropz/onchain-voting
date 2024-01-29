@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\ModelStatusEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('petitions', function (Blueprint $table) {
+        Schema::create('question_choices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->text('title');
-            $table->text('description');
-            $table->enum('status', ModelStatusEnum::values())->default(ModelStatusEnum::DRAFT->value);
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('question_id')->constrained('questions')->nullOnDelete();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->double('order')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pertitions');
+        Schema::dropIfExists('question_choices');
     }
 };

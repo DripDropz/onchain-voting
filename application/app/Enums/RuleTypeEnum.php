@@ -4,9 +4,11 @@ namespace App\Enums;
 
 enum RuleTypeEnum: string
 {
-    case POLICY = 'policy';
-    case SUM = 'sum';
-    case COUNT = 'count';
+    case FT = 'ft';
+    case NFT = 'nft';
+    case TALLY = 'tally';
+    case POOL = 'pool';
+
 
     public static function values(): array
     {

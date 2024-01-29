@@ -32,11 +32,12 @@ class Question extends Model implements Auditable, HasUser
 
     protected $hidden = [
         'id',
-        'ballot_id',
+        'model_id',
     ];
 
     protected $appends = [
         'hash',
+        'choices_tally'
     ];
 
     protected $casts = [
@@ -48,17 +49,23 @@ class Question extends Model implements Auditable, HasUser
 
     public function ballot(): BelongsTo
     {
-        return $this->belongsTo(Ballot::class);
+        return $this->belongsTo(Ballot::class, 'model_id')
+            ->where('model_type', Ballot::class);
+    }
+
+    public function poll(): BelongsTo
+    {
+        return $this->belongsTo(Poll::class);
     }
 
     public function choices(): HasMany
     {
-        return $this->hasMany(BallotQuestionChoice::class, 'question_id');
+        return $this->hasMany(QuestionChoice::class, 'question_id');
     }
 
     public function ranked_user_responses(): HasMany
     {
-        return $this->hasMany(BallotResponse::class)->where(
+        return $this->hasMany(QuestionResponse::class)->where(
             [
                 'user_id' => auth()?->user()?->getAuthIdentifier(),
             ]
@@ -67,7 +74,7 @@ class Question extends Model implements Auditable, HasUser
 
     public function responses(): HasMany
     {
-        return $this->hasMany(BallotResponse::class);
+        return $this->hasMany(QuestionResponse::class, 'model_id');
     }
 
     public function choicesTally(): Attribute
@@ -78,20 +85,20 @@ class Question extends Model implements Auditable, HasUser
                     ->pluck('title')
                     ->toArray();
 
-
-                $query = BallotResponse::where('question_id', $this->id);
+                $query = QuestionResponse::where('question_id', $this->id);
 
                 foreach ($allChoices as $choice) {
-                    $c = Str::snake(strtolower($choice));
+                    $c =  Str::snake(strtolower(trim($choice, '.')));
                     $query->withCount(
                         [
                             "choices as {$c}_count" => function ($query) use ($choice) {
-                                $query->where('ballot_question_choices.title', $choice);
+                                $query->where('question_choices.title', "$choice");
                             }
                         ]
                     );
                 }
                 $attributes = collect($query->first()?->attributes);
+
                 return $attributes
                     ->filter(
                         fn($att, $key) => Str::of($key)->contains('count'))

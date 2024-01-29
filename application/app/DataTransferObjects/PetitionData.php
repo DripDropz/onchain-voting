@@ -36,6 +36,12 @@ class PetitionData extends Data
         public ?string $updated_at,
 
         #[TypeScriptOptional]
+        public ?string $started_at,
+
+        #[TypeScriptOptional]
+        public ?string $ended_at,
+
+        #[TypeScriptOptional]
         public ?string $image_url,
 
         #[TypeScriptOptional]
@@ -47,6 +53,9 @@ class PetitionData extends Data
 
         /** @var CategoryData[] */
         public ?DataCollection $categories,
+
+        /** @var RuleData[] */
+        public ?DataCollection $rules,
     ) {}
 
     public static function attributes(): array

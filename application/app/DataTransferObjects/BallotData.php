@@ -78,7 +78,7 @@ class BallotData extends Data
 
         #[TypescriptOptional]
         #[DataCollectionOf(VoterData::class)]
-        /** @var QuestionData[] */
+        /** @var VoterData[] */
         public ?DataCollection $voters,
 
         #[TypescriptOptional]
@@ -92,17 +92,17 @@ class BallotData extends Data
 
         #[TypescriptOptional]
         #[DataCollectionOf(VoteData::class)]
-        /** @var QuestionData[] */
+        /** @var VoteData[] */
         public ?DataCollection $votes,
 
         #[TypescriptOptional]
         #[DataCollectionOf(TokenData::class)]
-        /** @var QuestionData[] */
+        /** @var TokenData[] */
         public ?DataCollection $tokens,
 
         #[TypescriptOptional]
         #[DataCollectionOf(TxData::class)]
-        /** @var QuestionData[] */
+        /** @var TxData[] */
         public ?DataCollection $txs,
     ) {
     }

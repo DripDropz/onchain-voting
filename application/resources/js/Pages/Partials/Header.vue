@@ -20,7 +20,7 @@
                         <Link v-for="option in menuOptions" :href="option.href" :class="[
                             currentUri == option.uri
                                 ? 'border-b-2 border-sky-300 dark:border-sky-500 font-medium text-sky-300 dark:text-sky-300 focus:outline-none focus:border-sky-700'
-                                : 'border-b-2 border-transparent font-medium text-sky-300 hover:text-sky-500 text-slate-900 dark:hover:text-sky-300 dark:text-slate-200 hover:border-sky-500 dark:hover:border-sky-300 focus:text-sky-500 dark:focus:text-sky-300 focus:border-sky-500 dark:focus:border-sky-300',
+                                : 'border-b-2 border-transparent font-medium  hover:text-sky-500 text-slate-900 dark:hover:text-sky-300 dark:text-slate-200 hover:border-sky-500 dark:hover:border-sky-300 focus:text-sky-500 dark:focus:text-sky-300 focus:border-sky-500 dark:focus:border-sky-300',
                             'block'
                         ]">
                             {{ option.name }}
@@ -32,7 +32,7 @@
         <div class="flex flex-row items-center justify-end w-1/3 gap-6 text-white">
             <div
                 class="relative lg:flex items-center gap-0 py-0.5 pl-1 bg-sky-400 rounded-lg flex-nowrap hover:bg-sky-300 hidden">
-                <div class="hover:text-yellow-400">
+                <div class="relative hover:text-yellow-400" >
                     <ConnectWallet background-color="bg-white"></ConnectWallet>
                 </div>
 

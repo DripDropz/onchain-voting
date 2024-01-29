@@ -2,18 +2,20 @@
 
 namespace App\Providers;
 
-use App\Models\Ballot;
-use App\Models\Petition;
-use App\Models\Policy;
 use App\Models\Poll;
+use App\Models\Rule;
+use App\Models\Ballot;
+use App\Models\Policy;
+use App\Models\Petition;
 use App\Models\Question;
+use App\Models\Signature;
 use App\Models\Snapshot;
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Route;
 use Vinkla\Hashids\Facades\Hashids;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -64,6 +66,14 @@ class RouteServiceProvider extends ServiceProvider
 
         Route::bind('policy', function ($value, $route) {
             return $this->getModel(Policy::class, $value);
+        });
+
+        Route::bind('rule', function ($value, $route) {
+            return $this->getModel(Rule::class, $value);
+        });
+
+        Route::bind('signature', function ($value, $route) {
+            return $this->getModel(Signature::class, $value);
         });
 
         $this->routes(function () {

@@ -1,6 +1,9 @@
 <template>
     <VoterLayout page="Petitions">
-        <section class="py-12 mx-auto w-full">
+        <template #header>
+            <NavCrumbs :crumbs="props.crumbs"/>
+        </template>
+        <section class="w-full py-12 mx-auto">
             <div class="inner-container sm:px-6 lg:px-8">
                 <div class="sm:rounded-lg">
                     <h2 class="mb-8 text-2xl font-bold leading-tight text-center text-gray-800 xl:text-4xl dark:text-gray-200">
@@ -30,6 +33,7 @@
                             </div>
                             <div>
                                 <button
+                                    v-if="user" @click.prevent="showModal = true"
                                     class="px-8 py-2 mb-2 font-semibold text-white rounded-lg bg-sky-500 hover:bg-slate-600 hover:cursor-pointer">
                                     New
                                 </button>
@@ -37,66 +41,62 @@
                         </div>
 
                         <div class="tab-content">
-                            <div v-if="currentTab === 'drafts'">
-                                <div v-if="!user" class="flex flex-col items-center justify-center h-[500px] gap-16">
-                                    <p class="text-2xl font-bold text-center dark:text-white">
-                                        Login to view your draft petitions.
-                                    </p>
-                                    <Link :href="route('login.email')"
-                                          class="inline-flex items-center px-8 py-2 font-semibold text-white border rounded-md shadow-sm gap-x-2 bg-sky-500 hover:bg-slate-600 hover:cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 border-sky-400">
-                                        Login
-                                    </Link>
+                            <template v-if="!!user">
+                                <div v-if="currentTab === 'drafts'">
+                                    <div>
+                                        <div v-if="filteredPetitions.length > 0">
+                                            <PetitionList v-if="petitions" :petitions="drafts"
+                                                          :currentTab="currentTab"/>
+                                        </div>
+                                        <div v-else class="flex flex-col items-center justify-center h-[500px] gap-16">
+                                            <p class="text-2xl font-bold text-center">No petitions</p>
+
+                                            <Link :href="route('#')"
+                                                  class="inline-flex items-center px-8 py-2 font-semibold text-white border rounded-md shadow-sm gap-x-2 bg-sky-500 hover:bg-sky-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 border-sky-400">
+                                                Login
+                                            </Link>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div v-else>
+                                <div v-else-if="currentTab === 'pending'">
                                     <div v-if="filteredPetitions.length > 0">
-                                        <PetitionList v-if="petitions" :petitions="drafts" :currentTab="currentTab"/>
+                                        <PetitionList v-if="petitions" :petitions="pending" :currentTab="currentTab"/>
                                     </div>
-                                    <div v-else class="flex flex-col items-center justify-center h-[500px] gap-16">
-                                        <p class="text-2xl font-bold text-center">No petitions</p>
-
-                                        <Link :href="route('#')"
-                                              class="inline-flex items-center px-8 py-2 font-semibold text-white border rounded-md shadow-sm gap-x-2 bg-sky-500 hover:bg-sky-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 border-sky-400">
-                                            Login
-                                        </Link>
+                                    <div v-else class="flex flex-row items-center justify-center">
+                                        <p class="text-2xl font-bold text-center">No pending petitions.</p>
                                     </div>
                                 </div>
-                            </div>
-                            <div v-else-if="currentTab === 'pending'">
-                                <div v-if="filteredPetitions.length > 0">
-                                    <PetitionList v-if="petitions" :petitions="pending" :currentTab="currentTab"/>
-                                </div>
-                                <div v-else class="flex flex-row items-center justify-center">
-                                    <p class="text-2xl font-bold text-center">No pending petitions.</p>
-                                </div>
-                            </div>
 
-                            <div v-else-if="currentTab === 'active'">
-                                <div v-if="filteredPetitions.length > 0">
-                                    <PetitionList v-if="petitions" :petitions="active" :currentTab="currentTab"/>
+                                <div v-else-if="currentTab === 'active'">
+                                    <div v-if="filteredPetitions.length > 0">
+                                        <PetitionList v-if="petitions" :petitions="active" :currentTab="currentTab"/>
+                                    </div>
+                                    <div v-else class="flex flex-row items-center justify-center">
+                                        <p class="text-2xl font-bold text-center">No active petitions.</p>
+                                    </div>
                                 </div>
-                                <div v-else class="flex flex-row items-center justify-center">
-                                    <p class="text-2xl font-bold text-center">No active petitions.</p>
+
+                                <div v-else-if="currentTab === 'signed'">
+                                    <div class="flex flex-row items-center justify-center">
+                                        <PetitionList v-if="signedPetitions" :petitions="signed"
+                                                      :currentTab="currentTab"/>
+                                        <p v-else class="text-2xl font-bold text-center dark:text-white">No signed
+                                            petitions.</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div v-else-if="currentTab === 'signed'">
-                                <div v-if="!user" class="flex flex-col items-center justify-center gap-16">
-                                    <p class="text-2xl font-bold text-center dark:text-white">
-                                        Login to view your signed petitions.
-                                    </p>
-                                    <Link :href="route('login.email')"
-                                          class="inline-flex items-center px-8 py-2 font-semibold text-white border rounded-md shadow-sm gap-x-2 bg-sky-500 hover:bg-slate-600 hover:cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 border-sky-400">
-                                        Login
-                                    </Link>
-                                </div>
-                                <div v-else class="flex flex-row items-center justify-center">
-                                    <PetitionList v-if="signedPetitions" :petitions="signed" :currentTab="currentTab"/>
-                                    <p v-else class="text-2xl font-bold text-center dark:text-white">No signed petitions.</p>
-                                </div>
+                            </template>
+                            <div v-else class="py-16">
+                                <LoginToView>
+                                    <span> Login to view your {{currentTab}} petitions.</span>
+                                </LoginToView>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <Modal :show="showModal">
+                <PetitionConfirmation @close="showModal = false"></PetitionConfirmation>
+            </Modal>
         </section>
     </VoterLayout>
 </template>
@@ -107,19 +107,26 @@ import {Link} from "@inertiajs/vue3";
 import PetitionData = App.DataTransferObjects.PetitionData;
 import PetitionList from "@/Pages/Petition/Partials/PetitionList.vue"
 import VoterLayout from "@/Layouts/VoterLayout.vue";
-import { usePage } from '@inertiajs/vue3';
+import {usePage} from '@inertiajs/vue3';
+import Modal from '@/Components/Modal.vue';
+import PetitionConfirmation from './Partials/PetitionConfirmation.vue';
+import LoginToView from "@/shared/components/LoginToView.vue";
+import NavCrumbs from '../NavCrumbs.vue';
 
 const page = usePage();
 
 const currentTab = ref('drafts');
 
+let showModal = ref(false);
+
 const props = withDefaults(defineProps<{
     petitions: PetitionData[];
     signedPetitions: PetitionData[];
     currentTab?: string;
+    crumbs: []
 }>(), {});
 
-const user = computed( () => page.props.auth.user );
+const user = computed(() => page.props.auth.user);
 const drafts = computed(() => props.petitions.filter((petition: PetitionData) => petition.status === 'draft'));
 const pending = computed(() => props.petitions.filter((petition: PetitionData) => petition.status === 'pending'));
 const active = computed(() => props.petitions.filter((petition: PetitionData) => petition.status === 'published'));

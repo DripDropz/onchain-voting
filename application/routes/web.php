@@ -40,7 +40,8 @@ Route::prefix('/ballots/{ballot}')->as('ballot.')->group(function () {
     Route::post('/registration/update', [BallotController::class, 'saveUpdateRegistration'])
         ->name('register.save-update');
 
-    Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');    Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');
+    Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');
+    Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');
     Route::get('/policy-id/{policyType}', [BallotController::class, 'policyId'])->name('policyId');
 
     Route::post('/vote/start', [BallotController::class, 'startVoting'])->name('startVoting');
@@ -63,23 +64,63 @@ Route::prefix('/voters')->as('voters.')->group(function () {
 Route::prefix('/petitions')->as('petitions.')->group(function () {
     Route::get('/', [PetitionController::class, 'index'])
         ->name('index');
-    Route::get('/{petition}', [PetitionController::class, 'view'])
-        ->name('view');
+
+    Route::prefix('/workflow')->group(function() {
+        Route::get('/create/{petition?}', [PetitionController::class, 'create'])->name('create');
+        Route::get('/create/{petition}/step/1', [PetitionController::class, 'create'])->name('create.stepOne');
+
+        Route::get('/create/{petition}/step/2', [PetitionController::class, 'stepTwo'])->name('create.stepTwo');
+
+        Route::get('/create/{petition}/step/3', [PetitionController::class, 'stepThree'])->name('create.stepThree');
+    });
+
+    Route::patch('/{petition}/update', [PetitionController::class, 'update'])->name('update');
+
+    Route::patch('/{petition}/close', [PetitionController::class, 'close'])->name('close');
+
+    Route::post('/store', [PetitionController::class, 'store'])->name('store');
 
     Route::get('/{petition}/manage', [PetitionController::class, 'manage'])
         ->middleware(['auth', 'verified'])
         ->name('manage');
 
     Route::get('/{petition}/edit', [PetitionController::class, 'edit'])->name('edit');
+
+    // rules
+    Route::prefix('{petition}/rules')->as('rules.')->group(function () {
+        Route::get('/create', [PetitionController::class, 'makeRule'])
+            ->name('create');
+        Route::post('/create', [PetitionController::class, 'saveRule'])
+            ->name('saveRule');
+        Route::get('{rule}/delete', [PetitionController::class, 'deleteRule'])
+            ->name('removeRule');
+        Route::post('{rule}/delete', [PetitionController::class, 'removeRule'])
+            ->name('delete');
+    });
+
+    Route::prefix('{petition}/signatures')->as('signatures.')->group(function () {
+        Route::post('/sign', [PetitionController::class, 'signPetition'])
+            ->name('store');
+    });
+
+    Route::get('/{petition}', [PetitionController::class, 'view'])
+    ->name('view');
+
+    Route::get('/{petition}/share', [PetitionController::class, 'share'])
+    ->name('share');
 });
 
 //Polls
 Route::prefix('/polls')->as('polls.')->group(function () {
     Route::get('/', [PollController::class, 'index'])
         ->name('index');
+    Route::get('/create', [PollController::class, 'create'])
+    ->name('create');
+    Route::post('/create', [PollController::class, 'store'])
+    ->name('store');
 });
 
 
-require __DIR__.'/admin.php';
+require __DIR__ . '/admin.php';
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

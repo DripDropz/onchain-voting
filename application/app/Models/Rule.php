@@ -20,6 +20,8 @@ class Rule extends Model
     protected $appends = [
         'hash',
     ];
+
+    protected $quarded = [];
     
     public function petitions(): BelongsToMany
     {
