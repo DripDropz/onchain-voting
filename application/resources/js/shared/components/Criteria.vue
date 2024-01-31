@@ -1,7 +1,9 @@
 <template>
-    <div class="flex flex-col items-center p-2 overflow-auto min-h-48 max-h-48 justify-items-center">
+     <div class="flex flex-col p-2 overflow-auto min-h-48 max-h-48 justify-items-center">
+    <div>
+
         <div v-for="(criterion, index) in criteriaRef"
-            class="flex flex-row items-center justify-between w-full gap-2 py-1 border-b border-gray-400 border-opacity-40 dark:border-gray-600 ">
+                  class="flex flex-row items-center justify-between w-full gap-2 py-1 border-b border-gray-400 border-opacity-40 dark:border-gray-600 ">
             <div class="flex flex-col gap-1 text-sm">
                 <span class="font-bold">{{ criterion.name }}</span>
                 <span class="font-light break-all text-slate-500" v-if="criterion?.assetName && criterion?.hash">
@@ -10,8 +12,8 @@
                 <span class="w-24 h-3 bg-slate-300 dark:bg-gray-700 animate-pulse" v-if=" !!criterion?.hash && !criterion?.assetName"></span>
             </div>
             <div>
-                <label class="relative inline-flex items-center cursor-pointer" :for="`${index}`">
-                    <input type="checkbox" :id="`${index}`" :value="criterion.type" class="sr-only peer"
+                <label class="relative inline-flex items-center " :for="`${index}`" :class="[(model?.status == 'published' || model?.status == 'closed')?'cursor-not-allowed':'cursor-pointer']">
+                    <input type="checkbox" :id="`${index}`" :value="criterion.type" class="sr-only peer" :disabled="model?.status == 'published' || model?.status == 'closed'"
                         @change="(e) => makeRule(e.target.checked, criterion.type, criterion.hash)"
                         :checked="!!criterion.hash">
                     <div
@@ -21,12 +23,13 @@
             </div>
         </div>
     </div>
+</div>
 </template>
 
 <script lang="ts" setup>
 import { router } from '@inertiajs/vue3';
 import PetitionData = App.DataTransferObjects.PetitionData;
-import { Ref, computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import PollData = App.DataTransferObjects.PollData;
 import axios from 'axios';
 
@@ -74,13 +77,13 @@ let getAssetData = async () => {
     }
 }
 
-if (props.model?.rules.length) {
+if (props.model?.rules?.length) {
     getAssetData();
 }
 
 watch(()=> criteria.value,()=>{
     criteriaRef.value = criteria.value;
-    if (props.model?.rules.length) {
+    if (props.model?.rules?.length) {
         getAssetData();
     }
 },{deep:true})

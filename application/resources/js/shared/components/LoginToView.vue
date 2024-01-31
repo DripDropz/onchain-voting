@@ -14,6 +14,7 @@
 import UserData = App.DataTransferObjects.UserData;
 import {Link} from '@inertiajs/vue3';
 
+
 withDefaults(defineProps<{
     user?: UserData;
 }>(), {});

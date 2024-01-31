@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\QuestionChoice;
+use OwenIt\Auditing\Auditable;
 use App\Http\Traits\HasHashIds;
 use App\Models\Traits\HashIdModel;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use OwenIt\Auditing\Auditable;
 
 class QuestionResponse extends Model implements \OwenIt\Auditing\Contracts\Auditable
 {
@@ -64,7 +65,7 @@ class QuestionResponse extends Model implements \OwenIt\Auditing\Contracts\Audit
 
     public function choices(): BelongsToMany
     {
-        return $this->belongsToMany(BallotQuestionChoice::class, 'ballot_responses_ballot_question_choices');
+        return $this->belongsToMany(QuestionChoice::class, 'question_responses_question_choices');
     }
 
     public function choice(): HasOne

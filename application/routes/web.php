@@ -114,6 +114,8 @@ Route::prefix('/petitions')->as('petitions.')->group(function () {
 Route::prefix('/polls')->as('polls.')->group(function () {
     Route::get('/', [PollController::class, 'index'])
         ->name('index');
+    Route::get('/pollsData/{params?}', [PollController::class, 'pollsData'])->name('pollsData');
+
     Route::get('/create', [PollController::class, 'create'])
     ->name('create');
     Route::post('/create', [PollController::class, 'store'])

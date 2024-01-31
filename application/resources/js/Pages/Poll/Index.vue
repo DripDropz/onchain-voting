@@ -1,10 +1,10 @@
 <template>
     <VoterLayout page="Polls">
         <template #header>
-            <Nav :crumbs="props.crumbs"/>
+            <Nav :crumbs="props.crumbs" />
         </template>
-        <section class="w-full py-12 m-auto">
-            <div class="w-full inner-container sm:px-6 lg:px-8">
+        <section class="flex flex-col w-full py-12 m-auto">
+            <div class="w-full inner-container">
                 <div class="sm:rounded-lg">
                     <h2
                         class="mb-8 text-2xl font-bold leading-tight text-center text-gray-800 xl:text-4xl dark:text-gray-200">
@@ -24,45 +24,27 @@
                                 </ul>
 
                                 <!-- Tabs for logged-in users -->
-<!--                                <ul class="flex flex-row items-center justify-between gap-8 mb-2" v-else>-->
-<!--                                    <li v-for="option in menuOptions" :key="option.name">-->
-<!--                                        <a @click="changeTab(option.value)" :class="getTabClass(option.value)">-->
-<!--                                            {{ option.value === 'browse' ? option.name : option.name + ' (3)' }}-->
-<!--                                        </a>-->
-<!--                                    </li>-->
-<!--                                </ul>-->
+                                <ul class="flex flex-row items-center justify-between gap-8 mb-2" v-else>
+                                    <li v-for="option in menuOptions" :key="option.name">
+                                        <a @click="changeTab(option.value)" :class="getTabClass(option.value)">
+                                            {{ option.value === 'browse' ? option.name : option.name + ' (3)' }}
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
                             <div>
-                                <Link :href="route('polls.create')"
+                                <button
                                     class="px-8 py-2 mb-2 font-semibold text-white rounded-lg bg-sky-500 hover:bg-slate-600 hover:cursor-pointer">Create
-                                    poll</Link>
+                                    poll</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="grid grid-cols-2 inner-container">
-                <div v-for="(poll) in polls" :key="poll.id"
-                    class="relative px-10 py-6 pb-16 m-4 border border-gray-800 rounded-lg dark:text-gray-200 dark:border-gray-200">
-                    <h2 class="mb-4 text-2xl font-extrabold">{{ poll.name }}</h2>
-                    <div v-for="(item, index) in poll.options" :key="index" class="flex mb-3">
-                        <label class="w-full cursor-pointer">
-                            <input type="radio" class="sr-only peer" v-model="selectedOption" />
-                            <span
-                                class="block w-full p-3 border-2 rounded-lg dark:text-gray-200 hover:shadow peer-checked:border-sky-500">
-                                <span class="flex items-center justify-between">
-                                    <span class="pr-8 font-bold">{{ index + 1 + '. ' + item.name }}</span>
-                                </span>
-                            </span>
-                        </label>
-                    </div>
-                    <div class="absolute bottom-0 items-center py-2">
-                        <span>{{ poll.votes }} votes</span>
-                        <button @click.prevent=""
-                            class="px-4 py-2 mb-2 font-semibold text-white rounded-lg bg-sky-500 hover:bg-slate-600 hover:cursor-pointer ml-72">Vote</button>
-                    </div>
-                </div>
+            <div >
+                <BrowsePolls :polls="polls" v-if="currentTab=='browse'"/>
             </div>
+
         </section>
     </VoterLayout>
 </template>
@@ -71,7 +53,10 @@
 import { ref, computed } from 'vue';
 import VoterLayout from "@/Layouts/VoterLayout.vue";
 import UserData = App.DataTransferObjects.UserData;
-import { Link } from '@inertiajs/vue3';
+import PollData = App.DataTransferObjects.PollData;
+import Nav from '../NavCrumbs.vue';
+import PollList from './Partials/PollList.vue';
+import BrowsePolls from './Partials/BrowsePolls.vue';
 
 const props = withDefaults(defineProps<{
     user: UserData;

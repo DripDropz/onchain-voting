@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Ballot;
 use App\Models\Question;
 use App\Models\Snapshot;
+use App\Models\QuestionChoice;
 use Illuminate\Database\Seeder;
 use App\Models\BallotQuestionChoice;
 
@@ -27,7 +28,7 @@ class BallotSeeder extends Seeder
                         'model_type' => $ballot::class
                     ])
                     ->has(
-                        BallotQuestionChoice::factory(4),
+                        QuestionChoice::factory(4),
                         'choices'
                     ),
                 'questions'

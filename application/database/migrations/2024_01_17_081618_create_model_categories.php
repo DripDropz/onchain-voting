@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('category_id')->references('id')
                 ->on('categories');
             $table->morphs('model');
-//            $table->text('model_type')->nullable();
         });
     }
 

@@ -20,7 +20,6 @@ import PetitionData = App.DataTransferObjects.PetitionData;
 import AlertService from '../Services/alert-service';
 import { Inertia } from '@inertiajs/inertia'
 import { useForm } from '@inertiajs/vue3';
-// import RequestPayload from 
 
 const walletStore = useWalletStore();
 const { walletData } = storeToRefs(walletStore);
@@ -41,7 +40,7 @@ let submitSignature = async () => {
        signature: signature.signature,
        stakeAddress:walletData.value.stakeAddress
     })
-    
+
     form.post(route('petitions.signatures.store', { petition: props.petition.hash }),
         {
             onSuccess: () => {

@@ -85,10 +85,7 @@ class Ballot extends Model implements Auditable, HasUser
     {
         return Attribute::make(
             get: function () {
-                $questions = Question::where([
-                    'model_id' => $this->id,
-                    'model_type' => $this::class,
-                ])->get();
+                $questions = Question::where(['model_id'=>$this->id,'model_type'=>static::class])->get();
                 $ballotPulishable = $questions->flatMap(function ($question) {
                     if ($question->status = 'published' and !is_null($this->started_at)) {
                         return $question->choices;

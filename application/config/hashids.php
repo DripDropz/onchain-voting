@@ -51,8 +51,8 @@ return [
             'length' => 11,
             'alphabet' => 'acdefghijklmnopqrstuvwxyz0123456789',
         ],
-        \App\Models\BallotQuestionChoice::class => [
-            'salt' => \App\Models\BallotQuestionChoice::class.env('APP_KEY'),
+        \App\Models\QuestionChoice::class => [
+            'salt' => \App\Models\QuestionChoice::class.env('APP_KEY'),
             'length' => 11,
             'alphabet' => 'bcdefghiklmnopqrstuvwxz0123456789',
             'alphabet' => 'bcdefghiklmnopqrstuvwxz0123456789',

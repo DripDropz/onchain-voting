@@ -17,12 +17,12 @@ snapshot?: App.DataTransferObjects.SnapshotData | null;
 user: App.DataTransferObjects.UserData | null;
 questions: Array<App.DataTransferObjects.QuestionData> | null;
 policies: Array<App.DataTransferObjects.PolicyData> | null;
-voters?: Array<App.DataTransferObjects.QuestionData> | null;
+voters?: Array<App.DataTransferObjects.VoterData> | null;
 responses?: any | null;
 user_responses?: Array<App.DataTransferObjects.BallotResponseData> | null;
-votes?: Array<App.DataTransferObjects.QuestionData> | null;
-tokens?: Array<App.DataTransferObjects.QuestionData> | null;
-txs?: Array<App.DataTransferObjects.QuestionData> | null;
+votes?: Array<App.DataTransferObjects.VoteData> | null;
+tokens?: Array<App.DataTransferObjects.TokenData> | null;
+txs?: Array<App.DataTransferObjects.TxData> | null;
 };
 export type BallotResponseData = {
 hash: string | null;
@@ -75,12 +75,14 @@ image_link?: string | null;
 };
 export type PollData = {
 hash: string | null;
+id: number | null;
 title: string;
 description?: string | null;
 user: App.DataTransferObjects.UserData | null;
 created_at?: string | null;
 updated_at?: string | null;
 status: string;
+question: App.DataTransferObjects.QuestionData | null;
 rules: Array<App.DataTransferObjects.RuleData> | null;
 };
 export type QuestionChoiceData = {

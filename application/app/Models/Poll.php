@@ -6,16 +6,19 @@ use App\Enums\ModelStatusEnum;
 use App\Http\Traits\HasHashIds;
 use App\Models\Interfaces\HasUser;
 use App\Models\Traits\HashIdModel;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use OwenIt\Auditing\Contracts\Auditable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Poll extends Model implements Auditable, HasUser
 {
     use \OwenIt\Auditing\Auditable,
         HasHashIds,
         HashIdModel,
-        Traits\HasUser;
+        Traits\HasUser,
+        HasFactory;
 
         protected $hidden = [
             'id',
@@ -61,9 +64,13 @@ class Poll extends Model implements Auditable, HasUser
             ->where('model_type', Poll::class);
     }
 
-    public function choices(): HasMany
+    public function choices(): HasManyThrough
     {
-        return $this->hasMany(BallotQuestionChoice::class, 'question_id');
+        return $this->hasManyThrough(
+            QuestionChoice::class,
+            Question::class,
+        );
     }
+
 
 }

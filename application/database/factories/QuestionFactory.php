@@ -32,7 +32,7 @@ class QuestionFactory extends Factory
             'type' => fake()->randomElement(QuestionTypeEnum::values()),
             'supplemental' => fake()->url,
             'max_choices' => fake()->numberBetween(1, 20),
-            'model_id' => fake()->randomElement($ballot_ids),
+            'model_id' => random_int(1, 15),
             'model_type' => fake()->randomElement([Poll::class,Ballot::class]),
             'user_id' => fake()->randomElement($user_ids)
         ];

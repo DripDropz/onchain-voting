@@ -72,7 +72,7 @@ class PetitionController extends Controller
 
         if ($response->allowed()) {
             return Inertia::render('Petition/Manage', [
-                'petition' => PetitionData::from($petition->load(['categories', 'user', 'rules'])),
+                'petition' => PetitionData::from($petition->load([ 'user', 'rules'])),
             ]);
         } else {
             return to_route('petitions.index');

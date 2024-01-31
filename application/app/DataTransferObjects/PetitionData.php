@@ -56,6 +56,8 @@ class PetitionData extends Data
 
         /** @var RuleData[] */
         public ?DataCollection $rules,
+
+        public  $petition_goals,
     ) {}
 
     public static function attributes(): array

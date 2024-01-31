@@ -19,6 +19,8 @@ class PollData extends Data
         #[WithoutValidation]
         public ?string $hash,
 
+        #[WithoutValidation]
+        public ?int $id,
 
         #[Required, StringType]
         public string $title,
@@ -39,6 +41,9 @@ class PollData extends Data
         #[Required]
         #[Rule('string')]
         public string $status,
+
+        /** @var QuestionData */
+        public ?QuestionData $question,
 
         /** @var RuleData[] */
         public ?DataCollection $rules,

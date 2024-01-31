@@ -37,3 +37,24 @@ if (! function_exists('previous_route_name_is')) {
         return previous_route_name() === $routeName;
     }
 }
+
+function previous_route_name(): string
+{
+    return app('router')->getRoutes()->match(app('request')->create(url()->previous()))->getName();
+}
+
+function previous_route_url(): string
+{
+    $previousUrl = url()->previous();
+    $currentUrl = url()->current();
+    if ($previousUrl === $currentUrl) {
+        return route('catalyst-explorer.proposals');
+    }
+
+    return app('router')->getRoutes()
+        ->match(
+            app('request')->create(url()->previous())
+        )?->uri();
+}
+
+

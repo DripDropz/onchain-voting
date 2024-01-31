@@ -76,4 +76,3 @@ Route::post('/update-position', [BallotController::class, 'updatePosition'])->na
 
 Route::get('/ballots', [BallotController::class, 'ballotsData'])->name('ballotsData');
 Route::get('/petitions', [PetitionController::class, 'petitionsData'])->name('petitionsData');
-Route::get('/polls', [PollController::class, 'pollsData'])->name('pollsData');

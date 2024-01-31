@@ -105,7 +105,7 @@
                             </div>
 
                             <div class="p-3 bg-white rounded-lg dark:bg-gray-900">
-                                <Criteria :petition="petition"/>
+                                <Criteria :model="petition"/>
                             </div>
                         </div>
                     </div>

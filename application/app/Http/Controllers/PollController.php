@@ -2,16 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\QuestionTypeEnum;
 use App\Models\Poll;
+use Inertia\Inertia;
 use App\Models\Question;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use App\Enums\QuestionTypeEnum;
+use Illuminate\Pagination\Cursor;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\DataTransferObjects\PollData;
 
 class PollController extends Controller
 {
+    public $perPage;
+
+    public $polls;
+
+    public ?string $nextCursor = null;
+
+    public int $offset = 4;
+
+    public bool $hasMorePages;
+
+
     /**
      * Display the poll list.
      */
@@ -25,9 +38,9 @@ class PollController extends Controller
             ],
         ];
 
-        
+
         return Inertia::render('Poll/Index', [
-            'polls' => Poll::inRandomOrder()->take(4)->get(),
+            // 'polls' => Poll::inRandomOrder()->with('question.choices')->take(4)->get(),
             'user' => $user,
             'crumbs' => $crumbs,
         ]);
@@ -44,6 +57,24 @@ class PollController extends Controller
     /**
      * Store a newly created poll in storage.
      */
+    public function pollsData(Request $request)
+    {
+        $this->perPage = $request->query('perPage', 4);
+        $this->nextCursor = $request->query('nextCursor', null);
+        $this->hasMorePages = $request->query('hasMorePages', false);
+        $pollCursor = Poll::latest()
+            ->when($this->nextCursor, function ($query) {
+                $query->cursorPaginate($this->perPage, ['*'], 'cursor', $this->nextCursor);
+            })
+            ->cursorPaginate($this->perPage);
+
+        return [
+            'polls' => PollData::collection(collect($pollCursor->items())->each(fn ($p) => $p->load('question.choices'))),
+            'nextCursor' => $pollCursor->nextCursor()?->encode(),
+            'hasMorePages' => $pollCursor->hasMorePages(),
+        ];
+    }
+
     public function store(Request $request)
     {
         $user = Auth::user();
@@ -51,7 +82,7 @@ class PollController extends Controller
         $validatedData = $request->validate([
             // 'pollTitle' => 'required|string|max:255',
             'question' => 'required|string|max:255',
-            'options' => 'required|array|min:2|max:4',
+            'options' => 'required|array|min:2',
             'options.*' => 'required|string|max:255',
             'publishOnchain' => 'boolean',
         ]);
@@ -66,22 +97,21 @@ class PollController extends Controller
 
         $question = new Question([
             'title' => $validatedData['question'],
-            'model_type'=>Poll::class,
+            'model_type' => Poll::class,
             'model_id' => $poll->id,
-            'type'=> QuestionTypeEnum::MULTIPLE->value
+            'type' => QuestionTypeEnum::MULTIPLE->value
         ]);
         $question->save();
 
-        foreach ($validatedData['options'] as $key=>$choice) {
+        foreach ($validatedData['options'] as $key => $choice) {
             // dd($key);
             $question->choices()->create([
                 'title' => $choice,
-                'order' =>$key,
-                'question_id'=> $question->id
+                'order' => $key,
+                'question_id' => $question->id
             ]);
         }
 
         return redirect()->route('polls.index');
-        // ->with('success', 'Poll created successfully');
     }
 }

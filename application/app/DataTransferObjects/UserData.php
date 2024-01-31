@@ -26,6 +26,8 @@ class UserData extends Data
         #[TypescriptOptional]
         #[DataCollectionOf(BallotData::class)]
         public ?array $ballots,
+
+        public ?array $user_roles
     ) {
     }
 }
