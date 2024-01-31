@@ -58,7 +58,7 @@ router.post('/submit', async (req, res) => {
     const tx = req.Lucid.fromTx(req.body?.tx);
     const multiSignedTx = await (tx.assemble([req.body?.witnesses]).sign()).complete();
     const txId = await multiSignedTx.submit();
-    return txId;
+    res.send(txId);
 })
 
 export default router;

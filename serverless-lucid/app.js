@@ -6,7 +6,6 @@ import walletRouter from './routes/wallet.js'
 import {checkHeader} from './lib/config.js'
 import bodyParser from "body-parser";
 
-
 const app = express()
 app.use(bodyParser.json())
 
@@ -25,7 +24,7 @@ app.use('/vote', voteRouter);
 app.use('/wallet', walletRouter);
 
 const mode = process.env.MODE.trim()
-const app_port = process.env.PORT.trim() ?? 3000
+const app_port = 80;
 
 if (mode === `dev`) {
     console.log("Running in local development mode")
@@ -33,5 +32,3 @@ if (mode === `dev`) {
 } else {
     module.exports.handler = serverless(app);
 }
-
-

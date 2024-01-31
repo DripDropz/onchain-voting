@@ -1,30 +1,18 @@
 version: '3'
 services:
-#    chainvote.lucid:
-#        image: nextjs/chainvote
-#        build:
-#            context: lucid
-#            dockerfile: Dockerfile.dev
-#        container_name: chainvote.lucid
-#        command: npx nest start --watch
-#        expose:
-#            - "3000"
-#        extra_hosts:
-#            - 'host.docker.internal:host-gateway'
-#        env_file:
-#            -   ./application/.env
-#        volumes:
-#            - './lucid:/usr/src/app'
-#        networks:
-#            - chainvote
     chainvote.lucid:
         image: nodejs/chainvote
         build:
             context: serverless-lucid
             dockerfile: Dockerfile
         container_name: chainvote.lucid
-        expose:
-            - "3000"
+        ports:
+            - '3000:80'
+        volumes:
+            - './serverless-lucid/lib:/code/lib'
+            - './serverless-lucid/routes:/code/routes'
+        env_file:
+            - ./serverless-lucid/.env
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         networks:
@@ -68,7 +56,7 @@ services:
         container_name: chainvote.queue
         command: 'php artisan horizon'
         extra_hosts:
-            - 'host.docker.internal:host-gateway'        
+            - 'host.docker.internal:host-gateway'
         env_file:
             -   ./application/.env
         environment:

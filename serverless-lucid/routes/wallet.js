@@ -62,12 +62,14 @@ router.post('/authenticate', async (req, res) => {
                 throw new Error(`No address found in signature.`);
             }
         })();
-        return cose1Address;
+        res.send(cose1Address);
+        return;
     }
 
     const txHash = req.body?.txHash;
     const stakeCredential = getAddressDetails(req.body?.stakeAddr)?.stakeCredential;
 
-    return txHash.includes(stakeCredential.hash);
+    res.send(txHash.includes(stakeCredential.hash));
 })
+
 export default router;
