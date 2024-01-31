@@ -50,12 +50,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import VoterLayout from "@/Layouts/VoterLayout.vue";
 import UserData = App.DataTransferObjects.UserData;
-import PollData = App.DataTransferObjects.PollData;
 import Nav from '../NavCrumbs.vue';
-import PollList from './Partials/PollList.vue';
 import BrowsePolls from './Partials/BrowsePolls.vue';
 
 const props = withDefaults(defineProps<{
@@ -63,8 +61,6 @@ const props = withDefaults(defineProps<{
     crumbs: []
 }>(), {
 });
-
-const selectedOption = '';
 
 const polls = [
     {
