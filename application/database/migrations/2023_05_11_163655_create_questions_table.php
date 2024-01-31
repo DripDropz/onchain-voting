@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('ballot_id')->nullable()->constrained('ballots')->nullOnDelete();
+            $table->foreignId('model_id')->nullable();
+            $table->text('model_type')->nullable();
             $table->string('title');
             $table->text('description')->nullable();
             $table->text('supplemental')->nullable();
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->enum('type', QuestionTypeEnum::values());
             $table->softDeletes();
             $table->timestamps();
+
         });
     }
 

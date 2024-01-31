@@ -1,7 +1,7 @@
 import axios from "axios";
 import WalletService from "@/cardano/Services/wallet-service";
 import { useWalletStore } from "@/cardano/stores/wallet-store";
-import { C, Lucid, UTxO, Unit, fromHex, toHex, toText } from "lucid-cardano";
+import {  Lucid, UTxO, } from "lucid-cardano";
 import { useVoterStore } from "@/Pages/Voter/stores/voter-store";
 
 export default class BallotService {

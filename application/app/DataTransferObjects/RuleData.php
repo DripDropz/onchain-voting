@@ -28,6 +28,12 @@ class RuleData extends Data
 
         #[StringType]
         public ?string $operator,
+
+        #[StringType]
+        public ?string $value1,
+
+        #[StringType]
+        public ?string $value2,
     ) {
     }
 }

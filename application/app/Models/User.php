@@ -4,14 +4,15 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Http\Traits\HasHashIds;
-use App\Models\Traits\HashIdModel;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Traits\HashIdModel;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditable
 {
@@ -37,6 +38,7 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
 
     protected $appends = [
         'hash',
+        'user_roles',
     ];
 
     /**
@@ -68,4 +70,10 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
         return $this->hasOne(VotingPower::class);
     }
 
+    public function userRoles(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->roles()->get()->toArray()
+        );
+    }
 }

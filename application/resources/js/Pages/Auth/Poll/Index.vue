@@ -1,9 +1,9 @@
 <template>
     <AuthenticatedLayout title="Dashboard" :crumbs="crumbs">
     <section>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="sm:rounded-lg">
-                <h2 class="font-semibold text-lg xl:text-xl text-gray-800 dark:text-gray-200 leading-tight mb-4 mt-9">
+                <h2 class="mb-4 text-lg font-semibold leading-tight text-gray-800 xl:text-xl dark:text-gray-200 mt-9">
                     Polls
                 </h2>
 
@@ -44,7 +44,7 @@
     }>();
 
     let pollStore = usePollStore();
-    pollStore.loadPolls();
+    pollStore.getAdminPolls();
     let { pollsQueryData, pollsData, pollsPagination } = storeToRefs(pollStore);
 
     let currPage = ref<number | null>(null);

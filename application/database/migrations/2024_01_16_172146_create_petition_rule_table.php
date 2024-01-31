@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('petition_id')->constrained();
             $table->foreignId('rule_id')->constrained();
+            $table->timestamp('started_at')->nullable();
+            $table->timestamp('ended_at')->nullable();
             $table->timestamps();
         });
     }

@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\ModelStatusEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Models\Ballot;
+use App\Models\Poll;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -31,7 +32,8 @@ class QuestionFactory extends Factory
             'type' => fake()->randomElement(QuestionTypeEnum::values()),
             'supplemental' => fake()->url,
             'max_choices' => fake()->numberBetween(1, 20),
-            'ballot_id' => fake()->randomElement($ballot_ids),
+            'model_id' => random_int(1, 15),
+            'model_type' => fake()->randomElement([Poll::class,Ballot::class]),
             'user_id' => fake()->randomElement($user_ids)
         ];
     }

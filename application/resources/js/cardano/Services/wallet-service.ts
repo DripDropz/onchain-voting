@@ -2,6 +2,7 @@
 import {Blockfrost, Lucid, Tx, toHex,C} from '@lucid-cardano';
 import BlockfrostKeysService from './BlockfrostKeysService';
 import CardanoWallet from "@/cardano/interface/Wallets";
+import AlertService from '@/shared/Services/alert-service';
 
 export {};
 declare global {

@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('model_categories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id');
-            $table->foreignId('model_id');
-            $table->text('model_type')->nullable();
+            $table->foreignId('category_id')->references('id')
+                ->on('categories');
+            $table->morphs('model');
         });
     }
 
@@ -25,6 +25,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('model_categories');
-
     }
 };

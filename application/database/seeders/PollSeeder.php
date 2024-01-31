@@ -2,10 +2,13 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Poll;
+use App\Models\User;
+use App\Models\Question;
+use App\Models\QuestionChoice;
+use Illuminate\Database\Seeder;
+use App\Models\BallotQuestionChoice;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class PollSeeder extends Seeder
 {
@@ -14,8 +17,25 @@ class PollSeeder extends Seeder
      */
     public function run(): void
     {
-        Poll::factory(15)
-        ->recycle(User::factory()->count(1), 'user')
-        ->create();
+        Poll::factory(9)
+            ->recycle(User::factory()->count(1), 'user')
+            ->has(
+                Question::factory(7)
+                    ->recycle(
+                        User::factory()->count(1),
+                        'user'
+                    )->state(fn (array $attributes, Poll $poll) => [
+                        'model_type' => $poll::class
+                    ])
+                    ->has(
+                        QuestionChoice::factory(4)->recycle(
+                            User::factory()->count(1),
+                            'user'
+                        ),
+                        'choices'
+                    ),
+                'question'
+            )
+            ->create();
     }
 }

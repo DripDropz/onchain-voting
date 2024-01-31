@@ -17,10 +17,8 @@ class BlockfrostRequest extends Request
      */
     protected Method $method = Method::GET;
 
-    public function __construct(
-        protected string $endpoint,
-    ) {
-    }
+    protected ?string $endpoint;
+
 
 
     public function resolveConnector(): Connector
@@ -34,5 +32,10 @@ class BlockfrostRequest extends Request
     public function resolveEndpoint(): string
     {
         return $this->endpoint;
+    }
+
+    public function setEndPoint($endpoint)
+    {
+        return $this->endpoint = $endpoint;
     }
 }
