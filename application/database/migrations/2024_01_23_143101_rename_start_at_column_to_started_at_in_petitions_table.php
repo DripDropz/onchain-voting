@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('ballot_question_choices', function (Blueprint $table) {
-            $table->double('order')->default(0);
-        });
+        // Schema::table('petitions', function (Blueprint $table) {
+        //     $table->renameColumn('start_at', 'started_at');
+        // });
     }
 
     /**
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('ballot_question_choices', function (Blueprint $table) {
-            $table->dropColumn('order');
+        Schema::table('petitions', function (Blueprint $table) {
+            $table->renameColumn('started_at', 'start_at');
         });
     }
 };

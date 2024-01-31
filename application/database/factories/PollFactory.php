@@ -24,6 +24,7 @@ class PollFactory extends Factory
             'title' => fake()->sentence(3, true),
             'description' => fake()->paragraphs(random_int(1, 2), true),
             'status' => fake()->randomElement(ModelStatusEnum::values()),
+            'created_at'=>fake()->date(),      
         ];
     }
 }

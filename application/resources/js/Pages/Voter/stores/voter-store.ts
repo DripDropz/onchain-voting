@@ -3,7 +3,7 @@ import {ref, Ref} from 'vue';
 import humanNumber from "@/utils/human-number";
 import {useWalletStore} from '@/cardano/stores/wallet-store';
 import WalletService from '@/cardano/Services/wallet-service';
-import {PolicyId, UTxO} from 'lucid-cardano';
+import {PolicyId, UTxO} from '@lucid-cardano';
 import axios from 'axios';
 import BallotService from '@/Pages/Ballot/Services/ballot-service';
 
@@ -50,8 +50,8 @@ export const useVoterStore = defineStore('voter', () => {
         const registrations = utxos.filter((utxo: UTxO) =>
          Object.keys(utxo.assets).some(asset => asset.includes(policyId))
         );
-        
-        
+
+
         if ( registrations.length > 0 ) {
             voterRegistrations.value[ballotHash] = {policyId, registration: registrations[0]};
         }

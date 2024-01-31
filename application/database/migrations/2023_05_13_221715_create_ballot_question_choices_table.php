@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('question_id')->constrained('questions')->nullOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
+            $table->double('order')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

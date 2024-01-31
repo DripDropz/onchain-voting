@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Petition;
+use App\Enums\RuleV1Enum;
 use Illuminate\Http\Request;
+use App\Enums\RuleOperatorEnum;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use App\DataTransferObjects\PetitionData;
+use App\DataTransferObjects\RuleData;
+
 
 class PetitionController extends Controller
 {
@@ -37,12 +40,12 @@ class PetitionController extends Controller
     }
 
     /**
-   * Display a single petition.
+     * Display a single petition.
      */
-    public function view(Request $request, Petition $petition): Response
+    public function view(Petition $petition): Response
     {
         return Inertia::render('Auth/Petition/View', [
-            'petition' => PetitionData::from($petition->load(['categories', 'user'])),
+            'petition' => PetitionData::from($petition->load(['rules', 'user'])),
             'crumbs' => [
                 ['label' => 'Petitions', 'link' => route('admin.petitions.index')],
                 ['label' => $petition->title],
@@ -50,14 +53,13 @@ class PetitionController extends Controller
         ]);
     }
 
-    public function edit(Request $request, Petition $petition): Response
+    public function edit(Petition $petition): Response
     {
         return Inertia::render('Auth/Petition/Edit', [
-            'petition' =>PetitionData::from($petition->load(['categories','user'])),
+            'petition' => PetitionData::from($petition->load(['rules', 'user'])),
             'crumbs' => [
                 ['label' => 'Petitions', 'link' => route('admin.petitions.index')],
                 ['label' => $petition->title],
-
             ]
         ]);
     }
@@ -68,17 +70,53 @@ class PetitionController extends Controller
         $perPage = $request->query('perPage') ?? 6;
 
         $petitions = Petition::paginate($perPage, ['*'], 'page', $page);
-
         return PetitionData::collection($petitions);
     }
 
-    public function update(Request $request,Petition $petition)
+    public function update(Request $request, Petition $petition)
     {
         $petition->update([
             'status' => $request->status
         ]);
-
-        return to_route('admin.petitions.view', $petition->hash);
-
     }
+
+    public function saveRule(Request $request, Petition $petition)
+    {
+        $request->validate([
+            'type' => 'required',
+            'v1' => 'required',
+            'v2' => 'required',
+            'title' => 'required'
+        ]);
+
+        $rule = $petition->rules()->where([
+            'type' => $request->type,
+            'value1' => $request->v1
+        ])->first();
+        
+        if ($rule instanceof Rule) {
+            $rule->value2 = $request->v2;
+            $rule->save();
+            return RuleData::from($rule);
+        } else {
+            $rule = new Rule;
+            $rule->type = $request->type;
+            $rule->title = $request->title;
+            $rule->value1 = $request->v1;
+            $rule->operator = RuleOperatorEnum::EQUALS_OR_GREATER_THAN->value;
+            $rule->save();
+            $petition->rules()->attach($rule->id);
+            return RuleData::from($rule);
+        }
+    }
+
+    public function removeRule(Petition $petition, Rule $rule)
+    {
+        $petition->rules()->detach($rule->id);
+        $rule->delete();
+        return to_route('petitions.manage', [
+            'petition' => $petition->hash,
+        ]);
+    }
+
 }

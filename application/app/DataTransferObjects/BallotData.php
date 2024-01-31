@@ -7,6 +7,7 @@ use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\BooleanType;
 use Spatie\LaravelData\Attributes\Validation\IntegerType;
 use Spatie\LaravelData\Attributes\Validation\Max;
+use Spatie\LaravelData\Attributes\Validation\Numeric;
 use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Attributes\Validation\StringType;
@@ -33,7 +34,7 @@ class BallotData extends Data
         public ?string $description,
 
         #[TypescriptOptional]
-        #[Required, IntegerType, Max(200)]
+        #[Required, Numeric, Max(200)]
         public ?string $version,
 
         #[StringType]
@@ -78,7 +79,7 @@ class BallotData extends Data
 
         #[TypescriptOptional]
         #[DataCollectionOf(VoterData::class)]
-        /** @var QuestionData[] */
+        /** @var VoterData[] */
         public ?DataCollection $voters,
 
         #[TypescriptOptional]
@@ -92,17 +93,17 @@ class BallotData extends Data
 
         #[TypescriptOptional]
         #[DataCollectionOf(VoteData::class)]
-        /** @var QuestionData[] */
+        /** @var VoteData[] */
         public ?DataCollection $votes,
 
         #[TypescriptOptional]
         #[DataCollectionOf(TokenData::class)]
-        /** @var QuestionData[] */
+        /** @var TokenData[] */
         public ?DataCollection $tokens,
 
         #[TypescriptOptional]
         #[DataCollectionOf(TxData::class)]
-        /** @var QuestionData[] */
+        /** @var TxData[] */
         public ?DataCollection $txs,
     ) {
     }

@@ -51,8 +51,8 @@ return [
             'length' => 11,
             'alphabet' => 'acdefghijklmnopqrstuvwxyz0123456789',
         ],
-        \App\Models\BallotQuestionChoice::class => [
-            'salt' => \App\Models\BallotQuestionChoice::class.env('APP_KEY'),
+        \App\Models\QuestionChoice::class => [
+            'salt' => \App\Models\QuestionChoice::class.env('APP_KEY'),
             'length' => 11,
             'alphabet' => 'bcdefghiklmnopqrstuvwxz0123456789',
             'alphabet' => 'bcdefghiklmnopqrstuvwxz0123456789',
@@ -86,6 +86,18 @@ return [
 
         \App\Models\Policy::class => [
             'salt' => \App\Models\Policy::class.env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'abcdefghijklmnoqrstuvxyz0123456789',
+        ],
+
+        \App\Models\Rule::class => [
+            'salt' => \App\Models\Rule::class . env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'abcdefghijklmnoqrstuvxyz0123456789',
+        ],
+
+        \App\Models\Signature::class => [
+            'salt' => \App\Models\Signature::class . env('APP_KEY'),
             'length' => 11,
             'alphabet' => 'abcdefghijklmnoqrstuvxyz0123456789',
         ],

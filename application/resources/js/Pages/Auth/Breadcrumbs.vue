@@ -59,7 +59,7 @@ import CrumbData = App.DataTransferObjects.CrumbData;
 
 const props = withDefaults(
     defineProps<{
-        crumbs: CrumbData[]
+        crumbs: CrumbData[],
     }>(), {});
 let crumbsLength = computed<number>(() => props.crumbs?.length);
 

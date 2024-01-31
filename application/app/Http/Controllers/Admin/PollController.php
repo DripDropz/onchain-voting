@@ -35,12 +35,13 @@ class PollController extends Controller
             ]
         );
     }
+    
     public function pollsData(Request $request)
     {
-        $page = $request->query('page') ?? 1;
-        $perPage = $request->query('perPage') ?? 6;
+        $page = $request->query('page',1);
+        $perPage = $request->query('perPage', 6);
 
-        $polls = Poll::paginate($perPage, ['*'], 'page', $page);
+        $polls = Poll::with('question.choices')->paginate($perPage, ['*'], 'page', $page);
 
         return PollData::collection($polls);
     }

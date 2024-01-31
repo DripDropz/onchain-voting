@@ -93,8 +93,14 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
         Route::get('/{petition:id}/edit', [PetitionController::class, 'edit'])
         ->name('edit');
 
-        Route::patch('/{petition:id}/edit', [PetitionController::class, 'update'])
-        ->name('update');
+        Route::patch('/{petition}/update', [PetitionController::class, 'update'])->name('update');
+
+        Route::prefix('{petition}/rules')->as('rules.')->group(function () {
+            Route::post('/create', [PetitionController::class, 'saveRule'])
+            ->name('saveRule');
+            Route::post('{rule}/delete', [PetitionController::class, 'removeRule'])
+            ->name('delete');
+        });
 
     });
 
@@ -102,15 +108,17 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
      Route::prefix('/polls')->as('polls.')->group(function () {
         // views
         Route::get('/', [PollController::class, 'index'])->name('index');
+        Route::get('/pollsData', [PollController::class, 'pollsData'])->name('pollsData');
 
-        Route::match(['get', 'patch'], '/{poll}', [PollController::class, 'view'])
-            ->name('view');
+        // Route::match(['get', 'patch'], '/{poll}', [PollController::class, 'view'])
+        //     ->name('view');
 
-        Route::get('/{poll:id}/edit', [PollController::class, 'edit'])
-        ->name('edit');
+        // Route::get('/{poll:id}/edit', [PollController::class, 'edit'])
+        // ->name('edit');
 
-        Route::patch('/{poll:id}/edit', [PollController::class, 'update'])
-        ->name('update');
+        // Route::patch('/{poll:id}/edit', [PollController::class, 'update'])
+        // ->name('update');
+
 
     });
 

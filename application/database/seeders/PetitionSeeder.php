@@ -26,7 +26,7 @@ class PetitionSeeder extends Seeder
                 ]
             )
             ->hasAttached(
-                Category::factory()->recycle()->count(3),
+                Category::factory()->count(3),
                 [
                     'model_type' => Petition::class
                 ]

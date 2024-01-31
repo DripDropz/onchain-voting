@@ -2,11 +2,12 @@
 
 namespace App\DataTransferObjects;
 
-use Doctrine\DBAL\Types\JsonType;
-use Spatie\LaravelData\Attributes\Validation\Json;
-use Spatie\LaravelData\Attributes\Validation\Required;
-use Spatie\LaravelData\Attributes\WithoutValidation;
 use Spatie\LaravelData\Data;
+use Doctrine\DBAL\Types\JsonType;
+use Spatie\LaravelData\DataCollection;
+use Spatie\LaravelData\Attributes\Validation\Json;
+use Spatie\LaravelData\Attributes\WithoutValidation;
+use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
 
@@ -31,5 +32,7 @@ class PolicyData extends Data
 
         #[TypeScriptOptional]
         public ?string $image_link,
+
+
     ) {}
 }
