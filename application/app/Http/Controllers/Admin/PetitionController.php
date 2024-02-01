@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\QuestionTypeEnum;
+use App\Models\Ballot;
 use App\Models\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -11,8 +13,6 @@ use Illuminate\Http\Request;
 use App\Enums\RuleOperatorEnum;
 use App\Http\Controllers\Controller;
 use App\DataTransferObjects\PetitionData;
-use App\DataTransferObjects\RuleData;
-
 
 class PetitionController extends Controller
 {
@@ -75,9 +75,43 @@ class PetitionController extends Controller
 
     public function update(Request $request, Petition $petition)
     {
-        $petition->update([
-            'status' => $request->status
-        ]);
+        switch ($request->status) {
+            case 'approve':
+                $petition->update([
+                    'status' => $request->status
+                ]);
+                break;
+            case 'ballot':
+                // Create ballot
+                $ballot = new Ballot;
+                $ballot->title = "Petition Ballot";
+                $ballot->version = 1;
+                $ballot->status = 'draft';
+                $ballot->type = 'snapshot';
+                $ballot->user_id = $petition->user_id;
+                $ballot->save();
+
+                // add petition as a choice on ballot
+
+                // create question
+                $question = $ballot->questions()->create([
+                    'title' => 'Add a title',
+                    'status' => 'draft',
+                    'type' => QuestionTypeEnum::SINGLE->value,
+                    'user_id' => $petition->user_id,
+                    'model_type' => Ballot::class,
+                ]);
+
+                // add choice to question
+                $question->choices()->create([
+                    'title' => $petition->title,
+                    'user_id' => $petition->user_id,
+                    'description' => $petition->description,
+                    'order' => $question->choices()->count() + 1
+                ]);
+                break;
+        }
+
     }
 
     public function saveRule(Request $request, Petition $petition)
@@ -93,7 +127,7 @@ class PetitionController extends Controller
             'type' => $request->type,
             'value1' => $request->v1
         ])->first();
-        
+
         if ($rule instanceof Rule) {
             $rule->value2 = $request->v2;
             $rule->save();
@@ -118,5 +152,4 @@ class PetitionController extends Controller
             'petition' => $petition->hash,
         ]);
     }
-
 }

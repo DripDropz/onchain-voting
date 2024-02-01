@@ -1,28 +1,12 @@
 <template>
-    <VoterLayout page="Manage Petition">
+    <VoterLayout
+        page="Manage Petition"
+        :crumbs="crumbs"
+        :actions="actions" >
         <div class="w-full">
             <div class="sticky top-0 w-full p-6 bg-white dark:bg-gray-900 dark:text-white">
-                <div class="container flex w-full pb-3">
+                <div class="container flex justify-center w-full pb-3">
                     <p class="text-xl font-bold leading-tight xl:text-2xl">{{ petition.title }}</p>
-                </div>
-                <div class="container flex gap-2">
-                    <Link :href="route('petitions.create.stepOne', { petition: petition.hash })">
-                        <PrimaryButton>
-                            <PencilIcon aria class="w-4 h-4"/>
-                            <span>Edit</span>
-                        </PrimaryButton>
-                    </Link>
-
-                    <Link :href="route('petitions.view', { petition: petition.hash })">
-                        <PrimaryButton>
-                            <ArrowTopRightOnSquareIcon aria class="w-4 h-4"/>
-                            <span>View Petition</span>
-                        </PrimaryButton>
-                    </Link>
-
-                    <PrimaryButton :theme="'primary'" @click.prevent="showModal = true" :class="{'pointer-events-none opacity-50': petition.ended_at}">
-                        <span class="">{{ !petition.ended_at ? 'Close Petition' : 'Petition closed' }}</span>
-                    </PrimaryButton>
                 </div>
             </div>
             <div
@@ -53,23 +37,7 @@
                                 <div>
                                     <span class="font-bold">Petition Goals</span>
                                 </div>
-                                <div>
-                                    <span>
-                                        Enlist your community!
-                                    </span>
-                                    <ul class="p-3 text-sm list-disc">
-                                        <li class="py-1 ">
-                                            <span class="font-bold"> 5 signatures</span> vissible on site
-                                        </li>
-                                        <li class="py-1 ">
-                                            <span class="font-bold"> 27 signatures</span> featured petition
-                                        </li>
-                                        <li class="py-1 ">
-                                            <span class="font-bold"> 76 signatures</span> Become a ballot
-                                        </li>
-                                    </ul>
-                                </div>
-
+                                <PetitionGoals :petition="petition" />
                             </div>
                         </div>
                     </div>
@@ -85,7 +53,7 @@
                                            class="w-1/2 border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-sky-500 dark:focus:border-sky-600 focus:ring-sky-500 dark:focus:ring-sky-600">
                                     <PrimaryButton @click="copy(link)"
                                                    class="inline-flex items-center p-1 font-semibold bg-white border rounded-md shadow-sm dark:bg-gray-900 gap-x-2 hover:bg-sky-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 ">
-                                        <LinkIcon class="w-4 h-4"/>
+                                        <LinkIcon class="w-4 h-4" />
                                         <span>
                                             Copy
                                         </span>
@@ -101,11 +69,11 @@
                         <div>
                             <div class="flex flex-row items-center gap-4 mb-4">
                                 <p class="text-lg font-bold leading-tight xl:text-xl">Petition Criteria </p>
-                                <LockClosedIcon class="w-4 h-4"/>
+                                <LockClosedIcon class="w-4 h-4" />
                             </div>
 
                             <div class="p-3 bg-white rounded-lg dark:bg-gray-900">
-                                <Criteria :model="petition"/>
+                                <Criteria :model="petition" />
                             </div>
                         </div>
                     </div>
@@ -132,21 +100,49 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Criteria from "@/shared/components/Criteria.vue";
 import Modal from "@/Components/Modal.vue";
 import ClosePetition from "./Partials/ClosePetition.vue";
-import { ref } from "vue";
+import PetitionGoals from "./Partials/PetitionGoals.vue";
+import { useConfigStore } from "@/stores/config-store";
+import { storeToRefs } from "pinia";
+import axios from "axios";
+import { useForm } from '@inertiajs/vue3';
+
+
 
 const props = defineProps<{
     petition: PetitionData;
-    crumbs?: []
+    crumbs: [];
+    actions: []
 }>();
-let showModal = ref(false);
+
+let configStore = useConfigStore();
+let { showModal } = storeToRefs(configStore);
+
+const form = useForm({
+    petition: props.petition.hash,
+});
+
+const publishPetition = async () => {
+    try {
+        await axios.post(route('petitions.publish', { petition: props.petition.hash }));
+        AlertService.show(["Petition has been published"], "success");
+    } catch (error) {
+        AlertService.show(["There was an error publishing the petition"], "error");
+    }
+};
+
 
 let copy = (link) => {
     try {
         navigator.clipboard.writeText(link);
-        AlertService.show(['Copied'], 'success')
+        AlertService.show(['Copied'], 'success');
     } catch (error) {
-        AlertService.show(['Not Copied'], 'error')
+        AlertService.show(['Not Copied'], 'error');
     }
 }
-let link = route('petitions.view', {petition: props.petition.hash});
+
+let link = route('petitions.view', { petition: props.petition.hash });
+
+
+
 </script>
+

@@ -248,12 +248,18 @@ class BallotController extends Controller
      * @param Request $request
      * @param Ballot $ballot
      * @param Question $question
+     * @return Response
      */
     public function editQuestion(Request $request, Ballot $ballot, Question $question)
     {
         $ballot->load(['questions']);
         $crumbs = [
-            ['label' => 'Edit Question', 'link' => route('admin.ballots.questions.edit', ['ballot' => $ballot->hash])],
+            [
+                'label' => 'Edit Question',
+                'link' => route('admin.ballots.questions.edit', [
+                    'ballot' => $ballot->hash,
+                    'question' => $question->hash
+                ])],
         ];
 
         return Inertia::render('Auth/Question/Edit', [

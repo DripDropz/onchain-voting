@@ -27,7 +27,9 @@ class Question extends Model implements Auditable, HasUser
         'max_choices',
         'status',
         'type',
+        'model_type',
         'started_at',
+        'user_id'
     ];
 
     protected $hidden = [
