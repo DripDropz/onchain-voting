@@ -23,6 +23,7 @@ return [
 
     'lucid' => [
         'endpoint' => env('CARDANO_LUCID_ENDPOINT', 'http://localhost:3000'),
+        'network' => env('CARDANO_LUCID_NETWORK', 'preview')
     ],
 
     'postmark' => [

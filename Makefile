@@ -5,15 +5,15 @@ $(eval export $(shell sed -ne 's/ *#.*$$//; /./ s/=.*$$// p' application/.env))
 
 .PHONY: init
 init:
+	@echo -n "Are you sure that you want to perform a clean install? [y/N] " && read ans && [ $${ans:-N} = y ]
 	docker run --rm --interactive --tty \
           --volume ${PWD}/application:/app \
           composer install --ignore-platform-reqs
 	make up
 	sleep 20
-	make -j2 backend-install frontend-install lucid-install
+	make -j2 backend-install frontend-install
 	$(sail) artisan key:generate
-	make migrate
-	make seed
+	make setup-db
 
 .PHONY: backend-install
 backend-install:
@@ -22,16 +22,28 @@ backend-install:
 .PHONY: frontend-install
 frontend-install:
 	make frontend-clean
-	make lucid-install
 	$(sail) yarn install
 
-.PHONY: lucid-install
-lucid-install:
-	docker-compose run chainvote.lucid yarn install
+.PHONY: restart
+restart:
+	make down
+	make up
 
 .PHONY: up
 up:
 	$(sail) up -d
+
+.PHONY: down
+down:
+	$(sail) down
+
+.PHONY: status
+status:
+	docker compose ps
+
+.PHONY: setup-db
+setup-db:
+	$(sail) artisan migrate:fresh --seed
 
 .PHONY: seed
 seed:
@@ -70,11 +82,6 @@ wasm:
 	cp ./application/node_modules/lucid-cardano/esm/src/core/libs/cardano_message_signing/cardano_message_signing_bg.wasm application/node_modules/.vite/deps/cardano_message_signing_bg.wasm
 	cp ./application/node_modules/lucid-cardano/esm/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib_bg.wasm application/node_modules/.vite/deps/cardano_multiplatform_lib_bg.wasm
 
-.PHONY: down
-down:
-	$(sail) down
-
-
 .PHONY: frontend-clean
 frontend-clean:
 	rm -rf application/node_modules 2>/dev/null || true
@@ -82,16 +89,9 @@ frontend-clean:
 	rm yarn.lock 2>/dev/null || true
 	$(sail) yarn cache clean
 
-.PHONY: lucid-clean
-lucid-clean:
-	rm -rf lucid/node_modules 2>/dev/null || true
-	rm lucid/package-lock.json 2>/dev/null || true
-	rm lucid/yarn.lock 2>/dev/null || true
-
 .PHONY: rm
 rm:
 	$(sail) down -v
-
 
 .PHONY: logs
 logs:
@@ -103,16 +103,8 @@ deps:
 	application/node_modules/lucid-cardano/esm/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib_bg.wasm \
 	application/node_modules/.vite/deps
 
-.PHONY:lucid-standalone-up
-lucid-standalone-up:
-	$(MAKE) lucid-standalone-down
-	docker compose -f lucid/docker-compose-standalone.yml build && \
-	docker compose -f lucid/docker-compose-standalone.yml up -d
-
-.PHONY:lucid-standalone-down
-lucid-standalone-down:
-	docker compose -f lucid/docker-compose-standalone.yml down --remove-orphans
-
-.PHONY:lucid-standalone-status
-lucid-standalone-status:
-	docker compose -f lucid/docker-compose-standalone.yml ps
+.PHONY: serverless-deploy
+serverless-deploy:
+	cd serverless-lucid && \
+	npm install && \
+	serverless deploy

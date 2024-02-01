@@ -27,7 +27,7 @@ class LucidConnector extends Connector
         return [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
-            // 'Multiple-Values-Header' => ['Value1', 'Value2'], // Value1;Value2
+            'Cardano-Network' => config('services.lucid.network'),
         ];
     }
 
