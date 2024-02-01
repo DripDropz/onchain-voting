@@ -1,4 +1,4 @@
-import {getLucid} from './util.js'
+import {getLucid} from './util.mjs'
 
 const checkHeader = async (req, res, next) => {
     try {
@@ -36,7 +36,6 @@ const checkHeader = async (req, res, next) => {
         res.status(400).send("Could not connect to Blockfrost!");
     }
 }
-
 
 export {
     checkHeader,

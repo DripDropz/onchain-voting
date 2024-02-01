@@ -1,5 +1,5 @@
 import express from 'express';
-import {generatePolicy, getLucid} from "../lib/util.js";
+import {generatePolicy, getLucid} from "../lib/util.mjs";
 import {toUnit} from "lucid-cardano";
 
 const router = express.Router();

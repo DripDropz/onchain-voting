@@ -1,9 +1,9 @@
 import express from 'express'
 import serverless from 'serverless-http'
-import registrationRouter from './routes/registration.js'
-import voteRouter from './routes/vote.js'
-import walletRouter from './routes/wallet.js'
-import {checkHeader} from './lib/config.js'
+import registrationRouter from './routes/registration.mjs'
+import voteRouter from './routes/vote.mjs'
+import walletRouter from './routes/wallet.mjs'
+import {checkHeader} from './lib/config.mjs'
 import bodyParser from "body-parser";
 
 const app = express()
@@ -26,9 +26,9 @@ app.use('/wallet', walletRouter);
 const mode = process.env.MODE.trim()
 const app_port = 80;
 
-if (mode === `dev`) {
+if (mode === 'dev') {
     console.log("Running in local development mode")
     app.listen(app_port, () => console.log(`Listening on: ${app_port}`));
-} else {
-    module.exports.handler = serverless(app);
 }
+
+export const handler = serverless(app);

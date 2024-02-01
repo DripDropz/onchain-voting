@@ -6,3 +6,5 @@
 .vapor/
 .env.staging
 serverless-lucid/node_modules
+serverless-lucid/.serverless
+serverless-lucid/env.json

@@ -102,3 +102,9 @@ deps:
 	cp -v application/node_modules/lucid-cardano/esm/src/core/libs/cardano_message_signing/cardano_message_signing_bg.wasm \
 	application/node_modules/lucid-cardano/esm/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib_bg.wasm \
 	application/node_modules/.vite/deps
+
+.PHONY: serverless-deploy
+serverless-deploy:
+	cd serverless-lucid && \
+	npm install && \
+	serverless deploy

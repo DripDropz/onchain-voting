@@ -1,5 +1,5 @@
 import express from 'express';
-import {generatePolicy, toObject} from "../lib/util.js";
+import {generatePolicy, toObject} from "../lib/util.mjs";
 import {fromHex, fromUnit, getAddressDetails, M, toHex, toText} from "lucid-cardano";
 
 const router = express.Router();
@@ -11,7 +11,6 @@ router.get('/get-policy-id', async (req, res) => {
 router.get('/get-policy', async (req, res) => {
     res.send(await generatePolicy(req.Lucid));
 });
-
 
 router.post('/address', async (req, res) => {
     res.send(await req.Lucid.wallet.address())
