@@ -4,7 +4,7 @@
   "description": "A Lucid-based microservice to support onchain-voting platform by DripDropz",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon --env-file=.env app.js",
+    "start": "node --env-file=.env app.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

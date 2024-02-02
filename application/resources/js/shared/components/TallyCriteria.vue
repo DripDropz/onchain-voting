@@ -9,13 +9,13 @@
                 <label class="relative inline-flex items-center gap-3 cursor-pointer">
                     <input v-model="criterion.value2" @input="saveRule($event, criterion, index)"
                         class="border-0 rounded w-28 focus:ring-0 dark:bg-gray-900 bg-sky-100">
-                    <div>
-                        <div  v-if="criterion.loading" class="flex flex-row items-center">
+                    <div >
+                        <div v-if="criterion.loading" class="flex flex-row items-center">
                             <spinner class="relative z-30" color="yellow" size="7" />
                             <span>saving!</span>
                         </div>
-                        <div v-if="criterion.value2 && !criterion.loading" class="flex flex-row items-center">
-                            <CheckCircleIcon class="w-5 h-5 text-green-500"  />
+                        <div v-if="criterion.updated && !criterion.loading" class="flex flex-row items-center">
+                            <CheckCircleIcon class="w-5 h-5 text-green-500" />
                             <span> saved!</span>
                         </div>
                     </div>
@@ -46,12 +46,14 @@ let criteria = computed(() => [
         'type': 'tally',
         'value1': 'visible',
         'loading': false,
+        'updated': false,
         ...(props.model && props.model.rules ? props.model.rules.filter((item) => item.value1 == 'visible')[0] : {})
     },
     {
         name: 'Feature petition',
         'type': 'tally',
         'loading': false,
+        'updated': false,
         'value1': 'feature-petition',
         ...(props.model && props.model.rules ? props.model.rules.filter((item) => item.value1 == 'feature-petition')[0] : {})
     },
@@ -59,6 +61,7 @@ let criteria = computed(() => [
         name: 'Ballot eligible',
         'type': 'tally',
         'loading': false,
+        'updated': false,
         'value1': 'ballot-eligible',
         ...(props.model && props.model.rules ? props.model.rules.filter((item) => item.value1 == 'ballot-eligible')[0] : {})
     }
@@ -68,6 +71,8 @@ let criteriaRef = ref(criteria.value);
 
 let saveRule = (value, criteria, index) => {
     criteriaRef.value[index].loading = true;
+    criteriaRef.value[index].updated = true;
+
     let data = {
         v1: criteria.value1,
         v2: value.target.value,

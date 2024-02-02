@@ -27,11 +27,10 @@
 <script lang="ts" setup>
 import PollData = App.DataTransferObjects.PollData;
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     polls: PollData[]
-}>(), {
-});
+}>(), {});
 
-const selectedOption = '';
+let selectedOption = '';
 
 </script>

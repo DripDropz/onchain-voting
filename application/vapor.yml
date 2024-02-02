@@ -22,7 +22,7 @@ environments:
       - 'php artisan migrate'
 
   staging:
-    # domain: todo-domain.net
+    domain: vote.dripdropz-dev.com
     timeout: 60
     memory: 1024
     cli-memory: 1024
