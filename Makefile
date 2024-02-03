@@ -9,6 +9,7 @@ init:
 	docker run --rm --interactive --tty \
           --volume ${PWD}/application:/app \
           composer install --ignore-platform-reqs
+	sudo chown -R $(id -u -n):$(id -g -n) ${PWD}/application/vendor
 	make up
 	sleep 20
 	make -j2 backend-install frontend-install
