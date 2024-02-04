@@ -4,16 +4,17 @@ namespace App\Models;
 
 use App\Enums\BallotTypeEnum;
 use App\Enums\ModelStatusEnum;
+use Illuminate\Support\Carbon;
 use App\Http\Traits\HasHashIds;
 use App\Models\Interfaces\HasUser;
 use App\Models\Traits\HashIdModel;
+use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Carbon;
-use OwenIt\Auditing\Contracts\Auditable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Ballot extends Model implements Auditable, HasUser
 {
@@ -75,7 +76,7 @@ class Ballot extends Model implements Auditable, HasUser
     public function choices(): HasManyThrough
     {
         return $this->hasManyThrough(
-            BallotQuestionChoice::class,
+            QuestionChoice::class,
             Question::class,
             'model_id',
             'question_id');
@@ -129,6 +130,11 @@ class Ballot extends Model implements Auditable, HasUser
                 'context',
                 'voting'
             );
+    }
+
+    public function petition(): HasMany
+    {
+        return $this->hasMany(Petition::class, 'ballot_id');
     }
 
     public function user_responses(): HasMany

@@ -12,6 +12,7 @@ export const useBallotStore = defineStore('ballot-store', () => {
     let formData = ref<object | null>(null);
     let ballot = ref<BallotData | null>(null);
     let step = ref<number>(1);
+    let ballots = ref<BallotData[]>([]);
     let ballotsData = ref<BallotData[]>([]);
     let ballotsPagination = ref<Pagination>();
     let ballotsQueryData = ref<BallotsQuery|null>({p:1, l:10})
@@ -34,6 +35,12 @@ export const useBallotStore = defineStore('ballot-store', () => {
 
     async function loadBallots() {
         getBallots();
+    }
+
+    async function loadAllBallots() {
+        if (!ballots.value.length) {
+            ballots.value = await AdminBallotService.getAllBallots()
+        }
     }
 
     watch(ballotsQueryData, () => {
@@ -60,6 +67,8 @@ export const useBallotStore = defineStore('ballot-store', () => {
         uploadFormData,
         uploadBallotData,
         loadBallots,
+        ballots,
+        loadAllBallots
     }
 });
 

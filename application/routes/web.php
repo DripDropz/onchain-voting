@@ -108,6 +108,9 @@ Route::prefix('/petitions')->as('petitions.')->group(function () {
 
     Route::get('/{petition}/share', [PetitionController::class, 'share'])
     ->name('share');
+
+    Route::post('/{petition}/publish', [PetitionController::class, 'publish'])
+        ->name('publish');
 });
 
 //Polls
@@ -116,10 +119,16 @@ Route::prefix('/polls')->as('polls.')->group(function () {
         ->name('index');
     Route::get('/pollsData/{params?}', [PollController::class, 'pollsData'])->name('pollsData');
 
+    Route::get('/pollData/{poll}', [PollController::class, 'pollData'])->name('pollData');
+
+    Route::get('/userPollsData/{params?}', [PollController::class, 'userPollsData'])->name('userPollsData');
+
     Route::get('/create', [PollController::class, 'create'])
     ->name('create');
     Route::post('/create', [PollController::class, 'store'])
     ->name('store');
+
+    Route::post('/{poll}/store/question-response', [PollController::class, 'storeQuestionResponse'])->name('storeQuestionResponse');
 });
 
 

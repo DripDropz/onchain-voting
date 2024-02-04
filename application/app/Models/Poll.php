@@ -20,31 +20,31 @@ class Poll extends Model implements Auditable, HasUser
         Traits\HasUser,
         HasFactory;
 
-        protected $hidden = [
-            'id',
-        ];
+    protected $hidden = [
+        'id',
+    ];
 
-        protected $appends = [
-            'hash',
-        ];
+    protected $appends = [
+        'hash',
+    ];
 
-        protected $fillable = [
-            'user_id',
-            'title',
-            'description',
-            'status',
-            'type',
-            'on_chain',
-            'visibility',
-            'started_at',
-            'ended_at',
-        ];
+    protected $fillable = [
+        'user_id',
+        'title',
+        'description',
+        'status',
+        'type',
+        'on_chain',
+        'visibility',
+        'started_at',
+        'ended_at',
+    ];
 
-        protected $casts = [
-            'status' => ModelStatusEnum::class,
-            'started_at' => 'datetime:Y-m-d H:i:s',
-            'ended_at' => 'datetime:Y-m-d H:i:s',
-        ];
+    protected $casts = [
+        'status' => ModelStatusEnum::class,
+        'started_at' => 'datetime:Y-m-d H:i:s',
+        'ended_at' => 'datetime:Y-m-d H:i:s',
+    ];
 
     public function snapshot(): HasOne
     {
@@ -72,5 +72,9 @@ class Poll extends Model implements Auditable, HasUser
         );
     }
 
-
+    public function responses(): HasMany
+    {
+        return $this->hasMany(QuestionResponse::class, 'model_id')
+            ->where('model_type', static::class);
+    }
 }

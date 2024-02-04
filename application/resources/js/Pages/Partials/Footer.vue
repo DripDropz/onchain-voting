@@ -42,7 +42,7 @@
                     Created with ♡ by <a href="https://dripdropz.io/" target="_blank" >DripDropz</a>
                 </div>
                 <div>
-                    Hosted with ♡ by  <a href="https://www.lidonation.com/" target="_blank" >Lidonation</a>
+                    Hosted with ♡ by  <a :href="config.hosted_by_link" target="_blank" >{{config.hosted_by}}</a>
                 </div>
             </div>
         </section>

@@ -4,10 +4,22 @@
         <section class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="sm:rounded-lg">
-                    <h2 class="font-semibold text-lg xl:text-xl text-gray-800 dark:text-gray-200 leading-tight mb-4 mt-1">
-                        Ballots
-                    </h2>
+                    <div class="flex flex-row justify-between w-full">
+                        <h2 class="font-semibold text-lg xl:text-xl text-gray-800 dark:text-gray-200 leading-tight mb-4">
+                            Ballots
+                        </h2>
+                        <div>
+                            <Link :href="route('admin.ballots.create')">
+                                <PrimaryButton :theme="'primary'">
+                                    New Ballot
+                                    <PlusIcon class="w-5 h-5"/>
+                                </PrimaryButton>
+                            </Link>
+                        </div>
+                    </div>
+
                     <BallotList :ballots="ballotsData" />
+
                     <div v-if="ballotsPagination" class="flex flex-row items-center justify-between w-full py-4">
                         <div class="border-2 border-sky-600">
                             <p class="p-4 text-sm text-sky-600 dark:text-gray-300">
@@ -37,6 +49,9 @@ import { VARIABLES } from '@/types/variables'
 import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import BallotData = App.DataTransferObjects.BallotData;
+import {Link} from "@inertiajs/vue3";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import {PlusIcon} from "@heroicons/vue/20/solid";
 
 
 const props = defineProps<{

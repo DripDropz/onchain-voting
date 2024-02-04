@@ -88,6 +88,7 @@ import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { onClickOutside } from '@vueuse/core';
 import voteAppLogo from '../../../images/openchainvote.png';
+import axios from 'axios';
 
 const user = usePage().props.auth.user;
 const walletStore = useWalletStore();
@@ -111,9 +112,11 @@ const menuOptions = [
 ];
 
 function logout() {
-    router.post(route('logout'));
-    walletStore.disconnect();
-    window.location.reload();
+    axios.post(route('logout')).finally(() => {
+        walletStore.disconnect();
+        window.location.reload();
+    });
+
 }
 
 const target = ref(null);

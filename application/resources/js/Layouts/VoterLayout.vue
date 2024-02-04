@@ -6,45 +6,56 @@ import Footer from "@/Pages/Partials/Footer.vue";
 import {useConfigStore} from "@/stores/config-store";
 import {storeToRefs} from 'pinia';
 import {Modal} from 'momentum-modal';
+import PageActions from "@/Components/PageActions.vue";
+import Nav from '@/Pages/NavCrumbs.vue';
 
 withDefaults(
     defineProps<{
         page: string;
         pageData?: any;
         canLogin?: boolean;
+        actions?: [];
+        crumbs?: [];
     }>(), {
         canLogin: true
     });
 
 let configStore = useConfigStore();
-let {isDarkMode} = storeToRefs(configStore);
+let {isDarkMode, showModal } = storeToRefs(configStore);
 
 </script>
 
 <template>
     <div class="h-full overflow-y-auto" :class="{'dark': isDarkMode }">
-        <div class="min-h-screen bg-white dark:bg-gray-900 h-full">
+        <div class="h-full min-h-screen bg-white dark:bg-gray-900">
 
             <Head :title="page"/>
 
             <div
                 class="relative flex flex-col justify-start min-h-screen bg-center bg-dots-darker dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
-                <div class="relative z-50 w-full p-4 text-right border-b">
+                <div class="relative z-50 w-full p-4 text-right border-b border-slate-100">
                     <div class="container">
                         <Header :can-login="canLogin" :pageData="pageData"/>
                     </div>
                 </div>
-                <header class="bg-white shadow-xs border-b dark:bg-gray-800">
-                    <div class="container">
-                        <slot name="header"/>
+
+                <nav v-if="!$page.component.startsWith('Home')"
+                     class="bg-white shadow dark:bg-gray-800" role="navigation" :crumbs="[]">
+                    <div class="flex justify-between items-center inner-container">
+                        <div class="breadcrumbs-wrapper">
+                            <Nav :crumbs="crumbs" />
+                        </div>
+                        <div class="actions-wrapper h-full">
+                            <PageActions :actions="actions" />
+                        </div>
                     </div>
-                </header>
+                </nav>
 
                 <main class="z-10 flex flex-1">
                     <slot/>
                 </main>
 
-                <div class="relative z-50 w-full text-right border-t border-slate-300 mt-auto">
+                <div class="relative z-50 w-full mt-auto text-right border-t border-slate-300">
                     <Footer :pageData="pageData"/>
                 </div>
             </div>

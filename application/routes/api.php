@@ -45,10 +45,12 @@ Route::prefix('/ballots')->as('config.')->group(function () {
                 'hosted_by',
                 'hosted_by_link',
                 'logo',
-                'power_by',
+                'powered_by',
                 'show_created_by'
             ])->toJson();
+            
     })->name('app');
+
 });
 
 Route::prefix('/query-chain')->as('frost.')->group(
@@ -75,4 +77,7 @@ Route::get('/snapshot', [SnapshotController::class, 'searchSnapshot'])->name('se
 Route::post('/update-position', [BallotController::class, 'updatePosition'])->name('update.position');
 
 Route::get('/ballots', [BallotController::class, 'ballotsData'])->name('ballotsData');
+Route::get('/all-ballots', [BallotController::class, 'allBallots'])->name('allBallots');
 Route::get('/petitions', [PetitionController::class, 'petitionsData'])->name('petitionsData');
+
+

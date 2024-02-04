@@ -93,7 +93,10 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
         Route::get('/{petition:id}/edit', [PetitionController::class, 'edit'])
         ->name('edit');
 
-        Route::patch('/{petition}/update', [PetitionController::class, 'update'])->name('update');
+        Route::get('/{petition}/ballot', [PetitionController::class, 'moveToBallot'])
+        ->name('toBallot');
+
+        Route::patch('/{petition}/update/{ballot?}', [PetitionController::class, 'update'])->name('update');
 
         Route::prefix('{petition}/rules')->as('rules.')->group(function () {
             Route::post('/create', [PetitionController::class, 'saveRule'])

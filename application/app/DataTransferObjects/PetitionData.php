@@ -29,6 +29,9 @@ class PetitionData extends Data
         #[WithoutValidation]
         public ?UserData $user,
 
+        #[WithoutValidation]
+        public ?int $user_id,
+
         #[TypeScriptOptional]
         public ?string $created_at,
 
@@ -53,6 +56,9 @@ class PetitionData extends Data
 
         /** @var CategoryData[] */
         public ?DataCollection $categories,
+
+        /** @var BallotData */
+        public ?BallotData $ballot,
 
         /** @var RuleData[] */
         public ?DataCollection $rules,

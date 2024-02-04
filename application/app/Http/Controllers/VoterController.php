@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\DataTransferObjects\BallotData;
 use App\DataTransferObjects\VoterData;
 use App\Models\Ballot;
-use App\Models\BallotQuestionChoice;
 use App\Models\BallotResponse;
 use App\Models\Question;
+use App\Models\QuestionChoice;
 use App\Models\User;
 use App\Models\VotingPower;
 use Illuminate\Http\Request;
@@ -40,7 +40,7 @@ class VoterController extends Controller
         $ballot = Ballot::byHashOrFail($request->ballot);
         $choices = collect($request->choices)
             ->map(
-                fn($hash) => BallotQuestionChoice::byHashOrFail($hash)
+                fn($hash) => QuestionChoice::byHashOrFail($hash)
             );
 
         $votingPower = VotingPower::where([

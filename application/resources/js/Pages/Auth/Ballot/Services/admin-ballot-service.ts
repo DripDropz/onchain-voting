@@ -18,6 +18,11 @@ export default class AdminBallotService {
         return true;
     }
 
+    public static async getAllBallots(): Promise<BallotData[]> {
+        return (await axios.get(route('allBallots'))).data;
+
+    }
+
     public static async unlinkSnapshot(data: { ballot: string, snapshot: string}){
         try {
             await axios.post(route('admin.ballots.snapshots.unLink', data), {});

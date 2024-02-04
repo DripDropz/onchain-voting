@@ -1,8 +1,6 @@
 <template>
-    <VoterLayout page="Ballots">
-        <template #header>
-            <Nav :crumbs="props.crumbs"/>
-        </template>
+    <VoterLayout page="Ballots"
+                 :crumbs="crumbs">
         <div class="container flex flex-col justify-between py-16">
             <div class="" v-if="props.ballots?.length > 0" id="open-ballots">
                 <div class="container" v-if="props.ballots?.length > 1">
@@ -15,10 +13,10 @@
                 <div class="container">
                     <OpenBallots :ballots="props.ballots"></OpenBallots>
 
-<!--                    <div class="flex flex-col gap-16" v-else>-->
-<!--                        <BallotSingle v-for="ballot in ballots" :key="ballot.hash" :ballot="ballot" context="list">-->
-<!--                        </BallotSingle>-->
-<!--                    </div>-->
+                    <!--                    <div class="flex flex-col gap-16" v-else>-->
+                    <!--                        <BallotSingle v-for="ballot in ballots" :key="ballot.hash" :ballot="ballot" context="list">-->
+                    <!--                        </BallotSingle>-->
+                    <!--                    </div>-->
                 </div>
             </div>
         </div>
@@ -30,10 +28,10 @@ import VoterLayout from "@/Layouts/VoterLayout.vue";
 import BallotSingle from "@/Pages/Ballot/Partials/BallotSingle.vue";
 import OpenBallots from "@/Pages/Partials/OpenBallots.vue";
 import Line from "@/Pages/Partials/Line.vue";
-import Nav from '../NavCrumbs.vue';
 
 const props = defineProps<{
     ballots: BallotData[];
-    crumbs: []
+    crumbs: [];
+    actions: []
 }>();
 </script>

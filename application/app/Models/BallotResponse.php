@@ -77,7 +77,7 @@ class BallotResponse extends Model implements \OwenIt\Auditing\Contracts\Auditab
 
     public function choices(): BelongsToMany
     {
-        return $this->belongsToMany(BallotQuestionChoice::class, 'ballot_responses_ballot_question_choices');
+        return $this->belongsToMany(QuestionChoice::class, 'ballot_responses_ballot_question_choices');
     }
 
     public function choice(): HasOne

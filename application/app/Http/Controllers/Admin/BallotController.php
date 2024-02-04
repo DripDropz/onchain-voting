@@ -13,9 +13,9 @@ use App\Http\Integrations\Lucid\Requests\GetAddress;
 use App\Http\Integrations\Lucid\Requests\GetPolicy;
 use App\Http\Integrations\Lucid\Requests\GetPolicyId;
 use App\Models\Ballot;
-use App\Models\BallotQuestionChoice;
 use App\Models\Policy;
 use App\Models\Question;
+use App\Models\QuestionChoice;
 use App\Models\Snapshot;
 use App\Models\Wallet;
 use Illuminate\Http\RedirectResponse;
@@ -52,6 +52,12 @@ class BallotController extends Controller
                 'crumbs' => $crumbs,
             ]
         );
+    }
+
+    public function allBallots()
+    {
+        $ballots = Ballot::query()->with('questions')->get();
+        return BallotData::collection($ballots);
     }
 
     public function ballotsData(Request $request)
@@ -248,12 +254,18 @@ class BallotController extends Controller
      * @param Request $request
      * @param Ballot $ballot
      * @param Question $question
+     * @return Response
      */
     public function editQuestion(Request $request, Ballot $ballot, Question $question)
     {
         $ballot->load(['questions']);
         $crumbs = [
-            ['label' => 'Edit Question', 'link' => route('admin.ballots.questions.edit', ['ballot' => $ballot->hash])],
+            [
+                'label' => 'Edit Question',
+                'link' => route('admin.ballots.questions.edit', [
+                    'ballot' => $ballot->hash,
+                    'question' => $question->hash
+                ])],
         ];
 
         return Inertia::render('Auth/Question/Edit', [
@@ -349,7 +361,7 @@ class BallotController extends Controller
     public function editQuestionChoice(Request $request, Ballot $ballot, Question $question): Modal
     {
         $question->load('ballot');
-        $choice = BallotQuestionChoice::byHash($request->choice);
+        $choice = QuestionChoice::byHash($request->choice);
 
         return Inertia::modal('Auth/Question/QuestionChoice/Edit')
             ->with([
@@ -390,7 +402,7 @@ class BallotController extends Controller
     #[NoReturn]
     public function storeQuestionChoice(QuestionChoiceData $choiceData)
     {
-        $choice = new BallotQuestionChoice();
+        $choice = new QuestionChoice();
         $choice->fill($choiceData->all());
         $choice->question_id = decode_model_hash($choiceData->question->hash, Question::class);
         $choice->save();
@@ -398,7 +410,7 @@ class BallotController extends Controller
 
     public function storeEditQuestionChoice(QuestionChoiceData $choiceData, Request $request)
     {
-        $choice = BallotQuestionChoice::byHash($request->choice);
+        $choice = QuestionChoice::byHash($request->choice);
 
         $choice->update([
             'title' => $choiceData->title,
@@ -408,13 +420,13 @@ class BallotController extends Controller
 
     public function deleteQuestionChoice(Request $request)
     {
-        $choice = BallotQuestionChoice::byHash($request->choice);
+        $choice = QuestionChoice::byHash($request->choice);
         $choice->delete();
     }
 
     public function updatePosition(Request $request)
     {
-        $choice = BallotQuestionChoice::byHash($request->hash);
+        $choice = QuestionChoice::byHash($request->hash);
 
         $choice->update([
             'order' => round($request->order, 5),
@@ -591,4 +603,6 @@ class BallotController extends Controller
             throw $e;
         }
     }
+
+    
 }

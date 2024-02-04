@@ -55,6 +55,7 @@ hash: string | null;
 title: string;
 description?: string | null;
 user: App.DataTransferObjects.UserData | null;
+user_id: number | null;
 created_at?: string | null;
 updated_at?: string | null;
 started_at?: string | null;
@@ -63,7 +64,9 @@ image_url?: string | null;
 signatures_count?: number | null;
 status: string;
 categories: Array<App.DataTransferObjects.CategoryData> | null;
+ballot: App.DataTransferObjects.BallotData | null;
 rules: Array<App.DataTransferObjects.RuleData> | null;
+petition_goals: any;
 };
 export type PolicyData = {
 hash: string | null;
@@ -78,12 +81,15 @@ hash: string | null;
 id: number | null;
 title: string;
 description?: string | null;
+publish_on_chain?: boolean | null;
 user: App.DataTransferObjects.UserData | null;
 created_at?: string | null;
 updated_at?: string | null;
 status: string;
 question: App.DataTransferObjects.QuestionData | null;
 rules: Array<App.DataTransferObjects.RuleData> | null;
+ballot: App.DataTransferObjects.BallotData | null;
+user_responses?: Array<App.DataTransferObjects.QuestionResponseData> | null;
 };
 export type QuestionChoiceData = {
 hash: string | null;
@@ -108,7 +114,20 @@ user: App.DataTransferObjects.UserData | null;
 ballot: App.DataTransferObjects.BallotData | null;
 choices: Array<App.DataTransferObjects.QuestionChoiceData> | null;
 ranked_user_responses?: Array<App.DataTransferObjects.BallotResponseData> | null;
+responses?: Array<App.DataTransferObjects.QuestionResponseData> | null;
 choices_tally: Array<any> | null;
+};
+export type QuestionResponseData = {
+hash: string | null;
+model_type?: string | null;
+model_id?: number | null;
+created_at?: string | null;
+question: App.DataTransferObjects.QuestionData | null;
+choices?: Array<App.DataTransferObjects.QuestionChoiceData> | null;
+user: App.DataTransferObjects.UserData | null;
+voting_power: App.DataTransferObjects.VotingPowerData | null;
+submit_tx: string | null;
+rank: number | null;
 };
 export type RegistrationData = {
 hash: string;
@@ -165,10 +184,12 @@ export type TxData = {
 };
 export type UserData = {
 hash: string;
+id: number;
 name: string;
 voter_id: string | null;
 hero?: string | null;
 ballots?: Array<any> | null;
+user_roles: Array<any> | null;
 };
 export type VerificationKey = {
 type: string;

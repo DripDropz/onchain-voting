@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { XMarkIcon } from '@heroicons/vue/24/outline';
+import { useConfigStore } from '@/stores/config-store';
+import { storeToRefs } from 'pinia';
+import { onClickOutside } from '@vueuse/core';
 
 const props = withDefaults(
     defineProps<{
@@ -15,6 +19,11 @@ const props = withDefaults(
 );
 
 const emit = defineEmits(['close']);
+let configStore = useConfigStore()
+let { showModal } = storeToRefs(configStore);
+const target = ref(null);
+onClickOutside(target, (event) => showModal.value = false);
+
 
 watch(
     () => props.show,
@@ -60,34 +69,28 @@ const maxWidthClass = computed(() => {
 <template>
     <teleport to="body">
         <transition leave-active-class="duration-200">
-            <div v-show="show" class="fixed inset-0 flex items-center justify-center overflow-y-auto px-4 py-6 sm:px-0 z-50" scroll-region>
-                <transition
-                    enter-active-class="ease-out duration-300"
-                    enter-from-class="opacity-0"
-                    enter-to-class="opacity-100"
-                    leave-active-class="ease-in duration-200"
-                    leave-from-class="opacity-100"
-                    leave-to-class="opacity-0"
-                >
-                    <div v-show="show" class="fixed inset-0 transform transition-all" @click="close">
-                        <div class="absolute inset-0 bg-gray-500 dark:bg-gray-900 opacity-75" />
+            <div v-show="show" class="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 overflow-y-auto sm:px-0"
+                scroll-region>
+                <transition enter-active-class="duration-300 ease-out" enter-from-class="opacity-0"
+                    enter-to-class="opacity-100" leave-active-class="duration-200 ease-in" leave-from-class="opacity-100"
+                    leave-to-class="opacity-0">
+                    <div v-show="show" class="fixed inset-0 transition-all transform" @click="close">
+                        <div class="absolute inset-0 bg-gray-500 opacity-75 dark:bg-gray-900" />
                     </div>
                 </transition>
 
-                <transition
-                    enter-active-class="ease-out duration-300"
-                    enter-from-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    enter-to-class="opacity-100 translate-y-0 sm:scale-100"
-                    leave-active-class="ease-in duration-200"
-                    leave-from-class="opacity-100 translate-y-0 sm:scale-100"
-                    leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                >
-                    <div
-                        v-show="show"
-                        class="mb-6 bg-sky-100 dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full sm:mx-auto"
-                        :class="maxWidthClass"
-                    >
-                        <slot v-if="show" />
+                <transition enter-active-class="duration-300 ease-out"
+                    enter-from-class="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+                    enter-to-class="translate-y-0 opacity-100 sm:scale-100" leave-active-class="duration-200 ease-in"
+                    leave-from-class="translate-y-0 opacity-100 sm:scale-100"
+                    leave-to-class="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95">
+                    <div v-show="show"
+                        class="mb-6 overflow-hidden transition-all transform rounded-lg shadow-xl bg-sky-100 dark:bg-gray-800 sm:w-full sm:mx-auto"
+                        :class="maxWidthClass">
+                        <div class="flex justify-end w-full">
+                            <XMarkIcon class="w-5 h-5 mt-2 mr-2 cursor-pointer" @click="showModal = false" />
+                        </div>
+                        <slot v-if="show" ref="target" />
                     </div>
                 </transition>
             </div>

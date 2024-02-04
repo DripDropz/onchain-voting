@@ -6,6 +6,7 @@ use App\Http\Traits\HasHashIds;
 use App\Models\Interfaces\HasUser;
 use App\Models\Traits\HashIdModel;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use OwenIt\Auditing\Contracts\Auditable;
 
@@ -14,6 +15,7 @@ class Snapshot extends Model implements Auditable, HasUser
     use \OwenIt\Auditing\Auditable,
         HasHashIds,
         HashIdModel,
+        HasFactory,
         Traits\HasUser;
 
     protected $fillable = [

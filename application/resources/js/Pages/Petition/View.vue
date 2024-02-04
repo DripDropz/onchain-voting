@@ -1,8 +1,8 @@
 <template>
-    <VoterLayout page="Petition">
-        <template #header>
-            <Nav :crumbs="crumbs"/>
-        </template>
+    <VoterLayout 
+                page="Petition"
+                :crumbs="crumbs"
+                :actions="actions">
       <section class="py-12 m-auto">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8"> 
                 <PetitionSingle
@@ -20,11 +20,11 @@ import VoterLayout from '@/Layouts/VoterLayout.vue';
 import PetitionData = App.DataTransferObjects.PetitionData;
 import SignatureData = App.DataTransferObjects.SignatureData;
 import PetitionSingle from './Partials/PetitionSingle.vue';
-import Nav from '../NavCrumbs.vue';
 
 defineProps<{
     petition: PetitionData;
-    crumbs: []
+    crumbs: [];
+    actions: []
     signature:SignatureData;
 }>();
 
