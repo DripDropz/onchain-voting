@@ -127,6 +127,8 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
 
     // Snapshot
     Route::prefix('/snapshots')->as('snapshots.')->group(function () {
+        Route::get('/snapshot-data', [SnapshotController::class, 'snapshotsData'])->name('snapshotsData');
+
         // Views
         Route::get('/', [SnapshotController::class, 'index'])->name('index');
         Route::get('/create', [SnapshotController::class, 'create'])->name('create');
@@ -140,6 +142,7 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
             ->name('update');
         Route::delete('/{snapshot}/delete', [SnapshotController::class, 'destroy'])
             ->name('destroy');
+
 
         // Snapshot Voting Powers
         Route::prefix('/{snapshot}/powers')->as('powers.')->group(function () {

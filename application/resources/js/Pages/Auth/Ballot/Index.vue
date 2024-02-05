@@ -2,10 +2,10 @@
     <AuthenticatedLayout title="Dashboard" :crumbs="crumbs">
 
         <section class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="sm:rounded-lg">
                     <div class="flex flex-row justify-between w-full">
-                        <h2 class="font-semibold text-lg xl:text-xl text-gray-800 dark:text-gray-200 leading-tight mb-4">
+                        <h2 class="mb-4 text-lg font-semibold leading-tight text-gray-800 xl:text-xl dark:text-gray-200">
                             Ballots
                         </h2>
                         <div>
@@ -44,7 +44,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import BallotList from "@/Pages/Auth/Ballot/Partials/BallotList.vue"
 import Paginator from '@/shared/components/Paginator.vue';
 import { useBallotStore } from '@/stores/ballot-store';
-import BallotsQuery from '@/types/ballots-query';
 import { VARIABLES } from '@/types/variables'
 import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
@@ -52,6 +51,7 @@ import BallotData = App.DataTransferObjects.BallotData;
 import {Link} from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import {PlusIcon} from "@heroicons/vue/20/solid";
+import DataQuery from '@/types/data-query';
 
 
 const props = defineProps<{
@@ -65,7 +65,7 @@ let { ballotsQueryData, ballotsData, ballotsPagination } = storeToRefs(ballotSto
 
 let currPage = ref<number | null>(null);
 let perPage = ref<number | null>(null);
-let ballotsQueryDataRef = ref<BallotsQuery | null>(null);
+let ballotsQueryDataRef = ref<DataQuery | null>(null);
 
 watch([currPage], () => {
     query();

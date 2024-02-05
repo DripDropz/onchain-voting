@@ -31,6 +31,17 @@ class SnapshotController extends Controller
         ]);
     }
 
+
+    public function snapshotsData(Request $request)
+    {
+        $page = $request->query('page') ?? 1;
+        $perPage = $request->query('perPage') ?? 6;
+
+        $snapshots = Snapshot::paginate($perPage, ['*'], 'p', $page)->setPath('/')->onEachSide(0);
+
+        return SnapshotData::collection($snapshots);
+    }
+
     /**
      * Display the new snapshot's form.
      */
@@ -143,7 +154,7 @@ class SnapshotController extends Controller
         $sort = $request->query('sort');
 
         if ($response->allowed()) {
-            if (! is_null($sort)) {
+            if (!is_null($sort)) {
                 [$sortColumn, $sortOrder] = explode(':', $sort);
                 $votingPowers = $snapshot->voting_powers()->orderBy($sortColumn, $sortOrder);
             } else {
@@ -154,7 +165,6 @@ class SnapshotController extends Controller
         } else {
             return Redirect::back()->withErrors(['error' => 'Not authorized to view voting power']);
         }
-
     }
 
     public function uploadVotingPowerCsv(Request $request, Snapshot $snapshot)

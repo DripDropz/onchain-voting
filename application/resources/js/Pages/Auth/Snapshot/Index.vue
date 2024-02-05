@@ -1,10 +1,10 @@
 <template>
     <AuthenticatedLayout title="Dashboard" :crumbs="crumbs">
         <section class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="sm:rounded-lg">
                     <div class="flex justify-between w-full">
-                        <h2 class="font-semibold text-lg xl:text-xl text-gray-800 dark:text-gray-200 leading-tight mb-4">
+                        <h2 class="mb-4 text-lg font-semibold leading-tight text-gray-800 xl:text-xl dark:text-gray-200">
                             Snapshots
                         </h2>
 
@@ -18,18 +18,18 @@
                         </div>
                     </div>
 
-                    <BallotList :ballots="ballotsData"/>
+                    <SnapshotList :snapshots="snapshots"/>
 
-                    <div v-if="ballotsPagination" class="flex flex-row items-center justify-between w-full py-4">
+                    <div v-if="snapshotsPagination" class="flex flex-row items-center justify-between w-full py-4">
                         <div class="border-2 border-sky-600">
                             <p class="p-4 text-sm text-sky-600 dark:text-gray-300">
                                 {{
-                                    `Showing ${ballotsPagination?.from} to ${(ballotsPagination?.to < ballotsPagination?.total) ? ballotsPagination?.to : ballotsPagination?.total} of ${ballotsPagination?.total} results`
+                                    `Showing ${snapshotsPagination?.from} to ${(snapshotsPagination?.to < snapshotsPagination?.total) ? snapshotsPagination?.to : snapshotsPagination?.total} of ${snapshotsPagination?.total} results`
                                 }}
                             </p>
                         </div>
 
-                        <Paginator :pagination="ballotsPagination"
+                        <Paginator :pagination="snapshotsPagination"
                                    @paginated="(payload: number) => currPage = payload"
                                    @perPageUpdated="(payload: number) => perPage = payload">
                         </Paginator>
@@ -47,13 +47,15 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import BallotList from "@/Pages/Auth/Ballot/Partials/BallotList.vue"
 import Paginator from '@/shared/components/Paginator.vue';
 import {useBallotStore} from '@/stores/ballot-store';
-import BallotsQuery from '@/types/ballots-query';
 import {VARIABLES} from '@/types/variables'
 import {ref, watch} from 'vue';
 import {storeToRefs} from 'pinia';
 import {Link} from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import {PlusIcon} from "@heroicons/vue/20/solid";
+import { useSnapshotStore } from '@/stores/snapshot-store';
+import DataQuery from '@/types/data-query';
+import SnapshotList from './Partials/SnapshotList.vue';
 
 
 const props = defineProps<{
@@ -61,13 +63,13 @@ const props = defineProps<{
     crumbs: [];
 }>();
 
-let ballotStore = useBallotStore();
-ballotStore.loadBallots();
-let {ballotsQueryData, ballotsData, ballotsPagination} = storeToRefs(ballotStore);
+let snapshotStore = useSnapshotStore();
+snapshotStore.loadSnaphots();
+let {snapshotsQueryData, snapshots, snapshotsPagination} = storeToRefs(snapshotStore);
 
 let currPage = ref<number | null>(null);
 let perPage = ref<number | null>(null);
-let ballotsQueryDataRef = ref<BallotsQuery | null>(null);
+let snapshotsQueryDataRef = ref<DataQuery | null>(null);
 
 watch([currPage], () => {
     query();
@@ -80,7 +82,7 @@ watch([perPage], () => {
 
 function query() {
     const data = getQueryData();
-    ballotsQueryDataRef.value = data;
+    snapshotsQueryDataRef.value = data;
 }
 
 function getQueryData() {
@@ -95,8 +97,8 @@ function getQueryData() {
     return data;
 }
 
-watch([ballotsQueryDataRef], () => {
-    ballotsQueryData.value = ballotsQueryDataRef.value;
+watch([snapshotsQueryDataRef], () => {    
+    snapshotsQueryData.value = snapshotsQueryDataRef.value;
 })
 
 

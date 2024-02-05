@@ -99,7 +99,6 @@ class BallotController extends Controller
 
     /**
      * Display the ballot's form.
-     * @throws \Saloon\Exceptions\Request\FatalRequestException
      */
     public function startRegistration(Request $request, Ballot $ballot): LaravelResponse
     {

@@ -114,7 +114,6 @@ user: App.DataTransferObjects.UserData | null;
 ballot: App.DataTransferObjects.BallotData | null;
 choices: Array<App.DataTransferObjects.QuestionChoiceData> | null;
 ranked_user_responses?: Array<App.DataTransferObjects.BallotResponseData> | null;
-responses?: Array<App.DataTransferObjects.QuestionResponseData> | null;
 choices_tally: Array<any> | null;
 };
 export type QuestionResponseData = {

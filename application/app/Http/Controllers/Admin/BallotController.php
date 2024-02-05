@@ -310,17 +310,16 @@ class BallotController extends Controller
         $response = Gate::inspect('create', Question::class);
 
         if ($response->allowed()) {
-            $question = new Question;
-            $question->title = $request->title;
-            $question->description = $request->description;
-            $question->status = $request->status;
-            $question->type = $request->type;
-            $question->max_choices = $request->maxChoices;
-            $question->supplemental = $request->supplemental;
-            $question->user_id = Auth::id();
-            $question->ballot_id = decode_model_hash($ballot?->hash, Ballot::class);
-            $question->save();
-
+            $question = $ballot->questions()->create([
+                'title' => $request->title,
+                'description' => $request->description,
+                'status' => $request->status,
+                'type' => $request->type,
+                'maxChoices' => $request->maxChoices,
+                'supplemental' => $request->supplemental,
+                'user_id' => Auth::id(),
+                'model_type' => Ballot::class,
+            ]);
         } else {
             return redirect()->route('admin.ballots.view', ['ballot' => $ballot?->hash])->withErrors([
                 'error' => 'Not authorized to create question!',
@@ -554,7 +553,7 @@ class BallotController extends Controller
             $lucid = new LucidConnector;
             $policyResponse = $lucid->send($policyAddress);
 
-            $registrationPolicyAddress = $policyResponse->json()['address'] ?? null;
+            $registrationPolicyAddress = $policyResponse->body()?? null;
         }
 
         if ($secondPolicySeed) {
@@ -565,7 +564,7 @@ class BallotController extends Controller
             $lucid = new LucidConnector;
             $policyResponse = $lucid->send($policyAddress);
 
-            $votingPolicyAddress = $policyResponse->json()['address'];
+            $votingPolicyAddress = $policyResponse->body();
         }
 
         return [
@@ -604,5 +603,5 @@ class BallotController extends Controller
         }
     }
 
-    
+
 }

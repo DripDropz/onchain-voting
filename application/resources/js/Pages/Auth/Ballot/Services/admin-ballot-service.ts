@@ -1,8 +1,8 @@
 import AdminService from "@/shared/Services/AdminService";
-import BallotsQuery from "@/types/ballots-query";
 import PaginatedResponse from "@/types/paginated-response";
 import axios from "axios";
 import BallotData = App.DataTransferObjects.BallotData;
+import DataQuery from "@/types/data-query";
 
 export default class AdminBallotService {
     public static async getBallotTypes(): Promise<string[]> {
@@ -31,7 +31,7 @@ export default class AdminBallotService {
         }
     }
 
-    public static async getBallots(queryData?: (BallotsQuery|null)): Promise<PaginatedResponse<BallotData>> {
+    public static async getBallots(queryData?: (DataQuery|null)): Promise<PaginatedResponse<BallotData>> {
         try {
             const queryParams = {
                 page: queryData?.p,
