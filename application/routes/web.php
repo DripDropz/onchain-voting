@@ -23,7 +23,7 @@ use App\Http\Integrations\Blockfrost\Requests\BlockfrostRequest;
 Route::get('/', [HomeController::class, 'view'])->name('home');
 
 // Ballot
-Route::prefix('/ballots')->as('ballots.')->group(function () {
+Route::prefix('/ballots')->as('ballots.')->middleware('featureEnabled:ballot')->group(function () {
     Route::get('/', [BallotController::class, 'index'])->name('index');
 });
 
@@ -63,7 +63,7 @@ Route::prefix('/voters')->as('voters.')->group(function () {
 });
 
 // Petition
-Route::prefix('/petitions')->as('petitions.')->group(function () {
+Route::prefix('/petitions')->as('petitions.')->middleware('featureEnabled:petition')->group(function () {
     Route::get('/', [PetitionController::class, 'index'])
         ->name('index');
 
@@ -116,7 +116,7 @@ Route::prefix('/petitions')->as('petitions.')->group(function () {
 });
 
 //Polls
-Route::prefix('/polls')->as('polls.')->group(function () {
+Route::prefix('/polls')->as('polls.')->middleware('featureEnabled:poll')->group(function () {
     Route::get('/', [PollController::class, 'index'])
         ->name('index');
     Route::get('/pollsData/{params?}', [PollController::class, 'pollsData'])->name('pollsData');

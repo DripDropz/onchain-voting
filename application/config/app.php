@@ -29,6 +29,12 @@ return [
 
     'powered_by' => env('APP_POWERED_BY', 'Chainvote'),
 
+    'feature_flags'=>[
+        'ballots'=> env('FEATURE_BALLOT',true),
+        'petitions'=> env('FEATURE_PETITION',true),
+        'polls'=> env('FEATURE_POLL',true),
+    ],
+
     'cardano_network' => env('CARDANO_NETWORK', 0),
 
     'logo' => env('APP_LOGO'),
