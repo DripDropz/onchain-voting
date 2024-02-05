@@ -22,6 +22,8 @@ import { computed } from 'vue';
 import PetitionData = App.DataTransferObjects.PetitionData;
 import RuleData = App.DataTransferObjects.RuleData;
 import PetitionSupportesDoughnut from './PetitionSupportesDoughnut.vue';
+import { useConfigStore } from '@/stores/config-store';
+import { storeToRefs } from 'pinia';
 
 const props = defineProps<{
     petition: PetitionData;
@@ -31,25 +33,12 @@ const visible = props.petition?.petition_goals?.visible as RuleData;
 const featurePetition = props.petition?.petition_goals?.['feature-petition'] as RuleData;
 const ballotEligible = props.petition?.petition_goals?.['ballot-eligible'] as RuleData;
 
-let chartData = computed(() => {
-    const visibleNo = Number(visible?.value2);
-    const featurePetitionNo = Number(featurePetition?.value2);
-    const ballotEligibleNo = Number(ballotEligible?.value2)
+let configStore = useConfigStore();
+let {isDarkMode} = storeToRefs(configStore);
 
-    return {
-        labels: ['visible', 'feature-petition', 'ballot-eligible'],
-        datasets: [{
-            data: [visibleNo, featurePetitionNo, ballotEligibleNo],
-            backgroundColor: ["#d3eaf2", "#66b5d1", "#165a72"],
-        }],
-    }
+let nextGoalPieSectionColor = computed(() => {
+    return isDarkMode.value ? '#374151' : "#e5e7eb";
 })
-
-let chartOptions = {
-    rotation: -90,
-    circumference: 180,
-    cutout: '90%'
-}
 
 let neededSupportesNextGoal = computed(() => {
     if ((Number(visible?.value2) - props.petition?.signatures_count) > 0) {
@@ -62,4 +51,26 @@ let neededSupportesNextGoal = computed(() => {
         return 0;
     }
 })
+
+let chartData = computed(() => {
+    const signatureCount = Number(props.petition.signatures_count);
+    const currentGoalNo = neededSupportesNextGoal.value;
+
+    return {
+        labels: ['signatures', 'pending to next goal'],
+        datasets: [{
+            data: [signatureCount, currentGoalNo],
+            backgroundColor: ["#50abcb", nextGoalPieSectionColor.value]
+        }],
+    }
+})
+
+let chartOptions = {
+    rotation: -90,
+    circumference: 180,
+    cutout: '90%',
+    borderWidth: 0,
+}
+
+
 </script>

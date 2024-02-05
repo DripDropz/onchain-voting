@@ -88,7 +88,7 @@ let saveRule = (value, criteria, index) => {
             .finally(() => {
                 criteriaRef.value[index].loading = false;
             })
-    }, 1000)
+    }, 2000)
 }
 
 

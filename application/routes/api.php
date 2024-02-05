@@ -60,12 +60,13 @@ Route::prefix('/query-chain')->as('frost.')->group(
     }
 );
 
-Route::get('/epochs/latest/parameters', function (Request $request, BlockfrostRequest $frost) {
-    $frost->setEndPoint('/epochs/latest/parameters');
+Route::get('query/{uri?}', function (Request $request, BlockfrostRequest $frost) {
+    $uri = str_replace('api/query','', $request->getRequestUri());
+    $frost->setEndPoint($uri);
     $response = $frost->send();
 
     return $response->json();
-})->name('blockfrost-query');
+})->where('uri', '.*')->name('blockfrost-query');
 
 
 Route::post('/parse/csv', [SnapshotImportController::class, 'parseCSV']);

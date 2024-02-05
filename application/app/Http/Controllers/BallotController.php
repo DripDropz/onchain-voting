@@ -62,6 +62,8 @@ class BallotController extends Controller
                 'model_id' => $ballot->id,
                 'model_type' => $ballot::class,
             ])->get()->append('choices_tally');
+
+
         $ballot->load([
             'user_responses.choices'
         ]);
@@ -345,7 +347,6 @@ class BallotController extends Controller
     /**
      * Display missing snapshot modal.
      */
-
     public function missingSnapshot(Ballot $ballot)
     {
         return Inertia::modal('Ballot/MissingSnapshot')

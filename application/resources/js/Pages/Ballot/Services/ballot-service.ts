@@ -14,9 +14,9 @@ export default class BallotService {
             );
             return response.data;
         } catch (error: any) {
-            if (error.response.status = 404) {
+            if (error.response.status == 404) {
                 return 0;
-            };
+            }
         }
     }
 

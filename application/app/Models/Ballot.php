@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Ballot extends Model implements Auditable, HasUser
@@ -93,7 +92,7 @@ class Ballot extends Model implements Auditable, HasUser
                     }
                 });
 
-                return $ballotPulishable->isEmpty() ? false : true;
+                return !$ballotPulishable->isEmpty();
             }
         );
     }
@@ -106,7 +105,8 @@ class Ballot extends Model implements Auditable, HasUser
 
     public function responses(): HasMany
     {
-        return $this->hasMany(BallotResponse::class);
+        return $this->hasMany(QuestionResponse::class, 'model_id')
+            ->where('model_type', static::class);
     }
 
     public function snapshot(): HasOne

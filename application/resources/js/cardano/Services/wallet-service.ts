@@ -151,7 +151,7 @@ export default class WalletService {
             }
 
             lucid = await Lucid.new(
-                new Blockfrost(`${appUrl}/api`),
+                new Blockfrost(`${appUrl}/api/query`),
                 network
             );
 
