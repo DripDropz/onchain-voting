@@ -1,17 +1,17 @@
 <template >
     <ModalRoute>
-        <div v-if="!(creatingBallot || selecteExistingBallot)"
+        <div v-if="!(creatingBallot || selectExistingBallot)"
             class="flex flex-col justify-center gap-8 p-16 overflow-hidden rounded-xl dark:border-gray-700">
             <PrimaryButton @click="creatingBallot = true" :theme="'primary'">
                 <PlusIcon class="w-6 h-6" />
                 <span>Create new Ballot</span>
             </PrimaryButton>
-            <PrimaryButton @click="selecteExistingBallot = true" :theme="'primary'">
+            <PrimaryButton @click="selectExistingBallot = true" :theme="'primary'">
                 <ArrowDownTrayIcon class="w-5 h-5" />
                 <span>Select existing Ballot</span>
             </PrimaryButton>
         </div>
-        <div v-if="selecteExistingBallot" class="flex flex-col min-h-96">
+        <div v-if="selectExistingBallot" class="flex flex-col min-h-96">
             <SelectBallot @create-ballot="changeContext()" @submit="(payload) => moveToBallot({}, payload)" />
         </div>
         <div v-if="creatingBallot" class="min-h-96">
@@ -39,10 +39,10 @@ import axios from 'axios';
 
 let { close, redirect, } = useModal();
 
-const ballotstore = useBallotStore()
-let { ballots } = storeToRefs(ballotstore);
+const ballotStore = useBallotStore()
+let { ballots } = storeToRefs(ballotStore);
 let creatingBallot = ref(false);
-let selecteExistingBallot = ref(false);
+let selectExistingBallot = ref(false);
 let ballot: Ref<BallotData> = ref(null);
 
 
@@ -54,7 +54,7 @@ const props = defineProps<{
 
 let changeContext = () => {
     creatingBallot.value = !creatingBallot.value;
-    selecteExistingBallot.value = !selecteExistingBallot.value;
+    selectExistingBallot.value = !selectExistingBallot.value;
 }
 
 function moveToBallot(formData, data = null) {

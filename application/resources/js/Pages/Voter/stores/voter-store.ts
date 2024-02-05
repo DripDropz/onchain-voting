@@ -8,13 +8,13 @@ import axios from 'axios';
 import BallotService from '@/Pages/Ballot/Services/ballot-service';
 
 export const useVoterStore = defineStore('voter', () => {
-    let voter = ref<Boolean|null>(null);
-    const voterPowers: Ref<{[key: string]: BigInt}> = ref({});
-    const voterRegistrations: Ref<{[key: string]: {policyId?: PolicyId, registration?: UTxO}}> = ref({});
+    let voter = ref<Boolean | null>(null);
+    const voterPowers: Ref<{ [key: string]: BigInt }> = ref({});
+    const voterRegistrations: Ref<{ [key: string]: { policyId?: PolicyId, registration?: UTxO } }> = ref({});
     const walletStore = useWalletStore();
-    const { walletName } = storeToRefs(walletStore);
+    const {walletName} = storeToRefs(walletStore);
     const ws = new WalletService(walletName.value);
-    let confirmedOnchain = ref(false);
+    let confirmedOnChain = ref(false);
 
     function registeredForBallot(ballotHash: string) {
         return !!voterRegistrations.value[ballotHash];
@@ -33,11 +33,11 @@ export const useVoterStore = defineStore('voter', () => {
 
     async function loadRegistration(ballotHash: string) {
         let policyId: string = '';
+
         // get policy id
         const policyIdRes = await axios.get(route('ballot.policyId', {policyType: 'registration', ballot: ballotHash}))
 
-
-        if ( policyIdRes.status === 200) {
+        if (policyIdRes.status === 200) {
             policyId = policyIdRes.data;
         } else {
             return;
@@ -48,11 +48,11 @@ export const useVoterStore = defineStore('voter', () => {
         const utxos = await lucid.wallet.getUtxos();
 
         const registrations = utxos.filter((utxo: UTxO) =>
-         Object.keys(utxo.assets).some(asset => asset.includes(policyId))
+            Object.keys(utxo.assets).some(asset => asset.includes(policyId))
         );
 
 
-        if ( registrations.length > 0 ) {
+        if (registrations.length > 0) {
             voterRegistrations.value[ballotHash] = {policyId, registration: registrations[0]};
         }
     }
@@ -64,18 +64,18 @@ export const useVoterStore = defineStore('voter', () => {
         voterPowers.value[ballotHash] = await BallotService.loadVotingPower(voterId, ballotHash);
     }
 
-    async function onchainConfirmation(ballotHash:string) {
+    async function onChainConfirmation(ballotHash: string) {
         const lucid = await ws.lucidInstance();
         let txHash = voterRegistrations.value[ballotHash].registration.txHash
         if (txHash) {
-            confirmedOnchain.value = await lucid.awaitTx(txHash, 200)
+            confirmedOnChain.value = await lucid.awaitTx(txHash, 500)
         }
     }
 
-    const userVotingPower = function(ballotHash: string){
+    const userVotingPower = function (ballotHash: string) {
         if (!ballotHash || !voterPowers.value[ballotHash]) {
             return '-';
-        };
+        }
 
         return humanNumber(voterPowers.value[ballotHash], 5);
     };
@@ -89,8 +89,8 @@ export const useVoterStore = defineStore('voter', () => {
         userVotingPower,
         loadRegistration,
         registeredForBallot,
-        confirmedOnchain,
-        onchainConfirmation
+        confirmedOnChain,
+        onChainConfirmation: onChainConfirmation
     }
 });
 

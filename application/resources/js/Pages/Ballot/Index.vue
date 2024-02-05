@@ -32,6 +32,6 @@ import Line from "@/Pages/Partials/Line.vue";
 const props = defineProps<{
     ballots: BallotData[];
     crumbs: [];
-    actions: []
+    actions?: []
 }>();
 </script>

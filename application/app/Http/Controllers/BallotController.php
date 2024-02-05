@@ -124,7 +124,7 @@ class BallotController extends Controller
             'metadata' => [
                 'name' => $ballot->title,
                 'image' => $ballot->registration_policy->image_link,
-                'Powered by' => config('app.power_by'),
+                'Powered by' => config('app.powered_by'),
                 'Cast Your Vote At' => config('app.url')
             ],
         ]);
@@ -143,10 +143,12 @@ class BallotController extends Controller
 
     public function checkExistingRegistration($address, $ballot)
     {
+        $blockFrostRequest = app(BlockfrostRequest::class);
         $blockfrostConn = new BlockfrostConnector();
-        $blockfrostReq = new BlockfrostRequest('/addresses/' . $address . '/total');
+        $blockFrostRequest->setEndPoint("/addresses/{$address}/total");
+
         $response = $blockfrostConn->sendAndRetry(
-            $blockfrostReq,
+            $blockFrostRequest,
             2,
             300,
             fn($exception) => $exception instanceof FatalRequestException
@@ -170,10 +172,9 @@ class BallotController extends Controller
             return null;
         }
 
-        $blockfrostReq = new BlockfrostRequest('/addresses/' . $address . '/utxos/' . $assetName);
-
+        $blockFrostRequest->setEndPoint("/addresses/{$address}/utxos/{$assetName}");
         $response = $blockfrostConn->sendAndRetry(
-            $blockfrostReq,
+            $blockFrostRequest,
             2,
             300,
             fn($exception) => $exception instanceof FatalRequestException

@@ -207,28 +207,34 @@ class PetitionController extends Controller
         $signature = new Signature;
 
         if (!$request->signature) {
-
             $signature->email_signature = $request->email;
-            $signature->user_id = Auth::user()->id;
-
         } else {
             $signature->wallet_signature = $request->signature;
             $signature->stake_address = $request->stakeAddress;
-            $signature->user_id = Auth::user()->id;
         }
+        $signature->user_id = Auth::user()->id;
 
         $signature->save();
         $petition?->signatures()->syncWithPivotValues($signature->id, [
             'model_type' => Petition::class,
         ], false);
         return to_route('petitions.view', $petition->hash);
-
     }
 
     public function create(Petition $petition)
     {
         return Inertia::render('Petition/Workflows/StepOne', [
             'petition' => $petition,
+            'crumbs' => [
+                [
+                    'label' => 'Petitions',
+                    'link' => route('petitions.index')
+                ],
+                [
+                    'label' => 'Create Petition',
+                    'link' => route('petitions.create')
+                ],
+            ],
         ]);
     }
 

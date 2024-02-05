@@ -62,7 +62,8 @@
                     <RegisterToVote v-if="loggedIn && !registeredToVote && !voteRecordedOnChain && isBallotOpen"
                                     :ballot="ballot$"
                                     :hasVotingPower="(voterPower !== '-')"/>
-                    <ConfirmingOnchainVue v-if="!confirmedOnchain && registeredToVote"/>
+
+                    <ConfirmingOnChainVue v-if="!confirmedOnChain && registeredToVote"/>
                 </div>
 
                 <div class="flex flex-col h-full gap-10 px-4 pt-1">
@@ -118,7 +119,7 @@ import Tooltip from "./Tooltip.vue";
 import ConnectWalletToVote from "@/Pages/Ballot/Partials/ConnectWalletToVote.vue";
 import {useVoterStore} from "@/Pages/Voter/stores/voter-store";
 import BallotService from "@/Pages/Ballot/Services/ballot-service";
-import ConfirmingOnchainVue from "./ConfirmingOnchain.vue";
+import ConfirmingOnChainVue from "./ConfirmingOnChain.vue";
 
 const registeredToVote = ref(false);
 const user = usePage().props.auth.user;
@@ -131,7 +132,7 @@ const props = withDefaults(defineProps<{
 
 const voterStore = useVoterStore();
 const {voterRegistrations} = storeToRefs(voterStore);
-const { confirmedOnchain } = storeToRefs(voterStore);
+const { confirmedOnChain } = storeToRefs(voterStore);
 
 voterStore.loadRegistration(props.ballot.hash).then(() => {
     registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
@@ -183,7 +184,7 @@ if (props.ballot.hash) {
 
 watch([()=>voterRegistrations.value], () => {
     registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
-    voterStore.onchainConfirmation(props.ballot.hash);
+    voterStore.onChainConfirmation(props.ballot.hash);
 },{deep:true})
 
 async function saveBallotResponse(response: BallotResponseData) {

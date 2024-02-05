@@ -102,10 +102,11 @@ export default class BallotService {
                 }
             );
 
-            onchain = await lucid.awaitTx(response.data?.existingTx, 200);
-            if (response.data?.existingTx && onchain) {
-                return response.data
-            }
+            // onchain = await lucid.awaitTx(response.data?.existingTx, 200);
+            // if (response.data?.existingTx && onchain) {
+            //     return response.data
+            // }
+
             const tx = lucid.fromTx(response.data.tx);
             const witnesses = await tx.partialSign();
 
@@ -120,7 +121,7 @@ export default class BallotService {
                     witnesses
                 }
             );
-            onchain = await lucid.awaitTx(response.data?.tx, 200);
+            onchain = await lucid.awaitTx(response.data?.tx, 500);
             if (onchain) {
                 return response.data;
             }

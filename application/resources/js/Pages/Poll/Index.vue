@@ -88,7 +88,7 @@ import AnsweredPolls from './Partials/AnsweredPolls.vue';
 
 const props = withDefaults(
     defineProps<{
-        polls: PollData[];
+        polls?: PollData[];
         user: UserData;
         crumbs: [];
         actions: []

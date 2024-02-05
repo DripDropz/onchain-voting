@@ -96,7 +96,7 @@ const walletStore = useWalletStore();
 let configStore = useConfigStore();
 let { config } = storeToRefs(configStore);
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     canLogin?: boolean;
     pageData?: any;
 }>(), {

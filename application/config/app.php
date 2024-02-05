@@ -27,7 +27,7 @@ return [
     |
     */
 
-    'powered_by' => env('APP_POWERED_BY', 'Open Chainvote'),
+    'powered_by' => env('APP_POWERED_BY', 'Chainvote'),
 
     'cardano_network' => env('CARDANO_NETWORK', 0),
 

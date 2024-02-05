@@ -14,6 +14,6 @@ import BallotSingle from "@/Pages/Ballot/Partials/BallotSingle.vue";
 const props = defineProps<{
     ballot: BallotData;
     crumbs: [];
-    actions: []
+    actions?: []
 }>();
 </script>

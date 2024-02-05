@@ -11,7 +11,7 @@ export async function walletMsgLogin(wallet: string , stakeAddr: string, redirec
 
         //get stakeAddr hex for comparison in backend
         const { address: { hex: hexAddress } } = getAddressDetails(stakeAddr);
-        const res = await window.axios.post(route("login.signMessageLogin"), {
+        await window.axios.post(route("login.signMessageLogin"), {
             ...signature,
             stakeAddrHex: hexAddress,
             stakeAddr: stakeAddr,
