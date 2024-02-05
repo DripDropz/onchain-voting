@@ -90,7 +90,7 @@ class BallotController extends Controller
      */
     public function viewRegistration(Request $request, Ballot $ballot)
     {
-        $ballot->load(['questions.choices', 'user_responses.choice']);
+        $ballot->load(['questions.choices', 'user_responses.choices']);
 
         return Inertia::modal('Ballot/Register')
             ->with([
