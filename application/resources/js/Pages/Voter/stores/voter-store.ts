@@ -68,7 +68,7 @@ export const useVoterStore = defineStore('voter', () => {
         const lucid = await ws.lucidInstance();
         let txHash = voterRegistrations.value[ballotHash].registration.txHash
         if (txHash) {
-            confirmedOnChain.value = await lucid.awaitTx(txHash, 500)
+            confirmedOnChain.value = await lucid.awaitTx(txHash, 2000)
         }
     }
 

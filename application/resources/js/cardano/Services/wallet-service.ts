@@ -1,5 +1,5 @@
 // @ts-nocheck
-import {Blockfrost, Lucid, Tx, toHex,C} from '@lucid-cardano';
+import {Blockfrost, Lucid, Tx, toHex, C} from '@lucid-cardano';
 import BlockfrostKeysService from './BlockfrostKeysService';
 import CardanoWallet from "@/cardano/interface/Wallets";
 import AlertService from '@/shared/Services/alert-service';
@@ -20,8 +20,7 @@ export default class WalletService {
         this.walletName = walletName;
     }
 
-    public async lucidInstance()
-    {
+    public async lucidInstance() {
         if (!this.lucid || typeof this.lucid === 'undefined') {
             await this.init();
         }
@@ -60,29 +59,27 @@ export default class WalletService {
         return <string>await this.api.signData(addresses[0], msg);
     }
 
-    public async expiredTx(wallet, assets , stakeAddr)
-    {
+    public async expiredTx(wallet, assets, stakeAddr) {
         await this.init(wallet);
         if (!this.api) {
             return;
         }
 
         const addr = await this.getAddress(wallet)
-        return await new Tx(this.lucid).payToAddress(addr,assets).validTo(Date.now() - 1000000).addSigner(stakeAddr).complete();
+        return await new Tx(this.lucid).payToAddress(addr, assets).validTo(Date.now() - 1000000).addSigner(stakeAddr).complete();
     }
 
     public async addressFromHexOrBech32(address: string) {
         try {
             return C.Address.from_bytes(fromHex(address));
-        }
-        catch (_e) {
+        } catch (_e) {
             try {
                 return C.Address.from_bech32(address);
-            }
-            catch (_e) {
+            } catch (_e) {
                 throw new Error("Could not deserialize address.");
             }
-    }}
+        }
+    }
 
     public async connectWallet(wallet: string) {
         try {

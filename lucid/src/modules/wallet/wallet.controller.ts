@@ -18,7 +18,7 @@ export class WalletController {
     }
 
     @Post('get-policy')
-    public async mintPolicy(@Req() request: Request) {
+    public async mintPolicy(@Req() request: Request) {        
         const [lucid] = await this.configService.getConfigs(request);
         lucid.selectWalletFromSeed(request?.body?.seed);
         return (await this.getPolicy(lucid));

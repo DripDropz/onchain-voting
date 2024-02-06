@@ -93,10 +93,12 @@ let signUser = async () => {
             walletData.value?.stakeAddress,
             props.baseUrl);
     }
-    // router.reload();
     close();
-    router.visit(props?.baseUrl, {
-        preserveScroll: true,
-    });
+    router.reload();
+    // close();
+    // router.visit(props?.baseUrl, {
+    //     preserveScroll: true,
+    //     preserveState: false
+    // });
 }
 </script>

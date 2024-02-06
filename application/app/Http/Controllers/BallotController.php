@@ -182,11 +182,24 @@ class BallotController extends Controller
             fn($exception) => $exception instanceof FatalRequestException
         );
 
-
         if (!isset($response->json()[0]['tx_hash'])) {
             return null;
         }
-        return $response->json()[0]['tx_hash'];
+
+
+        $blockFrostRequest->setEndPoint("/txs/{$response->json()[0]['tx_hash']}");
+        $response = $blockfrostConn->sendAndRetry(
+            $blockFrostRequest,
+            2,
+            300,
+            fn ($exception) => $exception instanceof FatalRequestException
+        );
+
+        if (!isset($response->json()['hash'])) {
+            return null;
+        }
+
+        return $response->json()['hash'];
     }
 
     public function policyId(Request $request, Ballot $ballot, string $policyType)
@@ -285,14 +298,14 @@ class BallotController extends Controller
     public function saveUpdateRegistration(Request $request, Ballot $ballot)
     {
         $user = Auth::user();
-        $registration = Registration::where('user_id', $user->id)
+        $reg = Registration::where('user_id', $user->id)
             ->where('ballot_id', $ballot->id)
             ->first();
 
-        if ($registration instanceof Registration) {
-            $registration->registration_tx = $request->registration_tx;
+        if ($reg instanceof Registration) {
+            $reg->registration_tx = $request->registration_tx;
 
-            $registration->save();
+            $reg->save();
         } else {
             $reg = new Registration();
             $reg->user_id = $user->id;
@@ -303,6 +316,8 @@ class BallotController extends Controller
 
             $reg->save();
         }
+
+        return $reg->ballot;
     }
 
     public function completeVoting(Request $request, Ballot $ballot): LaravelResponse

@@ -87,6 +87,7 @@
                             </template>
                         </Tooltip>
                     </div>
+
                     <div class="flex flex-col items-center justify-end gap-4">
                         <div
                             class="relative bg-sky-700 shadow-sm rounded-lg py-5 xl:px-6 xl:py-8 w-full lg:w-auto lg:min-w-[36rem] max-w-md flex flex-row h-auto">
@@ -105,7 +106,7 @@
 <script lang="ts" setup>
 import BallotData = App.DataTransferObjects.BallotData;
 import Line from "@/Pages/Partials/Line.vue";
-import {Link, usePage} from "@inertiajs/vue3";
+import {Link, router, usePage} from "@inertiajs/vue3";
 import BallotStatusBadge from "@/Pages/Auth/Ballot/Partials/BallotStatusBadge.vue";
 import BallotQuestionCard from "@/Pages/Ballot/Partials/BallotQuestionCard.vue";
 import {useWalletStore} from "@/cardano/stores/wallet-store";
@@ -138,7 +139,6 @@ voterStore.loadRegistration(props.ballot.hash).then(() => {
     registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
 });
 
-// let userResponses$ = ref<null | BallotResponseData[]>(props.ballot?.user_responses);
 const ballot$ = ref<BallotData>(props.ballot);
 const userResponses$ = ref<Record<string, BallotResponseData>>(
     props?.ballot?.user_responses?.reduce((acc, response) => {
@@ -238,8 +238,9 @@ async function saveBallotResponse(response: BallotResponseData) {
 
 async function submitToChain() {
     savingResponse.value = true;
-    const data = await BallotService.submitVote(props.ballot.hash);
+    await BallotService.submitVote(props.ballot.hash);
     savingResponse.value = false;
+    window.location.reload();
 }
 
 

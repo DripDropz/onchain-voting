@@ -53,6 +53,7 @@
                         </span>
                     </div>
                 </template>
+
                 <template v-else>
                     <p class="p-3 text-sm font-semibold text-white">
                         Your vote have been successfully recorded on chain.
