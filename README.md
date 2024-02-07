@@ -62,15 +62,17 @@ Please see [LICENSE](LICENSE.md) for the full details of the license.
 ### Pre-requisites
 * Make sure you have docker installed and running. 
 * Make sure you have make installed.
+* Have sed installed
+* Have your blockfrost project id ready to paste into your terminal
 
 
 ### Get up and running
 1) Clone this repository: `git clone https://github.com/DripDropz/onchain-voting.git`    
 2) cd into the project directory: `cd onchain-voting`   
-3) Run `cp ./application/.env.example ./application/.env`
-4) Run `make init` to install all frontend and backend dependencies and start the docker services.
-5) Run `make watch` to start the vite dev server and watch for changes.
-6) Navigate to `http://localhost:8080` in your browser.         
+3) Run `make init` to install all frontend and backend dependencies and start the docker services.
+4) Run `make vite` to start the vite dev server and watch for changes.
+5) When vite is up, In a separate terminal from the project root run `make wasm` to get wasm and vite to play nice.
+6) Navigate to `http://localhost:8080/admin/dashboard` in your browser.         
 
 
 # Makefile Commands

@@ -10,11 +10,20 @@ init:
           --volume ${PWD}/application:/app \
           composer install --ignore-platform-reqs
 	sudo chown -R $(id -u -n):$(id -g -n) ${PWD}/application/vendor
+	cp application/.env.example application/.env
+	@echo "Enter your blockfrost project:" && \
+ 		cd application && \
+ 		read bpid && \
+		sed -i '' "s/blockfrost_project_id/$${bpid}/" .env && \
+		cd ../
 	make up
 	sleep 20
 	make -j2 backend-install frontend-install
 	$(sail) artisan key:generate
-	make setup-db
+	make migrate
+	$(sail) artisan ciphersweet:generate-key
+	$(sail) artisan db:seed --class=RoleSeeder
+	$(sail) artisan db:seed --class=AdminUserSeeder
 
 .PHONY: backend-install
 backend-install:
