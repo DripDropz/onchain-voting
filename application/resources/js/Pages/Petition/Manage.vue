@@ -4,7 +4,7 @@
         :crumbs="crumbs"
         :actions="actions" >
         <div class="w-full">
-            <div class="sticky top-0 w-full p-6 bg-white dark:bg-gray-900 dark:text-white">
+            <div class="sticky top-0 w-full p-6 dark:text-white">
                 <div class="container flex justify-center w-full pb-3">
                     <p class="text-xl font-bold leading-tight xl:text-2xl">{{ petition.title }}</p>
                 </div>
