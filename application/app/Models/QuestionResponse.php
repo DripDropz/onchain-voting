@@ -60,6 +60,11 @@ class QuestionResponse extends Model implements \OwenIt\Auditing\Contracts\Audit
         return $this->belongsTo(Question::class);
     }
 
+    /**
+     * The separate table facilitates rank choice question where a
+     * response can have more than choices
+     * @return BelongsToMany
+     */
     public function choices(): BelongsToMany
     {
         return $this->belongsToMany(QuestionChoice::class, 'question_responses_question_choices');

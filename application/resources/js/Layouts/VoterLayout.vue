@@ -51,7 +51,7 @@ let {isDarkMode, showModal } = storeToRefs(configStore);
                     </div>
                 </nav>
 
-                <main class="z-10 flex flex-1">
+                <main class="z-10 flex flex-col flex-1 w-full">
                     <slot/>
                 </main>
 

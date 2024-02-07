@@ -27,12 +27,8 @@
 
             <div class="lg:w-[30%]">
                 <div v-if="!petition?.ballot">
-                    <Link :href="route('petitions.manage', { petition: petition.hash })
-                        ">
-                    <PrimaryButton v-if="user && user.hash === petition.user.hash" :theme="'primary'" class="w-full">
-                        Manage This Petition
-                    </PrimaryButton>
-                    </Link>
+                    <Link :href="route('petitions.manage', { petition: petition.hash })"></Link>
+
                     <SignatureProgress />
 
                     <SignPetitionForm :signature="signature" :petition="petition" :user="user" />

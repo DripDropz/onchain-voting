@@ -109,6 +109,14 @@ class Ballot extends Model implements Auditable, HasUser
             ->where('model_type', static::class);
     }
 
+    public function user_responses(): HasMany
+    {
+        return $this->responses()->where(
+            'user_id',
+            auth()?->user()?->getAuthIdentifier()
+        );
+    }
+
     public function snapshot(): HasOne
     {
         return $this->hasOne(Snapshot::class);
@@ -135,14 +143,6 @@ class Ballot extends Model implements Auditable, HasUser
     public function petition(): HasMany
     {
         return $this->hasMany(Petition::class, 'ballot_id');
-    }
-
-    public function user_responses(): HasMany
-    {
-        return $this->responses()->where(
-            'user_id',
-            auth()?->user()?->getAuthIdentifier()
-        );
     }
 
     public function policies(): HasMany

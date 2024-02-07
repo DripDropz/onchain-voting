@@ -1,15 +1,15 @@
 <template>
-    <VoterLayout 
-                page="Petition"
-                :crumbs="crumbs"
-                :actions="actions">
-      <section class="py-12 m-auto">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8"> 
+    <VoterLayout
+        page="Petition"
+        :crumbs="crumbs"
+        :actions="actions">
+        <section class="py-12 w-full">
+            <div class="inner-container">
                 <PetitionSingle
-                   :key="petition.hash"
-                   :petition="petition"
-                   :signature="signature"
-                 />
+                    :key="petition.hash"
+                    :petition="petition"
+                    :signature="signature"
+                />
             </div>
         </section>
     </VoterLayout>
@@ -25,7 +25,7 @@ defineProps<{
     petition: PetitionData;
     crumbs: [];
     actions: []
-    signature:SignatureData;
+    signature: SignatureData;
 }>();
 
 </script>

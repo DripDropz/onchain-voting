@@ -69,6 +69,8 @@ let criteria = computed(() => [
 
 let criteriaRef = ref(criteria.value);
 
+const emit = defineEmits(['update'])
+
 let saveRule = (value, criteria, index) => {
     criteriaRef.value[index].loading = true;
     criteriaRef.value[index].updated = true;
@@ -87,6 +89,7 @@ let saveRule = (value, criteria, index) => {
             })
             .finally(() => {
                 criteriaRef.value[index].loading = false;
+                emit('update')
             })
     }, 2000)
 }

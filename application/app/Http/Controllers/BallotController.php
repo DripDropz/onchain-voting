@@ -68,6 +68,7 @@ class BallotController extends Controller
             'user_responses.choices'
         ]);
         $ballot->questions = $questions;
+//        dd($ballot->toArray());
         $crumbs = [
             [
                 'label' => 'Ballots',

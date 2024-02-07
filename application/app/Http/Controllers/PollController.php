@@ -70,7 +70,27 @@ class PollController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Poll/Create');
+        $crumbs = [
+            [
+                'label' => 'Polls',
+                'link' => route('polls.index')
+            ],
+            [
+                'label' => 'Create Poll',
+                'link' => route('polls.create')
+            ],
+        ];
+
+        $actions = [
+            [
+                'label' => Auth::check() ? 'Create poll' : ' Login to create poll',
+                'link' => Auth::check() ? route('polls.create') : route('login.email')
+            ],
+        ];
+        return Inertia::render(
+            'Poll/Create',
+            compact('crumbs', 'actions')
+        );
     }
 
     /**

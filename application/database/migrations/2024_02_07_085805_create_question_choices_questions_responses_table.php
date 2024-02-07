@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('question_responses_question_choices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('question_response_id')->constrained('ballot_responses');
-            $table->foreignId('question_choice_id')->constrained('ballot_question_choices');
+            $table->foreignId('question_choice_id')->constrained('question_choices')->cascadeOnDelete();
+            $table->foreignId('question_response_id')->constrained('question_responses')->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ballot_responses_ballot_question_choices');
+        Schema::dropIfExists('question_responses_question_choices');
     }
 };

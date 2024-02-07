@@ -58,7 +58,7 @@
                                     <Criteria :model="petition" />
                                 </div>
                                 <div>
-                                    <TallyCriteria :model="petition" />
+                                    <TallyCriteria :model="petition" @update="()=>router.reload()" />
                                 </div>
                             </div>
                         </div>
@@ -77,12 +77,13 @@
                     Approve
                 </button>
                 <Link :href="route('admin.petitions.toBallot', { petition: petition.hash })"
-                    v-if="petition.status === 'approved'" :disabled="petition.status != 'approved'" :class="{
-                        'cursor-not-allowed bg-slate-300': petition.status != 'approved',
-                        'bg-sky-400 hover:bg-sky-600': petition.status == 'approved',
+                    v-if="petition.status === 'approved'  " :disabled="petition.status != 'approved' || !moveToBallot" :class="{
+                        'cursor-not-allowed bg-slate-400 px-2': petition.status != 'approved'|| !moveToBallot,
+                        'bg-sky-400 hover:bg-sky-600 py-2.5 px-8': petition.status == 'approved' && moveToBallot,
+
                     }"
-                    class="inline-flex items-center gap-x-2 rounded-md px-8 py-2.5  font-semibold text-white shadow-sm ">
-                Move to Ballot
+                    class="inline-flex items-center gap-1 font-semibold text-white rounded-md shadow-sm">
+                 <span>Move to Ballot</span><span v-if="!moveToBallot" class="text-xs">- goal(s) unmet</span>
                 </Link>
             </div>
             <div class="flex items-center gap-5" v-else>
@@ -106,7 +107,7 @@ import PetitionData = App.DataTransferObjects.PetitionData;
 import moment from 'moment-timezone';
 import Criteria from '@/shared/components/Criteria.vue';
 import TallyCriteria from "@/shared/components/TallyCriteria.vue"
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 import Breadcrumbs from "@/Pages/Auth/Breadcrumbs.vue";
 import AlertService from '@/shared/Services/alert-service';
 import { useConfigStore } from '@/stores/config-store';
@@ -114,6 +115,8 @@ import { storeToRefs } from 'pinia';
 import { Link } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/20/solid';
+import { computed } from 'vue';
+import compareValues from '@/utils/compare-values';
 
 const props = defineProps<{
     petition: PetitionData;
@@ -126,6 +129,12 @@ const form = useForm({
 
 let configStore = useConfigStore()
 let { showModal } = storeToRefs(configStore);
+
+let moveToBallot = computed(() => {
+    const minSignatureReq = props.petition.petition_goals['ballot-eligible']?.['value2'];
+    const operator = props.petition.petition_goals['ballot-eligible']?.['operator'];
+    return compareValues(props.petition.signatures_count, minSignatureReq, operator)
+})
 
 let handleFileChange = (event) => {
     const fileInput = event.target;

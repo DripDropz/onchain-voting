@@ -80,9 +80,6 @@ class PetitionController extends Controller
 
     public function update(Request $request, Petition $petition, Ballot $ballot,)
     {
-        $ballotEligible = intval($petition->petition_goals['ballot-eligible']['value2']);
-        $operator = $petition->petition_goals['ballot-eligible']['operator'];
-        $canMoveToBallot = compare_values($petition->signatures_count, $ballotEligible, $operator);
 
         switch ($request->status) {
             case 'approved':
@@ -91,6 +88,9 @@ class PetitionController extends Controller
                 ]);
                 break;
             case 'ballot':
+                $ballotEligible = intval($petition->petition_goals['ballot-eligible']['value2']);
+                $operator = $petition->petition_goals['ballot-eligible']['operator'];
+                $canMoveToBallot = compare_values($petition->signatures_count, $ballotEligible, $operator);
                 DB::beginTransaction();
                 try {
                     // Create ballot

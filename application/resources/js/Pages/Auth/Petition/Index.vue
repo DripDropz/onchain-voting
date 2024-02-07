@@ -17,10 +17,10 @@
                                     </a>
                                 </li>
                             </ul>
-                            <div>
-                                <button
-                                    class="px-8 py-2 mb-2 font-semibold text-black transition duration-300 ease-in-out border border-black rounded-lg dark:border-white dark:text-white hover:bg-gray-200">Settings</button>
-                            </div>
+<!--                            <div>-->
+<!--                                <button-->
+<!--                                    class="px-8 py-2 mb-2 font-semibold text-black transition duration-300 ease-in-out border border-black rounded-lg dark:border-white dark:text-white hover:bg-gray-200">Settings</button>-->
+<!--                            </div>-->
                         </div>
 
                         <div v-if="currentTab === 'all'">
@@ -86,7 +86,7 @@
         </section>
     </AuthenticatedLayout>
 </template>
-    
+
 <script lang="ts" setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PetitionListAdmin from "@/Pages/Auth/Petition/Partials/PetitionListAdmin.vue"
