@@ -62,7 +62,8 @@
                     <RegisterToVote v-if="loggedIn && !registeredToVote && !voteRecordedOnChain && isBallotOpen"
                                     :ballot="ballot$"
                                     :hasVotingPower="(voterPower !== '-')"/>
-                    <ConfirmingOnchainVue v-if="!confirmedOnchain && registeredToVote"/>
+
+                    <ConfirmingOnChainVue v-if="!confirmedOnChain && registeredToVote"/>
                 </div>
 
                 <div class="flex flex-col h-full gap-10 px-4 pt-1">
@@ -86,6 +87,7 @@
                             </template>
                         </Tooltip>
                     </div>
+
                     <div class="flex flex-col items-center justify-end gap-4">
                         <div
                             class="relative bg-sky-700 shadow-sm rounded-lg py-5 xl:px-6 xl:py-8 w-full lg:w-auto lg:min-w-[36rem] max-w-md flex flex-row h-auto">
@@ -104,7 +106,7 @@
 <script lang="ts" setup>
 import BallotData = App.DataTransferObjects.BallotData;
 import Line from "@/Pages/Partials/Line.vue";
-import {Link, usePage} from "@inertiajs/vue3";
+import {Link, router, usePage} from "@inertiajs/vue3";
 import BallotStatusBadge from "@/Pages/Auth/Ballot/Partials/BallotStatusBadge.vue";
 import BallotQuestionCard from "@/Pages/Ballot/Partials/BallotQuestionCard.vue";
 import {useWalletStore} from "@/cardano/stores/wallet-store";
@@ -118,7 +120,7 @@ import Tooltip from "./Tooltip.vue";
 import ConnectWalletToVote from "@/Pages/Ballot/Partials/ConnectWalletToVote.vue";
 import {useVoterStore} from "@/Pages/Voter/stores/voter-store";
 import BallotService from "@/Pages/Ballot/Services/ballot-service";
-import ConfirmingOnchainVue from "./ConfirmingOnchain.vue";
+import ConfirmingOnChainVue from "./ConfirmingOnChain.vue";
 
 const registeredToVote = ref(false);
 const user = usePage().props.auth.user;
@@ -131,13 +133,12 @@ const props = withDefaults(defineProps<{
 
 const voterStore = useVoterStore();
 const {voterRegistrations} = storeToRefs(voterStore);
-const { confirmedOnchain } = storeToRefs(voterStore);
+const { confirmedOnChain } = storeToRefs(voterStore);
 
 voterStore.loadRegistration(props.ballot.hash).then(() => {
     registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
 });
 
-// let userResponses$ = ref<null | BallotResponseData[]>(props.ballot?.user_responses);
 const ballot$ = ref<BallotData>(props.ballot);
 const userResponses$ = ref<Record<string, BallotResponseData>>(
     props?.ballot?.user_responses?.reduce((acc, response) => {
@@ -183,7 +184,7 @@ if (props.ballot.hash) {
 
 watch([()=>voterRegistrations.value], () => {
     registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
-    voterStore.onchainConfirmation(props.ballot.hash);
+    voterStore.onChainConfirmation(props.ballot.hash);
 },{deep:true})
 
 async function saveBallotResponse(response: BallotResponseData) {
@@ -237,8 +238,9 @@ async function saveBallotResponse(response: BallotResponseData) {
 
 async function submitToChain() {
     savingResponse.value = true;
-    const data = await BallotService.submitVote(props.ballot.hash);
+    await BallotService.submitVote(props.ballot.hash);
     savingResponse.value = false;
+    window.location.reload();
 }
 
 

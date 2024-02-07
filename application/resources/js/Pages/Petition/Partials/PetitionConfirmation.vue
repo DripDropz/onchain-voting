@@ -28,15 +28,31 @@
                 ref="cancelButtonRef">
                 Nevermind
             </button>
-            <Link :href="route('petitions.create')"
-                  class="inline-flex justify-center rounded-md bg-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:col-start-2"
-            >
+            <button @click.prevent="createPetition" class="inline-flex justify-center rounded-md bg-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:col-start-2">
                 Yes, that works
-            </Link>
+            </button>
         </div>
     </div>
 </template>
 <script setup lang="ts">
+import AlertService from '@/shared/Services/alert-service';
 import {SignalIcon} from '@heroicons/vue/24/outline'
-import {Link} from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+const emit = defineEmits(['close']);
+
+function createPetition(){
+    if(!user.value){
+        emit('close');
+        AlertService.show(["Login to create a petition."], "info");
+        setTimeout(() => { router.visit(route('login.wallet')) }, 1000);
+        return
+    } else {
+        router.visit(route('petitions.create'));
+        emit('close');
+    }
+}
 </script>

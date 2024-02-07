@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Saloon\Exceptions\Request\FatalRequestException;
+use Saloon\Exceptions\Request\RequestException;
 
 class WalletLoginController extends Controller
 {
@@ -53,6 +55,10 @@ class WalletLoginController extends Controller
         return Redirect::back()->withErrors(['error' => 'Credentials mismatch']);
     }
 
+    /**
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
     public function txLogin(Request $request)
     {
         $this->authenticateWallet = new AuthenticateWallet;
@@ -64,7 +70,7 @@ class WalletLoginController extends Controller
 
         $response = $this->connector->send($this->authenticateWallet);
 
-        if ($response) {
+        if ($response->successful()) {
             return $this->authenticate($request);
         }
 

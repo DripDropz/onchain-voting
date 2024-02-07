@@ -1,8 +1,7 @@
 import {Controller, Inject, Post, Req} from '@nestjs/common';
-import {PolicyId, Tx, TxComplete, fromText} from 'lucid-cardano';
+import {PolicyId, TxComplete, fromText} from 'lucid-cardano';
 import {Request} from 'express';
 import generatePolicy from '../../utils/generatePolicy.js';
-import _ from 'lodash';
 import {AppConfigService} from '../../services/app-config.service.js';
 
 @Controller('registration')

@@ -1,10 +1,13 @@
 <template>
-    <VoterLayout page="Petitions">
-        <template #header>
-            <NavCrumbs :crumbs="props.crumbs"/>
-        </template>
+    <VoterLayout
+        page="Petitions"
+        :crumbs="crumbs"
+        :actions="[{
+                    label: 'Create Petition',
+                    clickAction:'showModal'
+                }]">
         <section class="w-full py-12 mx-auto">
-            <div class="inner-container sm:px-6 lg:px-8">
+            <div class="inner-container">
                 <div class="sm:rounded-lg">
                     <h2 class="mb-8 text-2xl font-bold leading-tight text-center text-gray-800 xl:text-4xl dark:text-gray-200">
                         Petitions
@@ -31,13 +34,6 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div>
-                                <button
-                                    v-if="user" @click.prevent="showModal = true"
-                                    class="px-8 py-2 mb-2 font-semibold text-white rounded-lg bg-sky-500 hover:bg-slate-600 hover:cursor-pointer">
-                                    New
-                                </button>
-                            </div>
                         </div>
 
                         <div class="tab-content">
@@ -48,6 +44,7 @@
                                             <PetitionList v-if="petitions" :petitions="drafts"
                                                           :currentTab="currentTab"/>
                                         </div>
+
                                         <div v-else class="flex flex-col items-center justify-center h-[500px] gap-16">
                                             <p class="text-2xl font-bold text-center">No petitions</p>
 
@@ -58,6 +55,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <div v-else-if="currentTab === 'pending'">
                                     <div v-if="filteredPetitions.length > 0">
                                         <PetitionList v-if="petitions" :petitions="pending" :currentTab="currentTab"/>
@@ -87,7 +85,7 @@
                             </template>
                             <div v-else class="py-16">
                                 <LoginToView>
-                                    <span> Login to view your {{currentTab}} petitions.</span>
+                                    <span> Login to view your {{ currentTab }} petitions.</span>
                                 </LoginToView>
                             </div>
                         </div>
@@ -95,7 +93,7 @@
                 </div>
             </div>
             <Modal :show="showModal">
-                <PetitionConfirmation @close="showModal = false"></PetitionConfirmation>
+                <PetitionConfirmation @close="showModal = false"/>
             </Modal>
         </section>
     </VoterLayout>
@@ -111,19 +109,22 @@ import {usePage} from '@inertiajs/vue3';
 import Modal from '@/Components/Modal.vue';
 import PetitionConfirmation from './Partials/PetitionConfirmation.vue';
 import LoginToView from "@/shared/components/LoginToView.vue";
-import NavCrumbs from '../NavCrumbs.vue';
+import {useConfigStore} from '@/stores/config-store';
+import {storeToRefs} from 'pinia';
 
 const page = usePage();
 
 const currentTab = ref('drafts');
 
-let showModal = ref(false);
+let configStore = useConfigStore();
+let {showModal} = storeToRefs(configStore);
 
 const props = withDefaults(defineProps<{
     petitions: PetitionData[];
     signedPetitions: PetitionData[];
     currentTab?: string;
-    crumbs: []
+    crumbs: [];
+    actions: []
 }>(), {});
 
 const user = computed(() => page.props.auth.user);

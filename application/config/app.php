@@ -15,17 +15,60 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Open Chainvote'),
+    'name' => env('APP_NAME', 'Chainvote'),
 
-    'power_by' => env('APP_POWER_BY', 'Open Chainvote'),
+       /*
+    |--------------------------------------------------------------------------
+    | Powered By
+    |--------------------------------------------------------------------------
+    |
+    | This value specifies the "powered by" information for your application.
+    | It can be used to display information about the technology behind your app.
+    |
+    */
+
+    'powered_by' => env('APP_POWERED_BY', 'Chainvote'),
+
+    'feature_flags'=>[
+        'ballots'=> env('FEATURE_BALLOT',true),
+        'petitions'=> env('FEATURE_PETITION',true),
+        'polls'=> env('FEATURE_POLL',true),
+    ],
 
     'cardano_network' => env('CARDANO_NETWORK', 0),
 
     'logo' => env('APP_LOGO'),
 
-    'hosted_by' => env('HOSTED_BY', 'Open Chainvote'),
+    /*
+    |--------------------------------------------------------------------------
+    | Hosted By
+    |--------------------------------------------------------------------------
+    |
+    | This value specifies the hosting information for your application.
+    |
+    */
+
+    'hosted_by' => env('HOSTED_BY', null),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Hosted By Link
+    |--------------------------------------------------------------------------
+    |
+    | This value specifies the link to the hosting provider's website.
+    |
+    */
 
     'hosted_by_link' => env('HOSTED_BY_LINK', null),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Show Created By
+    |--------------------------------------------------------------------------
+    |
+    | This value determines whether to show the "created by" information.
+    |
+    */
 
     'show_created_by' => env('SHOW_CREATED_BY', true),
 

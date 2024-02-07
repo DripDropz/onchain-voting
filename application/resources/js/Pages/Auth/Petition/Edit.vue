@@ -36,10 +36,12 @@
                             <div class="flex flex-col">
                                 <div class="flex flex-col mb-8">
                                     <span class="text-xl leading-tight xl:text-2xl">
-                                        {{ petition.user.name }}
+                                        {{ petition?.user?.name }}
                                     </span>
                                     <span class="text-sm text-slate-500">
-                                        Started this petition on {{ moment(petition.created_at).format("Do MMMM YYYY") }}
+                                        Started this petition on {{
+                                            moment(petition.created_at).format("Do MMMM YYYY")
+                                        }}
                                     </span>
                                 </div>
                                 <div class="p-2 border border-gray-300 sm:rounded-lg dark:border-gray-600">
@@ -56,7 +58,7 @@
                                     <Criteria :model="petition" />
                                 </div>
                                 <div>
-                                    <TallyCriteria :model="petition"/>
+                                    <TallyCriteria :model="petition" @update="()=>router.reload()" />
                                 </div>
                             </div>
                         </div>
@@ -64,26 +66,37 @@
                 </div>
             </div>
         </div>
-        <div
-            class="sticky bottom-0 flex justify-end gap-5 px-16 bg-white sm:p-8 dark:bg-gray-800 sm:rounded-lg dark:text-white ">
-            <button
-                class="inline-flex items-center gap-x-2 rounded-md bg-white px-8 py-2.5 font-semibold text-sky-400 shadow-sm hover:bg-sky-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 border border-sky-400">
-                Reject
-            </button>
-            <button
-            v-if="props.petition.status !== 'approved'"
-               @click="approve"
-               class="inline-flex items-center gap-x-2 rounded-md bg-sky-400 px-8 py-2.5 font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
-              >
-                Approve
-           </button>
-    <button
-    v-if="props.petition.status === 'approved'"
-    :disabled="props.petition.status !== 'approved'"
-    class="inline-flex items-center gap-x-2 rounded-md bg-slate-300 px-8 py-2.5 font-semibold text-white shadow-sm cursor-not-allowed"
->
-    Move to Ballot
-</button>
+        <div class="sticky bottom-0 flex justify-end px-16 bg-white sm:p-8 dark:bg-gray-800 sm:rounded-lg dark:text-white ">
+            <div class="flex gap-5" v-if="!petition.ballot">
+                <button
+                    class="inline-flex items-center gap-x-2 rounded-md bg-white px-8 py-2.5 font-semibold text-sky-400 shadow-sm hover:bg-sky-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 border border-sky-400">
+                    Reject
+                </button>
+                <button v-if="petition.status !== 'approved'" @click="approve"
+                    class="inline-flex items-center gap-x-2 rounded-md bg-sky-400 px-8 py-2.5 font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">
+                    Approve
+                </button>
+                <Link :href="route('admin.petitions.toBallot', { petition: petition.hash })"
+                    v-if="petition.status === 'approved'  " :disabled="petition.status != 'approved' || !moveToBallot" :class="{
+                        'cursor-not-allowed bg-slate-400 px-2': petition.status != 'approved'|| !moveToBallot,
+                        'bg-sky-400 hover:bg-sky-600 py-2.5 px-8': petition.status == 'approved' && moveToBallot,
+
+                    }"
+                    class="inline-flex items-center gap-1 font-semibold text-white rounded-md shadow-sm">
+                 <span>Move to Ballot</span><span v-if="!moveToBallot" class="text-xs">- goal(s) unmet</span>
+                </Link>
+            </div>
+            <div class="flex items-center gap-5" v-else>
+                <span class="font-bold">Petition moved to ballot</span>
+                <Link :href="route('ballot.view', { ballot: petition.ballot.hash })">
+                <PrimaryButton :theme="'primary'">
+                    view ballot
+                    <ArrowTopRightOnSquareIcon class="w-5 h-5" />
+                </PrimaryButton>
+                </Link>
+
+            </div>
+
         </div>
     </AuthenticatedLayout>
 </template>
@@ -94,10 +107,16 @@ import PetitionData = App.DataTransferObjects.PetitionData;
 import moment from 'moment-timezone';
 import Criteria from '@/shared/components/Criteria.vue';
 import TallyCriteria from "@/shared/components/TallyCriteria.vue"
-import { ref } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 import Breadcrumbs from "@/Pages/Auth/Breadcrumbs.vue";
 import AlertService from '@/shared/Services/alert-service';
+import { useConfigStore } from '@/stores/config-store';
+import { storeToRefs } from 'pinia';
+import { Link } from '@inertiajs/vue3';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/20/solid';
+import { computed } from 'vue';
+import compareValues from '@/utils/compare-values';
 
 const props = defineProps<{
     petition: PetitionData;
@@ -108,7 +127,14 @@ const form = useForm({
     status: props?.petition?.status ?? 'draft',
 });
 
+let configStore = useConfigStore()
+let { showModal } = storeToRefs(configStore);
 
+let moveToBallot = computed(() => {
+    const minSignatureReq = props.petition.petition_goals['ballot-eligible']?.['value2'];
+    const operator = props.petition.petition_goals['ballot-eligible']?.['operator'];
+    return compareValues(props.petition.signatures_count, minSignatureReq, operator)
+})
 
 let handleFileChange = (event) => {
     const fileInput = event.target;
@@ -118,10 +144,10 @@ let handleFileChange = (event) => {
 
 const approve = () => {
     form.status = 'approved';
-    if (form.status === 'approved') {
-        AlertService.show(['Petition Approved Successfully'], 'success');
-        form.patch(route('admin.petitions.update', { petition: props.petition?.hash }));
-    }
+    AlertService.show(['Petition Approved Successfully'], 'success');
+    form.patch(route('admin.petitions.update', { petition: props.petition?.hash }));
 }
+
+
 
 </script>

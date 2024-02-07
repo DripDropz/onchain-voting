@@ -8,7 +8,6 @@ use App\Models\Question;
 use App\Models\Snapshot;
 use App\Models\QuestionChoice;
 use Illuminate\Database\Seeder;
-use App\Models\BallotQuestionChoice;
 
 class BallotSeeder extends Seeder
 {
@@ -19,6 +18,7 @@ class BallotSeeder extends Seeder
     {
         Ballot::factory(15)
             ->recycle(User::factory()->count(1), 'user')
+            ->has(Snapshot::factory()->count(1), 'snapshot')
             ->has(
                 Question::factory(7)
                     ->recycle(

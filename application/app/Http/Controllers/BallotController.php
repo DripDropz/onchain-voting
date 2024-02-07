@@ -62,10 +62,13 @@ class BallotController extends Controller
                 'model_id' => $ballot->id,
                 'model_type' => $ballot::class,
             ])->get()->append('choices_tally');
+
+
         $ballot->load([
             'user_responses.choices'
         ]);
         $ballot->questions = $questions;
+//        dd($ballot->toArray());
         $crumbs = [
             [
                 'label' => 'Ballots',
@@ -88,7 +91,7 @@ class BallotController extends Controller
      */
     public function viewRegistration(Request $request, Ballot $ballot)
     {
-        $ballot->load(['questions.choices', 'user_responses.choice']);
+        $ballot->load(['questions.choices', 'user_responses.choices']);
 
         return Inertia::modal('Ballot/Register')
             ->with([
@@ -99,7 +102,6 @@ class BallotController extends Controller
 
     /**
      * Display the ballot's form.
-     * @throws \Saloon\Exceptions\Request\FatalRequestException
      */
     public function startRegistration(Request $request, Ballot $ballot): LaravelResponse
     {
@@ -125,7 +127,7 @@ class BallotController extends Controller
             'metadata' => [
                 'name' => $ballot->title,
                 'image' => $ballot->registration_policy->image_link,
-                'Powered by' => config('app.power_by'),
+                'Powered by' => config('app.powered_by'),
                 'Cast Your Vote At' => config('app.url')
             ],
         ]);
@@ -144,10 +146,12 @@ class BallotController extends Controller
 
     public function checkExistingRegistration($address, $ballot)
     {
+        $blockFrostRequest = app(BlockfrostRequest::class);
         $blockfrostConn = new BlockfrostConnector();
-        $blockfrostReq = new BlockfrostRequest('/addresses/' . $address . '/total');
+        $blockFrostRequest->setEndPoint("/addresses/{$address}/total");
+
         $response = $blockfrostConn->sendAndRetry(
-            $blockfrostReq,
+            $blockFrostRequest,
             2,
             300,
             fn($exception) => $exception instanceof FatalRequestException
@@ -171,20 +175,32 @@ class BallotController extends Controller
             return null;
         }
 
-        $blockfrostReq = new BlockfrostRequest('/addresses/' . $address . '/utxos/' . $assetName);
-
+        $blockFrostRequest->setEndPoint("/addresses/{$address}/utxos/{$assetName}");
         $response = $blockfrostConn->sendAndRetry(
-            $blockfrostReq,
+            $blockFrostRequest,
             2,
             300,
             fn($exception) => $exception instanceof FatalRequestException
         );
 
-
         if (!isset($response->json()[0]['tx_hash'])) {
             return null;
         }
-        return $response->json()[0]['tx_hash'];
+
+
+        $blockFrostRequest->setEndPoint("/txs/{$response->json()[0]['tx_hash']}");
+        $response = $blockfrostConn->sendAndRetry(
+            $blockFrostRequest,
+            2,
+            300,
+            fn ($exception) => $exception instanceof FatalRequestException
+        );
+
+        if (!isset($response->json()['hash'])) {
+            return null;
+        }
+
+        return $response->json()['hash'];
     }
 
     public function policyId(Request $request, Ballot $ballot, string $policyType)
@@ -283,14 +299,14 @@ class BallotController extends Controller
     public function saveUpdateRegistration(Request $request, Ballot $ballot)
     {
         $user = Auth::user();
-        $registration = Registration::where('user_id', $user->id)
+        $reg = Registration::where('user_id', $user->id)
             ->where('ballot_id', $ballot->id)
             ->first();
 
-        if ($registration instanceof Registration) {
-            $registration->registration_tx = $request->registration_tx;
+        if ($reg instanceof Registration) {
+            $reg->registration_tx = $request->registration_tx;
 
-            $registration->save();
+            $reg->save();
         } else {
             $reg = new Registration();
             $reg->user_id = $user->id;
@@ -301,6 +317,8 @@ class BallotController extends Controller
 
             $reg->save();
         }
+
+        return $reg->ballot;
     }
 
     public function completeVoting(Request $request, Ballot $ballot): LaravelResponse
@@ -345,7 +363,6 @@ class BallotController extends Controller
     /**
      * Display missing snapshot modal.
      */
-
     public function missingSnapshot(Ballot $ballot)
     {
         return Inertia::modal('Ballot/MissingSnapshot')

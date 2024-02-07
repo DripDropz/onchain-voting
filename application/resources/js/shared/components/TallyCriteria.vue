@@ -8,7 +8,7 @@
                 <span class="mb-1 text-sm text-slate-500"> {{ criterion.name }}</span>
                 <label class="relative inline-flex items-center gap-3 cursor-pointer">
                     <input v-model="criterion.value2" @input="saveRule($event, criterion, index)"
-                        class="border-0 rounded w-28 focus:ring-0 dark:bg-gray-900 bg-sky-100">
+                        class="border-0 rounded w-28 focus:ring-0 dark:bg-gray-900 bg-sky-100" :readonly="!!model.ballot">
                     <div >
                         <div v-if="criterion.loading" class="flex flex-row items-center">
                             <spinner class="relative z-30" color="yellow" size="7" />
@@ -69,6 +69,8 @@ let criteria = computed(() => [
 
 let criteriaRef = ref(criteria.value);
 
+const emit = defineEmits(['update'])
+
 let saveRule = (value, criteria, index) => {
     criteriaRef.value[index].loading = true;
     criteriaRef.value[index].updated = true;
@@ -87,8 +89,9 @@ let saveRule = (value, criteria, index) => {
             })
             .finally(() => {
                 criteriaRef.value[index].loading = false;
+                emit('update')
             })
-    }, 1000)
+    }, 2000)
 }
 
 

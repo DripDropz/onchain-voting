@@ -30,7 +30,7 @@ class BallotData extends Data
         public string $title,
 
         #[TypescriptOptional]
-        #[StringType, Max(400)]
+        #[StringType, Max(1200)]
         public ?string $description,
 
         #[TypescriptOptional]

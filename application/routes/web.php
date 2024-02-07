@@ -1,11 +1,13 @@
 <?php
 
-use App\Http\Controllers\BallotController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\VoterController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PetitionController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PollController;
+use App\Http\Controllers\VoterController;
+use App\Http\Controllers\BallotController;
+use App\Http\Controllers\PetitionController;
+use App\Http\Integrations\Blockfrost\Requests\BlockfrostRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +23,7 @@ use App\Http\Controllers\PollController;
 Route::get('/', [HomeController::class, 'view'])->name('home');
 
 // Ballot
-Route::prefix('/ballots')->as('ballots.')->group(function () {
+Route::prefix('/ballots')->as('ballots.')->middleware('featureEnabled:ballot')->group(function () {
     Route::get('/', [BallotController::class, 'index'])->name('index');
 });
 
@@ -61,11 +63,11 @@ Route::prefix('/voters')->as('voters.')->group(function () {
 });
 
 // Petition
-Route::prefix('/petitions')->as('petitions.')->group(function () {
+Route::prefix('/petitions')->as('petitions.')->middleware('featureEnabled:petition')->group(function () {
     Route::get('/', [PetitionController::class, 'index'])
         ->name('index');
 
-    Route::prefix('/workflow')->group(function() {
+    Route::prefix('/workflow')->group(function () {
         Route::get('/create/{petition?}', [PetitionController::class, 'create'])->name('create');
         Route::get('/create/{petition}/step/1', [PetitionController::class, 'create'])->name('create.stepOne');
 
@@ -104,23 +106,34 @@ Route::prefix('/petitions')->as('petitions.')->group(function () {
     });
 
     Route::get('/{petition}', [PetitionController::class, 'view'])
-    ->name('view');
+        ->name('view');
 
     Route::get('/{petition}/share', [PetitionController::class, 'share'])
-    ->name('share');
+        ->name('share');
+
+    Route::post('/{petition}/publish', [PetitionController::class, 'publish'])
+        ->name('publish');
 });
 
 //Polls
-Route::prefix('/polls')->as('polls.')->group(function () {
+Route::prefix('/polls')->as('polls.')->middleware('featureEnabled:poll')->group(function () {
     Route::get('/', [PollController::class, 'index'])
         ->name('index');
     Route::get('/pollsData/{params?}', [PollController::class, 'pollsData'])->name('pollsData');
 
+    Route::get('/pollData/{poll}', [PollController::class, 'pollData'])->name('pollData');
+
+    Route::get('/userPollsData/{params?}', [PollController::class, 'userPollsData'])->name('userPollsData');
+
     Route::get('/create', [PollController::class, 'create'])
-    ->name('create');
+        ->name('create');
     Route::post('/create', [PollController::class, 'store'])
-    ->name('store');
+        ->name('store');
+
+    Route::post('/{poll}/store/question-response', [PollController::class, 'storeQuestionResponse'])->name('storeQuestionResponse');
 });
+
+
 
 
 require __DIR__ . '/admin.php';

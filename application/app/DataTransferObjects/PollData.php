@@ -29,6 +29,10 @@ class PollData extends Data
         #[Rule('string')]
         public ?string $description,
 
+        #[TypescriptOptional]
+        #[Rule('boolean')]
+        public ?bool $publish_on_chain,
+
         #[WithoutValidation]
         public ?UserData $user,
 
@@ -47,6 +51,14 @@ class PollData extends Data
 
         /** @var RuleData[] */
         public ?DataCollection $rules,
+
+        /** @var BallotData */
+        public ?BallotData $ballot,
+
+        #[TypescriptOptional]
+        #[DataCollectionOf(QuestionResponseData::class)]
+        /** @var QuestionResponseData[] */
+        public ?DataCollection $user_responses,
 
     ) {
     }

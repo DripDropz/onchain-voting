@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'admin.routes' => \App\Http\Middleware\AdminRoutes::class,
         'snapshot.check' => \App\Http\Middleware\CheckSnapshot::class,
         'auth.voter' => \App\Http\Middleware\AuthenticateVoter::class,
+        'featureEnabled' =>  \App\Http\Middleware\FeatureEnabled::class,
     ];
 }

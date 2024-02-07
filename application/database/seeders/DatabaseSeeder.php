@@ -15,12 +15,12 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             CategorySeeder::class,
             PermissionSeeder::class,
+            AdminUserSeeder::class,
             UserSeeder::class,
             PetitionSeeder::class,
-            AdminUserSeeder::class,
-            VotingPowerSeeder::class,
             PolicySeeder::class,
             BallotSeeder::class,
+            VotingPowerSeeder::class,
             PollSeeder::class,
         ]);
     }

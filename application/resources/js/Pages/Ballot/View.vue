@@ -1,8 +1,6 @@
 <template>
-    <VoterLayout :page="`${ballot.title} Ballot`" :page-data="ballot">
-        <template #header>
-            <Nav :crumbs="props.crumbs"/>
-        </template>
+    <VoterLayout :page="`${ballot.title} Ballot`" :page-data="ballot"
+                :crumbs="crumbs">
         <div class="container flex flex-col justify-between py-16">
            <BallotSingle :ballot="ballot"></BallotSingle>
         </div>
@@ -12,10 +10,10 @@
 import BallotData = App.DataTransferObjects.BallotData;
 import VoterLayout from "@/Layouts/VoterLayout.vue";
 import BallotSingle from "@/Pages/Ballot/Partials/BallotSingle.vue";
-import Nav from '../NavCrumbs.vue';
 
 const props = defineProps<{
     ballot: BallotData;
-    crumbs: []
+    crumbs: [];
+    actions?: []
 }>();
 </script>

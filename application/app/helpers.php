@@ -24,6 +24,31 @@ if (! function_exists('decode_model_hash')) {
     }
 }
 
+if (!function_exists('compare_values')) {
+    /**
+     * compares $first number against $second using given operator.
+     */
+    function compare_values(int $first, int $second, $operator): ?bool
+    {
+        switch ($operator) {
+            case ">=":
+                return $first >= $second;
+                break;
+            case ">":
+                return $first > $second;
+                break;
+            case '<=':
+                return $first <= $second;
+                break;
+            case '<':
+                return $first <= $second;
+                break;
+            case '=':
+                return $first = $second;
+                break;
+        }    }
+}
+
 if (! function_exists('previous_route_name')) {
     function previous_route_name(): string
     {
