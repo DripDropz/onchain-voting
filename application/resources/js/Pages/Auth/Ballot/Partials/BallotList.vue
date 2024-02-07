@@ -1,5 +1,5 @@
 <template>
-    <div class="py-12">
+    <div class="">
         <ul
             role="list"
             class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
@@ -15,7 +15,7 @@
 import BallotData = App.DataTransferObjects.BallotData;
 import BallotListItem from "@/Pages/Auth/Ballot/Partials/BallotListItem.vue";
 
-const props = defineProps<{
+defineProps<{
     ballots: BallotData[];
 }>();
 

@@ -1,8 +1,8 @@
 import AdminService from "@/shared/Services/AdminService";
-import BallotsQuery from "@/types/ballots-query";
 import PaginatedResponse from "@/types/paginated-response";
 import axios from "axios";
 import BallotData = App.DataTransferObjects.BallotData;
+import DataQuery from "@/types/data-query";
 
 export default class AdminBallotService {
     public static async getBallotTypes(): Promise<string[]> {
@@ -18,6 +18,11 @@ export default class AdminBallotService {
         return true;
     }
 
+    public static async getAllBallots(): Promise<BallotData[]> {
+        return (await axios.get(route('allBallots'))).data;
+
+    }
+
     public static async unlinkSnapshot(data: { ballot: string, snapshot: string}){
         try {
             await axios.post(route('admin.ballots.snapshots.unLink', data), {});
@@ -26,7 +31,7 @@ export default class AdminBallotService {
         }
     }
 
-    public static async getBallots(queryData?: (BallotsQuery|null)): Promise<PaginatedResponse<BallotData>> {
+    public static async getBallots(queryData?: (DataQuery|null)): Promise<PaginatedResponse<BallotData>> {
         try {
             const queryParams = {
                 page: queryData?.p,

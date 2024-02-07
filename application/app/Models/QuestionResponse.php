@@ -27,14 +27,7 @@ class QuestionResponse extends Model implements \OwenIt\Auditing\Contracts\Audit
         'question_id',
     ];
 
-    protected $fillable = [
-        'model_id',
-        'question_id',
-        'user_id',
-        'voting_power_id',
-        'submit_tx',
-        'rank'
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
@@ -44,6 +37,10 @@ class QuestionResponse extends Model implements \OwenIt\Auditing\Contracts\Audit
     protected $appends = [
         'hash',
         'question_hash',
+    ];
+
+    protected $with = [
+        'choices'
     ];
 
     public function questionHash(): Attribute
@@ -63,6 +60,11 @@ class QuestionResponse extends Model implements \OwenIt\Auditing\Contracts\Audit
         return $this->belongsTo(Question::class);
     }
 
+    /**
+     * The separate table facilitates rank choice question where a
+     * response can have more than choices
+     * @return BelongsToMany
+     */
     public function choices(): BelongsToMany
     {
         return $this->belongsToMany(QuestionChoice::class, 'question_responses_question_choices');

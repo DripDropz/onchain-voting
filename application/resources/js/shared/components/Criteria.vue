@@ -12,8 +12,8 @@
                 <span class="w-24 h-3 bg-slate-300 dark:bg-gray-700 animate-pulse" v-if=" !!criterion?.hash && !criterion?.assetName"></span>
             </div>
             <div>
-                <label class="relative inline-flex items-center " :for="`${index}`" :class="[(model?.status == 'published' || model?.status == 'closed')?'cursor-not-allowed':'cursor-pointer']">
-                    <input type="checkbox" :id="`${index}`" :value="criterion.type" class="sr-only peer" :disabled="model?.status == 'published' || model?.status == 'closed'"
+                <label class="relative inline-flex items-center " :for="`${index}`" :class="[(model?.status == 'published' || model?.status == 'closed' || model?.ballot)?'cursor-not-allowed':'cursor-pointer' ]">
+                    <input type="checkbox" :id="`${index}`" :value="criterion.type" class="sr-only peer" :disabled="model?.status == 'published' || model?.status == 'closed' || model?.ballot"
                         @change="(e) => makeRule(e.target.checked, criterion.type, criterion.hash)"
                         :checked="!!criterion.hash">
                     <div

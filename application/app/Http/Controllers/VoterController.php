@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\DataTransferObjects\BallotData;
 use App\DataTransferObjects\VoterData;
 use App\Models\Ballot;
-use App\Models\BallotQuestionChoice;
-use App\Models\BallotResponse;
 use App\Models\Question;
+use App\Models\QuestionChoice;
+use App\Models\QuestionResponse;
 use App\Models\User;
 use App\Models\VotingPower;
 use Illuminate\Http\Request;
@@ -40,7 +40,7 @@ class VoterController extends Controller
         $ballot = Ballot::byHashOrFail($request->ballot);
         $choices = collect($request->choices)
             ->map(
-                fn($hash) => BallotQuestionChoice::byHashOrFail($hash)
+                fn($hash) => QuestionChoice::byHashOrFail($hash)
             );
 
         $votingPower = VotingPower::where([
@@ -48,12 +48,14 @@ class VoterController extends Controller
             'snapshot_id' => $ballot->snapshot?->id,
         ])->firstOrFail();
 
-        $ballotResponse = BallotResponse::updateOrCreate([
-            'ballot_id' => $ballot->id,
+        $ballotResponse = QuestionResponse::updateOrCreate([
+            'model_id' => $ballot->id,
+            'model_type' => Ballot::class,
             'question_id' => $choices->first()?->question->id,
             'user_id' => $voter->id,
         ], [
-            'ballot_id' => $ballot->id,
+            'model_id' => $ballot->id,
+            'model_type' => Ballot::class,
             'question_id' => $choices->first()?->question->id,
             'voting_power_id' => $votingPower->id,
             'user_id' => $voter->id
@@ -63,7 +65,10 @@ class VoterController extends Controller
 
         $ballot->refresh();
         $questions = Question::with('choices')
-            ->where('ballot_id', $ballot->id)
+            ->where([
+                'model_id' => $ballot->id,
+                'model_type' => Ballot::class
+            ])
             ->get()->append('choices_tally');
         $ballot->load([
             'user_responses.user',

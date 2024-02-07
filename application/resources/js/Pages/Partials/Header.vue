@@ -21,8 +21,8 @@
                             currentUri == option.uri
                                 ? 'border-b-2 border-sky-300 dark:border-sky-500 font-medium text-sky-300 dark:text-sky-300 focus:outline-none focus:border-sky-700'
                                 : 'border-b-2 border-transparent font-medium  hover:text-sky-500 text-slate-900 dark:hover:text-sky-300 dark:text-slate-200 hover:border-sky-500 dark:hover:border-sky-300 focus:text-sky-500 dark:focus:text-sky-300 focus:border-sky-500 dark:focus:border-sky-300',
-                            'block'
-                        ]">
+                            'block',!option.visible?'hidden':''
+                        ]"  >
                             {{ option.name }}
                         </Link>
                     </li>
@@ -88,6 +88,7 @@ import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { onClickOutside } from '@vueuse/core';
 import voteAppLogo from '../../../images/openchainvote.png';
+import axios from 'axios';
 
 const user = usePage().props.auth.user;
 const walletStore = useWalletStore();
@@ -95,7 +96,7 @@ const walletStore = useWalletStore();
 let configStore = useConfigStore();
 let { config } = storeToRefs(configStore);
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     canLogin?: boolean;
     pageData?: any;
 }>(), {
@@ -105,15 +106,17 @@ const props = withDefaults(defineProps<{
 const currentUri =  usePage().props.ziggy.uri;
 let showMenu = ref(false);
 const menuOptions = [
-    { name: 'Ballots', href: route('ballots.index'), uri: '/ballots' },
-    { name: 'Petitions', href: route('petitions.index'), uri: '/petitions' },
-    { name: 'Polls', href: route('polls.index'), uri: '/polls' },
+    { name: 'Ballots', href: route('ballots.index'), uri: '/ballots' ,visible:usePage().props['feature-flags'].ballots},
+    { name: 'Petitions', href: route('petitions.index'), uri: '/petitions' ,visible:usePage().props['feature-flags'].petitions},
+    { name: 'Polls', href: route('polls.index'), uri: '/polls' ,visible:usePage().props['feature-flags'].polls},
 ];
 
 function logout() {
-    router.post(route('logout'));
-    walletStore.disconnect();
-    window.location.reload();
+    axios.post(route('logout')).finally(() => {
+        walletStore.disconnect();
+        window.location.reload();
+    });
+
 }
 
 const target = ref(null);

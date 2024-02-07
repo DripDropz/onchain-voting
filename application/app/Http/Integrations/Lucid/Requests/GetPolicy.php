@@ -14,7 +14,7 @@ class GetPolicy extends Request implements HasBody
     /**
      * Define the HTTP method
      */
-    protected Method $method = Method::GET;
+    protected Method $method = Method::POST;
 
     /**
      * Define the endpoint for the request

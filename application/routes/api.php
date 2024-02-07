@@ -45,10 +45,12 @@ Route::prefix('/ballots')->as('config.')->group(function () {
                 'hosted_by',
                 'hosted_by_link',
                 'logo',
-                'power_by',
+                'powered_by',
                 'show_created_by'
             ])->toJson();
+            
     })->name('app');
+
 });
 
 Route::prefix('/query-chain')->as('frost.')->group(
@@ -58,12 +60,13 @@ Route::prefix('/query-chain')->as('frost.')->group(
     }
 );
 
-Route::get('/epochs/latest/parameters', function (Request $request, BlockfrostRequest $frost) {
-    $frost->setEndPoint('/epochs/latest/parameters');
+Route::get('query/{uri?}', function (Request $request, BlockfrostRequest $frost) {
+    $uri = str_replace('api/query','', $request->getRequestUri());
+    $frost->setEndPoint($uri);
     $response = $frost->send();
 
     return $response->json();
-})->name('blockfrost-query');
+})->where('uri', '.*')->name('blockfrost-query');
 
 
 Route::post('/parse/csv', [SnapshotImportController::class, 'parseCSV']);
@@ -75,4 +78,7 @@ Route::get('/snapshot', [SnapshotController::class, 'searchSnapshot'])->name('se
 Route::post('/update-position', [BallotController::class, 'updatePosition'])->name('update.position');
 
 Route::get('/ballots', [BallotController::class, 'ballotsData'])->name('ballotsData');
+Route::get('/all-ballots', [BallotController::class, 'allBallots'])->name('allBallots');
 Route::get('/petitions', [PetitionController::class, 'petitionsData'])->name('petitionsData');
+
+

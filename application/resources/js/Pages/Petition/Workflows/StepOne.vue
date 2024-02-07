@@ -1,5 +1,5 @@
 <template>
-    <VoterLayout page="Create a petition">
+    <VoterLayout page="Create a petition" :crumbs="crumbs">
         <section class="w-[50%] mx-auto pt-12 space-y-4">
             <div class="space-y-4 dark:text-white">
                 <h1 class="text-5xl font-extrabold">
@@ -43,12 +43,13 @@
 <script setup lang="ts">
 import VoterLayout from "@/Layouts/VoterLayout.vue";
 import AlertService from "@/shared/Services/alert-service";
-import { Link, router, useForm } from "@inertiajs/vue3";
+import { Link, useForm } from "@inertiajs/vue3";
 import PetitionData = App.DataTransferObjects.PetitionData;
 
 const props = withDefaults(
     defineProps<{
-        petition: PetitionData,
+        petition?: PetitionData,
+        crumbs?: [],
     }>(),
     {
         petition: null,

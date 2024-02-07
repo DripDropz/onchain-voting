@@ -5,16 +5,16 @@
             <div>
 
             </div>
-            <div class="ml-auto">
-                <button
-                    class="font-semibold py-2 px-8 dark:text-white rounded-lg mb-2 border border-black dark:border-white text-black hover:bg-gray-200 transition duration-300 ease-in-out">
-                    Settings
-                </button>
-            </div>
+<!--            <div class="ml-auto">-->
+<!--                <button-->
+<!--                    class="font-semibold py-2 px-8 dark:text-white rounded-lg mb-2 border border-black dark:border-white text-black hover:bg-gray-200 transition duration-300 ease-in-out">-->
+<!--                    Settings-->
+<!--                </button>-->
+<!--            </div>-->
         </div>
 
         <div>
-            <PollListItem v-for="poll in polls" :key="poll.hash" :poll="poll" />
+            <PollListItem v-for="poll in polls" :key="poll.hash" :poll="poll"/>
         </div>
     </div>
 </template>

@@ -12,44 +12,44 @@
                 <Menu as="div" class="relative ml-auto">
                     <MenuButton class="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
                         <span class="sr-only">Open options</span>
-                        <EllipsisHorizontalIcon class="w-5 h-5" aria-hidden="true" />
+                        <EllipsisHorizontalIcon class="w-5 h-5" aria-hidden="true"/>
                     </MenuButton>
                     <transition enter-active-class="transition duration-100 ease-out"
-                        enter-from-class="transform scale-95 opacity-0" enter-to-class="transform scale-100 opacity-100"
-                        leave-active-class="transition duration-75 ease-in"
-                        leave-from-class="transform scale-100 opacity-100" leave-to-class="transform scale-95 opacity-0">
+                                enter-from-class="transform scale-95 opacity-0"
+                                enter-to-class="transform scale-100 opacity-100"
+                                leave-active-class="transition duration-75 ease-in"
+                                leave-from-class="transform scale-100 opacity-100"
+                                leave-to-class="transform scale-95 opacity-0">
                         <MenuItems
                             class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-sky-100 dark:bg-gray-700 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                             <MenuItem v-slot="{ active }">
-                            <Link :href="route('admin.ballots.view', ballot.hash)
-                                " :class="[
-        active
-            ? 'bg-gray-50 dark:bg-gray-900'
-            : '',
-        'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300',
-    ]">View<span class="sr-only">, {{ ballot.title }}</span>
-                            </Link>
+                                <Link :href="route('admin.ballots.view', ballot.hash)"
+                                      :class="[
+                                          active ? 'bg-gray-50 dark:bg-gray-900' : '',
+                                          'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300'
+                                      ]">View<span class="sr-only">, {{ ballot.title }}</span>
+                                </Link>
                             </MenuItem>
                             <MenuItem v-if="!ballot.live" v-slot="{ active }">
-                            <Link :href="route('admin.ballots.edit', ballot.hash)
+                                <Link :href="route('admin.ballots.edit', ballot.hash)
                                 " :class="[
         active
             ? 'bg-gray-50 dark:bg-gray-900'
             : '',
         'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300',
     ]">
-                            Edit<span class="sr-only">, {{ ballot.title }}</span>
-                            </Link>
+                                    Edit<span class="sr-only">, {{ ballot.title }}</span>
+                                </Link>
                             </MenuItem>
                             <MenuItem v-if="ballot.status !== 'published'" v-slot="{ active }">
-                            <a @click.prevent="publishBallot(ballot.hash)" :class="[
+                                <a @click.prevent="publishBallot(ballot.hash)" :class="[
                                 active
                                     ? 'bg-gray-50 dark:bg-gray-900 cursor-pointer'
                                     : '',
                                 'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-300',
                             ]">
-                                Publish<span class="sr-only">, {{ ballot?.title }}</span>
-                            </a>
+                                    Publish<span class="sr-only">, {{ ballot?.title }}</span>
+                                </a>
                             </MenuItem>
                         </MenuItems>
                     </transition>
@@ -63,8 +63,9 @@
                     </dt>
                     <dd class="text-gray-700 dark:text-gray-100">
                         <time datetime="2020-01-07">{{
-                            ballot.started_at
-                        }}</time>
+                                ballot.started_at
+                            }}
+                        </time>
                     </dd>
                 </div>
                 <div class="flex justify-between py-3 gap-x-4">
@@ -83,8 +84,8 @@
                         <div class="font-medium text-gray-900 dark:text-gray-200">
                             {{
                                 ballot.totalVotes
-                                ? humanNumber(ballot.totalVotes, 4)
-                                : 0
+                                    ? humanNumber(ballot.totalVotes, 4)
+                                    : 0
                             }}
                         </div>
                     </dd>
@@ -95,17 +96,17 @@
 </template>
 
 <script setup lang="ts">
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import {Menu, MenuButton, MenuItem, MenuItems} from "@headlessui/vue";
 import humanNumber from "@/utils/human-number";
-import { PlusIcon, EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
+import {PlusIcon, EllipsisHorizontalIcon} from "@heroicons/vue/20/solid";
 import BallotData = App.DataTransferObjects.BallotData;
-import { Link, router, useForm } from "@inertiajs/vue3";
+import {Link, router, useForm} from "@inertiajs/vue3";
 import BallotStatusBadge from "@/Pages/Auth/Ballot/Partials/BallotStatusBadge.vue";
 import AlertService from "@/shared/Services/alert-service";
 
 
 const props = defineProps<{
-    ballots:  BallotData[];
+    ballots: BallotData[];
 }>();
 
 const emit = defineEmits<{
@@ -125,7 +126,7 @@ const form = useForm({
 });
 
 let publishBallot = (ballotHash: string) =>
-    form.patch(route("admin.ballots.status.update", { ballot: ballotHash }), {
+    form.patch(route("admin.ballots.status.update", {ballot: ballotHash}), {
         preserveScroll: true,
         preserveState: true,
         onSuccess: () => {

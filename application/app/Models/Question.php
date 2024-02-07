@@ -27,7 +27,9 @@ class Question extends Model implements Auditable, HasUser
         'max_choices',
         'status',
         'type',
+        'model_type',
         'started_at',
+        'user_id'
     ];
 
     protected $hidden = [
@@ -49,8 +51,7 @@ class Question extends Model implements Auditable, HasUser
 
     public function ballot(): BelongsTo
     {
-        return $this->belongsTo(Ballot::class, 'model_id')
-            ->where('model_type', Ballot::class);
+        return $this->belongsTo(Ballot::class, 'model_id');
     }
 
     public function poll(): BelongsTo

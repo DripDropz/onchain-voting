@@ -21,10 +21,10 @@ class DashboardController extends Controller
     public function index(Request $request): Response
     {
 
-        $snapshots = Snapshot::inRandomOrder()->take(3)->get();
-        $ballots = BallotData::collection(Ballot::inRandomOrder()->take(3)->get());
-        $petitions = PetitionData::collection(Petition::inRandomOrder()->take(2)->get());
-        $polls = PollData::collection(Poll::inRandomOrder()->take(2)->get());
+        $snapshots = Snapshot::latest()->limit(3)->get();
+        $ballots = BallotData::collection(Ballot::latest()->limit(3)->get());
+        $petitions = PetitionData::collection(Petition::latest()->with('ballot')->limit(2)->get());
+        $polls = PollData::collection(Poll::latest()->limit(2)->get());
 
 
 

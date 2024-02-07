@@ -1,21 +1,24 @@
 <template>
     <button
         class="inline-flex items-center justify-center px-4 font-semibold rounded-md shadow-sm gap-x-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
-        :class="[selectedClass,defaultClass]" >
+        :class="[selectedClass,defaultClass, otherClasses]" >
         <slot/>
     </button>
 </template>
 
 
 <script lang="ts" setup>
+import { Strings } from 'lucid-cardano/types/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib.generated';
 import {computed} from 'vue';
 
 const props = withDefaults(defineProps<{
     theme?: string
     defaultClass?:string
+    otherClasses?:string
 }>(), {
     theme: '',
-    defaultClass:'py-1'
+    defaultClass:'py-1',
+    otherClasses:''
 })
 
 

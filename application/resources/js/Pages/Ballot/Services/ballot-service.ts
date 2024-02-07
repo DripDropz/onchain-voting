@@ -1,7 +1,7 @@
 import axios from "axios";
 import WalletService from "@/cardano/Services/wallet-service";
 import { useWalletStore } from "@/cardano/stores/wallet-store";
-import {  Lucid, UTxO, } from "lucid-cardano";
+import { Lucid, UTxO, } from "lucid-cardano";
 import { useVoterStore } from "@/Pages/Voter/stores/voter-store";
 
 export default class BallotService {
@@ -14,9 +14,9 @@ export default class BallotService {
             );
             return response.data;
         } catch (error: any) {
-            if (error.response.status = 404) {
+            if (error.response.status == 404) {
                 return 0;
-            };
+            }
         }
     }
 
@@ -89,7 +89,7 @@ export default class BallotService {
     static async register(ballotHash: string) {
         try {
             // get tx from the backend
-            let onchain = false;
+            let onChain = false;
 
             const lucid = await BallotService.getLucidInstance();
             let response = await axios.post(
@@ -102,10 +102,10 @@ export default class BallotService {
                 }
             );
 
-            onchain = await lucid.awaitTx(response.data?.existingTx, 200);
-            if (response.data?.existingTx && onchain) {
-                return response.data
+            if (response.data?.existingTx) {
+                    return response.data
             }
+
             const tx = lucid.fromTx(response.data.tx);
             const witnesses = await tx.partialSign();
 
@@ -120,8 +120,8 @@ export default class BallotService {
                     witnesses
                 }
             );
-            onchain = await lucid.awaitTx(response.data?.tx, 200);
-            if (onchain) {
+            onChain = await lucid.awaitTx(response.data?.tx, 2000);
+            if (onChain) {
                 return response.data;
             }
 
@@ -131,7 +131,7 @@ export default class BallotService {
     }
 
     static async saveUpdateRegistration(ballotHash: string, txHash: string) {
-        await axios.post(
+        return await axios.post(
             route('ballot.register.save-update', {
                 ballot: ballotHash
             }),

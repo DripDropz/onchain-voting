@@ -83,8 +83,6 @@ export class VoteController {
         .attachMetadata(446, [votingMetadata])
         .complete();
 
-      console.log({tx: tx.toString()});
-
       return {tx: tx.toString()};
     }
 
@@ -115,7 +113,7 @@ export class VoteController {
       const txHash = await multiSignedTx.submit();
 
       // process refund
-      const processed =  await votingMinter.awaitTx(txHash);
+      const processed =  await votingMinter.awaitTx(txHash, 2000);
       const changeUtxo = await votingMinter.utxosByOutRef([{txHash, outputIndex: 0}]);
 
       const refundTxComplete = await votingMinter.newTx().payToAddress(request.body.voterAddress, {lovelace: changeUtxo[0].assets.lovelace}).complete();

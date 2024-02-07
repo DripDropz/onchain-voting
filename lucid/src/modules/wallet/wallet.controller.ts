@@ -1,23 +1,7 @@
-import {
-    Controller,
-    Get,
-    Inject,
-    Post,
-    Req,
-} from '@nestjs/common';
-import {
-    fromHex,
-    fromUnit,
-    getAddressDetails,
-    Lucid,
-    M,
-    MintingPolicy,
-    toHex,
-    toText,
-} from 'lucid-cardano';
-import { Request } from 'express';
-import { ConfigService } from '@nestjs/config';
-import { AppConfigService } from '../../services/app-config.service.js';
+import {Controller, Get, Inject, Post, Req,} from '@nestjs/common';
+import {fromHex, fromUnit, getAddressDetails, Lucid, M, MintingPolicy, toHex, toText,} from 'lucid-cardano';
+import {Request} from 'express';
+import {AppConfigService} from '../../services/app-config.service.js';
 
 @Controller('wallet')
 export class WalletController {
@@ -28,13 +12,13 @@ export class WalletController {
     @Get('get-policy-id')
     public async mintPolicyId(@Req() request: Request) {
         const [lucid] = await this.configService.getConfigs(request);
-        const policyId = lucid.utils.mintingPolicyToId(
+        return lucid.utils.mintingPolicyToId(
             await this.mintPolicy(request)
         );
-        return policyId;
     }
-    @Get('get-policy')
-    public async mintPolicy(@Req() request: Request) {
+
+    @Post('get-policy')
+    public async mintPolicy(@Req() request: Request) {        
         const [lucid] = await this.configService.getConfigs(request);
         lucid.selectWalletFromSeed(request?.body?.seed);
         return (await this.getPolicy(lucid));

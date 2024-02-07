@@ -31,7 +31,6 @@
                 </div>
             </div>
 
-
             <div v-else class="flex flex-col items-center justify-center">
                 <h2 class="mb-5 title3">
                     Register to vote
@@ -76,6 +75,8 @@ import { useModal } from 'momentum-modal';
 import Spinner from '@/Components/Spinner.vue';
 import AlertService from '@/shared/Services/alert-service';
 import axios from 'axios';
+import { router } from '@inertiajs/vue3'
+
 
 const submittingRegistration = ref(false);
 const registrationComplete = ref(null);
@@ -100,13 +101,13 @@ async function registerToVote() {
         const data = await BallotService.register(props.ballot?.hash);
         if (data?.tx) {
             registrationComplete.value = data?.tx;
-            saveUpdateRegistration(data.tx);
-            voterStore.loadRegistration(props.ballot.hash);
+            await saveUpdateRegistration(data.tx);
+            await voterStore.loadRegistration(props.ballot.hash);
         } else if(data?.existingTx) {
             registrationComplete.value = data?.existingTx
             alreadyRegistered.value = true;
-            saveUpdateRegistration(data.existingTx);
-            voterStore.loadRegistration(props.ballot.hash);
+            await saveUpdateRegistration(data.existingTx);
+            await voterStore.loadRegistration(props.ballot.hash);
         } else {
             let network = (await axios.get(route('config.cardano')))?.data.projectId.includes('preview') ? 'preview' : 'mainnet';
             let $errorTemplate = `Registration Error, try again.
@@ -121,7 +122,8 @@ async function registerToVote() {
 
 async function saveUpdateRegistration(tx: string){
     await BallotService.saveUpdateRegistration(props.ballot?.hash, tx);
-    AlertService.show(['Registration succeful'], 'success');
+    AlertService.show(['Registration successful!'], 'success');
+    router.visit(route('ballot.view', {ballot: props.ballot.hash}));
 }
 
 </script>

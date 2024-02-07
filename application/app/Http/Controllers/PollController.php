@@ -11,6 +11,8 @@ use Illuminate\Pagination\Cursor;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\DataTransferObjects\PollData;
+use App\Models\QuestionChoice;
+use App\Models\QuestionResponse;
 
 class PollController extends Controller
 {
@@ -23,6 +25,14 @@ class PollController extends Controller
     public int $offset = 4;
 
     public bool $hasMorePages;
+
+    public array|null $filter;
+
+    public bool|null $hasPending;
+
+    public bool|null $hasAnswered;
+
+    public ?string $status = 'draft';
 
 
     /**
@@ -38,11 +48,20 @@ class PollController extends Controller
             ],
         ];
 
+        $actions = [
+            [
+                'label' => Auth::check() ? 'Create poll' : ' Login to create poll',
+                'link' => Auth::check() ? route('polls.create') : route('login.email')
+            ],
+        ];
+
+        $counts = $this->pollsCount(request());
 
         return Inertia::render('Poll/Index', [
-            // 'polls' => Poll::inRandomOrder()->with('question.choices')->take(4)->get(),
+            'counts' => $counts,
             'user' => $user,
             'crumbs' => $crumbs,
+            'actions' => $actions,
         ]);
     }
 
@@ -51,7 +70,27 @@ class PollController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Poll/Create');
+        $crumbs = [
+            [
+                'label' => 'Polls',
+                'link' => route('polls.index')
+            ],
+            [
+                'label' => 'Create Poll',
+                'link' => route('polls.create')
+            ],
+        ];
+
+        $actions = [
+            [
+                'label' => Auth::check() ? 'Create poll' : ' Login to create poll',
+                'link' => Auth::check() ? route('polls.create') : route('login.email')
+            ],
+        ];
+        return Inertia::render(
+            'Poll/Create',
+            compact('crumbs', 'actions')
+        );
     }
 
     /**
@@ -62,16 +101,72 @@ class PollController extends Controller
         $this->perPage = $request->query('perPage', 4);
         $this->nextCursor = $request->query('nextCursor', null);
         $this->hasMorePages = $request->query('hasMorePages', false);
+        $this->filter = $request->query('statusfilter', null);
+        $this->hasPending = $request->query('hasPending', false);
+        $this->hasAnswered = $request->query('hasAnswered', false);
+
         $pollCursor = Poll::latest()
+            ->when($this->hasPending, function ($query) {
+                $query->where('user_id', Auth::user()->id)
+                    ->whereNotIn('status', ['draft', 'published']);
+            })
+            ->when($this->filter, function ($query) {
+                $query->where('user_id', Auth::user()->id)
+                ->whereIn('status', $this->filter);
+            })
+            ->when($this->hasAnswered, function ($query) {
+                $query->where([
+                    'status' => 'published',
+                ])->whereRelation('user_responses','user_id',Auth::user()->id);
+            })
             ->when($this->nextCursor, function ($query) {
                 $query->cursorPaginate($this->perPage, ['*'], 'cursor', $this->nextCursor);
             })
             ->cursorPaginate($this->perPage);
 
         return [
-            'polls' => PollData::collection(collect($pollCursor->items())->each(fn ($p) => $p->load('question.choices'))),
+            'polls' => PollData::collection(collect($pollCursor->items())->each(fn ($p) => $p->load('question.choices', 'user_responses'))),
             'nextCursor' => $pollCursor->nextCursor()?->encode(),
             'hasMorePages' => $pollCursor->hasMorePages(),
+        ];
+    }
+
+    public function pollData(Request $request)
+    {
+        $poll = Poll::byHash($request->poll);
+
+        $poll->load('question.choices', 'user_responses');
+
+        $pollData = PollData::from($poll);
+
+        return $pollData;
+    }
+
+    private function pollsCount(Request $request)
+    {
+        $user = Auth::user();
+
+        $draftCount = Poll::where('user_id', $user?->id)
+            ->where('status', 'draft')->with('question.choices')
+            ->count();
+
+        $activeCount = Poll::where('user_id', $user?->id)
+            ->where('status', 'published')->with('question.choices')
+            ->count();
+
+        $pendingCount = Poll::where('user_id', $user?->id)
+            ->whereNotIn('status', ['draft', 'published'])
+            ->with('question.choices')->count();
+
+        $answeredCount = Poll::where('status', 'published')
+            ->whereRelation('user_responses','user_id', $user?->id)
+            ->with('question.choices')->count();
+
+        return [
+            'draftCount' => $draftCount,
+            'activeCount' => $activeCount,
+            'pendingCount' => $pendingCount,
+            'answeredCount' => $answeredCount,
         ];
     }
 
@@ -82,7 +177,7 @@ class PollController extends Controller
         $validatedData = $request->validate([
             // 'pollTitle' => 'required|string|max:255',
             'question' => 'required|string|max:255',
-            'options' => 'required|array|min:2',
+            'options' => 'required|array|min:4',
             'options.*' => 'required|string|max:255',
             'publishOnchain' => 'boolean',
         ]);
@@ -104,13 +199,33 @@ class PollController extends Controller
         $question->save();
 
         foreach ($validatedData['options'] as $key => $choice) {
-            // dd($key);
             $question->choices()->create([
                 'title' => $choice,
                 'order' => $key,
                 'question_id' => $question->id
             ]);
         }
+
+        return redirect()->route('polls.index');
+    }
+
+    public function storeQuestionResponse(Request $request)
+    {
+        $poll = Poll::byHash($request->poll);
+        $question = Question::byHash($request->questionHash);
+        $choice = QuestionChoice::byHash($request->selectedChoiceHash);
+        $user = Auth::user();
+
+        $questionResponse = new QuestionResponse([
+            'user_id' => $user->id,
+            'model_type' => Poll::class,
+            'model_id' => $poll->id,
+            'question_id' => $question->id,
+        ]);
+
+        $questionResponse->save();
+
+        $questionResponse->choices()->attach($choice->id);
 
         return redirect()->route('polls.index');
     }

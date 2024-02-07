@@ -1,15 +1,15 @@
 <template>
-    <VoterLayout page="Petition">
-        <template #header>
-            <Nav :crumbs="crumbs"/>
-        </template>
-      <section class="py-12 m-auto">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8"> 
+    <VoterLayout
+        page="Petition"
+        :crumbs="crumbs"
+        :actions="actions">
+        <section class="py-12 w-full">
+            <div class="inner-container">
                 <PetitionSingle
-                   :key="petition.hash"
-                   :petition="petition"
-                   :signature="signature"
-                 />
+                    :key="petition.hash"
+                    :petition="petition"
+                    :signature="signature"
+                />
             </div>
         </section>
     </VoterLayout>
@@ -20,12 +20,12 @@ import VoterLayout from '@/Layouts/VoterLayout.vue';
 import PetitionData = App.DataTransferObjects.PetitionData;
 import SignatureData = App.DataTransferObjects.SignatureData;
 import PetitionSingle from './Partials/PetitionSingle.vue';
-import Nav from '../NavCrumbs.vue';
 
 defineProps<{
     petition: PetitionData;
-    crumbs: []
-    signature:SignatureData;
+    crumbs: [];
+    actions: []
+    signature: SignatureData;
 }>();
 
 </script>

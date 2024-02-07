@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\Question;
 use App\Models\QuestionChoice;
 use Illuminate\Database\Seeder;
-use App\Models\BallotQuestionChoice;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class PollSeeder extends Seeder

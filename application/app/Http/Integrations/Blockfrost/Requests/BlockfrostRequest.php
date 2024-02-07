@@ -19,13 +19,11 @@ class BlockfrostRequest extends Request
 
     protected ?string $endpoint;
 
-
-
     public function resolveConnector(): Connector
     {
         return app(BlockfrostConnector::class);
     }
-    
+
     /**
      * Define the endpoint for the request
      */

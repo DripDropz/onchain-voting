@@ -4,7 +4,7 @@
             Load more
         </PrimaryButton>
     </div>
-    <PollLoadingShell v-if="loadingMore " />
+    <PollLoadingShell v-if="loadingMore" />
 </template>
 
 <script lang="ts" setup>
@@ -13,14 +13,20 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { usePollStore } from '@/stores/poll-store';
 import { storeToRefs } from 'pinia';
 
+const props = withDefaults(defineProps<{
+    context?: string
+    params?:{}
+}>(), {
+    context: 'browse'
+});
 
 let pollStore = usePollStore();
 let { loadingMore } = storeToRefs(pollStore);
 let { showMore } = storeToRefs(pollStore);
 
-let fetch = ()=>{
+let fetch = () => {
     loadingMore.value = true;
-    pollStore.loadPublicPolls();
+    pollStore.loadPublicPolls(props.context,props.params);
 }
 
 </script>

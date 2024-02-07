@@ -102,6 +102,12 @@ return [
             'alphabet' => 'abcdefghijklmnoqrstuvxyz0123456789',
         ],
 
+        \App\Models\QuestionResponse::class => [
+            'salt' => \App\Models\QuestionResponse::class . env('APP_KEY'),
+            'length' => 11,
+            'alphabet' => 'abcdefghijklmnoqrstuvxyz0123456789',
+        ],
+
         //        'main' => [
         //            'salt' =>  env('APP_KEY'),
         //            'length' => 4,
