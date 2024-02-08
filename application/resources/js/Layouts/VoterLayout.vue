@@ -41,7 +41,7 @@ let {isDarkMode, showModal } = storeToRefs(configStore);
 
                 <nav v-if="!$page.component.startsWith('Home')"
                      class="bg-white shadow dark:bg-gray-800" role="navigation" :crumbs="[]">
-                    <div class="flex justify-between items-center inner-container">
+                    <div class="flex justify-between items-center container">
                         <div class="breadcrumbs-wrapper">
                             <Nav :crumbs="crumbs" />
                         </div>
