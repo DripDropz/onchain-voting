@@ -8,47 +8,59 @@
             <ul role="list" class="px-4 mt-8">
                 <li v-for="(event, eventIdx) in timeline">
                     <div class="relative pb-8">
-          <span v-if="eventIdx !== timeline.length - 1" class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-sky-600"
-                aria-hidden="true" />
+                        <span v-if="eventIdx !== timeline.length - 1"
+                            class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-sky-600" aria-hidden="true" />
                         <div class="relative flex space-x-3">
                             <div>
-              <span class="flex items-center justify-center w-8 h-8 rounded-full ring-2 ring-white" :class="{
-                'bg-green-500': event.stepComplete,
-                'bg-sky-600': timeline?.[eventIdx - 1]?.stepComplete && !event.stepComplete || !timeline?.[eventIdx - 1]?.stepComplete && eventIdx == 0,
-                'bg-gray-500': !timeline?.[eventIdx - 1]?.stepComplete && !event.stepComplete && eventIdx != 0
-              }">
-                <HandThumbUpIcon v-if="event.stepComplete" class="w-5 h-5" aria-hidden="true" />
-              </span>
+                                <span class="flex items-center justify-center w-8 h-8 rounded-full ring-2 ring-white"
+                                    :class="{
+                                        'bg-green-500': event.stepComplete,
+                                        'bg-sky-600': timeline?.[eventIdx - 1]?.stepComplete && !event.stepComplete || !event?.stepComplete && eventIdx == 0,
+                                        'bg-gray-500': !timeline?.[eventIdx - 1]?.stepComplete && !event.stepComplete && eventIdx != 0
+                                    }">
+                                    <HandThumbUpIcon v-if="event.stepComplete" class="w-5 h-5" aria-hidden="true" />
+                                </span>
                             </div>
                             <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
                                 <div>
                                     <p v-if="!event.utility" class="text-sm"
-                                       :class="[event.stepComplete ? 'text-black dark:text-white' : 'text-gray-500']">
+                                        :class="[event.stepComplete ? 'text-black dark:text-white' : 'text-gray-500']">
                                         {{
                                             event.stepComplete
-                                                ? event.target
-                                                : event.content
+                                            ? event.target
+                                            : event.content
                                         }}
                                     </p>
-                                    <p v-else class="text-sm" :class="[event.stepComplete ? 'text-black dark:text-white' : 'text-gray-500']">
+                                    <p v-else class="text-sm"
+                                        :class="[event.stepComplete ? 'text-black dark:text-white' : 'text-gray-500']">
                                         {{
                                             event.utility
                                         }}
                                     </p>
                                 </div>
                                 <div class="text-sm text-right whitespace-nowrap" v-if="event.stepComplete"
-                                     :class="[event.datetime ? 'text-black dark:text-white' : 'text-gray-500']">
+                                    :class="[event.datetime ? 'text-black dark:text-white' : 'text-gray-500']">
                                     <UseTimeAgo v-slot="{ timeAgo }" :time="toUserTimezone(event.datetime)">
                                         {{ timeAgo }}
                                     </UseTimeAgo>
                                 </div>
-                                <button
-                                    v-if="event.content == 'Publish Ballot'"
-                                    :disabled="!timeline?.[eventIdx - 1]?.stepComplete || ballot.status == 'published'"
-                                    class="px-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
-                                    :class="{'hover:bg-slate-500 bg-slate-500 cursor-not-allowed': !timeline?.[eventIdx - 1]?.stepComplete || ballot.status == 'published'}">
-                                    Publish
-                                </button>
+                                <div>
+                                    <div v-if="event?.btnContent">
+                                        <Link as="button" :href="event?.href"
+                                            class="px-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                                            :class="{ 'hover:bg-slate-500 bg-slate-500 cursor-not-allowed': !timeline?.[eventIdx - 1]?.stepComplete }">
+                                        {{ event?.btnContent }}
+                                        </Link>
+                                    </div>
+                                    <div v-if="event.content == 'Publish Ballot'">
+                                        <button 
+                                            :disabled="!timeline?.[eventIdx - 1]?.stepComplete || ballot.status == 'published'"
+                                            class="px-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                                            :class="{ 'hover:bg-slate-500 bg-slate-500 cursor-not-allowed': !timeline?.[eventIdx - 1]?.stepComplete || ballot.status == 'published' }">
+                                            Publish
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -76,14 +88,18 @@
 import { HandThumbUpIcon } from "@heroicons/vue/20/solid";
 import { UseTimeAgo } from "@vueuse/components";
 import BallotData = App.DataTransferObjects.BallotData;
+import QuestionData = App.DataTransferObjects.QuestionData;
 import { computed, ref } from "vue";
 import moment from "moment-timezone";
 import { VARIABLES } from "@/models/variables";
 import AlertService from '@/shared/Services/alert-service';
 import { useForm } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
+import CreateBallotPolicyWallet from "../../Policies/Partials/CreateBallotPolicyWallet.vue";
 
 const props = defineProps<{
     ballot?: BallotData;
+    question?:QuestionData;
 }>();
 
 const form = useForm({
@@ -110,6 +126,7 @@ function updateBallotStatus() {
 }
 
 let ballot = ref(props.ballot);
+let question = ref(props.question)
 let userTimeZone = moment.tz.guess();
 
 let toUserTimezone = (targetTime: any) => {
@@ -144,19 +161,25 @@ const timeline = [
     {
         content: "Create question",
         target: "Question was created",
+        btnContent: "Create",
+        href: ballot.value?.hash ? route('admin.ballots.questions.create', { 'ballot': ballot.value?.hash }) : null,
         utility: ballot.value?.questions?.[0]?.created_at && !ballot.value?.questions?.[0]?.choices?.[0]?.created_at ? "Now add choices to complete step" : null,
         datetime: ballot.value?.questions?.[0]?.created_at ?? "",
-        stepComplete: ballot.value?.questions?.[0]?.choices?.[0]?.created_at,
+        stepComplete: ballot.value?.questions?.[0]?.created_at,
     },
     {
         content: "Add choices to question",
         target: "Choices added",
+        btnContent: "Add",
+        href: ballot.value?.hash && ballot.value?.questions?.[0]?.hash ? route('admin.ballots.questions.choices.create', { 'ballot': props.ballot?.hash, 'question': ballot.value?.questions?.[0]?.hash }) : '',
         datetime: ballot.value?.questions?.[0]?.choices?.[0]?.created_at ?? "",
         stepComplete: ballot.value?.questions?.[0]?.choices?.[0]?.created_at,
     },
     {
         content: "Add Onchain Policy",
         target: "Policy added",
+        btnContent: "Add",
+        href: ballot.value?.hash ? route('admin.ballots.policies.create', { 'ballot': ballot.value?.hash }) : null,
         utility: !ballot.value?.questions?.[0]?.created_at || !ballot.value?.questions?.[0]?.choices?.[0]?.created_at ? "Policy added, now add questions and choices" : null,
         datetime: policiesCreatedAt.value ?? "",
         stepComplete: hasPolicies.value && ballot.value?.questions?.[0]?.choices?.[0]?.created_at,

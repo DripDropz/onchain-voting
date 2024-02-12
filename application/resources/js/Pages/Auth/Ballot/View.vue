@@ -9,9 +9,14 @@ import AlertService from '@/shared/Services/alert-service';
 import BallotSnapshot from './Partials/BallotSnapshot.vue';
 import BallotPublishChecklist from './Partials/BallotPublishChecklist.vue';
 import Nav from '../Breadcrumbs.vue';
+import BallotPolicies from './Partials/BallotPolicies.vue';
 
 const props = defineProps<{
     ballot: BallotData;
+    addresses: {
+        registrationPolicyAddress: string;
+        votingPolicyAddress: string;
+    };
     crumbs: []
 }>();
 
@@ -41,6 +46,9 @@ AlertService.show(Object.values(usePage().props.errors), 'info');
 
                 <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg" >
                     <BallotSnapshot :ballot="ballot" />
+                </div>
+                <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
+                    <BallotPolicies :ballot="ballot" :addresses="addresses"/>
                 </div>
             </div>
         </div>
