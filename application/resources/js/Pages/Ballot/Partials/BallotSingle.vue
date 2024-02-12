@@ -63,7 +63,7 @@
                                     :ballot="ballot$"
                                     :hasVotingPower="(voterPower !== '-')"/>
 
-                    <ConfirmingOnChainVue v-if="!confirmedOnChain && registeredToVote"/>
+                    <ConfirmingOnChain v-if="!confirmedOnChain && registeredToVote" />
                 </div>
 
                 <div class="flex flex-col h-full gap-10 px-4 pt-1">
@@ -107,7 +107,7 @@
 <script lang="ts" setup>
 import BallotData = App.DataTransferObjects.BallotData;
 import Line from "@/Pages/Partials/Line.vue";
-import {Link, router, usePage} from "@inertiajs/vue3";
+import {Link, usePage} from "@inertiajs/vue3";
 import BallotStatusBadge from "@/Pages/Auth/Ballot/Partials/BallotStatusBadge.vue";
 import BallotQuestionCard from "@/Pages/Ballot/Partials/BallotQuestionCard.vue";
 import {useWalletStore} from "@/cardano/stores/wallet-store";
@@ -121,7 +121,7 @@ import Tooltip from "./Tooltip.vue";
 import ConnectWalletToVote from "@/Pages/Ballot/Partials/ConnectWalletToVote.vue";
 import {useVoterStore} from "@/Pages/Voter/stores/voter-store";
 import BallotService from "@/Pages/Ballot/Services/ballot-service";
-import ConfirmingOnChainVue from "./ConfirmingOnChain.vue";
+import ConfirmingOnChain from "@/Pages/Ballot/Partials/ConfirmingOnChain.vue";
 
 const registeredToVote = ref(false);
 const user = usePage().props.auth.user;
