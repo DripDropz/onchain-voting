@@ -2,8 +2,8 @@
     <div class="flex flex-row my-8 border rounded-lg border-slate-900 dark:border-slate-700 dark:text-slate-100">
         <div class="w-2/3">
             <div class="p-4">
-                <h2 class="mb-4 text-2xl font-bold">
-                    {{ petition.title }}
+                <h2 class="mb-4 text-2xl font-bold align-middle">
+                    {{ petition.title }} <span class="opacity-30 text-sm">- {{ petition.status }}</span>
                 </h2>
                 <span>{{ petition.description }}</span>
             </div>
@@ -12,18 +12,20 @@
                 <div class="flex flex-row items-center justify-between gap-8 w-full">
                     <h2 class="text-sm font-bold">{{ petition.hash }}</h2>
 
-                    <div class="flex flex-row items-center gap-3">
-                        <div class="font-semibold text-sky-500">
-                            <Link :href="route('petitions.view', { petition: petition.hash })">
-                                View
-                            </Link>
-                        </div>
-                        <div v-if="!petition?.ballot"
-                             class="font-semibold text-sky-500">
-                            <Link :href="route('admin.petitions.edit', { petition: petition.hash })">
-                                Edit
-                            </Link>
-                        </div>
+                    <div class="flex flex-row items-center gap-2">
+                        <Link
+                            :href="route('petitions.view', { petition: petition.hash })"
+                            class="font-semibold text-sky-500 hover:text-slate-700 dark:hover:text-white"
+                        >
+                            <span>View</span>
+                        </Link>
+
+                        <Link
+                            v-if="!petition?.ballot"
+                            :href="route('admin.petitions.edit', { petition: petition.hash })"
+                            class="font-semibold text-sky-500 hover:text-slate-700 dark:hover:text-white">
+                            <span>Edit</span>
+                        </Link>
 
                         <Link :href="route('admin.ballots.view', { ballot: petition?.ballot?.hash })"
                               v-if="petition.ballot">
@@ -33,7 +35,6 @@
                                 <ArrowTopRightOnSquareIcon class="w-5 h-5"/>
                             </button>
                         </Link>
-
                     </div>
 
                     <div class="flex flex-row items-center gap-8">
@@ -43,9 +44,11 @@
                         </div>
                         <div class="flex flex-row items-center gap-2">
                             <EnvelopeIcon class="w-6 h-6"/>
-                            <span>{{
+                            <span>
+                                {{
                                     formatDate(petition.status === 'published' ? petition.started_at : petition.created_at)
-                                }}</span>
+                                }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -69,10 +72,9 @@
 <script setup lang="ts">
 import {defineProps} from 'vue';
 import PetitionData = App.DataTransferObjects.PetitionData;
-import {UsersIcon, EnvelopeIcon, EyeIcon, PencilIcon} from '@heroicons/vue/20/solid';
+import {UsersIcon, EnvelopeIcon} from '@heroicons/vue/20/solid';
 import voteAppLogo from '../../../../../images/openchainvote.png';
 import {Link} from "@inertiajs/vue3";
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import {ArrowTopRightOnSquareIcon} from '@heroicons/vue/20/solid';
 
 defineProps<{
@@ -83,4 +85,5 @@ const formatDate = (dateString: string): string => {
     const options = {month: '2-digit', day: '2-digit', year: '2-digit'};
     return new Date(dateString).toLocaleDateString(undefined, options);
 };
+
 </script>

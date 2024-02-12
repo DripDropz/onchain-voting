@@ -17,7 +17,7 @@ return new class extends Migration
                 ->references('id')
                 ->on('users')
                 ->onDelete('cascade');
-            $table->text('email_signature')->nullable();
+            $table->text('email_signature')->nullable()->unique();
             $table->text('wallet_signature')->nullable();
             $table->text('stake_address')->nullable()->unique();
             $table->softDeletes();

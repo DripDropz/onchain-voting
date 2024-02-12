@@ -29,7 +29,7 @@
                 <div v-if="!petition?.ballot">
                     <Link :href="route('petitions.manage', { petition: petition.hash })"></Link>
 
-                    <SignatureProgress />
+                    <SignatureProgress :petition="petition"/>
 
                     <SignPetitionForm :signature="signature" :petition="petition" :user="user" />
                 </div>

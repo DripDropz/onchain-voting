@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import BallotData = App.DataTransferObjects.BallotData;
 import BallotQuestions from "@/Pages/Auth/Ballot/Partials/BallotQuestions.vue";
@@ -9,9 +9,14 @@ import AlertService from '@/shared/Services/alert-service';
 import BallotSnapshot from './Partials/BallotSnapshot.vue';
 import BallotPublishChecklist from './Partials/BallotPublishChecklist.vue';
 import Nav from '../Breadcrumbs.vue';
+import BallotPolicies from './Partials/BallotPolicies.vue';
 
 const props = defineProps<{
     ballot: BallotData;
+    addresses: {
+        registrationPolicyAddress: string;
+        votingPolicyAddress: string;
+    };
     crumbs: []
 }>();
 
@@ -21,7 +26,7 @@ AlertService.show(Object.values(usePage().props.errors), 'info');
 <template>
     <Head title="Ballot" />
 
-    <AuthenticatedLayout>
+    <AdminLayout>
         <template #header>
             <Nav :crumbs="props.crumbs"/>
         </template>
@@ -42,7 +47,10 @@ AlertService.show(Object.values(usePage().props.errors), 'info');
                 <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg" >
                     <BallotSnapshot :ballot="ballot" />
                 </div>
+                <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
+                    <BallotPolicies :ballot="ballot" :addresses="addresses"/>
+                </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </AdminLayout>
 </template>

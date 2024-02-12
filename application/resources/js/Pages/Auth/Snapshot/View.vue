@@ -1,7 +1,7 @@
 <template>
     <Head title="Ballot" />
 
-    <AuthenticatedLayout>
+    <AdminLayout>
         <template #header>
             <div class="flex flex-row justify-between">
                 <Nav :crumbs="props.crumbs"/>
@@ -20,10 +20,10 @@
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </AdminLayout>
 </template>
 <script setup lang="ts">
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { computed, ComputedRef} from "vue";
 import { usePage } from "@inertiajs/vue3";

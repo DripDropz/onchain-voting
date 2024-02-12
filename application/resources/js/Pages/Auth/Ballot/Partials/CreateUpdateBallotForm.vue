@@ -19,7 +19,13 @@
 
                     <label for="description" class="sr-only">Description</label>
                     <TextareaInput rows="4" name="description" id="description" v-model="form.description" placeholder="Write a description..."/>
-
+                    <div>
+                    <p class="py-2 px-2 text-sm text-bold text-sky-600 dark:text-sky-500"
+                    :class="{ 'text-red-500': isExceedingDescriptionLimit }">
+                        Word Count: {{ wordDescriptionCount }}/{{ wordDescriptionLimit }}
+                        <span v-if="isExceedingDescriptionLimit" class="ml-1">(Word limit exceeded!You won't be able to submit this form.)</span>
+                    </p>
+                   </div>
                     <div class="flex items-center gap-8 px-2 py-4 xl:px-3">
                         <label for="version"
                                class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300 w-44">State
@@ -43,6 +49,13 @@
                         <input type="text" name="version" id="version" v-model="form.version" placeholder="Version"
                                class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 bg-sky-100 dark:bg-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-sky-600 dark:focus:ring-sky-700 rounded-lg"/>
                     </div>
+<!--                    <div>-->
+<!--                        <p class="mt-1 ml-1 text-sm text-sky-600 dark:text-sky-500" -->
+<!--                        :class="{ 'text-red-500': isExceedingVersionLimit }">-->
+<!--                            Word Count: {{ wordVersionCount }}/{{ wordVersionLimit }}-->
+<!--                            <span v-if="isExceedingVersionLimit" class="ml-1">(Word limit exceeded!You won't be able to submit this form.)</span>-->
+<!--                        </p>-->
+<!--                    </div>-->
                     <div class="flex items-center gap-8 px-2 py-2 border-t border-gray-200 xl:px-3 dark:border-gray-700">
                         <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300 w-44">
                             Ballot Status
@@ -195,6 +208,26 @@ const props = defineProps<{
     ballot?: BallotData;
 }>();
 
+const wordDescriptionLimit = 1200;
+const wordVersionLimit = 200;
+
+const wordDescriptionCount = computed(() => {
+    return form.description ? form.description.trim().split(/\s+/).length : 0;
+});
+
+const wordVersionCount = computed(() => {
+    return typeof form.version === 'string' ? form.version.trim().split(/\s+/).length : 0;
+});
+
+const isExceedingDescriptionLimit = computed(() => {
+    return wordDescriptionCount.value > wordDescriptionLimit;
+});
+
+const isExceedingVersionLimit = computed(() => {
+    return wordVersionCount.value > wordVersionLimit;
+});
+
+
 const user = usePage().props.auth.user;
 const questions = ref(props.ballot?.questions);
 
@@ -257,41 +290,47 @@ const form = useForm({
     hash: props?.ballot?.hash,
     title: props?.ballot?.title ?? '',
     description: props?.ballot?.description ?? '',
-    version: props?.ballot?.version,
+    version: props?.ballot?.version ?? '1',
     status: props?.ballot?.status ?? 'draft',
-    type: props?.ballot?.type ?? 'Select Type',
+    type: props?.ballot?.type ?? 'snapshot',
     started_at: props?.ballot?.started_at,
     ended_at: props?.ballot?.ended_at,
 });
 
 
 function submitForm() {
-    if (!props.ballot?.hash) {
-        form.post(route('admin.ballots.create'), {
-            onSuccess: () => {
-                AlertService.show(['Ballot created successfully'], 'success');
-            },
-            onError: (errors) => {
-                AlertService.show(
-                    Object
-                        .entries(errors)
-                        .map(([key, value]) => value)
-                );
-            },
-        });
+    if (isExceedingDescriptionLimit.value) {
+        AlertService.show(['Word count limit exceeded. Please reduce the word count.'], 'error');
+    } else if (isExceedingVersionLimit.value) {
+        AlertService.show(['Version number cannot exceed the limit.'], 'error');
     } else {
-        form.patch(route('admin.ballots.update', {ballot: props.ballot?.hash}), {
-            onSuccess: () => {
-                AlertService.show(['Ballot updated successfully'], 'success');
-            },
-            onError: (errors) => {
-                AlertService.show(
-                    Object
-                        .entries(errors)
-                        .map(([key, value]) => value)
-                );
-            },
-        });
+        if (!props.ballot?.hash) {
+            form.post(route('admin.ballots.create'), {
+                onSuccess: () => {
+                    AlertService.show(['Ballot created successfully'], 'success');
+                },
+                onError: (errors) => {
+                    AlertService.show(
+                        Object
+                            .entries(errors)
+                            .map(([key, value]) => value)
+                    );
+                },
+            });
+        } else {
+            form.patch(route('admin.ballots.update', {ballot: props.ballot?.hash}), {
+                onSuccess: () => {
+                    AlertService.show(['Ballot updated successfully'], 'success');
+                },
+                onError: (errors) => {
+                    AlertService.show(
+                        Object
+                            .entries(errors)
+                            .map(([key, value]) => value)
+                    );
+                },
+            });
+        }
     }
 }
 </script>

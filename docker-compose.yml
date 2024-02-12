@@ -93,7 +93,7 @@ services:
         image: postgres:15.2-alpine3.17
         container_name: chainvotedb
         environment:
-            POSTGRES_LOGGING: true
+            POSTGRES_LOGGING: 'true'
             POSTGRES_DB: '${POSTGRES_DATABASE:-governor}'
             POSTGRES_USER: '${POSTGRES_USERNAME:-cardano}'
             POSTGRES_PASSWORD: '${POSTGRES_PASSWORD:-MdT6Sc7XfrpCMJw4D}'

@@ -9,13 +9,15 @@ export default defineConfig({
         target: "esnext",
         rollupOptions: {
             external: [
-                "lucid-cardano"
+                "lucid-cardano",
+                "momentum-modal"
             ]
         }
     },
     optimizeDeps: {
         exclude: [
-            "lucid-cardano"
+            "lucid-cardano",
+            "momentum-modal"
         ]
     },
     server: {

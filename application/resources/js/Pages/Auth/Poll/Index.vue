@@ -1,5 +1,5 @@
 <template>
-    <AuthenticatedLayout title="Dashboard" :crumbs="crumbs">
+    <AdminLayout title="Dashboard" :crumbs="crumbs">
         <section>
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="sm:rounded-lg">
@@ -36,11 +36,11 @@
                 </div>
             </div>
         </section>
-    </AuthenticatedLayout>
+    </AdminLayout>
 </template>
 
 <script lang="ts" setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import PollListAdmin from "@/Pages/Auth/Poll/Partials/PollListAdmin.vue"
 import Paginator from '@/shared/components/Paginator.vue';
 import { usePollStore } from '@/stores/poll-store';

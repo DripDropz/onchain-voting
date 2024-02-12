@@ -1,5 +1,5 @@
 <template>
-    <AuthenticatedLayout title="Dashboard" :crumbs="crumbs">
+    <AdminLayout title="Dashboard" :crumbs="crumbs">
         <section class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="sm:rounded-lg">
@@ -57,12 +57,12 @@
                 </div>
             </div>
         </section>
-    </AuthenticatedLayout>
+    </AdminLayout>
 </template>
 
 
 <script setup lang="ts">
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BallotList from "@/Pages/Auth/Ballot/Partials/BallotList.vue"
 import Paginator from '@/shared/components/Paginator.vue';
 import { useBallotStore } from '@/stores/ballot-store';

@@ -1,7 +1,7 @@
 <template>
     <Head title="Dashboard" />
 
-    <AuthenticatedLayout>
+    <AdminLayout>
         <section class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="sm:rounded-lg">
@@ -174,10 +174,10 @@
                 </div>
             </div>
         </section>
-    </AuthenticatedLayout>
+    </AdminLayout>
 </template>
 <script setup lang="ts">
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import BallotData = App.DataTransferObjects.BallotData;
 import BallotListAdmin from "@/Pages/Auth/Ballot/Partials/BallotListAdmin.vue";

@@ -72,12 +72,22 @@ class PetitionController extends Controller
 
         $actions = [
             [
-                'label' => Auth::check() ? (Auth::user()->id === $petition->user->id ? 'Manage' : 'You’re not the owner') : 'Not logged in',
+                'label' => Auth::check() && Auth::user()->id === $petition->user->id ? 'Manage' : '',
                 'link' => Auth::check() && Auth::user()->id === $petition->user->id
                     ? route('petitions.manage', ['petition' => $petition])
-                    : route('login.email'),
+                    : '',
                 'disabled' => !Auth::check() || (Auth::check() && Auth::user()->id !== $petition->user->id),
-            ]
+            ],
+            [
+                'label' => 'Edit Petition',
+                'link' => route('petitions.create.stepOne', ['petition' => $petition])
+            ],
+            [
+                'label' => $petition->closed ? 'Petition closed' : 'Close Petition',
+                "clickAction" => 'showModal',
+                'disabled' => $petition->closed,
+
+            ],
         ];
 
         return Inertia::render('Petition/View', [
@@ -108,7 +118,7 @@ class PetitionController extends Controller
 
         $actions = [
             [
-                'label' => 'Edit',
+                'label' => 'Edit Petition',
                 'link' => route('petitions.create.stepOne', ['petition' => $petition])
             ],
             [

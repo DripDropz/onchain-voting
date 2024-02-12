@@ -5,6 +5,7 @@
       :key="petition.hash"
       :petition="petition"
     />
+    
   </div>
 </template>
 

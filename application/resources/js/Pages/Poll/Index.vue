@@ -21,7 +21,7 @@
                                             {{
                                                 option.value === "browse"
                                                     ? option.name
-                                                    : `${option.name} (3)`
+                                                    : `${option.name}`
                                             }}
                                         </a>
                                     </li>
@@ -34,7 +34,7 @@
                                             {{
                                                 option.value === "browse"
                                                     ? option.name
-                                                    : option.name + '(' + option.count + ')'
+                                                    : option.name + ' (' + option.count + ')'
                                             }}
                                         </a>
                                     </li>

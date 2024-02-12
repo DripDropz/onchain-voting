@@ -1,20 +1,22 @@
-import {defineStore, storeToRefs} from 'pinia';
-import {ref, Ref} from 'vue';
+import { defineStore, storeToRefs } from 'pinia';
+import { ref, Ref, watch } from 'vue';
 import humanNumber from "@/utils/human-number";
-import {useWalletStore} from '@/cardano/stores/wallet-store';
+import { useWalletStore } from '@/cardano/stores/wallet-store';
 import WalletService from '@/cardano/Services/wallet-service';
-import {PolicyId, UTxO} from '@lucid-cardano';
+import { PolicyId, UTxO } from '@lucid-cardano';
 import axios from 'axios';
 import BallotService from '@/Pages/Ballot/Services/ballot-service';
+import { useConfigStore } from '@/stores/config-store';
 
 export const useVoterStore = defineStore('voter', () => {
     let voter = ref<Boolean | null>(null);
     const voterPowers: Ref<{ [key: string]: BigInt }> = ref({});
     const voterRegistrations: Ref<{ [key: string]: { policyId?: PolicyId, registration?: UTxO } }> = ref({});
     const walletStore = useWalletStore();
-    const {walletName} = storeToRefs(walletStore);
+    const { walletName } = storeToRefs(walletStore);
     const ws = new WalletService(walletName.value);
     let confirmedOnChain = ref(false);
+    let confirmationCount = ref(0);
 
     function registeredForBallot(ballotHash: string) {
         return !!voterRegistrations.value[ballotHash];
@@ -33,9 +35,12 @@ export const useVoterStore = defineStore('voter', () => {
 
     async function loadRegistration(ballotHash: string) {
         let policyId: string = '';
-
+        await useWalletStore();
         // get policy id
-        const policyIdRes = await axios.get(route('ballot.policyId', {policyType: 'registration', ballot: ballotHash}))
+        const policyIdRes = await axios.get(route('ballot.policyId', { policyType: 'registration', ballot: ballotHash }))
+        const txHash = (await axios.get(route('ballot.txHash', { ballot: ballotHash }))).data;
+
+
 
         if (policyIdRes.status === 200) {
             policyId = policyIdRes.data;
@@ -45,15 +50,27 @@ export const useVoterStore = defineStore('voter', () => {
 
         // find policy in user's wallet
         const lucid = await ws.lucidInstance();
-        const utxos = await lucid.wallet.getUtxos();
+        const addr = await lucid.wallet?.address();
+        const utxos = (await axios.get(route('blockfrost-query') + `/addresses/${addr}/utxos`)).data;
+        let registration = utxos.find((item) => item.tx_hash == txHash)
+        const assets = registration.amount.reduce((acc, curr) => {
+            if (curr.unit === 'lovelace') {
+                acc.lovelace = curr.quantity;
+            } else {
+                acc[curr.unit] = curr.quantity;
+            }
+            return acc;
+        }, {});
+        registration = {
+            txHash: registration.tx_hash,
+            outputIndex: registration.output_index,
+            assets,
+            address: registration.address
+        };
 
-        const registrations = utxos.filter((utxo: UTxO) =>
-            Object.keys(utxo.assets).some(asset => asset.includes(policyId))
-        );
 
-
-        if (registrations.length > 0) {
-            voterRegistrations.value[ballotHash] = {policyId, registration: registrations[0]};
+        if (registration?.address) {
+            voterRegistrations.value[ballotHash] = { policyId, registration: registration };
         }
     }
 
@@ -72,6 +89,15 @@ export const useVoterStore = defineStore('voter', () => {
         }
     }
 
+    async function frostConfirm(ballotHash) {
+        setInterval(async () => {
+            if (confirmationCount.value < 7) {
+                await loadRegistration(ballotHash);
+                confirmationCount.value++;
+            }
+        }, 3000)
+    }
+
     const userVotingPower = function (ballotHash: string) {
         if (!ballotHash || !voterPowers.value[ballotHash]) {
             return '-';
@@ -79,6 +105,7 @@ export const useVoterStore = defineStore('voter', () => {
 
         return humanNumber(voterPowers.value[ballotHash], 5);
     };
+
 
     return {
         voter,
@@ -90,7 +117,9 @@ export const useVoterStore = defineStore('voter', () => {
         loadRegistration,
         registeredForBallot,
         confirmedOnChain,
-        onChainConfirmation: onChainConfirmation
+        onChainConfirmation: onChainConfirmation,
+        confirmationCount,
+        frostConfirm,
     }
 });
 

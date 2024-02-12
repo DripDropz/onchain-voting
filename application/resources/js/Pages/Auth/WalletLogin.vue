@@ -5,7 +5,6 @@
                 <h1 class="text-2xl font-semibold lg:text-3xl 2xl:text-5xl 3xl:text-6xl text-slate-700 dark:text-white">
                     Login
                 </h1>
-
                 <div class="output">Sign in with <span v-if="signTx">a hardware</span> wallet</div>
 
                 <div class="w-auto flex-0">
@@ -59,7 +58,7 @@
 
 <script lang="ts" setup>
 import Toggle from '@vueform/toggle';
-import {ref} from 'vue';
+import {onUnmounted, ref} from 'vue';
 import ModalRoute from '@/Components/ModalRoute.vue';
 import WalletloginBtn from '@/cardano/Components/WalletloginBtn.vue';
 import {walletMsgLogin} from '@/cardano/Services/WalletLoginService';
@@ -79,6 +78,8 @@ let loading = ref(false);
 
 const {close} = useModal();
 let signTx = ref(false)
+console.log({url: props.baseUrl });
+
 
 let signUser = async () => {
     loading.value = true;
@@ -94,11 +95,10 @@ let signUser = async () => {
             props.baseUrl);
     }
     close();
-    router.reload();
-    // close();
-    // router.visit(props?.baseUrl, {
-    //     preserveScroll: true,
-    //     preserveState: false
-    // });
 }
+
+onUnmounted(() => {
+    router.get(props.baseUrl);
+})
+
 </script>
