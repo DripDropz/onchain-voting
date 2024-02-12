@@ -15,7 +15,7 @@ defineProps<{
 
     <AuthenticatedLayout>
         <template #header>
-            <Nav :crumbs="props.crumbs"/>
+            <Nav :crumbs="crumbs"/>
         </template>
 
         <div class="py-12">

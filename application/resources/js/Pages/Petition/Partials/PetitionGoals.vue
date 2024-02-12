@@ -26,13 +26,19 @@
 </template>
 
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia';
 import PetitionData = App.DataTransferObjects.PetitionData;
+import {usePetitionSignatureStore} from '@/Pages/Petition/stores/petition-signature-store';
 
 const props = defineProps<{
     petition: PetitionData;
 }>();
 
-const visible = props.petition?.petition_goals?.visible?.value2;
-const featurePetition = props.petition?.petition_goals?.['feature-petition']?.value2
-const ballotEligible = props.petition?.petition_goals?.['ballot-eligible']?.value2
+let petitionSignatureStore = usePetitionSignatureStore();
+petitionSignatureStore.setPetition(props.petition);
+let { visible$, featurePetition$, ballotEligible$} = storeToRefs(petitionSignatureStore);
+
+const visible = visible$.value?.value2;
+const featurePetition = featurePetition$.value?.value2
+const ballotEligible = ballotEligible$.value?.value2
 </script>
