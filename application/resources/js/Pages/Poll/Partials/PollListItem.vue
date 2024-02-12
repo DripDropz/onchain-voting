@@ -70,7 +70,7 @@ const user = computed(() => page.props.auth.user);
 let showModal = ref(false);
 let form = useForm({
     selectedChoiceHash: "",
-    questionHash: publicPoll.value.question.hash,
+    questionHash: publicPoll.value.question?.hash,
 });
 
 watch([()=>singlePublicPoll.value], () => {

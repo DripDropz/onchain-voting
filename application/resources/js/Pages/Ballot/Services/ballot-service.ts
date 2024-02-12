@@ -3,6 +3,7 @@ import WalletService from "@/cardano/Services/wallet-service";
 import { useWalletStore } from "@/cardano/stores/wallet-store";
 import { Lucid, UTxO, } from "lucid-cardano";
 import { useVoterStore } from "@/Pages/Voter/stores/voter-store";
+import { storeToRefs } from "pinia";
 
 export default class BallotService {
     protected static lucid: Lucid;
@@ -39,6 +40,7 @@ export default class BallotService {
         try {
             // collect registration token
             const voterStore = useVoterStore();
+            const {userUtxosRef} = storeToRefs(voterStore);
             const registration = voterStore.ballotRegistration(ballotHash);
             const lucid = await BallotService.getLucidInstance();
 
@@ -52,6 +54,8 @@ export default class BallotService {
                     return utxo.txHash != registration?.registration?.txHash;
                 });
             }
+            
+
 
             // submit vote and registration token
             let response = await axios.post(

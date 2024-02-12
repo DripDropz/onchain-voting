@@ -61,13 +61,13 @@ Route::prefix('/query-chain')->as('frost.')->group(
     }
 );
 
-Route::get('query/{uri?}', function (Request $request, BlockfrostRequest $frost) {
+Route::get('query/{params?}', function (Request $request, BlockfrostRequest $frost) {
     $uri = str_replace('api/query','', $request->getRequestUri());
     $frost->setEndPoint($uri);
     $response = $frost->send();
 
     return $response->json();
-})->where('uri', '.*')->name('blockfrost-query');
+})->where('params', '.*')->name('blockfrost-query');
 
 
 Route::post('/parse/csv', [SnapshotImportController::class, 'parseCSV']);

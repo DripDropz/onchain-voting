@@ -54,11 +54,9 @@ export class WalletController {
 
     @Post('balances')
     async balances(@Req() request: Request) {
-        // let lucid;
         const [lucid] = await this.configService.getConfigs(request);
         lucid.selectWalletFromSeed(request?.body?.seed);
 
-        // let utxos = await lucid.wallet.getUtxos();
         let utxos = (await lucid.wallet.getUtxos())
             .map((utxo) => utxo.assets);
 
@@ -85,6 +83,8 @@ export class WalletController {
                 ...props,
             };
         });
+
+        console.log({balances});
 
         return this.toObject(balances);
     }

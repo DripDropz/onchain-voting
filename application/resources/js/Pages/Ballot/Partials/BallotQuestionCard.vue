@@ -24,7 +24,6 @@
 
                 <ul class="flex flex-col gap-3 mt-4 overflow-y-auto ballot-choices max-h-72">
                     <BallotQuestionChoice
-                        
                         :isBallotOpen="isBallotOpen"
                         @selected="onChoiceSelected($event)"
                         v-for="choice in question.choices" :key="choice.hash"
