@@ -30,9 +30,13 @@
                                             </button>
                                         </div>
                                     </div>
-                                    <input type="text" v-model="newOption" @keydown.enter.prevent="addOption"
+                                    <div class="flex flex-row items-center justify-between">
+                                        <input type="text" v-model="newOption" @keydown.enter.prevent="addOption"
+                                           required
                                            placeholder="What else?"
-                                           class="w-full text-lg font-bold outline-0 border-0 custom-input" />
+                                           class="text-lg font-bold outline-0 border-0 custom-input w-[75%]" />
+                                           <span class="text-sm font-bold text-center bg-sky-500/10 text-sky-800 rounded-lg w-[25%] px-1">Hit Enter</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -127,12 +131,20 @@ let removeOption = (index) => {
     form.options.splice(index, 1);
 };
 
-let submit = () => {
-    if (form.question && form.options.every((option) => option !== '')) {
-        AlertService.show(['Poll Created Successfully'], 'success');
-        form.post(route('polls.store'));
+let showOptionError = ref(false);
+
+let submit = async () => {
+    if (form.question && form.options.length >= 4) {
+        try {
+            await form.post(route('polls.store'));
+
+            AlertService.show(['Poll Created Successfully'], 'success');
+        } catch (error) {
+            AlertService.show(['Failed to create poll. Please try again.'], 'error');
+        }
     } else {
-        AlertService.show(['Please fill in all required fields'], 'error');
+        AlertService.show(['Please fill in all required fields and provide at least 4 options'], 'error');
+        showOptionError.value = true;
     }
 };
 </script>

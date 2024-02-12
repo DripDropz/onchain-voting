@@ -20,7 +20,7 @@
                     <label for="description" class="sr-only">Description</label>
                     <TextareaInput rows="4" name="description" id="description" v-model="form.description" placeholder="Write a description..."/>
                     <div>
-                    <p class="mt-1 ml-1 text-sm" 
+                    <p class="mt-3 ml-1 text-sm text-bold text-sky-600 dark:text-sky-500" 
                     :class="{ 'text-red-500': isExceedingDescriptionLimit }">
                         Word Count: {{ wordDescriptionCount }}/{{ wordDescriptionLimit }}
                         <span v-if="isExceedingDescriptionLimit" class="ml-1">(Word limit exceeded!You won't be able to submit this form.)</span>
@@ -50,7 +50,7 @@
                                class="relative w-full flex flex-1 border-0 pt-2.5 sm:text-sm sm:leading-6 font-medium text-gray-900 dark:text-gray-100 placeholder:text-gray-400 bg-sky-100 dark:bg-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-sky-600 dark:focus:ring-sky-700 rounded-lg"/>
                     </div>
                     <div>
-                        <p class="mt-1 ml-1 text-sm" 
+                        <p class="mt-1 ml-1 text-sm text-sky-600 dark:text-sky-500" 
                         :class="{ 'text-red-500': isExceedingVersionLimit }">
                             Word Count: {{ wordVersionCount }}/{{ wordVersionLimit }}
                             <span v-if="isExceedingVersionLimit" class="ml-1">(Word limit exceeded!You won't be able to submit this form.)</span>
@@ -290,7 +290,7 @@ const form = useForm({
     hash: props?.ballot?.hash,
     title: props?.ballot?.title ?? '',
     description: props?.ballot?.description ?? '',
-    version: props?.ballot?.version ?? 1,
+    version: props?.ballot?.version ?? '1',
     status: props?.ballot?.status ?? 'draft',
     type: props?.ballot?.type ?? 'snapshot',
     started_at: props?.ballot?.started_at,
