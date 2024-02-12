@@ -108,7 +108,7 @@ class PetitionController extends Controller
 
         $actions = [
             [
-                'label' => 'Edit',
+                'label' => 'Edit Petition',
                 'link' => route('petitions.create.stepOne', ['petition' => $petition])
             ],
             [
