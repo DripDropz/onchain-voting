@@ -1,16 +1,28 @@
 <template>
     <div class="flex flex-col bg-white rounded-lg dark:bg-gray-900 ">
-        <div class="flex flex-col items-center w-full">
-            <div class="relative float-left m-4 text-center">
+        <div class="flex flex-col items-center w-full h-full">
+            <div :class="{
+                    'relative float-left m-4 text-center': (neededSupportesNextGoal > 0),
+                    'flex flex-col items-center justify-center gap-4 float-left m-4 text-center h-full': !(neededSupportesNextGoal > 0),
+                }">
                 <div class="w-300">
-                    <PetitionSupportesDoughnut :chart-data="chartData" :chart-options="chartOptions" />
+                    <PetitionSupportesDoughnut v-if="neededSupportesNextGoal > 0" :chart-data="chartData" :chart-options="chartOptions" />
                 </div>
-                <div class="absolute  flex flex-col bottom-24 text-center w-full">
+                <div :class="{
+                        'absolute  flex flex-col bottom-24 text-center w-full': (neededSupportesNextGoal > 0),
+                        'flex flex-col text-center w-full': !(neededSupportesNextGoal > 0)
+                    }">
                     <span class="text-xl font-bold leading-tight xl:text-2xl">{{ petition.signatures_count }}</span>
                     <span> supporters</span>
                 </div>
-                <div v-if="neededSupportesNextGoal" class="flex flex-col items-center w-full">
+                <div v-if="neededSupportesNextGoal == null" class="flex flex-col items-center w-full">
+                    <span>waiting for admin to set next petition goals</span>
+                </div>
+                <div v-if="neededSupportesNextGoal > 0" class="flex flex-col items-center w-full">
                     <span>Only <span class="font-bold">{{ neededSupportesNextGoal }} more</span> supporters to your next goal.</span>
+                </div>
+                <div v-if="neededSupportesNextGoal == 0" class="flex flex-col items-center w-full">
+                    <span>All petition goals achieved</span>
                 </div>
             </div>
         </div>
@@ -47,8 +59,10 @@ let neededSupportesNextGoal = computed(() => {
         return Number(featurePetition?.value2) - props.petition?.signatures_count;
     } else if((Number(ballotEligible?.value2) - props.petition?.signatures_count) > 0) {
         return Number(ballotEligible?.value2) - props.petition?.signatures_count;
-    } else {
+    }else if((props.petition?.signatures_count - Number(ballotEligible?.value2)) >= 0) {
         return 0;
+    } else {
+        return null;
     }
 })
 

@@ -15,11 +15,15 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory([
-            'name' => env('APP_ADMIN_USERNAME', 'chainvote'),
-            'email' => env('APP_ADMIN_EMAIL', 'chainvote@dripdropz.io'),
-            'password' => Hash::make(env('APP_ADMIN_PASSWORD', 'ouroboros')),
-        ])->hasAttached(Role::where('name', RoleEnum::SUPER_ADMIN)->first())
-            ->create();
+        $adminUser = User::where('email', env('APP_ADMIN_EMAIL', 'chainvote@dripdropz.io'))->first();
+
+        if (!$adminUser instanceof User) {
+            User::factory([
+                'name' => env('APP_ADMIN_USERNAME', 'chainvote'),
+                'email' => env('APP_ADMIN_EMAIL', 'chainvote@dripdropz.io'),
+                'password' => Hash::make(env('APP_ADMIN_PASSWORD', 'ouroboros')),
+            ])->hasAttached(Role::where('name', RoleEnum::SUPER_ADMIN)->first())
+                ->create();
+        }
     }
 }

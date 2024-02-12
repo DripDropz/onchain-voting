@@ -4,8 +4,7 @@ import { Head } from '@inertiajs/vue3';
 import CreateUpdateBallotForm from "@/Pages/Auth/Ballot/Partials/CreateUpdateBallotForm.vue";
 import Nav from '../Breadcrumbs.vue';
 
-
-const props = defineProps<{
+defineProps<{
     status?: string;
     crumbs: []
 }>();

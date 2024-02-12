@@ -31,6 +31,7 @@ use Momentum\Modal\Modal;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Saloon\Exceptions\Request\RequestException;
 
 class BallotController extends Controller
 {
@@ -459,9 +460,13 @@ class BallotController extends Controller
     /**
      * Store a wallet and generate Ballot policy.
      * Calls Lucid API to generate policy.
-     * @todo add gate for confirming user create/update policies
      * @param Request $request
      * @param Ballot $ballot
+     * @return RedirectResponse
+     * @throws FatalRequestException
+     * @throws \JsonException
+     * @throws RequestException
+     * @todo add gate for confirming user create/update policies
      */
     public function storePolicy(Request $request, Ballot $ballot)
     {

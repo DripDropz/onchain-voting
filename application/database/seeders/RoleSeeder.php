@@ -15,7 +15,7 @@ class RoleSeeder extends Seeder
     {
         collect(RoleEnum::values())
             ->each(
-                fn ($role) => Role::create(['name' => $role])
+                fn ($role) => Role::findOrCreate($role)
             );
     }
 }
