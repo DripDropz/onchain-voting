@@ -8,6 +8,7 @@ use App\Models\Ballot;
 use App\Models\Question;
 use App\Models\QuestionChoice;
 use App\Models\QuestionResponse;
+use App\Models\Registration;
 use App\Models\User;
 use App\Models\VotingPower;
 use Illuminate\Http\Request;
@@ -77,5 +78,13 @@ class VoterController extends Controller
         ]);
         $ballot->questions = $questions;
         return BallotData::from($ballot);
+    }
+
+    public function getTx(Ballot $ballot)  
+    {
+        return Registration::where([
+            'user_id'=>auth()->user()->id,
+            'ballot_id'=>$ballot->id
+        ])->first()->registration_tx;
     }
 }

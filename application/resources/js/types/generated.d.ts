@@ -75,6 +75,8 @@ policy_id: string | null;
 context: string | null;
 created_at?: string | null;
 image_link?: string | null;
+wallet_balance?: number | null;
+wallet_funded?: boolean | null;
 };
 export type PollData = {
 hash: string | null;

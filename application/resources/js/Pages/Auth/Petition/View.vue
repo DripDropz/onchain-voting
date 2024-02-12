@@ -1,7 +1,7 @@
 <template>
     <Head title="Petition" />
 
-    <AuthenticatedLayout>
+    <AdminLayout>
         <template #header>
             <Nav :crumbs="props.crumbs" />
         </template>
@@ -12,12 +12,12 @@
                     </div>
                 </div>
             </div>
-    </AuthenticatedLayout>
+    </AdminLayout>
 
 </template>
 
 <script lang="ts" setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Nav from '../Breadcrumbs.vue';
 import PetitionData = App.DataTransferObjects.PetitionData;
 

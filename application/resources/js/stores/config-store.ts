@@ -11,6 +11,7 @@ export interface Config {
     logo: string;
     powered_by: string;
     show_created_by: boolean;
+    app_url:string
 }
 export interface ConfigStore {
     isDarkMode?: Boolean;

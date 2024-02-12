@@ -87,14 +87,16 @@ import { defineEmits, computed, ref, watch, ComputedRef, onMounted } from "vue";
 import Multiselect from '@vueform/multiselect';
 import Pagination from "@/types/pagination";
 import { onUpdated } from "vue";
+import PetitionData = App.DataTransferObjects.PetitionData;
 
 const props = defineProps<{
-    pagination: Pagination;
+    pagination: Pagination ;
 }>();
 
 let currPageRef = computed(() => props.pagination.current_page);
 let perPageRef = computed(() => props.pagination.per_page);
 let totalPages = computed(() => props.pagination.last_page);
+
 
 let currPage = ref<any>(currPageRef.value);
 let perPage = ref<any>(perPageRef.value);

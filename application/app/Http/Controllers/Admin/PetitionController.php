@@ -18,31 +18,92 @@ use App\DataTransferObjects\RuleData;
 use App\DataTransferObjects\BallotData;
 use Illuminate\Support\Facades\Redirect;
 use App\DataTransferObjects\PetitionData;
+use App\Enums\QueryParams;
+use Illuminate\Support\Stringable;
 
 class PetitionController extends Controller
 {
+
+    public array|null $filter;
+
+    protected int $currentPage;
+
+    protected int $limit;
+
+    protected null|string|Stringable $projectStatus = null;
+
     /**
      * Display the petition list.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $petitions = Petition::with('ballot')->get();
-        $crumbs = [
+        $petitions = $this->petitionsData($request);
 
-            [
+        $props = [
+            'perPage' => $this->limit,
+            'currentPage' => $this->currentPage,
+            'filter' => [
+                'status' => $this->projectStatus
+            ],
+            'counts' => $this->petitionsCount(request()),
+            'petitions' => $petitions,
+            'crumbs' => [
                 'label' => 'Petitions',
                 'link' => route('admin.petitions.index')
             ],
         ];
 
-        return Inertia::render(
-            'Auth/Petition/Index',
-            [
-                'petitions' => $petitions,
-                'crumbs' => $crumbs,
-            ]
-        );
+        return Inertia::render('Auth/Petition/Index', $props);
     }
+
+    protected function setFilters(Request $request)
+    {
+        $this->limit = $request->input(QueryParams::PER_PAGE, 6);
+        $this->currentPage = $request->input(QueryParams::PAGE, 1);
+
+        $this->projectStatus = match ($request->input(QueryParams::STATUS, null)) {
+            'r' => implode(',', ['pending', 'approved']),
+            'a' => 'published',
+            default => null
+        };
+
+        // dd($this->projectStatus);
+    }
+
+    private function petitionsCount(Request $request)
+    {
+        $allCount = Petition::with('status', ['published', 'pending', 'approved', 'draft', 'rejected'])->count();
+
+        $activeCount = Petition::where('status', ['published'])->count();
+        
+        $pendingCount = Petition::whereIn('status', ['pending', 'approved'])->count();
+
+        return [
+            'allPetitions' => $allCount,
+            'activeCount' => $activeCount,
+            'pendingCount' => $pendingCount,
+        ];
+    }
+
+    public function petitionsData(Request $request)
+{
+    $this->setFilters($request);
+
+    $petitions = Petition::latest();
+
+    if ($this->projectStatus !== null) {
+        $statuses = explode(',', $this->projectStatus);
+        $petitions = $petitions->whereIn('status', $statuses);
+    }
+
+    $results = $petitions->paginate($this->limit, ['*'], 'p', $this->currentPage)
+        ->onEachSide(1)
+        ->toArray();
+  
+    return $results;
+}
+
+   
 
     /**
      * Display a single petition.
@@ -69,16 +130,8 @@ class PetitionController extends Controller
         ]);
     }
 
-    public function petitionsData(Request $request)
-    {
-        $page = $request->query('page') ?? 1;
-        $perPage = $request->query('perPage') ?? 6;
 
-        $petitions = Petition::paginate($perPage, ['*'], 'page', $page);
-        return PetitionData::collection($petitions);
-    }
-
-    public function update(Request $request, Petition $petition, Ballot $ballot,)
+public function update(Request $request, Petition $petition, Ballot $ballot,)
     {
 
         switch ($request->status) {

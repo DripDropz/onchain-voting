@@ -21,22 +21,18 @@ class WalletLoginController extends Controller
     public function __construct(
         public AuthenticateWallet $authenticateWallet,
         public LucidConnector $connector
-    ){}
+    ) {
+    }
 
     public function showWalletLogin(Request $request)
     {
-        if (!! $request->hash) {
-            $baseUrl = url()->previous();
-            $baseRoute = previous_route_name();
-        } else {
-            $baseUrl = '/';
-            $baseRoute = 'home';
-        }
+        $baseUrl = url()->previous();
+        $baseRoute = previous_route_name();
 
         return Inertia::modal('Auth/WalletLogin', [
             'baseUrl' => $baseUrl,
         ])
-        ->baseRoute($baseRoute, $request->hash);
+            ->baseRoute($baseRoute, $request->hash);
     }
 
     public function signMessageLogin(Request $request)
@@ -75,7 +71,6 @@ class WalletLoginController extends Controller
         }
 
         return Redirect::back()->withErrors(['error' => 'Credentials mismatch']);
-
     }
 
     public function authenticate($request)

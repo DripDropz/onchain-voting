@@ -20,7 +20,7 @@ class BallotSeeder extends Seeder
             ->recycle(User::factory()->count(1), 'user')
             ->has(Snapshot::factory()->count(1), 'snapshot')
             ->has(
-                Question::factory(7)
+                Question::factory(1)
                     ->recycle(
                         User::factory()->count(1),
                         'user'

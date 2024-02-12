@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-row items-center justify-between relative">
+    <div class="relative flex flex-row items-center justify-between">
         <div
             class="relative border-4 border-sky-100 min-h-96 rounded-lg px-4 py-5 xl:px-6 xl:py-8 w-full lg:w-auto lg:min-w-[40rem] max-w-md">
 
@@ -22,9 +22,8 @@
                     </div>
                 </div>
 
-                <ul class="flex flex-col gap-3 ballot-choices max-h-72 overflow-y-auto mt-4">
+                <ul class="flex flex-col gap-3 mt-4 overflow-y-auto ballot-choices max-h-72">
                     <BallotQuestionChoice
-                        v-if="question.type != 'ranked'"
                         :isBallotOpen="isBallotOpen"
                         @selected="onChoiceSelected($event)"
                         v-for="choice in question.choices" :key="choice.hash"

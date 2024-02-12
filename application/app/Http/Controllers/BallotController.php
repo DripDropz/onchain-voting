@@ -91,11 +91,13 @@ class BallotController extends Controller
      */
     public function viewRegistration(Request $request, Ballot $ballot)
     {
+        $baseUrl = url()->previous();
         $ballot->load(['questions.choices', 'user_responses.choices']);
 
         return Inertia::modal('Ballot/Register')
             ->with([
                 'ballot' => BallotData::from($ballot),
+                'baseUrl'=> $baseUrl,
             ])
             ->baseRoute('ballot.view', $ballot->hash);
     }

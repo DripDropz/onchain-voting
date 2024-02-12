@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import CreateUpdateBallotForm from "@/Pages/Auth/Ballot/Partials/CreateUpdateBallotForm.vue";
 import Nav from '../Breadcrumbs.vue';
@@ -13,9 +13,9 @@ defineProps<{
 <template>
     <Head title="Ballot" />
 
-    <AuthenticatedLayout>
+    <AdminLayout>
         <template #header>
-            <Nav :crumbs="props.crumbs"/>
+            <Nav :crumbs="crumbs"/>
         </template>
 
         <div class="py-12">
@@ -28,5 +28,5 @@ defineProps<{
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </AdminLayout>
 </template>
