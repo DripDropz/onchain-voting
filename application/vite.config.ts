@@ -10,14 +10,14 @@ export default defineConfig({
         rollupOptions: {
             external: [
                 "lucid-cardano",
-                "momentum-modal"
+                // "momentum-modal"
             ]
         }
     },
     optimizeDeps: {
         exclude: [
             "lucid-cardano",
-            "momentum-modal"
+            // "momentum-modal"
         ]
     },
     server: {
