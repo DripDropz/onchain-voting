@@ -1,13 +1,13 @@
 <template>
     <Head title="Petition" />
 
-    <AuthenticatedLayout>
+    <AdminLayout>
         <template #header>
             <Breadcrumbs :crumbs="props.crumbs" />
         </template>
 
         <div class="py-12">
-            <div class="mx-auto space-y-6 max-w-7xl sm:px-6 lg:px-8">
+            <div class="space-y-6 inner-container">
                 <div class="flex flex-col gap-8 p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg dark:text-white">
                     <div class="flex justify-center w-full py-3">
                         <p class="text-xl leading-tight xl:text-2xl "> {{ petition.title }}</p>
@@ -67,7 +67,7 @@
             </div>
         </div>
         <div class="sticky bottom-0 flex justify-end px-16 bg-white sm:p-8 dark:bg-gray-800 sm:rounded-lg dark:text-white ">
-            <div class="flex gap-5" v-if="!petition.ballot">
+            <div class="flex gap-5 justify-end container" v-if="!petition.ballot">
                 <button
                     class="inline-flex items-center gap-x-2 rounded-md bg-white px-8 py-2.5 font-semibold text-sky-400 shadow-sm hover:bg-sky-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 border border-sky-400">
                     Reject
@@ -98,13 +98,14 @@
             </div>
 
         </div>
-    </AuthenticatedLayout>
+    </AdminLayout>
 </template>
 
 <script lang="ts" setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import PetitionData = App.DataTransferObjects.PetitionData;
 import moment from 'moment-timezone';
+import { Head } from '@inertiajs/vue3';
 import Criteria from '@/shared/components/Criteria.vue';
 import TallyCriteria from "@/shared/components/TallyCriteria.vue"
 import { router, useForm } from '@inertiajs/vue3';

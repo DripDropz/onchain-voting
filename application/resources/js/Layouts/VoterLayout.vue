@@ -21,7 +21,7 @@ withDefaults(
     });
 
 let configStore = useConfigStore();
-let {isDarkMode, showModal } = storeToRefs(configStore);
+let {isDarkMode, showModal} = storeToRefs(configStore);
 
 </script>
 
@@ -33,7 +33,7 @@ let {isDarkMode, showModal } = storeToRefs(configStore);
 
             <div
                 class="relative flex flex-col justify-start min-h-screen bg-center bg-dots-darker dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
-                <div class="relative z-50 w-full p-4 text-right border-b border-slate-100">
+                <div class="relative z-50 w-full py-4 text-right border-b border-slate-100">
                     <div class="container">
                         <Header :can-login="canLogin" :pageData="pageData"/>
                     </div>
@@ -41,12 +41,14 @@ let {isDarkMode, showModal } = storeToRefs(configStore);
 
                 <nav v-if="!$page.component.startsWith('Home')"
                      class="bg-white shadow dark:bg-gray-800" role="navigation" :crumbs="[]">
-                    <div class="flex justify-between items-center inner-container">
-                        <div class="breadcrumbs-wrapper">
-                            <Nav :crumbs="crumbs" />
-                        </div>
-                        <div class="actions-wrapper h-full">
-                            <PageActions :actions="actions" />
+                    <div class="container">
+                        <div class="flex justify-between items-center">
+                            <div class="breadcrumbs-wrapper">
+                                <Nav :crumbs="crumbs"/>
+                            </div>
+                            <div class="actions-wrapper h-full">
+                                <PageActions :actions="actions"/>
+                            </div>
                         </div>
                     </div>
                 </nav>

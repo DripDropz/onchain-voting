@@ -6,10 +6,13 @@ import PolicyData = App.DataTransferObjects.PolicyData;
 import ModalRoute from "@/Components/ModalRoute.vue";
 import { ComputedRef } from "vue";
 import { VARIABLES } from "@/models/variables";
+import { useModal } from "momentum-modal";
 
 const props = defineProps<{
     ballot: BallotData;
 }>();
+const { close } = useModal();
+
 
 let context = computed(() => {
     if (props?.ballot?.policies && props?.ballot?.policies.length > 0) return VARIABLES.VOTING;
@@ -40,6 +43,7 @@ let policy: ComputedRef<PolicyData|undefined> = computed(() => {
 
             <div class="p-6 smax-w-7xl">
                 <CreateUpdatePolicy
+                    @policy-created="close()"
                     :ballot="ballot"
                     :context="context"
                     :policy="policy"

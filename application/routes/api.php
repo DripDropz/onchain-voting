@@ -46,7 +46,8 @@ Route::prefix('/ballots')->as('config.')->group(function () {
                 'hosted_by_link',
                 'logo',
                 'powered_by',
-                'show_created_by'
+                'show_created_by',
+                'url'
             ])->toJson();
             
     })->name('app');

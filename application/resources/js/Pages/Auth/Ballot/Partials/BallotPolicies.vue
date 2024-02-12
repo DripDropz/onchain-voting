@@ -15,7 +15,7 @@
                     <div class="flex flex-row flex-wrap w-full gap-4">
                         <div v-if="registrationPolicy">
                             <BallotPolicyCard :policy="registrationPolicy"
-                                              :address="addresses.registrationPolicyAddress"
+                                              :address="addresses?.registrationPolicyAddress"
                                               :ballot="ballot">
                                 Registration Policy
                             </BallotPolicyCard>
@@ -29,7 +29,7 @@
                     <div class="flex flex-row flex-wrap w-full gap-4">
                         <div v-if="votingPolicy">
                             <BallotPolicyCard :policy="votingPolicy"
-                                              :address="addresses.votingPolicyAddress"
+                                              :address="addresses?.votingPolicyAddress"
                                               :ballot="ballot">
                                 Voting Policy
                             </BallotPolicyCard>

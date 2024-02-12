@@ -16,6 +16,7 @@
                         <p class="mb-4 text-lg font-bold leading-tight xl:text-xl">Profile Overview</p>
                         <div class="grid gap-6 lg:grid-cols-2">
                             <PetitionSupporters :petition="petition" />
+
                             <div class="p-6 bg-white rounded-lg dark:bg-gray-900">
                                 <div>
                                     <span class="font-bold">Petition Goals</span>
@@ -73,8 +74,6 @@
 <script lang="ts" setup>
 import VoterLayout from "@/Layouts/VoterLayout.vue";
 import PetitionData = App.DataTransferObjects.PetitionData;
-import {PencilIcon} from "@heroicons/vue/20/solid";
-import {ArrowTopRightOnSquareIcon} from "@heroicons/vue/20/solid";
 import {LockClosedIcon} from "@heroicons/vue/20/solid";
 import {Link} from "@inertiajs/vue3";
 import {LinkIcon} from "@heroicons/vue/20/solid";
@@ -89,8 +88,6 @@ import { useConfigStore } from "@/stores/config-store";
 import { storeToRefs } from "pinia";
 import axios from "axios";
 import { useForm } from '@inertiajs/vue3';
-
-
 
 const props = defineProps<{
     petition: PetitionData;
@@ -114,7 +111,6 @@ const publishPetition = async () => {
     }
 };
 
-
 let copy = (link) => {
     try {
         navigator.clipboard.writeText(link);
@@ -126,7 +122,4 @@ let copy = (link) => {
 
 let link = route('petitions.view', { petition: props.petition.hash });
 
-
-
 </script>
-

@@ -107,7 +107,7 @@ class BallotController extends Controller
             ],
         ];
         return Inertia::render('Auth/Ballot/View', [
-            'ballot' => BallotData::from($ballot->load('snapshot', 'questions.choices')),
+            'ballot' => BallotData::from($ballot->load('snapshot', 'questions.choices', 'policies')),
             'crumbs' => $crumbs,
         ]);
     }
@@ -184,7 +184,7 @@ class BallotController extends Controller
     public function destroy(Request $request, Ballot $ballot): RedirectResponse
     {
         $password = $request->input('password');
-        if(!$password){
+        if (!$password) {
             return Redirect::back()->withErrors(['password' => 'Password is required.']);
         }
 
@@ -266,7 +266,8 @@ class BallotController extends Controller
                 'link' => route('admin.ballots.questions.edit', [
                     'ballot' => $ballot->hash,
                     'question' => $question->hash
-                ])],
+                ])
+            ],
         ];
 
         return Inertia::render('Auth/Question/Edit', [
@@ -437,6 +438,7 @@ class BallotController extends Controller
 
     public function createPolicy(Request $request, Ballot $ballot)
     {
+
         $ballot->load(['policies']);
         // @todo add similar gate for policies
         // $response = Gate::inspect('create', Policy::class);
@@ -475,59 +477,64 @@ class BallotController extends Controller
             'seedphrase' => 'required|string',
         ]);
 
-        DB::beginTransaction();
-        // create policy
-        $policyRequest = new GetPolicy;
-        $policyRequest->body()->merge([
-            'seed' => $data['seedphrase']
-        ]);
-        $lucid = new LucidConnector;
-        $policyResponse = $lucid->send($policyRequest);
-        if ($policyResponse->failed()) {
+        try {
+            DB::beginTransaction();
+            // create policy
+            $policyRequest = new GetPolicy;
+            $policyRequest->body()->merge([
+                'seed' => $data['seedphrase']
+            ]);
+            $lucid = new LucidConnector;
+            $policyResponse = $lucid->send($policyRequest);
+            if ($policyResponse->failed()) {
+                DB::rollBack();
+                return Redirect::back()
+                    ->withErrors(['error' => $policyResponse->object()?->message]);
+            }
+
+            $policy = new Policy;
+            $policy->script = $policyResponse->json();
+            $policy->user_id = Auth::id();
+            $policy->model_id = $ballot->id;
+            $policy->model_type = Ballot::class;
+            $policy->context = $data['context'];
+            $policy->save();
+
+            // creaet wallet that will be the signer on policy
+            $wallet = new Wallet();
+            $wallet->user_id = Auth::id();
+            $wallet->model_id = $ballot->id;
+            $wallet->model_type = Ballot::class;
+            $wallet->context_id = $policy->id;
+            $wallet->context_type = Policy::class;
+            $wallet->passphrase = $data['seedphrase'];
+
+            $wallet->save();
+
+            DB::commit();
+
+            // generate policy id
+            $connector = new LucidConnector;
+            $getPolicyIdRequest = new GetPolicyId;
+
+            $getPolicyIdRequest->body()->merge([
+                'seed' => $policy?->wallet?->passphrase,
+            ]);
+            $response = $connector->sendAndRetry(
+                $getPolicyIdRequest,
+                2,
+                300,
+                fn ($exception) => $exception instanceof FatalRequestException
+            );
+            $policy->policy_id = $response->body();
+            $policy->save();
+
+
+            return Redirect::back();
+        } catch (\Exception $e) {
             DB::rollBack();
-            return Redirect::back()
-                ->withErrors(['error' => $policyResponse->object()?->message]);
+            return Redirect::back()->withErrors(['error' => 'An error occurred while creating the policy. Please try again later.']);
         }
-
-        $policy = new Policy;
-        $policy->script = $policyResponse->json();
-        $policy->user_id = Auth::id();
-        $policy->model_id = $ballot->id;
-        $policy->model_type = Ballot::class;
-        $policy->context = $data['context'];
-        $policy->save();
-
-        // creaet wallet that will be the signer on policy
-        $wallet = new Wallet();
-        $wallet->user_id = Auth::id();
-        $wallet->model_id = $ballot->id;
-        $wallet->model_type = Ballot::class;
-        $wallet->context_id = $policy->id;
-        $wallet->context_type = Policy::class;
-        $wallet->passphrase = $data['seedphrase'];
-
-        $wallet->save();
-
-        DB::commit();
-
-        // generate policy id
-        $connector = new LucidConnector;
-        $getPolicyIdRequest = new GetPolicyId;
-
-        $getPolicyIdRequest->body()->merge([
-            'seed' => $policy?->wallet?->passphrase,
-        ]);
-        $response = $connector->sendAndRetry(
-            $getPolicyIdRequest,
-            2,
-            300,
-            fn ($exception) => $exception instanceof FatalRequestException
-        );
-        $policy->policy_id = $response->body();
-        $policy->save();
-
-
-        return Redirect::back();
     }
 
     public function policyAddresses($ballot)
@@ -558,7 +565,7 @@ class BallotController extends Controller
             $lucid = new LucidConnector;
             $policyResponse = $lucid->send($policyAddress);
 
-            $registrationPolicyAddress = $policyResponse->body()?? null;
+            $registrationPolicyAddress = $policyResponse->body() ?? null;
         }
 
         if ($secondPolicySeed) {
@@ -597,7 +604,7 @@ class BallotController extends Controller
         $startDate = Carbon::parse($ballot->started_at);
 
         if ($currentDate->greaterThanOrEqualTo($startDate)) {
-            throw new \Exception ('Cannot remove snapshot, the ballot has already started!');
+            throw new \Exception('Cannot remove snapshot, the ballot has already started!');
         }
 
         try {
@@ -607,6 +614,4 @@ class BallotController extends Controller
             throw $e;
         }
     }
-
-
 }

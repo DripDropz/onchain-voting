@@ -177,7 +177,7 @@ class PollController extends Controller
         $validatedData = $request->validate([
             // 'pollTitle' => 'required|string|max:255',
             'question' => 'required|string|max:255',
-            'options' => 'required|array|min:4',
+            'options' => 'required|array|min:1',
             'options.*' => 'required|string|max:255',
             'publishOnchain' => 'boolean',
         ]);

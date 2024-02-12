@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full">
+    <div class="relative w-full">
         <div class="flex flex-row">
             <button @click.prevent="open = !open" :aria-expanded="open"
                 class="flex flex-row justify-center w-full p-1.5 " :theme="'primary2'"
@@ -63,14 +63,14 @@
 import { WalletList } from '../utils/wallet-list';
 import WalletService from '../Services/wallet-service';
 import Wallet from '../models/wallet-data'
-import { computed, ref, Ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, Ref } from "vue";
 import { useWalletStore } from "../stores/wallet-store"
 import { storeToRefs } from 'pinia';
 import { onClickOutside } from '@vueuse/core';
 import { XMarkIcon } from "@heroicons/vue/20/solid";
 import AlertService from '@/shared/Services/alert-service';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-
+import { router } from '@inertiajs/vue3';
 
 const props = withDefaults(
     defineProps<{
@@ -136,4 +136,5 @@ function disconnectWallet() {
         AlertService.show(["Wallet disconnected successfully."], "success");
     }
 }
+
 </script>

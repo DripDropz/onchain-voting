@@ -45,6 +45,8 @@ Route::prefix('/ballots/{ballot}')->as('ballot.')->group(function () {
     Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');
     Route::get('/missing-snapshot', [BallotController::class, 'missingSnapshot'])->name('missing.snapshot');
     Route::get('/policy-id/{policyType}', [BallotController::class, 'policyId'])->name('policyId');
+    Route::get('/tx-hash', [VoterController::class, 'getTx'])->name('txHash');
+
 
     Route::post('/vote/start', [BallotController::class, 'startVoting'])->name('startVoting');
     Route::post('/vote/submit', [BallotController::class, 'completeVoting'])->name('completeVoting');

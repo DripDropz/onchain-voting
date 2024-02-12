@@ -1,7 +1,8 @@
-import {Controller, Get, Inject, Post, Req,} from '@nestjs/common';
+import {Controller, Get, Inject, Post, Req } from '@nestjs/common';
 import {fromHex, fromUnit, getAddressDetails, Lucid, M, MintingPolicy, toHex, toText,} from 'lucid-cardano';
 import {Request} from 'express';
 import {AppConfigService} from '../../services/app-config.service.js';
+import axios from 'axios';
 
 @Controller('wallet')
 export class WalletController {
@@ -86,6 +87,28 @@ export class WalletController {
         });
 
         return this.toObject(balances);
+    }
+
+    @Post('balance')
+    async balance(@Req() request: Request) {
+        const [lucid, projectId, blockfrostUrl] = await this.configService.getConfigs(request);
+        lucid.selectWalletFromSeed(request?.body?.seed);
+        let stakeAddr = await lucid.wallet.rewardAddress();
+
+        const axiosInstance = axios.create({
+            baseURL: blockfrostUrl,
+            headers: {
+              'Content-Type': 'application/json',
+              'project_id': projectId,
+            },
+        });
+
+        try {
+            const stakeResponse = await axiosInstance.get(`/accounts/${stakeAddr}`);
+            return stakeResponse.data.controlled_amount / 1000000;
+        } catch (error) {
+            console.error('Error fetching wallet balance:', error.message);
+        }
     }
 
     @Post('authenticate')

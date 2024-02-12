@@ -28,7 +28,7 @@
             </div>
         </div>
 
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-2 h-20">
             <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">
                 Receiving address
             </div>
@@ -36,6 +36,9 @@
                 {{ address }}
             </div>
         </div>
+
+        <WalletBalance :policy="policy"/>
+
         <div class="flex flex-col gap-3 mt-5">
             <div class="flex flex-col gap-2">
                 <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">
@@ -101,6 +104,7 @@ import AlertService from '@/shared/Services/alert-service';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import TextInput from '@/Components/TextInput.vue';
+import WalletBalance from './WalletBalance.vue';
 
 const props = defineProps<{
     policy: PolicyData;

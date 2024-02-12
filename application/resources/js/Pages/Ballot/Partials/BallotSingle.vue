@@ -53,7 +53,7 @@
                                         @record-onchain="submitToChain()"
                                         :registeredToVote="registeredToVote"
                                         :working="working"
-                                        :userResponse="userResponses$[question.hash]" />
+                                        :userResponse="userResponses$[question.hash]"/>
 
                     <ConnectWalletToVote v-if="!wallet && isBallotOpen"/>
 
@@ -78,7 +78,8 @@
                                     <h3 class="text-2xl font-bold">To Vote </h3>
                                     <ol class="flex flex-col gap-2 ml-5 text-lg text-white list-decimal list-outside xl:text-xl">
                                         <li class="text-gray-300">Select Choice</li>
-                                        <li class="text-gray-300">Hit Save. You will be given the choice to change your vote or
+                                        <li class="text-gray-300">Hit Save. You will be given the choice to change your
+                                            vote or
                                             submit on change
                                         </li>
                                         <li class="text-gray-300">Submit on chain and Sign Tx.</li>
@@ -91,11 +92,11 @@
                     <div class="flex flex-col items-center justify-end gap-4">
                         <div
                             class="relative bg-sky-700 shadow-sm rounded-lg py-5 xl:px-6 xl:py-8 w-full lg:w-auto lg:min-w-[36rem] max-w-md flex flex-row h-auto">
-                            <QuestionChoicesChart :question="question" />
+                            <QuestionChoicesChart :question="question"/>
                         </div>
 
                         <span class="ml-auto text-right text-white title2">
-                            {{isBallotOpen ? 'Live Results' : 'Final Results'}}
+                            {{ isBallotOpen ? 'Live Results' : 'Final Results' }}
                         </span>
                     </div>
                 </div>
@@ -133,7 +134,7 @@ const props = withDefaults(defineProps<{
 
 const voterStore = useVoterStore();
 const {voterRegistrations} = storeToRefs(voterStore);
-const { confirmedOnChain } = storeToRefs(voterStore);
+const {confirmedOnChain} = storeToRefs(voterStore);
 
 voterStore.loadRegistration(props.ballot.hash).then(() => {
     registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
@@ -182,10 +183,10 @@ if (props.ballot.hash) {
     registeredToVote.value = false;
 }
 
-watch([()=>voterRegistrations.value], () => {
+watch([() => voterRegistrations.value], () => {
     registeredToVote.value = !!voterStore.registeredForBallot(props.ballot.hash);
     voterStore.onChainConfirmation(props.ballot.hash);
-},{deep:true})
+}, {deep: true})
 
 async function saveBallotResponse(response: BallotResponseData) {
     savingResponse.value = true;
@@ -240,7 +241,7 @@ async function submitToChain() {
     savingResponse.value = true;
     await BallotService.submitVote(props.ballot.hash);
     savingResponse.value = false;
-    window.location.reload();
+    router.reload();
 }
 
 

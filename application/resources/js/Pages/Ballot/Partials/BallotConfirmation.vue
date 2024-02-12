@@ -1,7 +1,7 @@
 <template>
     <div
         class="absolute top-0 left-0 z-20 flex items-center justify-center w-full h-full p-8 text-white rounded-lg bg-sky-800/90">
-        <div class="w-4/5 h-full p-1 bg-sky-700 rounded-lg">
+        <div class="w-4/5 h-full p-1 rounded-lg bg-sky-700">
             <Spinner v-if="savingResponse" class="absolute top-0 left-0 z-30" color="yellow" size="10" />
 
             <div class="flex flex-col justify-start h-full gap-4 text-center">
@@ -32,7 +32,7 @@
                     <div class="flex justify-center gap-3 p-3 mt-auto">
                         <div class="flex flex-col justify-center">
                             <button  v-if="!voteRecordedOnChain" @click="emit('change-choice')"
-                                class="px-2 lg:px-3 py-1 text-xs xl:text-sm border border-white border-dashed rounded-lg hover:bg-sky-900/90">
+                                class="px-2 py-1 text-xs border border-white border-dashed rounded-lg lg:px-3 xl:text-sm hover:bg-sky-900/90">
                                 Change
                             </button>
                         </div>
@@ -42,8 +42,8 @@
                             Save
                         </button>
 
-                        <button v-if="voteSaved && !voteRecordedOnChain && !hasUnansweredQuestions" @click="emit('record-onchain')" type="button"
-                                class="rounded-full px-4 lg:px-6 py-0.5 xl:py-1 text-md xl:text-xl font-semibold text-sky-950 shadow-sm bg-sky-100 hover:bg-sky-300">
+                            <button v-if="voteSaved && !voteRecordedOnChain && !hasUnansweredQuestions" @click="emit('record-onchain')" type="button"
+                                    class="rounded-full px-4 lg:px-6 py-0.5 xl:py-1 text-md xl:text-xl font-semibold text-sky-950 shadow-sm bg-sky-100 hover:bg-sky-300">
                             Record ballot on chain
                         </button>
 
@@ -61,7 +61,7 @@
 
                     <div class="mt-6">
                         <a target="_blank" :href="`${config?.explorer}/${submittedVote}`"
-                            class="px-4 py-2 text-sm font-semibold text-white bg-sky-900 rounded-lg hover:bg-sky-800">
+                            class="px-4 py-2 text-sm font-semibold text-white rounded-lg bg-sky-900 hover:bg-sky-800">
                             View Transaction
                         </a>
                     </div>

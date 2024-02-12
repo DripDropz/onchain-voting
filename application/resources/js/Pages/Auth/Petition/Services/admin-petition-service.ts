@@ -8,8 +8,9 @@ export default class AdminPetitionService {
     public static async getPetitions(queryData?: (PetitionsQuery|null)): Promise<PaginatedResponse<PetitionData>> {
         try {
             const queryParams = {
-                page: queryData?.p,
-                perPage: queryData?.l,
+                p: queryData?.p,
+                l: queryData?.l,
+                ss: queryData?.ss,
             };
 
             const response = await axios.get(route('petitionsData'), {

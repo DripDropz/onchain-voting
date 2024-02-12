@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import DeleteBallotForm from "@/Pages/Auth/Ballot/Partials/DeleteBallotForm.vue";
 import BallotData = App.DataTransferObjects.BallotData;
@@ -22,7 +22,7 @@ const props = defineProps<{
 <template>
     <Head title="Ballot" />
 
-    <AuthenticatedLayout>
+    <AdminLayout>
         <template #header>
             <Nav :crumbs="props.crumbs"/>
         </template>
@@ -51,5 +51,5 @@ const props = defineProps<{
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </AdminLayout>
 </template>

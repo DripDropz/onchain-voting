@@ -21,7 +21,7 @@
             </div>
             <div class="flex-shrink-0">
                 <button @click.prevent="saveSeedPhrase"
-                        class="inline-flex items-center px-3 py-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">
+                        class="inline-flex items-center px-3 py-2 text-sm font-semibold text-white rounded-md shadow-sm bg-sky-600 hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">
                         {{ ballot ? 'Update' : 'Create' }}
                 </button>
             </div>
@@ -36,6 +36,7 @@ import TextareaInput from '@/Components/TextareaInput.vue';
 import { computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import AlertService from '@/shared/Services/alert-service';
+import { emit } from 'process';
 
 const props = defineProps<{
     ballot: BallotData;
@@ -55,12 +56,15 @@ const policyString = computed(() => {
     return ''
 });
 
+const emit = defineEmits(['policy-created'])
+
 function saveSeedPhrase() {
     form.post(route('admin.ballots.policies.store', {ballot: props.ballot?.hash}), {
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
                 AlertService.show(['Wallet created. Policy generated successfully'], 'success');
+                emit('policy-created')
             },
             onError: (errors) => {
                 AlertService.show(
