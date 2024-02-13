@@ -13,7 +13,8 @@ router.get('/get-policy', async (req, res) => {
 });
 
 router.post('/address', async (req, res) => {
-    res.send(await req.Lucid.wallet.address())
+    const address = await req.Lucid.wallet.address();
+    res.send({"address": address});
 });
 
 router.post('/balances', async (req, res) => {
