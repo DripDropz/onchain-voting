@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Log;
 
 class Policy extends Model
 {
@@ -50,13 +51,14 @@ class Policy extends Model
             get: function () {
                 $seed = $this->wallet->passphrase;
                 $walletBalance = new GetBalance;
-                $walletBalance->body()->merge([
-                    'seed' => $seed
-                ]);
+                $walletBalance->body()->merge(compact('seed'));
                 $lucid = new LucidConnector;
                 $walletResponse = $lucid->send($walletBalance);
-                $balance = $walletResponse->body();
-                return is_numeric($balance) ? (float)$balance : 0;
+                $balance = $walletResponse->json('lovelace.amount');
+                if (is_numeric($balance)) {
+                    return (float) $balance / 1_000_000;
+                }
+                return 0;
             }
         );
     }
@@ -65,7 +67,7 @@ class Policy extends Model
     {
         return Attribute::make(
             get: function () {
-                return $this->walletBalance > 5;
+                return $this->walletBalance >= 5;
             }
         );
     }

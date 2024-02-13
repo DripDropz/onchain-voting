@@ -4,11 +4,11 @@ import {fromHex, fromUnit, getAddressDetails, M, toHex, toText} from "lucid-card
 
 const router = express.Router();
 
-router.get('/get-policy-id', async (req, res) => {
+router.post('/get-policy-id', async (req, res) => {
     res.send(await req.Lucid.utils.mintingPolicyToId(await generatePolicy(req.Lucid)));
 });
 
-router.get('/get-policy', async (req, res) => {
+router.post('/get-policy', async (req, res) => {
     res.send(await generatePolicy(req.Lucid));
 });
 

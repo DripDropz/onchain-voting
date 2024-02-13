@@ -12,6 +12,7 @@ use App\Models\Registration;
 use App\Models\User;
 use App\Models\VotingPower;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class VoterController extends Controller
 {
@@ -80,11 +81,15 @@ class VoterController extends Controller
         return BallotData::from($ballot);
     }
 
-    public function getTx(Ballot $ballot)  
+    public function getTx(Ballot $ballot)
     {
+        if (!auth()->check()) {
+            return null;
+        }
+
         return Registration::where([
             'user_id'=>auth()->user()->id,
             'ballot_id'=>$ballot->id
-        ])->first()->registration_tx;
+        ])->first()?->registration_tx;
     }
 }
