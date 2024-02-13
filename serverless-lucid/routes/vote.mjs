@@ -4,29 +4,33 @@ import {toUnit} from "lucid-cardano";
 
 const router = express.Router();
 
-router.post('mint', async (req, res) => {
+router.post('/mint', async (req, res) => {
     if (!req.body?.votingSeed || !req.body?.registrationSeed) {
         res.status(400).send("Invalid Wallet Data.");
         return;
     }
 
-    const registration = {policyId, registration} = req.body?.registration;
-    const assets = Object.keys(registration?.registration?.assets);
-    const registrationToken = assets.find((asset) => asset.includes(registration.policyId));
+    const votingMinter = await getLucid(req);
+    votingMinter.selectWalletFromSeed(req.body?.votingSeed);
 
     const registrationMinter = await getLucid(req);
     registrationMinter.selectWalletFromSeed(req.body.registrationSeed);
-    const registrationPolicy = await generatePolicy(req.Lucid);
+
+    const registration = req.body?.registration;
+    const assets = Object.keys(registration?.registration?.assets);
+    const registrationToken = assets.find((asset) => asset.includes(registration.policyId));
+
+    const registrationPolicy = await generatePolicy(registrationMinter);
 
     const assetName = req.body?.assetName;
 
-    const votingMinter = await getLucid(req);
-    votingMinter.selectWalletFromSeed(req.body?.votingSeed);
     const votingPolicy = await generatePolicy(votingMinter);
     const votingPolicyId = votingMinter.utils.mintingPolicyToId(votingPolicy);
     const votingUnit = toUnit(votingPolicyId, assetName);
 
     const utxos = req.body?.utxos;
+
+    const voter = await getLucid(req);
 
     voter.selectWalletFrom({
         address: registration?.registration?.address,

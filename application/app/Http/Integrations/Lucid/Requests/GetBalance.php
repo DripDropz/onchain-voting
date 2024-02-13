@@ -21,6 +21,6 @@ class GetBalance extends Request implements HasBody
      */
     public function resolveEndpoint(): string
     {
-        return '/wallet/balance';
+        return '/wallet/balances';
     }
 }
