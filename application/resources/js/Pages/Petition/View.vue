@@ -1,12 +1,12 @@
 <template>
     <VoterLayout page="Petition" :crumbs="crumbs" :actions="actions">
-        <section class="py-12 w-full">
+        <section class="w-full py-12">
             <div class="inner-container">
                 <div v-if="petition.status === 'published'">
                     <PetitionSingle :key="petition.hash" :petition="petition" :signature="signature" />
                 </div>
-                <div v-else>
-                    <p class="text-lg font-semibold text-center">This petition is not yet published.</p>
+                <div v-else class="flex flex-row justify-center my-8 border rounded-lg border-slate-900 dark:border-slate-700 dark:text-slate-100">
+                    <p class="py-16 text-2xl font-semibold text-center dark:text-white">This petition is not yet published.</p>
                 </div>
             </div>
             <Modal :show="showModal">

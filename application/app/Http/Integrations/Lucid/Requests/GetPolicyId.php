@@ -14,7 +14,7 @@ class GetPolicyId extends Request implements HasBody
     /**
      * Define the HTTP method
      */
-    protected Method $method = Method::POST;
+    protected Method $method = Method::GET;
 
     /**
      * Define the endpoint for the request

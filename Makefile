@@ -27,7 +27,9 @@ init:
 
 .PHONY: backend-install
 backend-install:
-	$(sail) composer i
+	docker run --rm --interactive --tty \
+              --volume ${PWD}/application:/app \
+              composer install --ignore-platform-reqs
 
 .PHONY: frontend-install
 frontend-install:

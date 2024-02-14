@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Enums\PolicyTypeEnum;
 use App\Http\Integrations\Lucid\LucidConnector;
-use App\Http\Integrations\Lucid\Requests\GetBalance;
+use App\Http\Integrations\Lucid\Requests\GetBalances;
 use App\Http\Traits\HasHashIds;
 use App\Models\Traits\HashIdModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Support\Facades\Log;
 
 class Policy extends Model
 {
@@ -50,7 +49,7 @@ class Policy extends Model
         return Attribute::make(
             get: function () {
                 $seed = $this->wallet->passphrase;
-                $walletBalance = new GetBalance;
+                $walletBalance = new GetBalances;
                 $walletBalance->body()->merge(compact('seed'));
                 $lucid = new LucidConnector;
                 $walletResponse = $lucid->send($walletBalance);

@@ -31,8 +31,7 @@ class WalletLoginController extends Controller
 
         return Inertia::modal('Auth/WalletLogin', [
             'baseUrl' => $baseUrl,
-        ])
-            ->baseRoute($baseRoute, $request->hash);
+        ])->baseURL($baseUrl);
     }
 
     public function signMessageLogin(Request $request)

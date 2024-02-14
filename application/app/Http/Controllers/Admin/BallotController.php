@@ -23,7 +23,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -532,17 +531,7 @@ class BallotController extends Controller
 
 
             return Redirect::back();
-        } catch (\Throwable $e) {
-            Log::error('Failed to store policy', [
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'previous' => ($e->getPrevious() ? [
-                    'error' => $e->getPrevious()->getMessage(),
-                    'file' => $e->getPrevious()->getFile(),
-                    'line' => $e->getPrevious()->getLine(),
-                ] : null),
-            ]);
+        } catch (\Exception $e) {
             DB::rollBack();
             return Redirect::back()->withErrors(['error' => 'An error occurred while creating the policy. Please try again later.']);
         }
