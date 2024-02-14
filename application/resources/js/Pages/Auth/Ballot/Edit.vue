@@ -33,7 +33,7 @@ const props = defineProps<{
                     <CreateUpdateBallotForm :ballot="ballot" class="w-full" />
                 </div>
 
-                <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
+                <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg" id="ballot-questions">
                     <BallotQuestions :questions="ballot?.questions || []" :ballot="ballot" />
                 </div>
 
