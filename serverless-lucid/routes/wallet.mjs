@@ -14,6 +14,8 @@ router.post('/get-policy', async (req, res) => {
 
 router.post('/address', async (req, res) => {
     const address = await req.Lucid.wallet.address();
+    console.log('address.value', address);
+    console.log('address.req', req.body);
     res.send({"address": address});
 });
 
