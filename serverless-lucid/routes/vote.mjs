@@ -74,7 +74,6 @@ router.post('/mint', async (req, res) => {
         res.send({tx: tx.toString()});
     } catch (e) {
         console.error('Vote/Mint Error', e);
-        console.error('Request Body', req.body);
         res.status(400).send("Vote/Mint transaction failed");
     }
 });
