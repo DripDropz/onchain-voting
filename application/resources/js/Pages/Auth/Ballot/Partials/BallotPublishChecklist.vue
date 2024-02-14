@@ -22,7 +22,7 @@
                                 </span>
                             </div>
                             <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
-                                <div>
+                                <div class="w-1/3">
                                     <p v-if="!event.utility" class="text-sm"
                                         :class="[event.stepComplete ? 'text-black dark:text-white' : 'text-gray-500']">
                                         {{
@@ -30,6 +30,11 @@
                                             ? event.target
                                             : event.content
                                         }}
+                                        <span v-if="event?.totalNumber" class="flex flex-col">
+                                            ({{
+                                                event?.totalNumber
+                                            }})
+                                        </span>
                                     </p>
                                     <p v-else class="text-sm"
                                         :class="[event.stepComplete ? 'text-black dark:text-white' : 'text-gray-500']">
@@ -38,26 +43,56 @@
                                         }}
                                     </p>
                                 </div>
-                                <div class="text-sm text-right whitespace-nowrap" v-if="event.stepComplete"
+                                <div class="text-sm text-right whitespace-nowrap w-1/3" v-if="event.stepComplete"
                                     :class="[event.datetime ? 'text-black dark:text-white' : 'text-gray-500']">
                                     <UseTimeAgo v-slot="{ timeAgo }" :time="toUserTimezone(event.datetime)">
                                         {{ timeAgo }}
                                     </UseTimeAgo>
                                 </div>
-                                <div>
-                                    <div v-if="event?.btnContent">
+                                <div class="w-1/3" v-if="ballot?.status !== 'published'">
+                                    <div v-if="event?.content === 'Add Onchain Policy'">
                                         <Link as="button" :href="event?.href"
-                                            class="px-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                                            :disabled="!timeline?.[eventIdx - 1]?.stepComplete || hasPolicies"
+                                            class=" w-full px-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                                            :class="{ 'hover:bg-slate-500 bg-slate-500 cursor-not-allowed': !timeline?.[eventIdx - 1]?.stepComplete || hasPolicies }">
+                                        {{ event?.btnContent }}
+                                        </Link>
+                                    </div>
+                                    <div v-if="event?.btnContent && event?.content === 'Create question'">
+                                        <Link as="button" :href="event?.href"
+                                            class="w-full px-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
                                             :class="{ 'hover:bg-slate-500 bg-slate-500 cursor-not-allowed': !timeline?.[eventIdx - 1]?.stepComplete }">
+                                        {{ event?.btnContent }}
+                                        </Link>
+                                    </div>
+                                    <div
+                                        v-if="event?.btnContent && event?.content === 'Add choices to question' && ballot?.questions.length <= 1">
+                                        <Link as="button" :href="event?.href"
+                                            class="w-full px-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                                            :class="{ 'hover:bg-slate-500 bg-slate-500 cursor-not-allowed': !timeline?.[eventIdx - 1]?.stepComplete }">
+                                        {{ event?.btnContent }}
+                                        </Link>
+                                    </div>
+                                    <div
+                                        v-if="event?.btnContent && event.content == 'Add choices to question' && ballot?.questions.length > 1">
+                                        <button @click.prevent="goToQuestions"
+                                            class="w-full px-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">
+                                            {{ event?.btnContent }}
+                                        </button>
+                                    </div>
+                                    <div
+                                        v-if="ballot?.created_at && event?.btnContent && event?.content === 'Link Snapshot' && !ballot?.snapshot">
+                                        <Link as="button" :href="event?.href"
+                                            class="w-full px-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">
                                         {{ event?.btnContent }}
                                         </Link>
                                     </div>
                                     <div v-if="event.content == 'Publish Ballot'">
                                         <button
                                             :disabled="!timeline?.[eventIdx - 1]?.stepComplete || ballot.status == 'published'"
-                                            class="px-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                                            class="w-full px-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
                                             :class="{ 'hover:bg-slate-500 bg-slate-500 cursor-not-allowed': !timeline?.[eventIdx - 1]?.stepComplete || ballot.status == 'published' }">
-                                            Publish
+                                            Publish Ballot
                                         </button>
                                     </div>
                                 </div>
@@ -99,7 +134,7 @@ import CreateBallotPolicyWallet from "../../Policies/Partials/CreateBallotPolicy
 
 const props = defineProps<{
     ballot?: BallotData;
-    question?:QuestionData;
+    question?: QuestionData;
 }>();
 
 const form = useForm({
@@ -153,7 +188,7 @@ let policiesCreatedAt = computed(() => {
 
 let walletFunded = computed(() => {
     if (!props.ballot || !props.ballot.policies) {
-            return false;
+        return false;
     }
 
     const votingPolicy = props.ballot.policies.find(policy => policy.context === 'voting');
@@ -174,8 +209,9 @@ const timeline = [
     {
         content: "Create question",
         target: "Question was created",
-        btnContent: "Create",
+        btnContent: !ballot.value?.questions?.length ? "Add" : "Add Another",
         href: ballot.value?.hash ? route('admin.ballots.questions.create', { 'ballot': ballot.value?.hash }) : null,
+        totalNumber: ballot.value?.questions?.length,
         utility: ballot.value?.questions?.[0]?.created_at && !ballot.value?.questions?.[0]?.choices?.[0]?.created_at ? "Now add choices to complete step" : null,
         datetime: ballot.value?.questions?.[0]?.created_at ?? "",
         stepComplete: ballot.value?.questions?.[0]?.created_at,
@@ -183,15 +219,16 @@ const timeline = [
     {
         content: "Add choices to question",
         target: "Choices added",
-        btnContent: "Add",
+        btnContent: !ballot.value?.questions?.[0]?.choices.length ? "Add" : "Add Another",
         href: ballot.value?.hash && ballot.value?.questions?.[0]?.hash ? route('admin.ballots.questions.choices.create', { 'ballot': props.ballot?.hash, 'question': ballot.value?.questions?.[0]?.hash }) : '',
+        totalNumber: ballot.value?.questions.reduce((total, question) => total + (question.choices ? question.choices.length : 0), 0),
         datetime: ballot.value?.questions?.[0]?.choices?.[0]?.created_at ?? "",
         stepComplete: ballot.value?.questions?.[0]?.choices?.[0]?.created_at,
     },
     {
         content: "Add Onchain Policy",
-        target: "Policy added",
-        btnContent: "Add",
+        target: !hasPolicies ? "Policy added" : "Policies added",
+        btnContent: !props.ballot?.policies?.[0]?.context ? "Registration Policy" : "Add Voting Policy",
         href: ballot.value?.hash ? route('admin.ballots.policies.create', { 'ballot': ballot.value?.hash }) : null,
         utility: !ballot.value?.questions?.[0]?.created_at || !ballot.value?.questions?.[0]?.choices?.[0]?.created_at ? "Policy added, now add questions and choices" : null,
         datetime: policiesCreatedAt.value ?? "",
@@ -205,6 +242,14 @@ const timeline = [
         stepComplete: walletFunded.value,
     },
     {
+        content: "Link Snapshot",
+        target: "Snapshot linked",
+        btnContent: "Link Snapshot",
+        href: ballot.value?.hash ? route('admin.ballots.snapshots.link.view', { 'ballot': ballot.value.hash }) : null,
+        datetime: ballot.value?.snapshot?.created_at ?? "",
+        stepComplete: ballot.value?.snapshot?.created_at && ballot.value?.questions?.[0]?.choices?.[0]?.created_at
+    },
+    {
         content: "Publish Ballot",
         target: "Ballot Published",
         datetime: ballot.value?.status == "published" ? ballot.value?.created_at : '' ?? "",
@@ -214,4 +259,8 @@ const timeline = [
             ballot.value?.questions?.[0]?.choices?.[0]?.created_at,
     },
 ];
+function goToQuestions() {
+    const questionsSection = document.getElementById('ballot-questions');
+    questionsSection.scrollIntoView({ behavior: 'smooth' });
+}
 </script>

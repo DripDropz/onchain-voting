@@ -115,4 +115,11 @@ class BallotData extends Data
             'description' => 'description',
         ];
     }
+    public static function rules(): array
+    {
+        return [
+            'policies' => 'array|max:2',
+            
+        ];
+    }
 }
