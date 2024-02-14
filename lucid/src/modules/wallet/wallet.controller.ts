@@ -10,7 +10,7 @@ export class WalletController {
         @Inject(AppConfigService) private readonly configService: AppConfigService,
     ) {}
 
-    @Get('get-policy-id')
+    @Post('get-policy-id')
     public async mintPolicyId(@Req() request: Request) {
         const [lucid] = await this.configService.getConfigs(request);
         return lucid.utils.mintingPolicyToId(
