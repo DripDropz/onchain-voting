@@ -49,28 +49,33 @@ router.post('/mint', async (req, res) => {
     const votingMinterAddress = await votingMinter.wallet.address()
     const registrationMinterAddress = await registrationMinter.wallet.address()
 
-    const tx = await voter
-        .newTx()
-        .readFrom(utxos)
-        .payToAddress(votingMinterAddress, {
-            [votingUnit]: 1n,
-        })
-        // Voting
-        .attachMintingPolicy(votingPolicy)
-        .mintAssets({[votingUnit]: 1n})
-        .addSigner(votingMinterAddress)
-        // Registration
-        .attachMintingPolicy(registrationPolicy)
-        .mintAssets({[registrationToken]: -1n})
-        .addSigner(registrationMinterAddress)
+    try {
+        const tx = await voter
+          .newTx()
+          .readFrom(utxos)
+          .payToAddress(votingMinterAddress, {
+              [votingUnit]: 1n,
+          })
+          // Voting
+          .attachMintingPolicy(votingPolicy)
+          .mintAssets({[votingUnit]: 1n})
+          .addSigner(votingMinterAddress)
+          // Registration
+          .attachMintingPolicy(registrationPolicy)
+          .mintAssets({[registrationToken]: -1n})
+          .addSigner(registrationMinterAddress)
 
-        .validTo(Date.now() + 250000)
-        .attachMetadata(446, [votingMetadata])
-        .complete()
+          .validTo(Date.now() + 250000)
+          .attachMetadata(446, [votingMetadata])
+          .complete()
 
-    console.log({tx: tx.toString()});
+        console.log({tx: tx.toString()});
 
-    res.send({tx: tx.toString()});
+        res.send({tx: tx.toString()});
+    } catch (e) {
+        console.error('Vote/Mint Error', e);
+        res.status(400).send("Vote/Mint transaction failed");
+    }
 });
 
 router.post('/submit', async (req, res) => {
