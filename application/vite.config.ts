@@ -54,7 +54,7 @@ export default defineConfig({
             "ziggy-vue": "/vendor/tightenco/ziggy/dist/vue",
             "@": "/resources/js",
             "@lucid-cardano": "/node_modules/lucid-cardano/web/mod.js",
-            // "@lucid-cardano": "/node_modules/lucid-cardano/types/src/mod.d.ts",
+            "@laravel-vapor":"/node_modules/laravel-vapor/dist/laravel-vapor.js"
         },
     },
 });

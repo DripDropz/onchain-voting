@@ -90,10 +90,12 @@ export const useVoterStore = defineStore('voter', () => {
     }
 
     async function frostConfirm(ballotHash) {
-        setInterval(async () => {
+        const confirmationTimer = setInterval(async () => {
             if (confirmationCount.value < 7) {
                 await loadRegistration(ballotHash);
                 confirmationCount.value++;
+            } else {
+                clearTimeout(confirmationTimer);
             }
         }, 3000)
     }

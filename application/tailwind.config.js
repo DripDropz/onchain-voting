@@ -32,6 +32,7 @@ module.exports = {
             },
             minHeight: (theme) => ({
                 ...theme('spacing'),
+                '100': '26rem',
             }),
         },
     },

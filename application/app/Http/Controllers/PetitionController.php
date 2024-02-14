@@ -72,11 +72,11 @@ class PetitionController extends Controller
 
         $actions = [
             [
-                'label' => Auth::check() && Auth::user()->id === $petition->user->id ? 'Manage' : '',
-                'link' => Auth::check() && Auth::user()->id === $petition->user->id
+                'label' => Auth::check() && Auth::user()?->id === $petition?->user?->id ? 'Manage' : '',
+                'link' => Auth::check() && Auth::user()?->id === $petition?->user?->id
                     ? route('petitions.manage', ['petition' => $petition])
                     : '',
-                'disabled' => !Auth::check() || (Auth::check() && Auth::user()->id !== $petition->user->id),
+                'disabled' => !Auth::check() || (Auth::check() && Auth::user()?->id !== $petition?->user?->id),
             ],
             [
                 'label' => 'Edit Petition',
@@ -136,7 +136,7 @@ class PetitionController extends Controller
 
         if ($response->allowed()) {
             return Inertia::render('Petition/Manage', [
-                'petition' => PetitionData::from($petition->load(['user', 'rules','ballot'])),
+                'petition' => PetitionData::from($petition->load(['user', 'rules', 'ballot'])),
                 'crumbs' => $crumbs,
                 'actions' => $actions,
             ]);
@@ -214,17 +214,24 @@ class PetitionController extends Controller
             'stakeAddress' => ValidationRule::requiredIf(!!$request->signature && !$request->email)
         ]);
 
-        $signature = new Signature;
+        $signature = Signature::query()
+            ->where('email_signature', $request->email)
+            ->orWhere('stake_address', $request->stakeAddress)->first();
+        
+        if (!$signature instanceof Signature) {
+            $signature = new Signature;
 
-        if (!$request->signature) {
-            $signature->email_signature = $request->email;
-        } else {
-            $signature->wallet_signature = $request->signature;
-            $signature->stake_address = $request->stakeAddress;
+            if (!$request->signature) {
+                $signature->email_signature = $request->email;
+            } else {
+                $signature->wallet_signature = $request->signature;
+                $signature->stake_address = $request->stakeAddress;
+            }
+            $signature->user_id = Auth::user()->id;
+
+            $signature->save();
         }
-        $signature->user_id = Auth::user()->id;
 
-        $signature->save();
         $petition?->signatures()->syncWithPivotValues($signature->id, [
             'model_type' => Petition::class,
         ], false);
@@ -316,5 +323,4 @@ class PetitionController extends Controller
             ]);
         }
     }
-
 }
