@@ -27,7 +27,7 @@ class SyncVotingPowersFIleJob implements ShouldQueue
      */
     public function __construct(
         protected Snapshot $snapshot,
-        protected $storagePath
+        protected $filename
     ) {
     }
 
@@ -36,19 +36,20 @@ class SyncVotingPowersFIleJob implements ShouldQueue
      */
     public function handle(): void
     {
-        LazyCollection::make(function () {
-            $handle = fopen($this->storagePath, 'r');
+        $fileContent = Storage::disk('s3')->get($this->filename);
+        $processedRowCount = 0;
 
-            while (($line = fgetcsv($handle, null)) !== false) {
-                yield $line;
+        LazyCollection::make(function () use ($fileContent, $processedRowCount) {
+            $lines = explode(PHP_EOL, $fileContent);
+            foreach ($lines as $line) {
+                yield str_getcsv($line);
             }
-
-            fclose($handle);
         })
             ->skip(1)
             ->chunk(1000)
-            ->each(function (LazyCollection $chunk) {
-                $chunk->each(function ($row) {
+            ->each(function (LazyCollection $chunk) use ($processedRowCount) {
+                $chunk->each(function ($row) use ($processedRowCount) {
+                    $processedRowCount++;
                     CreateVotingPowerSnapshotJob::dispatch(
                         $this->snapshot->hash,
                         $row[0],
@@ -57,7 +58,6 @@ class SyncVotingPowersFIleJob implements ShouldQueue
                 });
             });
 
-        File::delete($this->storagePath);
         event(new votingPowersImportedEvent($this->snapshot));
     }
 }
