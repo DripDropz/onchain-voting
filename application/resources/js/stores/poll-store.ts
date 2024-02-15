@@ -23,33 +23,34 @@ export const usePollStore = defineStore('poll-store', () => {
         [context: string]: {
             polls: PollData[];
             nextCursor: string;
-            hasMorePages: boolean
+            hasMorePages: boolean;
         }
     }[]> = ref([{
         'browse':{
             polls: [],
             nextCursor: null,
-            hasMorePages: null
+            hasMorePages: null,
+
         },
         'draft': {
             polls: [],
             nextCursor: null,
-            hasMorePages: null
+            hasMorePages: null,
         },
         'active': {
             polls: [],
             nextCursor: null,
-            hasMorePages: null
+            hasMorePages: null,
         },
         'pending':{
             polls: [],
             nextCursor: null,
-            hasMorePages: null
+            hasMorePages: null,
         },
         'answered':{
             polls: [],
             nextCursor: null,
-            hasMorePages: null
+            hasMorePages: null,
         },
     }]);
 
