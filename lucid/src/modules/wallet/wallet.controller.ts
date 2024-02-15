@@ -10,7 +10,7 @@ export class WalletController {
         @Inject(AppConfigService) private readonly configService: AppConfigService,
     ) {}
 
-    @Get('get-policy-id')
+    @Post('get-policy-id')
     public async mintPolicyId(@Req() request: Request) {
         const [lucid] = await this.configService.getConfigs(request);
         return lucid.utils.mintingPolicyToId(
@@ -60,31 +60,30 @@ export class WalletController {
         let utxos = (await lucid.wallet.getUtxos())
             .map((utxo) => utxo.assets);
 
+
         const balances = {};
         utxos.forEach((asset) =>
             Object.keys(asset).forEach((key) => {
-                balances[key] = asset[key] + (balances[key] || BigInt(0));
-            }),
-        );
+                balances[key] = asset[key] + (balances[key] || 0n)
+            })
+        )
 
         Object.keys(balances).forEach((key) => {
             let props = {};
-            if (key == 'lovelace') {
+            if (key === "lovelace") {
                 props = {
                     name: key,
-                };
+                }
             } else {
                 props = fromUnit(key);
-                props['name'] = toText(props['name']);
+                props['name'] = toText(props['name'])
             }
             balances[key] = {
                 asset: key,
                 amount: balances[key],
-                ...props,
+                ...props
             };
         });
-
-        console.log({balances});
 
         return this.toObject(balances);
     }

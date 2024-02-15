@@ -544,7 +544,10 @@ class BallotController extends Controller
                 ] : null),
             ]);
             DB::rollBack();
-            return Redirect::back()->withErrors(['error' => 'An error occurred while creating the policy. Please try again later.']);
+            return Redirect::back()
+                ->withErrors([
+                    'error' => 'An error occurred while creating the policy. Please try again later.'
+                ]);
         }
     }
 

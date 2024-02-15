@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\ModelStatusEnum;
 use App\Http\Controllers\Controller;
-use App\Jobs\CreateVotingPowerSnapshotJob;
-use App\Jobs\SyncVotingPowerFIleJob;
 use App\Jobs\SyncVotingPowersFIleJob;
 use App\Models\Snapshot;
 use Illuminate\Http\Request;
@@ -22,9 +20,9 @@ class SnapshotImportController extends Controller
      */
     public function parseCSV(Request $request)
     {
-        $file = $request->file('file');
+        $filename = $request->filename;
         $directory = 'voting_powers';
-        $pathName = 'voting_powers/' . $file->getClientOriginalName();
+        $pathName = 'voting_powers/' . $filename;
 
         //$pathName already exist then delete already existing record
         if ($request->input('count') == '0' && Storage::exists($pathName)) {
@@ -37,12 +35,23 @@ class SnapshotImportController extends Controller
         }
 
         $path = Storage::path($pathName);
-        File::append($path, $file->get());
+        // temp storage
+
+        Storage::disk('s3')->copy(
+            $request->key,
+            $filename
+        );
+        File::append($path, Storage::disk('s3')->get($filename));
+
+        // $path = Storage::path($pathName);
+        return $this->getParsedCSV(10,$filename);
     }
 
-    public function getParsedCSV(Request $request, $filename) {
-        $sampleCount = $request->input('count', 10);
-        $pathName = "voting_powers/".$filename;
+
+    public function getParsedCSV($sampleCount, $filename)
+    {
+        // $sampleCount = $request->input('count', 10);
+        $pathName = "voting_powers/" . $filename;
         $path = Storage::path($pathName);
 
         $parsedSample = LazyCollection::make(function () use ($path, $sampleCount) {
@@ -56,23 +65,24 @@ class SnapshotImportController extends Controller
 
             fclose($handle);
         })
-        ->skip(1)
-        ->map(function($row) {
-            return [
-                'voter_id' => $row[0],
-                'voting_power' => $row[1],
-            ];
-        });
+            ->skip(1)
+            ->map(function ($row) {
+                return [
+                    'voter_id' => $row[0],
+                    'voting_power' => $row[1],
+                ];
+            });
 
         return response()->json([
             'total_uploaded' => count(file($path)) - 1,
             'sample_data' => new Fluent($parsedSample)
         ]);
-
     }
 
-    public function cancelParsedCSV(Request $request) {
-        $filePath = Storage::path('voting_powers/'.$request->input('filename'));
+    public function cancelParsedCSV(Request $request)
+    {
+        $filePath = Storage::path('voting_powers/' . $request->input('filename'));
+        Storage::disk('s3')->delete($request->input('filename'));
         File::delete($filePath);
     }
 
@@ -105,7 +115,6 @@ class SnapshotImportController extends Controller
             'row_count' => count(file($storagePath)) - 1
         ];
         $snap->save();
-
     }
 
     protected function getFirstLine($filePath)

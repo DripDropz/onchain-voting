@@ -1,7 +1,7 @@
 <template>
     <div class="relative flex flex-row items-center justify-between">
         <div
-            class="relative border-4 border-sky-100 min-h-96 rounded-lg px-4 py-5 xl:px-6 xl:py-8 w-full lg:w-auto lg:min-w-[40rem] max-w-md">
+            class="relative border-4 border-sky-100 min-h-100 rounded-lg px-4 py-5 xl:px-6 xl:py-8 w-full lg:w-auto lg:min-w-[40rem] max-w-md">
 
             <Spinner v-if="working"/>
 
