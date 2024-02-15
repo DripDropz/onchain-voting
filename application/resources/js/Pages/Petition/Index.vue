@@ -36,6 +36,15 @@
                             </div>
                         </div>
 
+                        <div v-if="currentTab === 'browse'">
+                            <div v-if="filteredPetitions.length > 0">
+                                <PetitionBrowser :browsePetitions="browse" :currentTab="currentTab" />
+                            </div>
+                            <div v-else class="flex flex-row items-center justify-center">
+                                <p class="text-2xl font-bold text-center">No petitions.</p>
+                            </div>
+                        </div>
+
                         <div class="tab-content">
                             <template v-if="!!user">
                                 <div v-if="currentTab === 'drafts'">
@@ -84,9 +93,11 @@
                                 </div>
                             </template>
                             <div v-else class="py-16">
-                                <LoginToView>
-                                    <span> Login to view your {{ currentTab }} petitions.</span>
-                                </LoginToView>
+                                <div v-if="currentTab !== 'browse'">
+                                    <LoginToView>
+                                        <span> Login to view your {{ currentTab }} petitions.</span>
+                                    </LoginToView>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -111,10 +122,11 @@ import PetitionConfirmation from './Partials/PetitionConfirmation.vue';
 import LoginToView from "@/shared/components/LoginToView.vue";
 import {useConfigStore} from '@/stores/config-store';
 import {storeToRefs} from 'pinia';
+import PetitionBrowser from './Partials/PetitionBrowser.vue';
 
 const page = usePage();
 
-const currentTab = ref('drafts');
+const currentTab = ref('browse');
 
 let configStore = useConfigStore();
 let {showModal} = storeToRefs(configStore);
@@ -128,6 +140,7 @@ const props = withDefaults(defineProps<{
 }>(), {});
 
 const user = computed(() => page.props.auth.user);
+const browse = computed(() => props.petitions);
 const drafts = computed(() => props.petitions.filter((petition: PetitionData) => petition.status === 'draft'));
 const pending = computed(() => props.petitions.filter((petition: PetitionData) => petition.status === 'pending'));
 const active = computed(() => props.petitions.filter((petition: PetitionData) => petition.status === 'published'));
@@ -139,6 +152,8 @@ const getCountForTab = (tabName: string) => {
 
 const filteredPetitions = (tabName: string) => {
     switch (tabName) {
+        case 'browse':
+            return browse.value;
         case 'drafts':
             return drafts.value;
         case 'pending':
@@ -156,6 +171,7 @@ const changeTab = (tabName: string) => {
     currentTab.value = tabName;
 };
 const menuOptions = [
+    {name: 'Browse', value: 'browse'},
     {name: 'Drafts', value: 'drafts'},
     {name: 'Pending', value: 'pending'},
     {name: 'Active', value: 'active'},

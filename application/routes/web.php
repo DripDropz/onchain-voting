@@ -69,6 +69,8 @@ Route::prefix('/petitions')->as('petitions.')->middleware('featureEnabled:petiti
     Route::get('/', [PetitionController::class, 'index'])
         ->name('index');
 
+    Route::get('/petitionsData/{params?}', [PetitionController::class, 'petitionsData'])->name('petitionsData');
+
     Route::prefix('/workflow')->group(function () {
         Route::get('/create/{petition?}', [PetitionController::class, 'create'])->name('create');
         Route::get('/create/{petition}/step/1', [PetitionController::class, 'create'])->name('create.stepOne');

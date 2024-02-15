@@ -241,7 +241,7 @@ async function submitToChain() {
     savingResponse.value = true;
     await BallotService.submitVote(props.ballot.hash);
     savingResponse.value = false;
-    router.reload();
+    router.get(route('ballot.view',{ballot:props.ballot.hash}));
 }
 
 

@@ -171,43 +171,48 @@ class PollController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        $validatedData = $request->validate([
-            // 'pollTitle' => 'required|string|max:255',
-            'question' => 'required|string|max:255',
-            'options' => 'required|array|min:1',
-            'options.*' => 'required|string|max:255',
-            'publishOnchain' => 'boolean',
+    $validatedData = $request->validate([
+        // 'pollTitle' => 'required|string|max:255',
+        'question' => 'required|string|max:255',
+        'options' => 'required|array|min:1',
+        'options.*' => 'required|string|max:255',
+        'publishOnchain' => 'boolean',
+    ]);
+
+    $poll = new Poll([
+        'user_id' => $user->id,
+        'title' => $validatedData['question'],
+        'publish_on_chain' => $validatedData['publishOnchain'],
+    ]);
+
+    $poll->save();
+
+    $question = new Question([
+        'title' => $validatedData['question'],
+        'model_type' => Poll::class,
+        'model_id' => $poll->id,
+        'type' => QuestionTypeEnum::MULTIPLE->value
+    ]);
+
+    $question->user_id = $user->id;
+    $question->model_id = $poll->id;
+
+    $question->save();
+
+    foreach ($validatedData['options'] as $key => $choice) {
+        $question->choices()->create([
+            'title' => $choice,
+            'order' => $key,
+            'question_id' => $question->id
         ]);
-
-        $poll = new Poll([
-            'user_id' => $user->id,
-            'title' => $validatedData['question'],
-            'publish_on_chain' => $validatedData['publishOnchain'],
-        ]);
-
-        $poll->save();
-
-        $question = new Question([
-            'title' => $validatedData['question'],
-            'model_type' => Poll::class,
-            'model_id' => $poll->id,
-            'type' => QuestionTypeEnum::MULTIPLE->value
-        ]);
-        $question->save();
-
-        foreach ($validatedData['options'] as $key => $choice) {
-            $question->choices()->create([
-                'title' => $choice,
-                'order' => $key,
-                'question_id' => $question->id
-            ]);
-        }
-
-        return redirect()->route('polls.index');
     }
+
+    return redirect()->route('polls.index');
+}
+
 
     public function storeQuestionResponse(Request $request)
     {

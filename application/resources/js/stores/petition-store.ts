@@ -1,8 +1,11 @@
 import {defineStore} from 'pinia';
-import {ref, watch, Ref} from 'vue';
+import {ref, watch, Ref, computed} from 'vue';
 import PetitionsQuery from '@/types/petitions-query';
 import AdminPetitionService from '@/Pages/Auth/Petition/Services/admin-petition-service';
 import { VARIABLES } from '@/types/variables';
+import PetitionData = App.DataTransferObjects.PetitionData;
+import PublicPetitionService from '@/Pages/Petition/services/public-petition-service';
+import AlertService from '@/shared/Services/alert-service';
 
 interface CurrentModel<PetitionPagination, K, PP, CP, P> {
     data?: PetitionPagination
@@ -17,6 +20,21 @@ export const usePetitionStore = defineStore('petition-store', () => {
     let step = ref<number>(1);
     let currentModel = ref(({} as CurrentModel<any, any, any, any, any>) || null);
     let params: Ref<{ [x: string]: any; } | null> = ref(null);
+    let currentContext = ref('browse');
+    let loadingMore = ref(false);
+    let publicPetition: Ref<{
+        [context: string]: {
+            petitions: PetitionData[];
+            nextCursor: string;
+            hasMorePages: boolean
+        }
+    }[]> = ref([{
+        'browse':{
+            petitions: [],
+            nextCursor: null,
+            hasMorePages: null
+        }
+    }]);
 
     function setModel<T, K, CP, PP, P> (model: CurrentModel<T, K, CP, PP, P> ) {
         currentModel.value = model
@@ -86,6 +104,36 @@ export const usePetitionStore = defineStore('petition-store', () => {
         return data;
     }
 
+    async function loadPublicPetitions(context = 'browse', params = null) {        
+        try {
+            const data = {
+                hasMorePages: publicPetition.value[0][context]?.hasMorePages ?? null,
+                nextCursor: publicPetition.value[0][context]?.nextCursor ?? null,
+                ...params
+            }
+
+            await PublicPetitionService.fetchPetitions(data)
+                .then((res) => {
+                    publicPetition.value[0][context].hasMorePages = res.hasMorePages;
+                    publicPetition.value[0][context].nextCursor = res.nextCursor;
+                    publicPetition.value[0][context].petitions = [...publicPetition.value[0][context].petitions ,...res.petitions];
+                }).finally(() => {
+                    loadingMore.value = false
+                })
+        } catch (error) {
+            loadingMore.value = false
+            AlertService.show(['error'], 'error ')
+        }
+    }
+
+    const showMore = computed(() => {
+        return publicPetition?.value[0][currentContext.value]?.nextCursor && publicPetition?.value[0][currentContext.value]?.hasMorePages;
+    })
+
+    function setContext(context){
+        currentContext.value = context;
+    }
+
     watch(() =>currentModel.value?.currPage, () => {
         getFilteredData();
     }, { deep: true})
@@ -108,5 +156,11 @@ export const usePetitionStore = defineStore('petition-store', () => {
         nextStep,
         uploadFormData,
         setModel,
+        loadPublicPetitions,
+        publicPetition,
+        loadingMore,
+        currentContext,
+        showMore,
+        setContext,
     }
 });
