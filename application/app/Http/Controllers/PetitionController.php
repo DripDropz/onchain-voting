@@ -347,4 +347,9 @@ class PetitionController extends Controller
             'hasMorePages' => $petitionCursor->hasMorePages(),
         ];
     }
+
+    public function petitionData(Request $request, Petition $petition)
+    {
+        return PetitionData::from($petition->load(['ballot', 'user', 'rules']));
+    }
 }
