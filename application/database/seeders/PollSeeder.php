@@ -16,7 +16,7 @@ class PollSeeder extends Seeder
      */
     public function run(): void
     {
-        Poll::factory(9)
+        Poll::factory(40)
             ->recycle(User::factory()->count(1), 'user')
             ->has(
                 Question::factory(7)

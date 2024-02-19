@@ -6,6 +6,9 @@ use App\Events\votingPowersImportedEvent;
 use App\Models\Policy;
 use App\Models\Snapshot;
 use App\Listeners\PublishSnapshotListener;
+use App\Models\Ballot;
+use App\Observers\BallotObserver;
+use App\Observers\BallotPolicyObserver;
 use App\Observers\SnapshotObserver;
 use App\Observers\PolicyObserver;
 use Illuminate\Auth\Events\Registered;
@@ -35,6 +38,7 @@ class EventServiceProvider extends ServiceProvider
     {
         Snapshot::observe(SnapshotObserver::class);
         Policy::observe(PolicyObserver::class);
+        Ballot::observe(BallotObserver::class);
     }
 
     /**

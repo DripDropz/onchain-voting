@@ -11,7 +11,7 @@
         </div>
 
         <div v-if="user && !signature" class="relative">
-            <SignWithWallet :petition="petition" />
+            <SignWithWallet :petition="petition$" />
             <Divider />
             <div class="sticky flex flex-col gap-3">
                 <TextInput v-model="form.firstName" type="text" placeholder="First Name" />
@@ -37,7 +37,6 @@
 <script setup lang="ts">
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { useForm } from '@inertiajs/vue3';
-import PetitionData = App.DataTransferObjects.PetitionData;
 import SignatureData = App.DataTransferObjects.SignatureData;
 import AlertService from '@/shared/Services/alert-service';
 import TextInput from '@/Components/TextInput.vue';
@@ -45,13 +44,17 @@ import LoginToView from '@/shared/components/LoginToView.vue';
 import Divider from '@/shared/components/Divider.vue';
 import SignWithWallet from '@/shared/components/SignWithWallet.vue';
 import SignatureCard from '@/Pages/Signature/Partials/SignatureCard.vue';
+import {usePetitionSignatureStore} from '@/Pages/Petition/stores/petition-signature-store';
+import { storeToRefs } from 'pinia';
 
 
 const props = defineProps<{
-    petition?: PetitionData;
     user?: {}
     signature?: SignatureData;
 }>();
+
+let petitionSignatureStore = usePetitionSignatureStore();
+let {  petition$ } = storeToRefs(petitionSignatureStore);
 
 let form = useForm({
     firstName: '',
@@ -59,11 +62,11 @@ let form = useForm({
     email: ''
 })
 
-
-const submitForm = () => {
-    form.post(route('petitions.signatures.store', { petition: props.petition.hash }),
+const submitForm = async() => {
+    form.post(route('petitions.signatures.store', { petition: petition$.value.hash }),
         {
-            onSuccess: () => {
+            onSuccess: async() => {
+                await petitionSignatureStore.reloadPetitionData(petition$.value.hash);
                 AlertService.show(['Petition Signed '], 'success');
             },
             onError: (errors) => {

@@ -1,16 +1,16 @@
 <template>
-    <VoterLayout page="Petition" :crumbs="crumbs" :actions="actions">
+    <VoterLayout v-if="petition$" page="Petition" :crumbs="crumbs" :actions="actions">
         <section class="w-full py-12">
             <div class="inner-container">
-                <div v-if="petition.status === 'published'">
-                    <PetitionSingle :key="petition.hash" :petition="petition" :signature="signature" />
+                <div v-if="petition$.status === 'published'">
+                    <PetitionSingle :signature="signature" />
                 </div>
                 <div v-else class="flex flex-row justify-center my-8 border rounded-lg border-slate-900 dark:border-slate-700 dark:text-slate-100">
                     <p class="py-16 text-2xl font-semibold text-center dark:text-white">This petition is not yet published.</p>
                 </div>
             </div>
             <Modal :show="showModal">
-                <ClosePetition :petition="petition" @close="showModal = false"></ClosePetition>
+                <ClosePetition @close="showModal = false"></ClosePetition>
             </Modal>
         </section>
     </VoterLayout>
@@ -25,8 +25,10 @@ import Modal from "@/Components/Modal.vue";
 import ClosePetition from "./Partials/ClosePetition.vue";
 import { useConfigStore } from "@/stores/config-store";
 import { storeToRefs } from "pinia";
+import { onMounted } from 'vue';
+import {usePetitionSignatureStore} from '@/Pages/Petition/stores/petition-signature-store';
 
-defineProps<{
+const props = defineProps<{
     petition: PetitionData;
     crumbs: [];
     actions: []
@@ -36,4 +38,7 @@ defineProps<{
 let configStore = useConfigStore();
 let { showModal } = storeToRefs(configStore);
 
+let petitionSignatureStore = usePetitionSignatureStore();
+petitionSignatureStore.setPetition(props.petition);
+let {  petition$ } = storeToRefs(petitionSignatureStore);
 </script>

@@ -26,11 +26,6 @@ import { storeToRefs } from 'pinia';
 import PetitionData = App.DataTransferObjects.PetitionData;
 import {usePetitionSignatureStore} from '@/Pages/Petition/stores/petition-signature-store';
 
-const props = defineProps<{
-    petition: PetitionData;
-}>();
-
 let petitionSignatureStore = usePetitionSignatureStore();
-petitionSignatureStore.setPetition(props.petition);
 let {  petition$, currentGoalPercetage$, allGoalsAchieved$, nextGoal$, hasNextGoal$, lackingNextGoal$ } = storeToRefs(petitionSignatureStore);  
 </script>

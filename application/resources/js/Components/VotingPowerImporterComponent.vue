@@ -186,7 +186,7 @@ let inputFile = (event: any) => {
     }).then(response => {
         console.log({ response,file });
         
-        axios.post(`/api/parse/csv`, {
+        axios.post(`/api/parse/csv/${props.snapshot.hash}`, {
             key: response.key,
             filename: 'vp_' + props.snapshot.hash + '.csv'
         }).then((res) => {
@@ -228,7 +228,7 @@ let inputFile = (event: any) => {
 // };
 
 let cancelParsing = () => {
-    axios.post('/api/parse/csv/cancel', { filename: 'vp_' + props.snapshot.hash + '.csv' })
+    axios.post(`/api/parse/csv/cancel/${props.snapshot.hash}`, { filename: 'vp_' + props.snapshot.hash + '.csv' })
         .then(() => {
             fileParsed.value = false;
         });

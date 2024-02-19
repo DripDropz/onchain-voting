@@ -21,8 +21,15 @@ use Illuminate\Support\Facades\Redirect;
 use App\DataTransferObjects\PetitionData;
 use Illuminate\Validation\Rule as ValidationRule;
 
+
 class PetitionController extends Controller
 {
+    public $perPage;
+
+    public ?string $nextCursor = null;
+
+    public bool $hasMorePages;
+
     /**
      * Display the petition list.
      */
@@ -322,5 +329,27 @@ class PetitionController extends Controller
                 'started_at' => now()
             ]);
         }
+    }
+
+    public function petitionsData(Request $request)
+    {
+        $this->perPage = $request->query('perPage', 4);
+        $this->nextCursor = $request->query('nextCursor', null);
+        $this->hasMorePages = $request->query('hasMorePages', false);
+
+        $petitionCursor = Petition::when($this->nextCursor, function ($query) {
+            $query->cursorPaginate($this->perPage, ['*'], 'cursor', $this->nextCursor);
+        })
+            ->cursorPaginate($this->perPage);
+        return [
+            'petitions' => PetitionData::collection(collect($petitionCursor->items())),
+            'nextCursor' => $petitionCursor->nextCursor()?->encode(),
+            'hasMorePages' => $petitionCursor->hasMorePages(),
+        ];
+    }
+
+    public function petitionData(Request $request, Petition $petition)
+    {
+        return PetitionData::from($petition->load(['ballot', 'user', 'rules']));
     }
 }
