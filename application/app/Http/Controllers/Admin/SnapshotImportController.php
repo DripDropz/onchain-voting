@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\ModelStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Jobs\CreateVotingPowerSnapshotJob;
+use App\Jobs\SyncVotingPowerFIleJob;
 use App\Jobs\SyncVotingPowersFIleJob;
 use App\Models\Snapshot;
 use Illuminate\Http\Request;
@@ -18,54 +20,45 @@ class SnapshotImportController extends Controller
     /**
      * Display the new snapshots's form.
      */
-    public function parseCSV(Request $request)
+    public function parseCSV(Request $request, Snapshot $snapshot)
     {
         $filename = $request->filename;
-        $directory = 'voting_powers';
-        $pathName = 'voting_powers/' . $filename;
-
-        //$pathName already exist then delete already existing record
-        if ($request->input('count') == '0' && Storage::exists($pathName)) {
-            File::delete(Storage::path($pathName));
-        };
-
-        //create directory if it doesn't exist
-        if (!Storage::exists($directory)) {
-            Storage::makeDirectory($directory);
-        }
-
-        $path = Storage::path($pathName);
-        // temp storage
-
-        Storage::disk('s3')->copy(
+        Storage::disk(config('filesystems.default'))->move(
             $request->key,
             $filename
         );
-        File::append($path, Storage::disk('s3')->get($filename));
 
-        // $path = Storage::path($pathName);
-        return $this->getParsedCSV(10,$filename);
+        return $this->getParsedCSV(10, $filename, $snapshot);
     }
 
-
-    public function getParsedCSV($sampleCount, $filename)
+    public function getParsedCSV($sampleCount = 10, $filename, Snapshot $snapshot)
     {
-        // $sampleCount = $request->input('count', 10);
-        $pathName = "voting_powers/" . $filename;
-        $path = Storage::path($pathName);
+        // Get the file from Amazon S3
+        $file = Storage::disk(config('filesystems.default'))->get($filename);
 
-        $parsedSample = LazyCollection::make(function () use ($path, $sampleCount) {
-            $handle = fopen($path, 'r');
-
-            $count = 0;
-            while ((($line = fgetcsv($handle, null)) !== false) && $count <= $sampleCount) {
-                yield $line;
-                $count++;
+        // Process the file content
+        $parsedData = LazyCollection::make(function () use ($file) {
+            $lines = explode(PHP_EOL, $file);
+            foreach ($lines as $line) {
+                yield str_getcsv($line);
             }
+        });
 
-            fclose($handle);
-        })
-            ->skip(1)
+        $totalCount = $parsedData->count();
+        $snapshot->metadata =  [
+            'snapshot_file' => $filename,
+            'row_count' => $totalCount
+        ];
+        $snapshot->save();
+
+        $sampleData = $parsedData->take($sampleCount);
+        $sampleCount = count($sampleData);
+
+        // You can then proceed to process the entire data
+        $parsedData = $sampleData->skip(1)
+            ->filter(function ($row) {
+                return isset($row[0]) && isset($row[1]);
+            })
             ->map(function ($row) {
                 return [
                     'voter_id' => $row[0],
@@ -73,32 +66,29 @@ class SnapshotImportController extends Controller
                 ];
             });
 
+        // Return response as JSON
         return response()->json([
-            'total_uploaded' => count(file($path)) - 1,
-            'sample_data' => new Fluent($parsedSample)
+            'total_uploaded' => $parsedData->count(),
+            'sample_data' => new Fluent($parsedData)
         ]);
     }
 
-    public function cancelParsedCSV(Request $request)
+    public function cancelParsedCSV(Request $request, Snapshot $snapshot)
     {
-        $filePath = Storage::path('voting_powers/' . $request->input('filename'));
-        Storage::disk('s3')->delete($request->input('filename'));
-        File::delete($filePath);
+        Storage::disk(config('filesystems.default'))->delete($request->input('filename'));
+        $snapshot->metadata = null;
+        $snapshot->save();
     }
 
     public function uploadCSV(Request $request, Snapshot $snapshot)
     {
-        $response = Gate::inspect('update', Snapshot::class);
-
         $fileName = $request->input('filename');
-        $filePath = "voting_powers/{$fileName}";
-        $storagePath = Storage::path($filePath);
 
         //save snapshot's metadata about fil
-        $this->updateSnapshotModel($snapshot, $storagePath, $fileName);
-        SyncVotingPowersFIleJob::dispatch(
+        $this->updateSnapshotModel($snapshot);
+        SyncVotingPowersFIleJob::dispatchAfterResponse(
             $snapshot,
-            $storagePath
+            $fileName
         );
 
         return response()->json([
@@ -106,14 +96,10 @@ class SnapshotImportController extends Controller
         ]);
     }
 
-    protected function updateSnapshotModel(Snapshot $snapshot, $storagePath, $fileName)
+    protected function updateSnapshotModel(Snapshot $snapshot)
     {
         $snap = Snapshot::byHash($snapshot->hash);
         $snap->status = ModelStatusEnum::PENDING->value;
-        $snap->metadata =  [
-            'snapshot_file' => $fileName,
-            'row_count' => count(file($storagePath)) - 1
-        ];
         $snap->save();
     }
 

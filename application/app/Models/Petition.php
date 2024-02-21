@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Petition extends Model implements Auditable, HasUser
 {
@@ -49,14 +50,6 @@ class Petition extends Model implements Auditable, HasUser
     public function snapshot(): HasOne
     {
         return $this->hasOne(Snapshot::class);
-    }
-
-    public function user_responses(): HasMany
-    {
-        return $this->responses()->where(
-            'user_id',
-            auth()?->user()?->getAuthIdentifier()
-        );
     }
 
     public function rules(): BelongsToMany

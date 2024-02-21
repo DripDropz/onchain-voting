@@ -23,33 +23,34 @@ export const usePollStore = defineStore('poll-store', () => {
         [context: string]: {
             polls: PollData[];
             nextCursor: string;
-            hasMorePages: boolean
+            hasMorePages: boolean;
         }
     }[]> = ref([{
         'browse':{
             polls: [],
             nextCursor: null,
-            hasMorePages: null
+            hasMorePages: null,
+
         },
         'draft': {
             polls: [],
             nextCursor: null,
-            hasMorePages: null
+            hasMorePages: null,
         },
         'active': {
             polls: [],
             nextCursor: null,
-            hasMorePages: null
+            hasMorePages: null,
         },
         'pending':{
             polls: [],
             nextCursor: null,
-            hasMorePages: null
+            hasMorePages: null,
         },
         'answered':{
             polls: [],
             nextCursor: null,
-            hasMorePages: null
+            hasMorePages: null,
         },
     }]);
 
@@ -101,7 +102,6 @@ export const usePollStore = defineStore('poll-store', () => {
                     publicPoll.value[0][context].hasMorePages = res.hasMorePages;
                     publicPoll.value[0][context].nextCursor = res.nextCursor;
                     publicPoll.value[0][context].polls = [...publicPoll.value[0][context].polls ,...res.polls];
-
                 }).finally(() => {
                     loadingMore.value = false
                 })

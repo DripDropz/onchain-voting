@@ -1,8 +1,8 @@
 <template >
     <div class="">
-        <PollList :polls="publicPoll[0].browse?.polls" />
+        <PollList :polls="publicPoll[0]?.[context].polls" />
 
-        <LoadMorePolls />
+        <LoadMorePolls :context="context" :params="params"/>
     </div>
 </template>
 
@@ -13,15 +13,23 @@ import PollList from './PollList.vue';
 import { usePollStore } from '@/stores/poll-store';
 import { storeToRefs } from 'pinia';
 
-let pollStore = usePollStore();
-let { publicPoll } = storeToRefs(pollStore);
+const props = withDefaults(defineProps<{
+    context?: string
+    params: {}
+}>(), {
+    context: 'browse',
+});
 
-if (!publicPoll.value[0].browse?.polls.length) {
-    pollStore.loadPublicPolls('browse').then()
+let pollStore = usePollStore();
+let { publicPoll, loadingMore } = storeToRefs(pollStore);
+
+if (!publicPoll.value[0]?.[props.context]?.polls.length) {
+    loadingMore.value = true;
+    pollStore.loadPublicPolls(props.context, props.params).then()
 }
 
 onMounted(() => {
-    pollStore.setContext('browse');
+    pollStore.setContext(props.context);
 })
 
 </script>

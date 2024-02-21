@@ -20,7 +20,11 @@
                                 <ul class="flex flex-row items-center gap-8 mb-2" v-if="!user">
                                     <li v-for="option in menuOptions" :key="option.name">
                                         <a @click="changeTab(option.value)" :class="getTabClass(option.value)">
-                                            {{ option.name }} ({{ getCountForTab(option.value) }})
+                                            {{
+                                                option.value === "browse"
+                                                ? option.name
+                                                : `${option.name}`
+                                            }}
                                         </a>
                                     </li>
                                 </ul>
@@ -29,67 +33,27 @@
                                 <ul class="flex flex-row items-center justify-between gap-8 mb-2" v-else>
                                     <li v-for="option in menuOptions" :key="option.name">
                                         <a @click="changeTab(option.value)" :class="getTabClass(option.value)">
-                                            {{ option.name }} ({{ getCountForTab(option.value) }})
+                                            {{
+                                                `${option.name} (${option.count ?? 0})`
+                                            }}
                                         </a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-
-                        <div class="tab-content">
-                            <template v-if="!!user">
-                                <div v-if="currentTab === 'drafts'">
-                                    <div>
-                                        <div v-if="filteredPetitions.length > 0">
-                                            <PetitionList v-if="petitions" :petitions="drafts"
-                                                          :currentTab="currentTab"/>
-                                        </div>
-
-                                        <div v-else class="flex flex-col items-center justify-center h-[500px] gap-16">
-                                            <p class="text-2xl font-bold text-center">No petitions</p>
-
-                                            <Link :href="route('#')"
-                                                  class="inline-flex items-center px-8 py-2 font-semibold text-white border rounded-md shadow-sm gap-x-2 bg-sky-500 hover:bg-sky-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 border-sky-400">
-                                                Login
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div v-else-if="currentTab === 'pending'">
-                                    <div v-if="filteredPetitions.length > 0">
-                                        <PetitionList v-if="petitions" :petitions="pending" :currentTab="currentTab"/>
-                                    </div>
-                                    <div v-else class="flex flex-row items-center justify-center">
-                                        <p class="text-2xl font-bold text-center">No pending petitions.</p>
-                                    </div>
-                                </div>
-
-                                <div v-else-if="currentTab === 'active'">
-                                    <div v-if="filteredPetitions.length > 0">
-                                        <PetitionList v-if="petitions" :petitions="active" :currentTab="currentTab"/>
-                                    </div>
-                                    <div v-else class="flex flex-row items-center justify-center">
-                                        <p class="text-2xl font-bold text-center">No active petitions.</p>
-                                    </div>
-                                </div>
-
-                                <div v-else-if="currentTab === 'signed'">
-                                    <div class="flex flex-row items-center justify-center">
-                                        <PetitionList v-if="signedPetitions" :petitions="signed"
-                                                      :currentTab="currentTab"/>
-                                        <p v-else class="text-2xl font-bold text-center dark:text-white">No signed
-                                            petitions.</p>
-                                    </div>
-                                </div>
-                            </template>
-                            <div v-else class="py-16">
-                                <LoginToView>
-                                    <span> Login to view your {{ currentTab }} petitions.</span>
-                                </LoginToView>
-                            </div>
-                        </div>
                     </div>
+                </div>
+            </div>
+            <div class="h-full inner-container">
+                <PetitionBrowser v-if="currentTab == 'browse'" :context="'browse'" :params="{}" />
+
+                <template v-else-if="!!user" v-for="option in menuOptions" :key="option.name">
+                    <PetitionBrowser v-if="currentTab == option.value && option.value!='browse'" :context="option.value" :params="option.param" />
+                </template>
+                <div v-else class="py-16">
+                    <LoginToView>
+                        <span class="dark:text-white"> Login to view your {{ currentTab }} petitions.</span>
+                    </LoginToView>
                 </div>
             </div>
             <Modal :show="showModal">
@@ -100,69 +64,72 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed} from 'vue';
+import {ref} from 'vue';
 import {Link} from "@inertiajs/vue3";
+import UserData = App.DataTransferObjects.UserData;
 import PetitionData = App.DataTransferObjects.PetitionData;
-import PetitionList from "@/Pages/Petition/Partials/PetitionList.vue"
 import VoterLayout from "@/Layouts/VoterLayout.vue";
-import {usePage} from '@inertiajs/vue3';
 import Modal from '@/Components/Modal.vue';
 import PetitionConfirmation from './Partials/PetitionConfirmation.vue';
 import LoginToView from "@/shared/components/LoginToView.vue";
 import {useConfigStore} from '@/stores/config-store';
 import {storeToRefs} from 'pinia';
-
-const page = usePage();
-
-const currentTab = ref('drafts');
+import PetitionBrowser from './Partials/PetitionBrowser.vue';
 
 let configStore = useConfigStore();
 let {showModal} = storeToRefs(configStore);
 
-const props = withDefaults(defineProps<{
-    petitions: PetitionData[];
-    signedPetitions: PetitionData[];
-    currentTab?: string;
-    crumbs: [];
-    actions: []
-}>(), {});
+const props = withDefaults(
+    defineProps<{
+        petitions?: PetitionData[];
+        user: UserData;
+        crumbs: [];
+        actions: []
+        counts: any;
+    }>(),
+    {}
+);
 
-const user = computed(() => page.props.auth.user);
-const drafts = computed(() => props.petitions.filter((petition: PetitionData) => petition.status === 'draft'));
-const pending = computed(() => props.petitions.filter((petition: PetitionData) => petition.status === 'pending'));
-const active = computed(() => props.petitions.filter((petition: PetitionData) => petition.status === 'published'));
-const signed = computed(() => props.signedPetitions); // Placeholder, update with your logic for signed petitions
+const currentTab = ref('browse');
 
-const getCountForTab = (tabName: string) => {
-    return filteredPetitions(tabName).length;
-};
-
-const filteredPetitions = (tabName: string) => {
-    switch (tabName) {
-        case 'drafts':
-            return drafts.value;
-        case 'pending':
-            return pending.value;
-        case 'active':
-            return active.value;
-        case 'signed':
-            return signed.value;
-        default:
-            return [];
-    }
-};
-
-const changeTab = (tabName: string) => {
+const changeTab = (tabName) => {
     currentTab.value = tabName;
 };
-const menuOptions = [
-    {name: 'Drafts', value: 'drafts'},
-    {name: 'Pending', value: 'pending'},
-    {name: 'Active', value: 'active'},
-    {name: 'Signed', value: 'signed'},
-]
 
-const getTabClass = (tabName: string) => {
+const menuOptions = [
+    {
+        name: "Browse", 
+        value: "browse", 
+        count: props.counts.allCount,
+        param:{}
+    },
+    {
+        name: "Drafts", 
+        value: "draft", 
+        count: props.counts.draftCount,
+        param: { statusfilter: ['draft'] }
+    },
+    {
+        name: "Active", 
+        value: "active", 
+        count: props.counts.activeCount,
+        param: { statusfilter: ['published'] }
+    },
+    {
+        name: "Pending", 
+        value: "pending", 
+        count: props.counts.pendingCount,
+        param: { hasPending: true }
+    },
+    {
+        name: "signed", 
+        value: "signed", 
+        count: props.counts.signedCount,
+        param: { hasSigned: true }
+    },
+];
+
+const getTabClass = (tabName) => {
     return {
         'border-b-2 border-sky-300 dark:border-sky-500 font-medium text-sky-300 dark:text-sky-300 focus:outline-none focus:border-sky-700 text-xl hover:cursor-pointer':
             currentTab.value === tabName,
@@ -170,4 +137,5 @@ const getTabClass = (tabName: string) => {
             currentTab.value !== tabName,
     };
 };
+
 </script>

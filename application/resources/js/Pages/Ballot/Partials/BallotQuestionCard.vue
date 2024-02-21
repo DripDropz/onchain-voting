@@ -10,6 +10,7 @@
                                 @record-onchain="emit('record-onchain')"
                                 :userResponse="userResponse$"
                                 :ballot="ballot"
+                                :working = "working"
                                 v-if="seeConfirmation"/>
             <div>
                 <div class="relative">

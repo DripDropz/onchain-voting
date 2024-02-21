@@ -38,15 +38,15 @@
 </template>
 <script setup lang="ts">
 import Multiselect from '@vueform/multiselect';
-import { ref } from 'vue';
+import { ref , Ref , onBeforeUnmount} from 'vue';
 import { useSnapshotStore } from "../store/snapshot-store"
 import { storeToRefs } from 'pinia';
-import { Ref } from 'vue';
 import AlertService from '@/shared/Services/alert-service';
 import BallotData = App.DataTransferObjects.BallotData;
 import ModalRoute from '@/Components/ModalRoute.vue';
 import { useModal } from "momentum-modal"
 import AdminBallotService from '../../Ballot/Services/admin-ballot-service';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps<{
     ballot?: BallotData;
@@ -73,6 +73,8 @@ let addSnapshot = async () => {
     AlertService.show(['Snapshot added successfully'], 'success');
     close();
 }
-
+onBeforeUnmount(() => {
+    router.get(route('admin.ballots.view',{ballot:props.ballot.hash}));    
+})
 </script>
 ../../Ballot/Services/admin-ballot-service

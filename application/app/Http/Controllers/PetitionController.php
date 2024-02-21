@@ -21,17 +21,34 @@ use Illuminate\Support\Facades\Redirect;
 use App\DataTransferObjects\PetitionData;
 use Illuminate\Validation\Rule as ValidationRule;
 
+
 class PetitionController extends Controller
 {
+    public $perPage;
+
+    public $petitions;
+
+    public ?string $nextCursor = null;
+
+    public int $offset = 4;
+
+    public bool $hasMorePages;
+
+    public array|null $filter;
+
+    public bool|null $hasPending;
+
+    public bool|null $hasSigned;
+
+    public ?string $status = 'draft';
+
     /**
      * Display the petition list.
      */
 
-    public function index(Request $request): Response
+    public function index()
     {
-        $petitions = Petition::query()->get();
-        $signedPetitions = Petition::whereRelation('signatures', 'user_id', $request->user()?->id)
-            ->get();
+        $user = Auth::user();
         $crumbs = [
             [
                 'label' => 'Petitions',
@@ -46,9 +63,11 @@ class PetitionController extends Controller
             ],
         ];
 
+        $counts = $this->petitionsCount(request());
+
         return Inertia::render('Petition/Index', [
-            'petitions' => $petitions,
-            'signedPetitions' => $signedPetitions,
+            'counts' => $counts,
+            'user' => $user,
             'crumbs' => $crumbs,
             'actions' => $actions,
         ]);
@@ -217,7 +236,7 @@ class PetitionController extends Controller
         $signature = Signature::query()
             ->where('email_signature', $request->email)
             ->orWhere('stake_address', $request->stakeAddress)->first();
-        
+
         if (!$signature instanceof Signature) {
             $signature = new Signature;
 
@@ -322,5 +341,73 @@ class PetitionController extends Controller
                 'started_at' => now()
             ]);
         }
+    }
+
+    public function petitionsData(Request $request)
+    {
+        $this->perPage = $request->query('perPage', 4);
+        $this->nextCursor = $request->query('nextCursor', null);
+        $this->hasMorePages = $request->query('hasMorePages', false);
+        $this->filter = $request->query('statusfilter', null);
+        $this->hasPending = $request->query('hasPending', false);
+        $this->hasSigned = $request->query('hasSigned', false);
+
+        $petitionCursor = Petition::latest()
+            ->when($this->hasPending, function ($query) {
+                $query->where('user_id', Auth::user()->id)
+                    ->whereNotIn('status', ['draft', 'published']);
+            })
+            ->when($this->filter, function ($query) {
+                $query->where('user_id', Auth::user()->id)
+                    ->whereIn('status', $this->filter);
+            })
+            ->when($this->hasSigned, function ($query) {
+                $query->where([
+                    'status' => 'published',
+                ])->whereRelation('signatures', 'user_id', Auth::user()->id);
+            })
+            ->when($this->nextCursor, function ($query) {
+                $query->cursorPaginate($this->perPage, ['*'], 'cursor', $this->nextCursor);
+            })
+            ->cursorPaginate($this->perPage);
+
+        return [
+            'petitions' => PetitionData::collection(collect($petitionCursor->items())),
+            'nextCursor' => $petitionCursor->nextCursor()?->encode(),
+            'hasMorePages' => $petitionCursor->hasMorePages(),
+        ];
+    }
+
+    public function petitionData(Request $request, Petition $petition)
+    {
+        return PetitionData::from($petition->load(['ballot', 'user', 'rules']));
+    }
+
+    private function petitionsCount(Request $request)
+    {
+        $user = Auth::user();
+        $draftCount = Petition::where('user_id', $user?->id)
+            ->where('status', 'draft')
+            ->count();
+
+        $activeCount = Petition::where('user_id', $user?->id)
+            ->where('status', 'published')
+            ->count();
+
+        $pendingCount = Petition::where('user_id', $user?->id)
+            ->whereNotIn('status', ['draft', 'published'])
+            ->count();
+
+        $signedCount = Petition::where('status', 'published')
+            ->whereRelation('signatures', 'user_id', $user?->id)
+            ->count();
+
+        return [
+            'draftCount' => $draftCount,
+            'activeCount' => $activeCount,
+            'pendingCount' => $pendingCount,
+            'signedCount' => $signedCount,
+            'allCount' => Petition::query()->count()
+        ];
     }
 }
