@@ -151,7 +151,7 @@
     </form>
 </template>
 <script setup lang="ts">
-import {useForm} from '@inertiajs/vue3';
+import {useForm,router} from '@inertiajs/vue3';
 import BallotData = App.DataTransferObjects.BallotData;
 import QuestionData = App.DataTransferObjects.QuestionData;
 import {Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions} from '@headlessui/vue';
@@ -159,6 +159,7 @@ import {ChevronUpDownIcon, CheckIcon} from '@heroicons/vue/20/solid';
 import AlertService from '@/shared/Services/alert-service';
 import { useModal } from "momentum-modal"
 import TextareaInput from '@/Components/TextareaInput.vue';
+import { onBeforeUnmount } from 'vue';
 
 const props = defineProps<{
     ballot: BallotData;
@@ -194,8 +195,8 @@ const { close } = useModal();
 function submit() {
     if(!props.question?.hash){
         form.post(route('admin.ballots.questions.store', {ballot: props.ballot?.hash}), {
-            preserveScroll: true,
-            preserveState: true,
+            preserveScroll: false,
+            preserveState: false,
         onSuccess: () => {
                 AlertService.show(['Question created successfully'], 'success');
                 close();

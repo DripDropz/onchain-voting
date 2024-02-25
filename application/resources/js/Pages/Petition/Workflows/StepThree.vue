@@ -30,24 +30,17 @@
                     </p>
                 </div>
                 <p class="bg-gray-100 w-full px-4 py-5 rounded-lg">
-                    Your petition will be visible on OpenChainvote.com after it
-                    reaches 5 signatures.
+                    Your petition will be visible on OpenChainvote.com after it reaches the visibility signature threshold set by an admin.
                 </p>
             </div>
             <div class="flex flex-row justify-end">
-                <div class="space-x-4">
-                    <button
-                        class="inline-flex justify-center rounded-md bg-white px-4 py-3 text-sm font-extrabold shadow-sm hover:bg-gray-100 border border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:col-start-2"
-                    >
-                        Preview petition
-                    </button>
+               
                     <button
                         @click.prevent="submit"
                         class="inline-flex justify-center rounded-md bg-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:col-start-2"
                     >
                         Save petition
                     </button>
-                </div>
             </div>
         </section>
     </VoterLayout>

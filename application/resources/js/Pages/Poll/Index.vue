@@ -28,26 +28,17 @@
                                 <ul class="flex flex-row items-center justify-between gap-8 mb-2" v-else>
                                     <li v-for="option in menuOptions" :key="option.name">
                                         <a @click="changeTab(option.value)" :class="getTabClass(option.value)">
-                                            {{
-                                                `${option.name} (${option.count ?? 0})`
-                                            }}
+                                            {{`${option.name} (${option.count ?? 0})` }}
                                         </a>
                                     </li>
                                 </ul>
                             </div>
-
-                            <!--                            <div class="pb-4">-->
-                            <!--                                <Link :href="route('polls.create')"-->
-                            <!--                                      class="px-8 py-2 font-semibold text-white rounded-lg bg-sky-500 hover:bg-slate-600 hover:cursor-pointer">-->
-                            <!--                                    Create poll-->
-                            <!--                                </Link>-->
-                            <!--                            </div>-->
                         </div>
                     </div>
                 </div>
             </div>
             <div class="h-full inner-container">
-                <BrowsePolls v-if="currentTab == 'browse'" :context="'browse'" :params="{}" />
+                <BrowsePolls v-if="currentTab == 'browse'" :context="'browse'" :params="{'status': 'published'}" />
 
                 <template v-else-if="!!user" v-for="option in menuOptions" :key="option.name">
                     <BrowsePolls v-if="currentTab == option.value && option.value!='browse'" :context="option.value" :params="option.param" />
@@ -71,7 +62,6 @@ import PollData = App.DataTransferObjects.PollData;
 import BrowsePolls from "./Partials/BrowsePolls.vue";
 import LoginToView from '@/shared/components/LoginToView.vue';
 
-
 const props = withDefaults(
     defineProps<{
         polls?: PollData[];
@@ -90,32 +80,26 @@ const changeTab = (tabName) => {
 };
 const menuOptions = [
     {
-        name: "Browse", 
-        value: "browse", 
+        name: "Browse",
+        value: "browse",
         count: props.counts.allCount,
         param:{}
     },
     {
-        name: "Drafts", 
-        value: "draft", 
-        count: props.counts.draftCount,
-        param: { statusfilter: ['draft'] }
-    },
-    {
-        name: "Active", 
-        value: "active", 
+        name: "Active",
+        value: "active",
         count: props.counts.activeCount,
-        param: { statusfilter: ['published'] }
+        param: { status: 'published' }
     },
     {
-        name: "Pending", 
-        value: "pending", 
+        name: "Pending",
+        value: "pending",
         count: props.counts.pendingCount,
         param: { hasPending: true }
     },
     {
-        name: "Answered", 
-        value: "answered", 
+        name: "Answered",
+        value: "answered",
         count: props.counts.answeredCount,
         param: { hasAnswered: true }
     },

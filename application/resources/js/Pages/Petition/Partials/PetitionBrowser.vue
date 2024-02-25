@@ -1,33 +1,35 @@
 <template>
     <div>
-        <PetitionList v-if="browsePetitions" :petitions="publicPetition[0].browse?.petitions" :currentTab="currentTab" />
+        <PetitionList :petitions="publicPetition[0]?.[context].petitions" />
 
-        <LoadMorePetitions />
+        <LoadMorePetitions :context="context" :params="params"/>
     </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, onMounted } from 'vue';
-import PetitionList from './PetitionList.vue';
-import PetitionData = App.DataTransferObjects.PetitionData;
+import { onMounted } from 'vue';
 import LoadMorePetitions from './LoadMorePetitions.vue';
+import PetitionList from './PetitionList.vue';
 import { usePetitionStore } from '@/stores/petition-store';
 import { storeToRefs } from 'pinia';
 
-const props = defineProps<{
-    browsePetitions: Array<PetitionData>,
-    currentTab: string,
-}>();
+const props = withDefaults(defineProps<{
+    context?: string
+    params: {}
+}>(), {
+    context: 'browse',
+});
 
 let petitionStore = usePetitionStore();
-let { publicPetition } = storeToRefs(petitionStore);
+let { publicPetition, loadingMore } = storeToRefs(petitionStore);
 
-if (!publicPetition.value[0].browse?.petitions.length) {
-    petitionStore.loadPublicPetitions('browse').then()
+if (!publicPetition.value[0]?.[props.context]?.petitions.length) {
+    loadingMore.value = true;
+    petitionStore.loadPublicPetitions(props.context, props.params).then()
 }
 
 onMounted(() => {
-    petitionStore.setContext('browse');
+    petitionStore.setContext(props.context);
 })
 
 </script>

@@ -32,11 +32,6 @@ export const usePollStore = defineStore('poll-store', () => {
             hasMorePages: null,
 
         },
-        'draft': {
-            polls: [],
-            nextCursor: null,
-            hasMorePages: null,
-        },
         'active': {
             polls: [],
             nextCursor: null,
@@ -53,8 +48,6 @@ export const usePollStore = defineStore('poll-store', () => {
             hasMorePages: null,
         },
     }]);
-
-
 
     function uploadFormData(form: any) {
         formData.value = form;
@@ -76,10 +69,9 @@ export const usePollStore = defineStore('poll-store', () => {
         currentContext.value = context;
     }
 
-
     watch(pollsQueryData, () => {
         getAdminPolls(pollsQueryData.value).then();
-    })
+    });
 
     async function getAdminPolls(query?: (PollsQuery | null)) {
         await AdminPollService.getPolls(query)
@@ -102,7 +94,6 @@ export const usePollStore = defineStore('poll-store', () => {
                     publicPoll.value[0][context].hasMorePages = res.hasMorePages;
                     publicPoll.value[0][context].nextCursor = res.nextCursor;
                     publicPoll.value[0][context].polls = [...publicPoll.value[0][context].polls ,...res.polls];
-
                 }).finally(() => {
                     loadingMore.value = false
                 })
@@ -125,8 +116,7 @@ export const usePollStore = defineStore('poll-store', () => {
 
     const showMore = computed(() => {
         return publicPoll?.value[0][currentContext.value]?.nextCursor && publicPoll?.value[0][currentContext.value]?.hasMorePages;
-    })
-
+    });
 
     return {
         formData,
@@ -138,7 +128,6 @@ export const usePollStore = defineStore('poll-store', () => {
         setStep,
         nextStep,
         uploadFormData,
-        uploadPollData,
         loadingMore,
         loadPublicPolls,
         loadPublicPoll,

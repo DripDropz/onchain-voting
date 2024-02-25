@@ -25,12 +25,13 @@ class PetitionFactory extends Factory
         $endedAt = fake()->dateTimeBetween($startedAt, '+3 months');
 
         return [
-            'user_id' => User::factory(),
+            'user_id' => 1,
             'title' => fake()->sentence(3, true),
             'description' => fake()->paragraphs(random_int(1, 2), true),
             'status' => fake()->randomElement(ModelStatusEnum::values()),
             'started_at' => $startedAt,
             'ended_at' => $endedAt,
+            'created_at' => fake()->date()
         ];
         }
 }

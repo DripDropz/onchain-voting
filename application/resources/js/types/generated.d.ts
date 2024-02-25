@@ -84,6 +84,7 @@ id: number | null;
 title: string;
 description?: string | null;
 publish_on_chain?: boolean | null;
+responses_count: number | null;
 user: App.DataTransferObjects.UserData | null;
 created_at?: string | null;
 updated_at?: string | null;

@@ -1,15 +1,13 @@
 <template>
-    <VoterLayout
-        page="Petitions"
-        :crumbs="crumbs"
-        :actions="[{
-                    label: 'Create Petition',
-                    clickAction:'showModal'
-                }]">
+    <VoterLayout page="Petitions" :crumbs="crumbs" :actions="[{
+        label: 'Create Petition',
+        clickAction: 'showModal'
+    }]">
         <section class="w-full py-12 mx-auto">
             <div class="inner-container">
                 <div class="sm:rounded-lg">
-                    <h2 class="mb-8 text-2xl font-bold leading-tight text-center text-gray-800 xl:text-4xl dark:text-gray-200">
+                    <h2
+                        class="mb-8 text-2xl font-bold leading-tight text-center text-gray-800 xl:text-4xl dark:text-gray-200">
                         Petitions
                     </h2>
                     <div class="w-full">
@@ -20,7 +18,11 @@
                                 <ul class="flex flex-row items-center gap-8 mb-2" v-if="!user">
                                     <li v-for="option in menuOptions" :key="option.name">
                                         <a @click="changeTab(option.value)" :class="getTabClass(option.value)">
-                                            {{ option.name }} ({{ getCountForTab(option.value) }})
+                                            {{
+                                                option.value === "browse"
+                                                ? option.name
+                                                : `${option.name}`
+                                            }}
                                         </a>
                                     </li>
                                 </ul>
@@ -29,156 +31,153 @@
                                 <ul class="flex flex-row items-center justify-between gap-8 mb-2" v-else>
                                     <li v-for="option in menuOptions" :key="option.name">
                                         <a @click="changeTab(option.value)" :class="getTabClass(option.value)">
-                                            {{ option.name }} ({{ getCountForTab(option.value) }})
+                                            {{
+                                                `${option.name} (${option.count ?? 0})`
+                                            }}
                                         </a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="h-full inner-container">
+                <PetitionBrowser v-if="currentTab == 'browse'" :context="'browse'" :params="{}" />
 
-                        <div v-if="currentTab === 'browse'">
-                            <div v-if="filteredPetitions.length > 0">
-                                <PetitionBrowser :browsePetitions="browse" :currentTab="currentTab" />
-                            </div>
-                            <div v-else class="flex flex-row items-center justify-center">
-                                <p class="text-2xl font-bold text-center">No petitions.</p>
-                            </div>
+                <template v-else-if="!!user" v-for="option in menuOptions" :key="option.name">
+                    <PetitionBrowser v-if="currentTab == option.value && option.value != 'browse'" :context="option.value"
+                        :params="option.param" />
+                </template>
+
+
+                <div v-else-if="currentTab != 'signed'" class="py-16">
+                    <LoginToView>
+                        <span class="dark:text-white"> Login to view your {{ currentTab }} petitions.</span>
+                    </LoginToView>
+                </div>
+            </div>
+
+            <div v-if="currentTab === 'signed' && (!menuOptions.find(option => option.value === 'signed') || menuOptions.find(option => option.value === 'signed').count === 0)"
+                class="py-16">
+                <div class="h-full inner-container justify-center text-center border-2 border-dashed border-gray-300">
+                    <div class="py-6">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            aria-hidden="true">
+                            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-200">Browse More Petitions</h3>
+                        <div class="mt-6 pb-3">
+                            <Link @click="changeTab('browse')">
+                            <PrimaryButton :theme="'primary'">
+                                Browse Petitions
+                                <PlusIcon class="w-5 h-5" />
+                            </PrimaryButton>
+                            </Link>
                         </div>
-
-                        <div class="tab-content">
-                            <template v-if="!!user">
-                                <div v-if="currentTab === 'drafts'">
-                                    <div>
-                                        <div v-if="filteredPetitions.length > 0">
-                                            <PetitionList v-if="petitions" :petitions="drafts"
-                                                          :currentTab="currentTab"/>
-                                        </div>
-
-                                        <div v-else class="flex flex-col items-center justify-center h-[500px] gap-16">
-                                            <p class="text-2xl font-bold text-center">No petitions</p>
-
-                                            <Link :href="route('#')"
-                                                  class="inline-flex items-center px-8 py-2 font-semibold text-white border rounded-md shadow-sm gap-x-2 bg-sky-500 hover:bg-sky-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 border-sky-400">
-                                                Login
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div v-else-if="currentTab === 'pending'">
-                                    <div v-if="filteredPetitions.length > 0">
-                                        <PetitionList v-if="petitions" :petitions="pending" :currentTab="currentTab"/>
-                                    </div>
-                                    <div v-else class="flex flex-row items-center justify-center">
-                                        <p class="text-2xl font-bold text-center">No pending petitions.</p>
-                                    </div>
-                                </div>
-
-                                <div v-else-if="currentTab === 'active'">
-                                    <div v-if="filteredPetitions.length > 0">
-                                        <PetitionList v-if="petitions" :petitions="active" :currentTab="currentTab"/>
-                                    </div>
-                                    <div v-else class="flex flex-row items-center justify-center">
-                                        <p class="text-2xl font-bold text-center">No active petitions.</p>
-                                    </div>
-                                </div>
-
-                                <div v-else-if="currentTab === 'signed'">
-                                    <div class="flex flex-row items-center justify-center">
-                                        <PetitionList v-if="signedPetitions" :petitions="signed"
-                                                      :currentTab="currentTab"/>
-                                        <p v-else class="text-2xl font-bold text-center dark:text-white">No signed
-                                            petitions.</p>
-                                    </div>
-                                </div>
-                            </template>
-                            <div v-else class="py-16">
-                                <div v-if="currentTab !== 'browse'">
-                                    <LoginToView>
-                                        <span> Login to view your {{ currentTab }} petitions.</span>
-                                    </LoginToView>
-                                </div>
-                            </div>
+                    </div>
+                </div>
+            </div>
+            <div v-else-if="user && ['pending', 'draft', 'active'].includes(currentTab) && (!menuOptions.find(option => option.value === currentTab) || menuOptions.find(option => option.value === currentTab).count === 0)"
+                class="py-16">
+                <div
+                    class="h-full inner-container justify-center text-center rounded-lg border-2 border-dashed border-gray-300">
+                    <div class="py-6">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            aria-hidden="true">
+                            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-200">No Petitions</h3>
+                        <div class="mt-6 pb-3">
+                            <Link :href="route('petitions.create')">
+                            <PrimaryButton :theme="'primary'">
+                                Create New Petition
+                                <PlusIcon class="w-5 h-5" />
+                            </PrimaryButton>
+                            </Link>
                         </div>
                     </div>
                 </div>
             </div>
             <Modal :show="showModal">
-                <PetitionConfirmation @close="showModal = false"/>
+                <PetitionConfirmation @close="showModal = false" />
             </Modal>
         </section>
     </VoterLayout>
 </template>
 
 <script setup lang="ts">
-import {ref, computed} from 'vue';
-import {Link} from "@inertiajs/vue3";
+import { ref } from 'vue';
+import { Link } from "@inertiajs/vue3";
+import UserData = App.DataTransferObjects.UserData;
 import PetitionData = App.DataTransferObjects.PetitionData;
-import PetitionList from "@/Pages/Petition/Partials/PetitionList.vue"
 import VoterLayout from "@/Layouts/VoterLayout.vue";
-import {usePage} from '@inertiajs/vue3';
 import Modal from '@/Components/Modal.vue';
 import PetitionConfirmation from './Partials/PetitionConfirmation.vue';
 import LoginToView from "@/shared/components/LoginToView.vue";
-import {useConfigStore} from '@/stores/config-store';
-import {storeToRefs} from 'pinia';
+import { useConfigStore } from '@/stores/config-store';
+import { storeToRefs } from 'pinia';
 import PetitionBrowser from './Partials/PetitionBrowser.vue';
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
-const page = usePage();
+let configStore = useConfigStore();
+let { showModal } = storeToRefs(configStore);
+
+const props = withDefaults(
+    defineProps<{
+        petitions?: PetitionData[];
+        user: UserData;
+        crumbs: [];
+        actions: []
+        counts: any;
+    }>(),
+    {}
+);
 
 const currentTab = ref('browse');
 
-let configStore = useConfigStore();
-let {showModal} = storeToRefs(configStore);
-
-const props = withDefaults(defineProps<{
-    petitions: PetitionData[];
-    signedPetitions: PetitionData[];
-    currentTab?: string;
-    crumbs: [];
-    actions: []
-}>(), {});
-
-const user = computed(() => page.props.auth.user);
-const browse = computed(() => props.petitions);
-const drafts = computed(() => props.petitions.filter((petition: PetitionData) => petition.status === 'draft'));
-const pending = computed(() => props.petitions.filter((petition: PetitionData) => petition.status === 'pending'));
-const active = computed(() => props.petitions.filter((petition: PetitionData) => petition.status === 'published'));
-const signed = computed(() => props.signedPetitions); // Placeholder, update with your logic for signed petitions
-
-const getCountForTab = (tabName: string) => {
-    return filteredPetitions(tabName).length;
-};
-
-const filteredPetitions = (tabName: string) => {
-    switch (tabName) {
-        case 'browse':
-            return browse.value;
-        case 'drafts':
-            return drafts.value;
-        case 'pending':
-            return pending.value;
-        case 'active':
-            return active.value;
-        case 'signed':
-            return signed.value;
-        default:
-            return [];
-    }
-};
-
-const changeTab = (tabName: string) => {
+const changeTab = (tabName) => {
     currentTab.value = tabName;
 };
-const menuOptions = [
-    {name: 'Browse', value: 'browse'},
-    {name: 'Drafts', value: 'drafts'},
-    {name: 'Pending', value: 'pending'},
-    {name: 'Active', value: 'active'},
-    {name: 'Signed', value: 'signed'},
-]
 
-const getTabClass = (tabName: string) => {
+const menuOptions = [
+    {
+        name: "Browse",
+        value: "browse",
+        count: props.counts.allCount,
+        param: {}
+    },
+    {
+        name: "Drafts",
+        value: "draft",
+        count: props.counts.draftCount,
+        param: { statusfilter: ['draft'] }
+    },
+    {
+        name: "Active",
+        value: "active",
+        count: props.counts.activeCount,
+        param: { statusfilter: ['published'] }
+    },
+    {
+        name: "Pending",
+        value: "pending",
+        count: props.counts.pendingCount,
+        param: { hasPending: true }
+    },
+    {
+        name: "signed",
+        value: "signed",
+        count: props.counts.signedCount,
+        param: { hasSigned: true }
+    },
+];
+
+const getTabClass = (tabName) => {
     return {
         'border-b-2 border-sky-300 dark:border-sky-500 font-medium text-sky-300 dark:text-sky-300 focus:outline-none focus:border-sky-700 text-xl hover:cursor-pointer':
             currentTab.value === tabName,
@@ -186,4 +185,5 @@ const getTabClass = (tabName: string) => {
             currentTab.value !== tabName,
     };
 };
+
 </script>

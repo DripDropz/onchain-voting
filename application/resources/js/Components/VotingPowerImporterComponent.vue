@@ -157,16 +157,6 @@ let file = null;
 let chunks = ref([]);
 let chunksCount = ref<number>(0);
 
-// let dropFile = (event: any) => {
-
-//     parsingFile.value = true;
-//     event.preventDefault();
-
-//     file = event.dataTransfer.files[0];
-//     if (file) {
-//         createChunks(file);
-//     }
-// }
 
 let inputFile = (event: any) => {
     parsingFile.value = true;
@@ -178,11 +168,7 @@ let inputFile = (event: any) => {
         file = event.target.files[0];
     }
     Vapor.store(file, {
-        // visibility: 'public-read',
-        // progress: progress => {
-        //     console.log(progress);
-        //     // this.uploadProgress = Math.round(progress * 100);
-        // }
+
     }).then(response => {
         console.log({ response,file });
         
@@ -200,32 +186,7 @@ let inputFile = (event: any) => {
 
 }
 
-// let createChunks = async (file: any) => {
-//     let size = 1024 * 1054 * 5 * 3;//process 5mb size
-//     chunksCount.value = Math.ceil(file.size / size);
 
-//     for (let i = 0; i < chunksCount.value; i++) {
-//         chunks.value.push(file.slice(
-//             i * size, Math.min(i * size + size, file.size), file.type
-//         ));
-//             console.log({ [i]: chunks.value });
-//     }
-
-
-
-//     if (chunksCount.value == chunks.value.length) {
-//         await parse();
-//     }
-// }
-
-// let parse = async () => {
-//     let dataIsParsed = await parseData();
-//     if (dataIsParsed) {
-//         setTimeout(() => {
-//             getParsedData();
-//         }, 1000 * 5)
-//     }
-// };
 
 let cancelParsing = () => {
     axios.post(`/api/parse/csv/cancel/${props.snapshot.hash}`, { filename: 'vp_' + props.snapshot.hash + '.csv' })
@@ -250,36 +211,5 @@ let confirmParsing = async () => {
         });
 }
 
-// let parseData = async () => {
-//     for (let index = 0; index < chunks.value.length; index++) {
-//         const chunk = chunks.value[index];
 
-//         let formData = new FormData;
-//         formData.append('is_last', chunks.value.length === 1 ? 'true' : 'false')
-//         formData.append('file', chunk, 'vp_' + props.snapshot.hash + '.csv');
-//         formData.append('count', index + '');
-
-//         await axios.post('/api/parse/csv', formData, {
-//             headers: {
-//                 'Content-Type': 'multipart/form-data',
-//             },
-//         });
-//     }
-
-//     return true;
-// }
-
-let getParsedData = async () => {
-    const params = {
-        count: 10,
-    };
-
-    await axios.get(`/api/parsed/csv/vp_${props.snapshot.hash}.csv`, { params })
-        .then((res) => {
-            parsedSample.value = res.data.sample_data;
-            totalParsed.value = res.data.total_uploaded;
-            parsingFile.value = false;
-            fileParsed.value = true;
-        })
-}
 </script>

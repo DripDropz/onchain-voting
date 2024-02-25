@@ -2,6 +2,8 @@
 
 namespace App\DataTransferObjects;
 
+use Spatie\LaravelData\Attributes\Validation\BooleanType;
+use Spatie\LaravelData\Attributes\Validation\IntegerType;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\DataCollection;
 use Spatie\LaravelData\Attributes\Validation\Rule;
@@ -32,6 +34,9 @@ class PollData extends Data
         #[TypescriptOptional]
         #[Rule('boolean')]
         public ?bool $publish_on_chain,
+
+        #[IntegerType]
+        public ?int $responses_count,
 
         #[WithoutValidation]
         public ?UserData $user,

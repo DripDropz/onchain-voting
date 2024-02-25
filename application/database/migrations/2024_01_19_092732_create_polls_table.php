@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->enum('status', ModelStatusEnum::values())->default(ModelStatusEnum::DRAFT->value);
+            $table->enum('status', ModelStatusEnum::values())->default(ModelStatusEnum::PENDING->value);
             $table->enum('type', BallotTypeEnum::values())->default(BallotTypeEnum::SNAPSHOT->value);
             $table->boolean('publish_on_chain')->default(false);
             $table->text('visibility')->default('public');
