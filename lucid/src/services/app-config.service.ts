@@ -38,7 +38,7 @@ import { ConfigService } from '@nestjs/config';
 export class AppConfigService {
     constructor(
         private configService: ConfigService
-    ) { }
+    ) {}
 
     async getConfigs(request: Request): Promise<[Lucid, string, string, string, string]> {
         const projectId = this.configService.get('BLOCKFROST_PROJECT_ID') || process.env.BLOCKFROST_PROJECT_ID;
