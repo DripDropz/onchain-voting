@@ -133,6 +133,9 @@ export const usePetitionStore = defineStore('petition-store', () => {
                 nextCursor: publicPetition.value[0][context]?.nextCursor ?? null,
                 ...params
             }
+            if (context === 'browse') {
+                data['statusfilter'] = ['published'];
+            }
 
             await PublicPetitionService.fetchPetitions(data)
                 .then((res) => {
@@ -163,22 +166,22 @@ export const usePetitionStore = defineStore('petition-store', () => {
         return publicPetition?.value[0][currentContext.value]?.nextCursor && publicPetition?.value[0][currentContext.value]?.hasMorePages;
     })
 
-    function setContext(context) {
+    function setContext(context: any) {
         currentContext.value = context;
     }
 
     watch(() => currentModel.value?.currPage, () => {
-        getFilteredData();
+        getFilteredData().then();
     }, { deep: true })
 
     watch(() => currentModel.value?.perPage, () => {
         currentModel.value.currPage = null
-        getFilteredData();
+        getFilteredData().then();
     }, { deep: true })
 
     watch(() => currentModel.value?.filters, () => {
         currentModel.value.currPage = null
-        getFilteredData();
+        getFilteredData().then();
     }, { deep: true })
 
     return {
@@ -191,7 +194,6 @@ export const usePetitionStore = defineStore('petition-store', () => {
         uploadFormData,
         setModel,
         loadPublicPetitions,
-        loadPublicPetition,
         publicPetition,
         loadingMore,
         currentContext,

@@ -5,8 +5,21 @@
         :actions="actions" >
         <div class="w-full">
             <div class="sticky top-0 w-full p-6 dark:text-white">
-                <div class="container flex justify-center w-full pb-3">
+                <div class="container flex flex-col items-center gap-6 w-full pb-3">
                     <p class="text-xl font-bold leading-tight xl:text-2xl">{{ petition.title }}</p>
+
+                  <div v-if="petition.status === 'draft'" class="flex items-center gap-2 text-base">
+                    <div class="opacity-75">Status:</div>
+                    <p class="font-bold leading-tight text-amber-500">
+                      Waiting for admin approval.
+                    </p>
+                  </div>
+                  <div v-else-if="petition.status === 'approved'" class="flex flex-col items-center gap-4 text-base">
+                    <p class="font-bold leading-tight text-green-500">
+                      Your Petition have been approved.
+                    </p>
+                    <PrimaryButton theme="primary">Publish</PrimaryButton>
+                  </div>
                 </div>
             </div>
             <div

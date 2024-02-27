@@ -137,7 +137,7 @@ services:
             timeout: 5s
 
     chainvote.minio:
-        image: bitnami/minio
+        image: bitnami/minio:2024.2.26
         environment:
         - MINIO_ROOT_USER=chainvote-admin
         - MINIO_ROOT_PASSWORD=chainvote-admin

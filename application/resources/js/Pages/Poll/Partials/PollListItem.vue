@@ -25,6 +25,9 @@
                 </span>
             </label>
         </div>
+        <div v-if="publicPoll.question.status !== 'published'" class="bg-white/10 py-1 px-4 rounded-md mb-4 text-sky-500">
+             <p>Poll will be published when an admin approves it.</p>
+        </div>
         <div class="mt-auto w-full bottom-0 flex justify-between items-center py-2">
             <span>{{ publicPoll.responses_count ?? 0 }} votes</span>
             <button v-if="publicPoll.user_responses.length < 1"

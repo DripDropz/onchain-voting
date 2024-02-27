@@ -15,10 +15,17 @@
                     <div class="flex flex-col w-full lg:flex-row gap-y-4">
                         <div class="flex flex-col w-full lg:w-2/3 lg:px-12">
 
-                            <!-- Dropzone  -->
-                            <div class="flex items-center justify-center w-full mb-6" @dragover.prevent @drop="handleDrop">
-                                <label for="dropzone-file"
-                                    class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                            <!-- Dropzone Area-->
+                            <div class="flex items-center justify-center w-full mb-6 relative"
+                                @dragenter.prevent="handleDragEnter" @dragleave.prevent="handleDragLeave" @dragover.prevent
+                                @drop.prevent="handleDrop">
+                                <img v-if="imageUrl" :src="imageUrl" alt="Uploaded image"
+                                    class="max-h-64 max-w-full object-contain rounded-lg" />
+
+
+                                <label v-else for="dropzone-file"
+                                    class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer"
+                                    :class="{ 'bg-gray-200 dark:bg-gray-600': isHovering, 'pointer-events-none': uploading }">
                                     <span v-if="uploading">
                                         <svg aria-hidden="true"
                                             class="w-16 h-16 text-gray-200 animate-spin dark:text-gray-400 fill-sky-800"
@@ -51,6 +58,7 @@
                                 </label>
                                 <input id="dropzone-file" type="file" class="hidden" @change="handleFileChange" />
                             </div>
+
                             <div class="flex flex-col">
                                 <div class="flex flex-col mb-8">
                                     <span class="text-xl leading-tight xl:text-2xl">
@@ -70,8 +78,12 @@
                         <div class="w-full lg:w-1/3">
                             <div class="flex flex-col lg:px-12 gap-y-4">
                                 <div class="pb-3">
-                                    <p class="text-lg font-semibold text-gray-500 dark:text-gray-400">Petition Status: {{
-                                        petition.status }}</p>
+                                    <div class="flex flex-col justify-start w-full gap-1">
+                                        <p class="text-xl leading-tight xl:text-2xl ">Status</p>
+                                        <p class="text-lg font-semibold text-gray-500 dark:text-gray-400">
+                                            {{ petition.status }}
+                                        </p>
+                                    </div>
                                 </div>
                                 <div>
                                     <div class="flex justify-start w-full pb-3">
@@ -162,9 +174,22 @@ const MAX_WIDTH = 800;
 const MAX_HEIGHT = 400;
 
 const uploading = ref(false);
+let imageUrl = '';
+
+
+const isHovering = ref(false);
+
+const handleDragEnter = () => {
+    isHovering.value = true;
+};
+
+const handleDragLeave = () => {
+    isHovering.value = false;
+};
 
 const handleDrop = (event) => {
     event.preventDefault();
+    isHovering.value = false;
     const file = event.dataTransfer.files[0];
     handleFile(file);
 };
@@ -198,6 +223,7 @@ const validateImage = (file) => {
 };
 
 const handleFile = async (file) => {
+    console.log({ file })
     if (file) {
         const isValid = await validateImage(file);
         if (isValid) {
@@ -205,6 +231,7 @@ const handleFile = async (file) => {
             uploading.value = true;
             setTimeout(() => {
                 uploading.value = false;
+                imageUrl = URL.createObjectURL(file);
             }, 2000);
         }
     }

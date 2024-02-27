@@ -20,7 +20,7 @@
                         class="block w-full p-4 text-gray-900 border border-black dark::border-slate-700 rounded-lg sm:text-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     />
                 </div>
-                <div class="flex flex-row justify-end">
+                <div class="flex flex-row justify-end pb-4">
                     <div class="space-x-4">
                         <Link
                             :href="route('petitions.index')"
