@@ -30,6 +30,8 @@ class PollController extends Controller
 
     public bool|null $hasAnswered;
 
+    public bool|null $hasActive;
+
     public ?string $status = 'pending';
 
 
@@ -102,17 +104,21 @@ class PollController extends Controller
         $this->status = $request->query('status', null);
         $this->hasPending = $request->query('hasPending', false);
         $this->hasAnswered = $request->query('hasAnswered', false);
-        
+        $this->hasActive = $request->query('hasActive', false);
+
         $pollCursor = Poll::latest()
             ->when($this->hasPending, function ($query) {
                 $query->where('user_id', Auth::user()->id)
-                    ->whereIn('status', ['pending']);
+                ->whereIn('status', ['draft', 'pending']);
             })->when($this->status, function ($query) {
                 $query->where('status', $this->status);
             })->when($this->hasAnswered, function ($query) {
                 $query->where([
                     'status' => 'published',
                 ])->whereRelation('user_responses', 'user_id', Auth::user()->id);
+            })->when($this->hasActive, function ($query) {
+                $query->where('user_id', Auth::user()->id)
+                    ->whereIn('status', ['published']);
             })->when($this->nextCursor, function ($query) {
                 $query->cursorPaginate($this->perPage, ['*'], 'cursor', $this->nextCursor);
             })->cursorPaginate($this->perPage);
@@ -129,7 +135,7 @@ class PollController extends Controller
 
     public function pollData(Request $request)
     {
-        $poll = Poll::byHash($request->poll);
+        $poll = $request->route('poll');
 
         $poll->load('question.choices', 'user_responses');
 
@@ -147,7 +153,7 @@ class PollController extends Controller
             ->count();
 
         $pendingCount = Poll::where('user_id', $user?->id)
-            ->whereNotIn('status', ['draft', 'published'])
+            ->whereIn('status', ['draft', 'pending'])
             ->count();
 
         $answeredCount = Poll::where('status', 'published')
@@ -208,7 +214,7 @@ class PollController extends Controller
 
     public function storeQuestionResponse(Request $request)
     {
-        $poll = Poll::byHash($request->poll);
+        $poll = $request->route('poll');
         $question = Question::byHash($request->questionHash);
         $choice = QuestionChoice::byHash($request->selectedChoiceHash);
         $user = Auth::user();
