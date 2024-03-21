@@ -27,10 +27,20 @@
             </template>
             <template v-else>
                 <div v-if="!actions[0].disabled" class="inline-flex rounded-md shadow-sm">
+                    <PrimaryButton
+                        :theme="'primary'"
+                        @click="handleAction(actions[0])"
+                        v-if="!!actions[0].clickAction"
+                        :disabled="actions[0].disabled"
+                        :otherClasses="actions[0].disabled ? 'cursor-not-allowed' :''"
+                        class="px-3 py-2 text-xs font-semibold text-white rounded-lg shadow-sm bg-sky-500 dark:text-white hover:bg-primary-500 hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+                    >
+                        {{ actions[0].label }}
+                    </PrimaryButton>
                     <NavLink
-                    type="button"
+                        type="button"
                         :href="actions[0].link"
-                        v-if="!!actions[0].link"
+                        v-if="actions[0].link"
                         class="px-3 py-0.5 text-xs font-semibold text-white rounded shadow-sm bg-sky-500 dark:text-white hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
                     >
                         <span>{{ actions[0].label }}</span>
@@ -91,7 +101,11 @@
   const handleAction = (action: any) => {
     if (action.clickAction) {
         if (!action.disabled) {
-            configStore.toggleModal();
+            if (action.clickAction === 'showPublishModal') {
+                configStore.togglePublishModal();
+            } else {
+                configStore.toggleModal();
+            }
         }
     }
   };

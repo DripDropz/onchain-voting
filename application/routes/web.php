@@ -117,7 +117,7 @@ Route::prefix('/petitions')->as('petitions.')->middleware('featureEnabled:petiti
     Route::get('/{petition}/share', [PetitionController::class, 'share'])
         ->name('share');
 
-    Route::post('/{petition}/publish', [PetitionController::class, 'publish'])
+    Route::put('/{petition}/publish', [PetitionController::class, 'publish'])
         ->name('publish');
 });
 

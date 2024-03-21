@@ -14,11 +14,15 @@
                       Waiting for admin approval.
                     </p>
                   </div>
-                  <div v-else-if="petition.status === 'approved'" class="flex flex-col items-center gap-4 text-base">
+                  <div v-if="petition.status === 'approved'" class="flex flex-col items-center gap-4 text-base">
                     <p class="font-bold leading-tight text-green-500">
-                      Your Petition have been approved.
+                      Your Petition has been approved.
                     </p>
-                    <PrimaryButton theme="primary">Publish</PrimaryButton>
+                    <button
+                            @click.prevent="publishPetition()"
+                            class="font-semibold bg-sky-500 txt-white hover:text-slate-700 dark:hover:text-white py-2 px-4 rounded-md">
+                            <span>Publish</span>
+                        </button>
                   </div>
                 </div>
             </div>
@@ -78,7 +82,10 @@
                 </div>
             </div>
             <Modal :show="showModal">
-                <ClosePetition :petition="petition" @close="showModal = false"></ClosePetition>
+                <ClosePetition :petition="petition" @close="showModal = false" />
+            </Modal>
+            <Modal :show="showPublishModal" :modalType="'publish'">
+                <PublishPetition :petition="petition" @close="showPublishModal = false" />
             </Modal>
         </div>
     </VoterLayout>
@@ -88,19 +95,18 @@
 import VoterLayout from "@/Layouts/VoterLayout.vue";
 import PetitionData = App.DataTransferObjects.PetitionData;
 import {LockClosedIcon} from "@heroicons/vue/20/solid";
-import {Link} from "@inertiajs/vue3";
+import {Link, useForm} from "@inertiajs/vue3";
 import {LinkIcon} from "@heroicons/vue/20/solid";
 import AlertService from "@/shared/Services/alert-service";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Criteria from "@/shared/components/Criteria.vue";
 import Modal from "@/Components/Modal.vue";
 import ClosePetition from "./Partials/ClosePetition.vue";
+import PublishPetition from "./Partials/PublishPetition.vue";
 import PetitionGoals from "./Partials/PetitionGoals.vue";
 import PetitionSupporters from "@/Pages/Petition/Partials/PetitionSupporters.vue"
 import { useConfigStore } from "@/stores/config-store";
 import { storeToRefs } from "pinia";
-import axios from "axios";
-import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps<{
     petition: PetitionData;
@@ -108,20 +114,24 @@ const props = defineProps<{
     actions: []
 }>();
 
-let configStore = useConfigStore();
-let { showModal } = storeToRefs(configStore);
+let configStore = useConfigStore()
+let {showModal, showPublishModal } = storeToRefs(configStore);
 
 const form = useForm({
-    petition: props.petition.hash,
+    status: props?.petition?.status,
 });
 
+const emit = defineEmits<{(e: 'close'):void}>()
+
 const publishPetition = async () => {
-    try {
-        await axios.post(route('petitions.publish', { petition: props.petition.hash }));
-        AlertService.show(["Petition has been published"], "success");
-    } catch (error) {
-        AlertService.show(["There was an error publishing the petition"], "error");
-    }
+        try {
+            await form.put(route("petitions.publish", { petition: props.petition?.hash }));
+            props.petition.status = "published";
+            AlertService.show(["Petition has been published"], "success");
+            emit('close');
+        } catch (error) {
+            AlertService.show(["There was an error publishing the petition"], "error");
+        }
 };
 
 let copy = (link) => {
