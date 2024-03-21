@@ -11,6 +11,7 @@ use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 use Spatie\LaravelData\Attributes\Validation\StringType;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
+use Spatie\LaravelData\Attributes\Validation\BooleanType;
 
 #[TypeScript]
 class PetitionData extends Data
@@ -64,6 +65,13 @@ class PetitionData extends Data
         public ?DataCollection $rules,
 
         public  $petition_goals,
+
+        #[BooleanType]
+        public ?bool $is_visible,
+
+        #[BooleanType]
+        public ?bool $is_featured,
+
     ) {}
 
     public static function attributes(): array

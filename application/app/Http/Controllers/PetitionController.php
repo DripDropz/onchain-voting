@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Gate;
 use App\DataTransferObjects\RuleData;
 use Illuminate\Support\Facades\Redirect;
 use App\DataTransferObjects\PetitionData;
+use App\Events\PetitionSigned;
 use Illuminate\Validation\Rule as ValidationRule;
 
 
@@ -253,6 +254,9 @@ class PetitionController extends Controller
         $petition?->signatures()->syncWithPivotValues($signature->id, [
             'model_type' => Petition::class,
         ], false);
+
+        PetitionSigned::dispatch($petition);
+
         return to_route('petitions.view', $petition->hash);
     }
 
@@ -365,7 +369,7 @@ class PetitionController extends Controller
                     ->whereIn('status', $this->filter);
             })
             ->when(in_array('published', $this->filter ?? []), function ($query) {
-                $query->whereIn('status', $this->filter);
+                $query->whereIn('status', $this->filter)->where('is_visible', true);
             })
             ->when($this->hasSigned, function ($query) {
                 $query->where([
@@ -407,13 +411,15 @@ class PetitionController extends Controller
         $signedCount = Petition::where('status', 'published')
             ->whereRelation('signatures', 'user_id', $user?->id)
             ->count();
-
+        $allActiveCount = Petition::where('status', 'published')
+            ->where('is_visible', true)
+            ->count();
         return [
             'draftCount' => $draftCount,
             'activeCount' => $activeCount,
             'pendingCount' => $pendingCount,
             'signedCount' => $signedCount,
-            'allCount' => Petition::where('status', 'published')->count()
+            'allCount' => $allActiveCount,
         ];
     }
 }

@@ -22,6 +22,7 @@ use App\DataTransferObjects\BallotData;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 use App\DataTransferObjects\PetitionData;
+use App\Events\PetitionSigned;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
@@ -126,7 +127,7 @@ class PetitionController extends Controller
         $petition->load('media');
 
         return Inertia::render('Auth/Petition/Edit', [
-            'petition' => PetitionData::from($petition),
+            'petition' => PetitionData::from($petition->load(['rules'])),
             'petitionImg' => optional($petition->getMedia('petitions'))->first()?->getUrl(),
             'crumbs' => [
                 ['label' => 'Petitions', 'link' => route('admin.petitions.index')],
@@ -215,6 +216,7 @@ class PetitionController extends Controller
         if ($rule instanceof Rule) {
             $rule->value2 = $request->v2;
             $rule->save();
+            PetitionSigned::dispatch($petition);
             return RuleData::from($rule);
         } else {
             $rule = new Rule;
@@ -224,6 +226,7 @@ class PetitionController extends Controller
             $rule->operator = RuleOperatorEnum::EQUALS_OR_GREATER_THAN->value;
             $rule->save();
             $petition->rules()->attach($rule->id);
+            PetitionSigned::dispatch($petition);
             return RuleData::from($rule);
         }
     }
