@@ -1,15 +1,13 @@
 <template>
-    <VoterLayout
-        page="Petitions"
-        :crumbs="crumbs"
-        :actions="[{
-                    label: 'Create Petition',
-                    clickAction:'showModal'
-                }]">
-        <section class="w-full py-12 mx-auto">
+    <VoterLayout page="Petitions" :crumbs="crumbs" :actions="[{
+        label: 'Create Petition',
+        clickAction: 'showModal'
+    }]">
+        <section class="w-full py-12 mx-auto container">
             <div class="inner-container">
                 <div class="sm:rounded-lg">
-                    <h2 class="mb-8 text-2xl font-bold leading-tight text-center text-gray-800 xl:text-4xl dark:text-gray-200">
+                    <h2
+                        class="mb-8 text-2xl font-bold leading-tight text-center text-gray-800 xl:text-4xl dark:text-gray-200">
                         Petitions
                     </h2>
                     <div class="w-full">
@@ -48,36 +46,85 @@
                 <PetitionBrowser v-if="currentTab == 'browse'" :context="'browse'" :params="{}" />
 
                 <template v-else-if="!!user" v-for="option in menuOptions" :key="option.name">
-                    <PetitionBrowser v-if="currentTab == option.value && option.value!='browse'" :context="option.value" :params="option.param" />
+                    <PetitionBrowser v-if="currentTab == option.value && option.value != 'browse'" :context="option.value"
+                        :params="option.param" />
                 </template>
-                <div v-else class="py-16">
+
+                <div v-else-if="currentTab != 'signed'" class="py-16">
                     <LoginToView>
                         <span class="dark:text-white"> Login to view your {{ currentTab }} petitions.</span>
                     </LoginToView>
                 </div>
             </div>
+
+            <div v-if="currentTab === 'signed' && (!menuOptions.find(option => option.value === 'signed') || menuOptions.find(option => option.value === 'signed').count === 0)" class="py-16">
+                <div class="h-full inner-container justify-center text-center border-2 border-dashed border-gray-300">
+                    <div class="py-6">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            aria-hidden="true">
+                            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-200">
+                          You haven't signed any petitions.
+                        </h3>
+                        <div class="mt-6 pb-3">
+                            <PrimaryButton :theme="'primary'" @click="changeTab('browse')">
+                                Browse Petitions
+                                <PlusIcon class="w-5 h-5" />
+                            </PrimaryButton>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-else-if="user && ['pending', 'draft', 'active'].includes(currentTab) && (!menuOptions.find(option => option.value === currentTab) || menuOptions.find(option => option.value === currentTab).count === 0)"
+                class="py-16">
+                <div
+                    class="h-full inner-container justify-center text-center rounded-lg border-2 border-dashed border-gray-300">
+                    <div class="py-6">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            aria-hidden="true">
+                            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-200 capitalize">No {{currentTab}} Petitions</h3>
+                        <div class="mt-6 pb-3">
+                            <Link :href="route('petitions.create')">
+                            <PrimaryButton :theme="'primary'">
+                                Create Petition
+                                <PlusIcon class="w-5 h-5" />
+                            </PrimaryButton>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <Modal :show="showModal">
-                <PetitionConfirmation @close="showModal = false"/>
+                <PetitionConfirmation @close="showModal = false" />
             </Modal>
         </section>
     </VoterLayout>
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
-import {Link} from "@inertiajs/vue3";
+import { ref } from 'vue';
+import { Link } from "@inertiajs/vue3";
 import UserData = App.DataTransferObjects.UserData;
 import PetitionData = App.DataTransferObjects.PetitionData;
 import VoterLayout from "@/Layouts/VoterLayout.vue";
 import Modal from '@/Components/Modal.vue';
 import PetitionConfirmation from './Partials/PetitionConfirmation.vue';
 import LoginToView from "@/shared/components/LoginToView.vue";
-import {useConfigStore} from '@/stores/config-store';
-import {storeToRefs} from 'pinia';
+import { useConfigStore } from '@/stores/config-store';
+import { storeToRefs } from 'pinia';
 import PetitionBrowser from './Partials/PetitionBrowser.vue';
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import {PlusIcon} from "@heroicons/vue/20/solid";
 
 let configStore = useConfigStore();
-let {showModal} = storeToRefs(configStore);
+let { showModal } = storeToRefs(configStore);
 
 const props = withDefaults(
     defineProps<{
@@ -98,32 +145,32 @@ const changeTab = (tabName) => {
 
 const menuOptions = [
     {
-        name: "Browse", 
-        value: "browse", 
+        name: "Browse",
+        value: "browse",
         count: props.counts.allCount,
-        param:{}
+        param: {}
     },
     {
-        name: "Drafts", 
-        value: "draft", 
+        name: "Drafts",
+        value: "draft",
         count: props.counts.draftCount,
         param: { statusfilter: ['draft'] }
     },
     {
-        name: "Active", 
-        value: "active", 
+        name: "Active",
+        value: "active",
         count: props.counts.activeCount,
-        param: { statusfilter: ['published'] }
+        param: { statusfilter: ['active'] }
     },
     {
-        name: "Pending", 
-        value: "pending", 
+        name: "Pending",
+        value: "pending",
         count: props.counts.pendingCount,
         param: { hasPending: true }
     },
     {
-        name: "signed", 
-        value: "signed", 
+        name: "signed",
+        value: "signed",
         count: props.counts.signedCount,
         param: { hasSigned: true }
     },

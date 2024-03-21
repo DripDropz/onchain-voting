@@ -1,17 +1,23 @@
 <template>
     <div>
-        <PetitionList :petitions="publicPetition[0]?.[context].petitions" />
+        <div v-if="publicPetition[0]?.[context].petitions?.length > 0">
+            <PetitionList :petitions="publicPetition[0]?.[context].petitions"/>
 
-        <LoadMorePetitions :context="context" :params="params"/>
+            <LoadMorePetitions :context="context" :params="params"/>
+        </div>
+        <div class="py-16" v-else>
+            <EmptyPetition />
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import {onMounted} from 'vue';
 import LoadMorePetitions from './LoadMorePetitions.vue';
 import PetitionList from './PetitionList.vue';
-import { usePetitionStore } from '@/stores/petition-store';
-import { storeToRefs } from 'pinia';
+import {usePetitionStore} from '@/stores/petition-store';
+import {storeToRefs} from 'pinia';
+import EmptyPetition from "@/Pages/Petition/Partials/EmptyPetition.vue";
 
 const props = withDefaults(defineProps<{
     context?: string
@@ -21,7 +27,7 @@ const props = withDefaults(defineProps<{
 });
 
 let petitionStore = usePetitionStore();
-let { publicPetition, loadingMore } = storeToRefs(petitionStore);
+let {publicPetition, loadingMore} = storeToRefs(petitionStore);
 
 if (!publicPetition.value[0]?.[props.context]?.petitions.length) {
     loadingMore.value = true;

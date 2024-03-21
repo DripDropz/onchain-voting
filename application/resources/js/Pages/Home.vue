@@ -11,9 +11,9 @@ defineProps<{
 
 <template>
     <VoterLayout page="Home">
-        <div class="self-stretch place-items-stretch w-full">
-            <div class="flex flex-col h-full w-full justify-center md:flex-row md:items-center">
-                <div class="flex flex-col justify-center h-full gap-4 p-8 lg:p-16 items-center lg:w-1/2 ">
+        <div class="self-stretch place-items-stretch w-full h-full">
+            <div class="flex flex-col h-full w-full justify-center md:grid md:grid-cols-2">
+                <div class="flex flex-col justify-center h-full gap-4 p-8 lg:p-16 items-center w-full ">
                     <div class="flex flex-col gap-y-8">
                         <div
                             class="text-4xl font-medium tracking-tight font-display text-slate-900 dark:text-slate-200 sm:text-6xl xl:text-7xl">
@@ -51,28 +51,10 @@ defineProps<{
                         </a>
                     </div>
                 </div>
-                <div class="lg:w-1/2 h-full bg-center"
+                <div class="w-full h-full bg-center"
                      :style="{ backgroundImage: 'url(' + voteSplashImg + ')' }">
                 </div>
             </div>
-
-<!--            <div class="py-24 bg-sky-100 dark:bg-slate-800/20" v-if="ballots?.length > 0" id="open-ballots">-->
-<!--                <div class="container" v-if="ballots?.length > 1">-->
-<!--                    <h2 class="mb-6 title2 font-display lg:mb-10">-->
-<!--                        <span class="flex">Open Ballots</span>-->
-<!--                        <Line></Line>-->
-<!--                    </h2>-->
-<!--                </div>-->
-
-<!--                <div class="container">-->
-<!--                    <OpenBallots v-if="ballots.length > 3" :ballots="ballots"></OpenBallots>-->
-
-<!--                    <div class="flex flex-col gap-16" v-else>-->
-<!--                        <BallotSingle v-for="ballot in ballots" :key="ballot.hash" :ballot="ballot" context="list">-->
-<!--                        </BallotSingle>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
         </div>
     </VoterLayout>
 </template>

@@ -17,6 +17,8 @@ services:
             - './lucid:/usr/src/app'
         networks:
             - chainvote
+        environment:
+            - APP_URL=http://chainvote.test
     chainvote.lucid:
         image: nodejs/chainvote
         build:
@@ -99,7 +101,7 @@ services:
             POSTGRES_PASSWORD: '${POSTGRES_PASSWORD:-MdT6Sc7XfrpCMJw4D}'
             POSTGRES_POSTGRES_PASSWORD: '${POSTGRES_ROOT_PASSWORD:-bVd95i3mUPLKYqGVCRtN}'
         ports:
-            - "${POSTGRES_PORT:-5436}:5432"
+            - "${POSTGRES_PORT:-5432}:5432"
         healthcheck:
             test: pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
             interval: 10s
@@ -135,7 +137,7 @@ services:
             timeout: 5s
 
     chainvote.minio:
-        image: bitnami/minio
+        image: bitnami/minio:2024.2.26
         environment:
         - MINIO_ROOT_USER=chainvote-admin
         - MINIO_ROOT_PASSWORD=chainvote-admin

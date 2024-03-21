@@ -24,6 +24,7 @@
         "spatie/laravel-ciphersweet": "^1.2",
         "spatie/laravel-data": "^3.4",
         "spatie/laravel-enum": "^3.0",
+        "spatie/laravel-medialibrary": "^11.0.0",
         "spatie/laravel-permission": "^5.10",
         "spatie/laravel-typescript-transformer": "^2.2",
         "staudenmeir/belongs-to-through": "^2.5",

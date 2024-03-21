@@ -20,6 +20,7 @@ import PetitionData = App.DataTransferObjects.PetitionData;
 import AlertService from '../Services/alert-service';
 import { Inertia } from '@inertiajs/inertia'
 import { useForm } from '@inertiajs/vue3';
+import { usePetitionSignatureStore } from '@/Pages/Petition/stores/petition-signature-store';
 
 const walletStore = useWalletStore();
 const { walletData } = storeToRefs(walletStore);
@@ -30,6 +31,7 @@ const props = defineProps<{
     user?: {}
 }>();
 
+let petitionSignatureStore = usePetitionSignatureStore();
 let submitSignature = async () => {
 
     const messageHex = fromText(`Sign petition ${props.petition.hash}`)
@@ -44,6 +46,7 @@ let submitSignature = async () => {
     form.post(route('petitions.signatures.store', { petition: props.petition.hash }),
         {
             onSuccess: () => {
+                petitionSignatureStore.reloadPetitionData(props.petition.hash).then();
                 AlertService.show(['Petition Signed '], 'success');
             },
             onError: (errors) => {

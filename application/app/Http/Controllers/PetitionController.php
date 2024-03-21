@@ -9,16 +9,14 @@ use Inertia\Response;
 use App\Models\Petition;
 use App\Enums\RuleV1Enum;
 use App\Models\Signature;
-use App\Enums\RuleTypeEnum;
 use Illuminate\Http\Request;
 use App\Enums\ModelStatusEnum;
-use Illuminate\Support\Carbon;
 use App\Enums\RuleOperatorEnum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\DataTransferObjects\RuleData;
-use Illuminate\Support\Facades\Redirect;
 use App\DataTransferObjects\PetitionData;
+use App\Events\PetitionSigned;
 use Illuminate\Validation\Rule as ValidationRule;
 
 
@@ -104,7 +102,7 @@ class PetitionController extends Controller
             [
                 'label' => $petition->closed ? 'Petition closed' : 'Close Petition',
                 "clickAction" => 'showModal',
-                'disabled' => $petition->closed,
+                'disabled' => $petition->closed || $petition->signatures()->count() > 0,
 
             ],
         ];
@@ -119,7 +117,6 @@ class PetitionController extends Controller
 
     public function manage(Petition $petition)
     {
-
         $crumbs = [
             [
                 'label' => 'Petitions',
@@ -147,10 +144,22 @@ class PetitionController extends Controller
             [
                 'label' => $petition->closed ? 'Petition closed' : 'Close Petition',
                 "clickAction" => 'showModal',
-                'disabled' => $petition->closed,
-
+                'disabled' => $petition->closed || $petition->signatures()->count() > 0,
+        
             ],
         ];
+
+        if ($petition->status->value === 'approved') {
+            $firstAction = [
+                'label' => 'Publish Petition',
+                "clickAction" => 'showPublishModal',
+                'disabled' => $petition->status === 'published',
+            ];
+            array_unshift($actions, $firstAction);
+        } elseif ($petition->status->value === 'published') {
+            array_slice($actions, 1);
+        }
+
         $response = Gate::inspect('view', $petition);
 
         if ($response->allowed()) {
@@ -254,6 +263,9 @@ class PetitionController extends Controller
         $petition?->signatures()->syncWithPivotValues($signature->id, [
             'model_type' => Petition::class,
         ], false);
+
+        PetitionSigned::dispatch($petition);
+
         return to_route('petitions.view', $petition->hash);
     }
 
@@ -335,12 +347,10 @@ class PetitionController extends Controller
      */
     public function publish(Petition $petition)
     {
-        if ($petition->status === 'approved') {
             $petition->update([
                 'status' => 'published',
                 'started_at' => now()
             ]);
-        }
     }
 
     public function petitionsData(Request $request)
@@ -357,9 +367,16 @@ class PetitionController extends Controller
                 $query->where('user_id', Auth::user()->id)
                     ->whereNotIn('status', ['draft', 'published']);
             })
-            ->when($this->filter, function ($query) {
+            ->when(in_array('active', $this->filter ?? []), function ($query) {
+                $query->where('user_id', Auth::user()->id)
+                    ->whereIn('status', ['published']);
+            })
+            ->when(in_array('draft', $this->filter ?? []), function ($query) {
                 $query->where('user_id', Auth::user()->id)
                     ->whereIn('status', $this->filter);
+            })
+            ->when(in_array('published', $this->filter ?? []), function ($query) {
+                $query->whereIn('status', $this->filter)->where('is_visible', true);
             })
             ->when($this->hasSigned, function ($query) {
                 $query->where([
@@ -401,13 +418,15 @@ class PetitionController extends Controller
         $signedCount = Petition::where('status', 'published')
             ->whereRelation('signatures', 'user_id', $user?->id)
             ->count();
-
+        $allActiveCount = Petition::where('status', 'published')
+            ->where('is_visible', true)
+            ->count();
         return [
             'draftCount' => $draftCount,
             'activeCount' => $activeCount,
             'pendingCount' => $pendingCount,
             'signedCount' => $signedCount,
-            'allCount' => Petition::query()->count()
+            'allCount' => $allActiveCount,
         ];
     }
 }

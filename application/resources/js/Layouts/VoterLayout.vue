@@ -32,7 +32,7 @@ let {isDarkMode, showModal} = storeToRefs(configStore);
             <Head :title="page"/>
 
             <div
-                class="relative flex flex-col justify-start min-h-screen bg-center bg-dots-darker dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
+                class="relative flex flex-col justify-start min-h-screen h-screen grid-flow-col bg-center bg-dots-darker dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
                 <div class="relative z-50 w-full py-4 text-right border-b border-slate-100">
                     <div class="container">
                         <Header :can-login="canLogin" :pageData="pageData"/>

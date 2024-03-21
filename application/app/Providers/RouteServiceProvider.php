@@ -52,7 +52,7 @@ class RouteServiceProvider extends ServiceProvider
             return $this->getModel(Petition::class, $value);
         });
 
-        Route::bind('pool', function ($value, $route) {
+        Route::bind('poll', function ($value, $route) {
             return $this->getModel(Poll::class, $value);
         });
 

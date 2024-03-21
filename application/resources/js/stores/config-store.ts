@@ -22,6 +22,7 @@ export const useConfigStore = defineStore('config', () => {
     const isDarkMode: Ref<Boolean> = useStorage('dark-mode', true, localStorage, {mergeDefaults: true});
     const config: Ref<Config> = ref<Config>({} as Config);
     let showModal = ref(false);
+    let showPublishModal = ref(false);
     let user =  usePage().props.auth.user;
 
 
@@ -47,14 +48,20 @@ export const useConfigStore = defineStore('config', () => {
         showModal.value = !showModal.value;
     }
 
+    function togglePublishModal() {
+        showPublishModal.value = !showPublishModal.value;
+    }
+
     onMounted(loadConfig);
 
     return {
         config,
         isDarkMode,
         toggleModal,
+        togglePublishModal,
         toggleDarkMode,
         showModal,
+        showPublishModal,
         user
     }
 });

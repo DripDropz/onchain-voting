@@ -63,7 +63,6 @@
 
 <script setup lang="ts">
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import BallotList from "@/Pages/Auth/Ballot/Partials/BallotList.vue"
 import Paginator from '@/shared/components/Paginator.vue';
 import { useBallotStore } from '@/stores/ballot-store';
 import { VARIABLES } from '@/types/variables'

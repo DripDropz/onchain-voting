@@ -12,7 +12,7 @@
                     <ul class="p-3 text-sm list-disc">
                         <li class="py-1" v-if="visible">
                             <span class="font-bold"> {{ visible }}
-                                signatures</span> vissible on site
+                                signatures</span> visible on site
                         </li>
                         <li class="py-1" v-if="featurePetition">
                             <span class="font-bold"> {{ featurePetition }}
