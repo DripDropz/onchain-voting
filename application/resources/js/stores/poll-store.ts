@@ -102,7 +102,6 @@ export const usePollStore = defineStore('poll-store', () => {
                     publicPoll.value[0][context].hasMorePages = res.hasMorePages;
                     publicPoll.value[0][context].nextCursor = res.nextCursor;
                     publicPoll.value[0][context].polls = [...publicPoll.value[0][context].polls ,...res.polls];
-
                 }).finally(() => {
                     loadingMore.value = false
                 })

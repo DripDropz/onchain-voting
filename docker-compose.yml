@@ -133,6 +133,20 @@ services:
                 - ping
             retries: 3
             timeout: 5s
+
+    chainvote.minio:
+        image: bitnami/minio
+        environment:
+        - MINIO_ROOT_USER=chainvote-admin
+        - MINIO_ROOT_PASSWORD=chainvote-admin
+        - MINIO_DEFAULT_BUCKETS=chainvote-bucket
+        ports:
+        - 9000:9000
+        - 9001:9001
+        volumes:
+        - 'chainvote-minio:/data'
+        networks:
+        - chainvote
 networks:
     chainvote:
         driver: bridge
@@ -140,4 +154,6 @@ volumes:
     chainvote-db:
         driver: local
     chainvote-redis:
+        driver: local
+    chainvote-minio:
         driver: local

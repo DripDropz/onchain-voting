@@ -23,20 +23,18 @@ class SnapshotImportController extends Controller
     public function parseCSV(Request $request, Snapshot $snapshot)
     {
         $filename = $request->filename;
-        // temp storage
-        Storage::disk('s3')->move(
+        Storage::disk(config('filesystems.default'))->move(
             $request->key,
             $filename
         );
 
-        // $path = Storage::path($pathName);
         return $this->getParsedCSV(10, $filename, $snapshot);
     }
 
     public function getParsedCSV($sampleCount = 10, $filename, Snapshot $snapshot)
     {
         // Get the file from Amazon S3
-        $file = Storage::disk('s3')->get($filename);
+        $file = Storage::disk(config('filesystems.default'))->get($filename);
 
         // Process the file content
         $parsedData = LazyCollection::make(function () use ($file) {
@@ -77,7 +75,7 @@ class SnapshotImportController extends Controller
 
     public function cancelParsedCSV(Request $request, Snapshot $snapshot)
     {
-        Storage::disk('s3')->delete($request->input('filename'));
+        Storage::disk(config('filesystems.default'))->delete($request->input('filename'));
         $snapshot->metadata = null;
         $snapshot->save();
     }

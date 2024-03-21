@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.2",
         "based/momentum-modal": "^0.2.0",
-        "doctrine/dbal": "*",
+        "doctrine/dbal": "3.8.*",
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^0.6.11",
         "laravel/framework": "^10.0",
@@ -15,7 +15,7 @@
         "laravel/sanctum": "^3.2",
         "laravel/telescope": "^4.14",
         "laravel/tinker": "^2.8",
-        "laravel/vapor-core": "^2.33",
+        "laravel/vapor-core": "^2.37",
         "laravel/vapor-ui": "^1.7",
         "league/flysystem-aws-s3-v3": "^3.24",
         "owen-it/laravel-auditing": "^13.5",

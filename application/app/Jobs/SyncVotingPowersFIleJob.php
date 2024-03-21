@@ -36,7 +36,7 @@ class SyncVotingPowersFIleJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $fileContent = Storage::disk('s3')->get($this->filename);
+        $fileContent = Storage::disk(config('filesystems.default'))->get($this->filename);
         $processedRowCount = 0;
 
         LazyCollection::make(function () use ($fileContent, $processedRowCount) {
