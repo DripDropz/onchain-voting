@@ -25,7 +25,7 @@
                 </span>
             </label>
         </div>
-        <div v-if="publicPoll.question.status !== 'published'" class="bg-white/10 py-1 px-4 rounded-md mb-4 text-sky-500">
+        <div v-if="publicPoll.status !== 'published'" class="bg-white/10 py-1 px-4 rounded-md mb-4 text-sky-500">
              <p>Poll will be published when an admin approves it.</p>
         </div>
         <div class="mt-auto w-full bottom-0 flex justify-between items-center py-2">
@@ -37,7 +37,7 @@
             </button>
         </div>
     </div>
-    <Modal :show="showModal">
+    <Modal :show="showModal" @close="showModal = false">
         <VoteConfirmation
             @close="showModal = false"
             :poll="publicPoll"

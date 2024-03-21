@@ -37,6 +37,7 @@
         "chart.js": "^4.3.0",
         "flowbite-vue": "^0.0.16",
         "lucid-cardano": "^0.10.7",
+        "markdown-it": "^14.0.0",
         "moment-timezone": "^0.5.34",
         "momentum-modal": "^0.2.1",
         "momentum-paginator": "^1.0.6",

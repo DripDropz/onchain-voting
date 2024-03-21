@@ -16,15 +16,16 @@
                         <div class="flex flex-col w-full lg:w-2/3 lg:px-12">
 
                             <!-- Dropzone Area-->
-                            <div class="flex items-center justify-center w-full mb-6 relative"
-                                @dragenter.prevent="handleDragEnter" @dragleave.prevent="handleDragLeave" @dragover.prevent
-                                @drop.prevent="handleDrop">
-                                <img v-if="imageUrl" :src="imageUrl" alt="Uploaded image"
+                            <div class="flex items-center justify-center w-full mb-6 relative">
+
+                                <img v-if="photoPreview" :src="photoPreview" alt="Uploaded image"
                                     class="max-h-64 max-w-full object-contain rounded-lg" />
 
 
-                                <label v-else for="dropzone-file"
+                                <label v-if="!photoPreview" for="dropzone-file"
                                     class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer"
+                                    @dragenter.prevent="isHovering = true" @dragover.prevent="isHovering = true"
+                                    @dragleave.prevent="isHovering = false" @drop.prevent="handlefile($event)"
                                     :class="{ 'bg-gray-200 dark:bg-gray-600': isHovering, 'pointer-events-none': uploading }">
                                     <span v-if="uploading">
                                         <svg aria-hidden="true"
@@ -56,7 +57,8 @@
                                         </div>
                                     </span>
                                 </label>
-                                <input id="dropzone-file" type="file" class="hidden" @change="handleFileChange" />
+                                <input id="dropzone-file" type="file" class="hidden" @change="handlefile($event)"
+                                    ref="fileUploads" />
                             </div>
 
                             <div class="flex flex-col">
@@ -71,7 +73,7 @@
                                     </span>
                                 </div>
                                 <div class="p-2 border border-gray-300 sm:rounded-lg dark:border-gray-600">
-                                    {{ petition.description }}
+                                    <p v-html="parseMarkdown(petition.description)"></p>
                                 </div>
                             </div>
                         </div>
@@ -151,9 +153,15 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/20/solid';
 import { computed, ref } from 'vue';
 import compareValues from '@/utils/compare-values';
+import axios from 'axios';
+import Vapor from '@laravel-vapor';
+import MarkdownIt from 'markdown-it';
+
+
 
 const props = defineProps<{
     petition: PetitionData;
+    petitionImg?: string
     crumbs: []
 }>();
 
@@ -173,32 +181,19 @@ let moveToBallot = computed(() => {
 const MAX_WIDTH = 800;
 const MAX_HEIGHT = 400;
 
+
+
 const uploading = ref(false);
-let imageUrl = '';
-
-
+// let photoPreview =ref(null);
+let photoPreview = ref(props.petitionImg);
 const isHovering = ref(false);
 
-const handleDragEnter = () => {
-    isHovering.value = true;
-};
+let file = null;
+let fileUploads = ref();
 
-const handleDragLeave = () => {
-    isHovering.value = false;
-};
 
-const handleDrop = (event) => {
-    event.preventDefault();
-    isHovering.value = false;
-    const file = event.dataTransfer.files[0];
-    handleFile(file);
-};
 
-const handleFileChange = (event) => {
-    const fileInput = event.target;
-    const file = fileInput.files[0];
-    handleFile(file);
-};
+
 
 const validateImage = (file) => {
     const allowedTypes = ['image/svg+xml', 'image/png', 'image/jpeg', 'image/gif'];
@@ -219,29 +214,52 @@ const validateImage = (file) => {
                 resolve(true);
             }
         };
+        img.src = URL.createObjectURL(file);
     });
 };
 
-const handleFile = async (file) => {
-    console.log({ file })
-    if (file) {
-        const isValid = await validateImage(file);
-        if (isValid) {
-            AlertService.show(['File uploading'], 'success');
-            uploading.value = true;
-            setTimeout(() => {
-                uploading.value = false;
-                imageUrl = URL.createObjectURL(file);
-            }, 2000);
-        }
+let handlefile = async (event: any) => {
+    uploading.value = true;
+    event.preventDefault();
+
+    if (event.dataTransfer?.files?.[0]) {
+        file = event.dataTransfer?.files[0];
+    } else {
+        file = event.target.files[0];
     }
+
+    const isValidImage = await validateImage(file);
+    if (!isValidImage) {
+        uploading.value = false;
+        return;
+    }
+
+    Vapor.store(file, {
+        visibility: 'public-read'
+
+    }).then(response => {
+        console.log({ response, file });
+
+        axios.post(route('admin.petitions.upload', { petition: props.petition.hash }), {
+            key: response.key,
+            filename: 'PT_' + props.petition.hash + '.img'
+        }).then((res) => {
+            uploading.value = false;
+            photoPreview.value = URL.createObjectURL(file);
+
+        })
+    })
 };
+
 const approve = () => {
     form.status = 'approved';
     AlertService.show(['Petition Approved Successfully'], 'success');
     form.patch(route('admin.petitions.update', { petition: props.petition?.hash }));
 }
+const md = new MarkdownIt();
 
-
+const parseMarkdown = (content: string): string => {
+    return md.render(content);
+};
 
 </script>

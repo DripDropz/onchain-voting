@@ -71,12 +71,10 @@
                           You haven't signed any petitions.
                         </h3>
                         <div class="mt-6 pb-3">
-                            <Link @click="changeTab('browse')">
-                              <PrimaryButton :theme="'primary'">
-                                  Browse Petitions
-                                  <PlusIcon class="w-5 h-5" />
-                              </PrimaryButton>
-                            </Link>
+                            <PrimaryButton :theme="'primary'" @click="changeTab('browse')">
+                                Browse Petitions
+                                <PlusIcon class="w-5 h-5" />
+                            </PrimaryButton>
                         </div>
                     </div>
                 </div>

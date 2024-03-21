@@ -104,8 +104,6 @@ wasm:
 .PHONY: frontend-clean
 frontend-clean:
 	rm -rf application/node_modules 2>/dev/null || true
-	rm package-lock.json 2>/dev/null || true
-	rm yarn.lock 2>/dev/null || true
 	$(sail) yarn cache clean
 
 .PHONY: rm

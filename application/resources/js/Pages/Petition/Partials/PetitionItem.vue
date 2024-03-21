@@ -8,7 +8,7 @@
                     {{ petition.title }}
                     </Link>
                 </h2>
-                <p>{{ petition.description }}</p>
+                <p v-html="parsedDescription"></p>
             </div>
             <div
                 class="flex flex-row items-center justify-between p-4 border border-b-0 border-l-0 border-r-0 border-black border-t- dark:border-slate-700">
@@ -61,6 +61,7 @@ import { useConfigStore } from "@/stores/config-store";
 import { storeToRefs } from "pinia";
 import AlertService from "@/shared/Services/alert-service";
 import { Alert } from "flowbite-vue";
+import MarkdownIt from 'markdown-it';
 
 const props = defineProps<{
     petition: PetitionData;
@@ -96,4 +97,8 @@ let manage = () => {
 
 const page = usePage();
 
+const md = new MarkdownIt();
+const parsedDescription = computed(() => {
+  return md.render(props.petition.description);
+});
 </script>

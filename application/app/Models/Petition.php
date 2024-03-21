@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\RuleV1Enum;
 use App\Enums\ModelStatusEnum;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Carbon;
 use App\Http\Traits\HasHashIds;
 use App\Models\Interfaces\HasUser;
@@ -13,19 +14,22 @@ use App\Models\Traits\HasTaxonomies;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Petition extends Model implements Auditable, HasUser
+class Petition extends Model implements Auditable, HasUser, HasMedia
 {
     use \OwenIt\Auditing\Auditable,
         HasHashIds,
         HashIdModel,
         Traits\HasUser,
         HasSignatures,
-        HasTaxonomies;
+        HasTaxonomies,
+        HasFactory,
+        InteractsWithMedia;
 
     protected $withCount = [
         'signatures'
@@ -91,5 +95,10 @@ class Petition extends Model implements Auditable, HasUser
 
             }
         );
+    }
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('petitions')
+             ->useDisk(config('filesystems.default'));
     }
 }

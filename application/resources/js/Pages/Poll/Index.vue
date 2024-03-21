@@ -49,6 +49,50 @@
                     </LoginToView>
                 </div>
             </div>
+            <div v-if="user && currentTab === 'answered' && (!menuOptions.find(option => option.value === 'answered') || menuOptions.find(option => option.value === 'answered').count === 0)" class="py-16">
+                <div class="h-full inner-container justify-center text-center border-2 border-dashed border-gray-300">
+                    <div class="py-6">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            aria-hidden="true">
+                            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-200">
+                          You haven't answered any polls.
+                        </h3>
+                        <div class="mt-6 pb-3">
+                            <PrimaryButton :theme="'primary'" @click="changeTab('browse')">
+                                Browse Polls
+                                <PlusIcon class="w-5 h-5" />
+                            </PrimaryButton>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-else-if="user && ['pending', 'active'].includes(currentTab) && (!menuOptions.find(option => option.value === currentTab) || menuOptions.find(option => option.value === currentTab).count === 0)"
+                class="py-16">
+                <div
+                    class="h-full inner-container justify-center text-center rounded-lg border-2 border-dashed border-gray-300">
+                    <div class="py-6">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            aria-hidden="true">
+                            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-200 capitalize">No {{currentTab}} Polls</h3>
+                        <div class="mt-6 pb-3">
+                            <Link :href="route('polls.create')">
+                                <PrimaryButton :theme="'primary'">
+                                    Create Poll
+                                    <PlusIcon class="w-5 h-5" />
+                                </PrimaryButton>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
     </VoterLayout>
 </template>
@@ -61,6 +105,8 @@ import UserData = App.DataTransferObjects.UserData;
 import PollData = App.DataTransferObjects.PollData;
 import BrowsePolls from "./Partials/BrowsePolls.vue";
 import LoginToView from '@/shared/components/LoginToView.vue';
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import {PlusIcon} from "@heroicons/vue/20/solid";
 
 const props = withDefaults(
     defineProps<{
@@ -89,7 +135,7 @@ const menuOptions = [
         name: "Active",
         value: "active",
         count: props.counts.activeCount,
-        param: { status: 'published' }
+        param: { hasActive: true }
     },
     {
         name: "Pending",

@@ -82,8 +82,8 @@ let saveRule = (value, criteria, index) => {
         title: criteria.name,
     }
 
-    setTimeout(() => {
-        axios.post(route('admin.petitions.rules.saveRule', { petition: props.model.hash }), data)
+    setTimeout(async () => {
+        await axios.post(route('admin.petitions.rules.saveRule', { petition: props.model.hash }), data)
             .then((res) => {
                 criteriaRef.value[index].loading = res.data;
             })
@@ -91,7 +91,7 @@ let saveRule = (value, criteria, index) => {
                 criteriaRef.value[index].loading = false;
                 emit('update')
             })
-    }, 2000)
+    }, 5000)
 }
 
 
