@@ -15,8 +15,8 @@
                 <div class="flex items-center gap-1">
                     <h2 class="text-xl font-bold">{{ petition.hash }}</h2>
 
-                    <div @click.prevent="manage">
-                        <PrimaryButton v-if="user" :theme="'primary'">
+                    <div @click.prevent="manage" v-if="petition?.user_id === user?.id">
+                        <PrimaryButton :theme="'primary'">
                             <CogIcon aria class="w-4 h-4" />
                             <span>Manage</span>
                         </PrimaryButton>

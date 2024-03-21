@@ -47,7 +47,7 @@ AlertService.show(Object.values(usePage().props.errors), 'info');
                 <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg" >
                     <BallotSnapshot :ballot="ballot" />
                 </div>
-                <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
+                <div id="policy-section" class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
                     <BallotPolicies :ballot="ballot" :addresses="addresses"/>
                 </div>
             </div>

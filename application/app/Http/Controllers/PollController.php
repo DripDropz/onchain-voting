@@ -26,13 +26,11 @@ class PollController extends Controller
 
     public bool $hasMorePages;
 
-    public array|null $filter;
-
     public bool|null $hasPending;
 
     public bool|null $hasAnswered;
 
-    public ?string $status = 'draft';
+    public ?string $status = 'pending';
 
 
     /**
@@ -101,31 +99,29 @@ class PollController extends Controller
         $this->perPage = $request->query('perPage', 4);
         $this->nextCursor = $request->query('nextCursor', null);
         $this->hasMorePages = $request->query('hasMorePages', false);
-        $this->filter = $request->query('statusfilter', null);
+        $this->status = $request->query('status', null);
         $this->hasPending = $request->query('hasPending', false);
         $this->hasAnswered = $request->query('hasAnswered', false);
-
+        
         $pollCursor = Poll::latest()
             ->when($this->hasPending, function ($query) {
                 $query->where('user_id', Auth::user()->id)
-                    ->whereNotIn('status', ['draft', 'published']);
-            })
-            ->when($this->filter, function ($query) {
-                $query->where('user_id', Auth::user()->id)
-                    ->whereIn('status', $this->filter);
-            })
-            ->when($this->hasAnswered, function ($query) {
+                    ->whereIn('status', ['pending']);
+            })->when($this->status, function ($query) {
+                $query->where('status', $this->status);
+            })->when($this->hasAnswered, function ($query) {
                 $query->where([
                     'status' => 'published',
                 ])->whereRelation('user_responses', 'user_id', Auth::user()->id);
-            })
-            ->when($this->nextCursor, function ($query) {
+            })->when($this->nextCursor, function ($query) {
                 $query->cursorPaginate($this->perPage, ['*'], 'cursor', $this->nextCursor);
-            })
-            ->cursorPaginate($this->perPage);
+            })->cursorPaginate($this->perPage);
 
         return [
-            'polls' => PollData::collection(collect($pollCursor->items())->each(fn ($p) => $p->load('question.choices', 'user_responses'))),
+            'polls' => PollData::collection(
+                collect($pollCursor->items())
+                    ->each(fn($p) => $p->load('question.choices', 'user_responses'))
+            ),
             'nextCursor' => $pollCursor->nextCursor()?->encode(),
             'hasMorePages' => $pollCursor->hasMorePages(),
         ];
@@ -145,9 +141,6 @@ class PollController extends Controller
     private function pollsCount(Request $request)
     {
         $user = Auth::user();
-        $draftCount = Poll::where('user_id', $user?->id)
-            ->where('status', 'draft')
-            ->count();
 
         $activeCount = Poll::where('user_id', $user?->id)
             ->where('status', 'published')
@@ -162,11 +155,10 @@ class PollController extends Controller
             ->count();
 
         return [
-            'draftCount' => $draftCount,
             'activeCount' => $activeCount,
             'pendingCount' => $pendingCount,
             'answeredCount' => $answeredCount,
-            'allCount' => Poll::query()->count()
+            'allCount' => Poll::where('status', 'published')->count()
         ];
     }
 

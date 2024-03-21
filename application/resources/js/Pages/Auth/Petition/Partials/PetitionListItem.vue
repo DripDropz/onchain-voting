@@ -3,7 +3,12 @@
         <div class="w-2/3">
             <div class="p-4">
                 <h2 class="mb-4 text-2xl font-bold align-middle">
-                    {{ petition.title }} <span class="opacity-30 text-sm">- {{ petition.status }}</span>
+                    <Link
+                        v-if="!petition?.ballot"
+                        :href="route('admin.petitions.edit', { petition: petition.hash })"
+                        class="font-semibold text-white hover:text-sky-500">
+                        {{ petition.title }} <span class="opacity-30 text-sm">- {{ petition.status }}</span>
+                    </Link>
                 </h2>
                 <span>{{ petition.description }}</span>
             </div>
@@ -15,8 +20,7 @@
                     <div class="flex flex-row items-center gap-2">
                         <Link
                             :href="route('petitions.view', { petition: petition.hash })"
-                            class="font-semibold text-sky-500 hover:text-slate-700 dark:hover:text-white"
-                        >
+                            class="font-semibold text-sky-500 hover:text-slate-700 dark:hover:text-white">
                             <span>View</span>
                         </Link>
 

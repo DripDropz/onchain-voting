@@ -17,6 +17,8 @@ services:
             - './lucid:/usr/src/app'
         networks:
             - chainvote
+        environment:
+            - APP_URL=http://chainvote.test
     chainvote.lucid:
         image: nodejs/chainvote
         build:
