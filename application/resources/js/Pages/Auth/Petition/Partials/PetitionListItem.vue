@@ -6,7 +6,7 @@
                     <Link
                         v-if="!petition?.ballot"
                         :href="route('admin.petitions.edit', { petition: petition.hash })"
-                        class="font-semibold text-white hover:text-sky-500">
+                        class="font-semibold hover:text-sky-500">
                         {{ petition.title }} <span class="opacity-30 text-sm">- {{ petition.status }}</span>
                     </Link>
                 </h2>

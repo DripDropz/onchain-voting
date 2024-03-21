@@ -67,6 +67,8 @@ categories: Array<App.DataTransferObjects.CategoryData> | null;
 ballot: App.DataTransferObjects.BallotData | null;
 rules: Array<App.DataTransferObjects.RuleData> | null;
 petition_goals: any;
+is_visible: boolean | null;
+is_featured: boolean | null;
 };
 export type PolicyData = {
 hash: string | null;
