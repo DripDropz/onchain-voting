@@ -10,7 +10,7 @@
                         {{ petition.title }} <span class="opacity-30 text-sm">- {{ petition.status }}</span>
                     </Link>
                 </h2>
-                <span>{{ petition.description }}</span>
+                <span v-html="parseMarkdown(petition.description)"></span>
             </div>
             <div
                 class="flex flex-row items-center justify-between p-4 border border-b-0 border-l-0 border-r-0 border-black border-t- dark:border-slate-700">
@@ -80,6 +80,8 @@ import {UsersIcon, EnvelopeIcon} from '@heroicons/vue/20/solid';
 import voteAppLogo from '../../../../../images/openchainvote.png';
 import {Link} from "@inertiajs/vue3";
 import {ArrowTopRightOnSquareIcon} from '@heroicons/vue/20/solid';
+import MarkdownIt from 'markdown-it';
+
 
 defineProps<{
     petition: PetitionData;
@@ -88,6 +90,12 @@ defineProps<{
 const formatDate = (dateString: string): string => {
     const options = {month: '2-digit', day: '2-digit', year: '2-digit'};
     return new Date(dateString).toLocaleDateString(undefined, options);
+};
+
+const md = new MarkdownIt();
+
+const parseMarkdown = (content: string): string => {
+    return md.render(content);
 };
 
 </script>

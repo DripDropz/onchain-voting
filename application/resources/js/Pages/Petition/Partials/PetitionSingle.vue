@@ -21,7 +21,7 @@
                 </div>
 
                 <div>
-                    <p>{{ petition$.description }}</p>
+                    <p v-html="parseMarkdown(petition$.description)"></p>
                 </div>
             </div>
 
@@ -64,6 +64,8 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/24/outline';
 import {usePetitionSignatureStore} from '@/Pages/Petition/stores/petition-signature-store';
 import { storeToRefs } from "pinia";
+import MarkdownIt from 'markdown-it';
+
 
 const page = usePage();
 
@@ -80,4 +82,10 @@ const formatDate = (dateString: string): string => {
 };
 
 const user = computed(() => page.props.auth.user);
+
+const md = new MarkdownIt();
+
+const parseMarkdown = (content: string): string => {
+    return md.render(content);
+};
 </script>

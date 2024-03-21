@@ -105,6 +105,9 @@ Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.ro
             ->name('delete');
         });
 
+        Route::post('/{petition}/upload-image', [PetitionController::class, 'uploadImage'])
+        ->name('upload');
+
     });
 
      // Poll
