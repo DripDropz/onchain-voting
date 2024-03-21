@@ -3,7 +3,7 @@
         label: 'Create Petition',
         clickAction: 'showModal'
     }]">
-        <section class="w-full py-12 mx-auto">
+        <section class="w-full py-12 mx-auto container">
             <div class="inner-container">
                 <div class="sm:rounded-lg">
                     <h2
@@ -58,8 +58,7 @@
                 </div>
             </div>
 
-            <div v-if="currentTab === 'signed' && (!menuOptions.find(option => option.value === 'signed') || menuOptions.find(option => option.value === 'signed').count === 0)"
-                class="py-16">
+            <div v-if="currentTab === 'signed' && (!menuOptions.find(option => option.value === 'signed') || menuOptions.find(option => option.value === 'signed').count === 0)" class="py-16">
                 <div class="h-full inner-container justify-center text-center border-2 border-dashed border-gray-300">
                     <div class="py-6">
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -68,13 +67,15 @@
                                 stroke-width="2"
                                 d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                         </svg>
-                        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-200">Browse More Petitions</h3>
+                        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-200">
+                          You haven't signed any petitions.
+                        </h3>
                         <div class="mt-6 pb-3">
                             <Link @click="changeTab('browse')">
-                            <PrimaryButton :theme="'primary'">
-                                Browse Petitions
-                                <PlusIcon class="w-5 h-5" />
-                            </PrimaryButton>
+                              <PrimaryButton :theme="'primary'">
+                                  Browse Petitions
+                                  <PlusIcon class="w-5 h-5" />
+                              </PrimaryButton>
                             </Link>
                         </div>
                     </div>
@@ -91,11 +92,11 @@
                                 stroke-width="2"
                                 d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                         </svg>
-                        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-200">No Petitions</h3>
+                        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-200 capitalize">No {{currentTab}} Petitions</h3>
                         <div class="mt-6 pb-3">
                             <Link :href="route('petitions.create')">
                             <PrimaryButton :theme="'primary'">
-                                Create New Petition
+                                Create Petition
                                 <PlusIcon class="w-5 h-5" />
                             </PrimaryButton>
                             </Link>
@@ -123,6 +124,7 @@ import { useConfigStore } from '@/stores/config-store';
 import { storeToRefs } from 'pinia';
 import PetitionBrowser from './Partials/PetitionBrowser.vue';
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import {PlusIcon} from "@heroicons/vue/20/solid";
 
 let configStore = useConfigStore();
 let { showModal } = storeToRefs(configStore);
@@ -161,7 +163,7 @@ const menuOptions = [
         name: "Active",
         value: "active",
         count: props.counts.activeCount,
-        param: { statusfilter: ['published'] }
+        param: { statusfilter: ['active'] }
     },
     {
         name: "Pending",

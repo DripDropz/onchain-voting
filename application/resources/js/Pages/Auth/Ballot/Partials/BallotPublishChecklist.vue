@@ -82,11 +82,12 @@
                                             </Link>
                                         </div>
                                         <div v-if="event.content === 'Fund voting wallet' && !event?.stepComplete">
-                                            <button
+                                            <Link as="button" href="#policy-section"
+                                                :disabled="!timeline?.[eventIdx - 1]?.stepComplete"
                                                 class="w-full px-2 text-sm font-semibold text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
                                                 :class="{ 'hover:bg-slate-500 bg-slate-500 cursor-not-allowed': !timeline?.[eventIdx - 1]?.stepComplete }">
-                                                <a href="#policy-section">Fund wallet</a>
-                                            </button>
+                                                Fund wallet
+                                            </Link>
                                         </div>
                                         <div v-if="event.content == 'Publish Ballot'">
                                             <button

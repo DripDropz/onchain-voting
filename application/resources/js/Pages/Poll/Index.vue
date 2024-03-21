@@ -1,6 +1,6 @@
 <template>
     <VoterLayout page="Polls" :crumbs="crumbs" :actions="actions">
-        <section class="w-full py-12">
+        <section class="w-full py-12 container">
             <div class="w-full inner-container">
                 <div class="sm:rounded-lg">
                     <h2

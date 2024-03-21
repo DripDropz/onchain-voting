@@ -119,7 +119,6 @@ class PetitionController extends Controller
 
     public function manage(Petition $petition)
     {
-
         $crumbs = [
             [
                 'label' => 'Petitions',
@@ -357,9 +356,16 @@ class PetitionController extends Controller
                 $query->where('user_id', Auth::user()->id)
                     ->whereNotIn('status', ['draft', 'published']);
             })
-            ->when($this->filter, function ($query) {
+            ->when(in_array('active', $this->filter ?? []), function ($query) {
+                $query->where('user_id', Auth::user()->id)
+                    ->whereIn('status', ['published']);
+            })
+            ->when(in_array('draft', $this->filter ?? []), function ($query) {
                 $query->where('user_id', Auth::user()->id)
                     ->whereIn('status', $this->filter);
+            })
+            ->when(in_array('published', $this->filter ?? []), function ($query) {
+                $query->whereIn('status', $this->filter);
             })
             ->when($this->hasSigned, function ($query) {
                 $query->where([
@@ -407,7 +413,7 @@ class PetitionController extends Controller
             'activeCount' => $activeCount,
             'pendingCount' => $pendingCount,
             'signedCount' => $signedCount,
-            'allCount' => Petition::query()->count()
+            'allCount' => Petition::where('status', 'published')->count()
         ];
     }
 }
