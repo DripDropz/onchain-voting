@@ -8,29 +8,40 @@
                     {{ petition.title }}
                     </Link>
                 </h2>
-                <p v-html="parsedDescription"></p>
+                <p>{{ petition.description }}</p>
             </div>
-            <div
-                class="flex flex-row items-center justify-between p-4 border border-b-0 border-l-0 border-r-0 border-black border-t- dark:border-slate-700">
-                <div class="flex items-center gap-1">
-                    <h2 class="text-xl font-bold">{{ petition.hash }}</h2>
+            <div class="flex flex-row items-center justify-between p-4 border border-b-0 border-l-0 border-r-0 border-black border-t- dark:border-slate-700">
+                <div class="flex flex-row items-center justify-between gap-8 w-full">
+                    <h2 class="text-sm font-bold">{{ petition.hash }}</h2>
 
-                    <div @click.prevent="manage" v-if="petition?.user_id === user?.id">
-                        <PrimaryButton :theme="'primary'">
-                            <CogIcon aria class="w-4 h-4" />
+                    <div class="flex flex-row items-center gap-2">
+                        <Link
+                            v-if="petition?.user_id === user?.id"
+                            :href="route('petitions.manage', { petition: petition.hash })"
+                            class="font-semibold text-sky-500 hover:text-slate-700 dark:hover:text-white">
                             <span>Manage</span>
-                        </PrimaryButton>
-                    </div>
-                </div>
+                        </Link>
+                        <div>
 
-                <div class="flex flex-row items-center gap-8">
-                    <div class="flex flex-row items-center gap-2">
-                        <UsersIcon class="w-6 h-6" />
-                        <p>{{ petition.signatures_count ?? "-" }}</p>
+                        <button
+                            v-if="petition.user_id === user?.id && petition.status === 'approved'"
+                            @click.prevent="publishPetition()"
+                            class="font-semibold text-sky-500 hover:text-slate-700 dark:hover:text-white">
+                            <span>Publish</span>
+                        </button>
+                        <span v-else-if="petition.status === 'published'" class="font-bold leading-tight text-green-500">Published</span>
+                        </div>
                     </div>
-                    <div class="flex flex-row items-center gap-2">
-                        <EnvelopeIcon class="w-6 h-6" />
-                        <p>{{ formatDate(petition.created_at) }}</p>
+
+                    <div class="flex flex-row items-center gap-8">
+                        <div class="flex flex-row items-center gap-2">
+                            <UsersIcon class="w-6 h-6"/>
+                            <p>{{ petition.signatures_count ?? "-" }}</p>
+                        </div>
+                        <div class="flex flex-row items-center gap-2">
+                            <EnvelopeIcon class="w-6 h-6" />
+                            <p>{{ petition.status === 'published' ? 'Published' : (petition.status === 'closed' ? 'Closed' : formatDate(petition.created_at)) }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -46,22 +57,24 @@
                 </h1>
             </li>
         </ul>
+        <Modal :show="showPublishModal" :modalType="'publish'">
+            <PublishPetition :petition="petition" @close="showPublishModal = false" />
+        </Modal>
     </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from "vue";
+import { defineProps } from "vue";
 import PetitionData = App.DataTransferObjects.PetitionData;
-import { UsersIcon, EnvelopeIcon, CogIcon } from "@heroicons/vue/20/solid";
+import Modal from "@/Components/Modal.vue";
+import PublishPetition from "./PublishPetition.vue";
+import { UsersIcon, EnvelopeIcon } from "@heroicons/vue/20/solid";
 import voteAppLogo from "../../../../images/openchainvote.png";
-import { Link, router } from "@inertiajs/vue3";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
+import { Link, router, useForm } from "@inertiajs/vue3";
 import { usePage } from "@inertiajs/vue3";
 import { useConfigStore } from "@/stores/config-store";
 import { storeToRefs } from "pinia";
 import AlertService from "@/shared/Services/alert-service";
-import { Alert } from "flowbite-vue";
-import MarkdownIt from 'markdown-it';
 
 const props = defineProps<{
     petition: PetitionData;
@@ -73,32 +86,23 @@ const formatDate = (dateString: string): string => {
 };
 
 let configStore = useConfigStore()
-let { user } = storeToRefs(configStore);
+let { user, showPublishModal } = storeToRefs(configStore);
 
-let manage = () => {
-    if (user.value.id == props.petition.user_id) {
-        router.get(route('petitions.manage', {
-            petition: props.petition.hash,
-        }), {},
-            {
-                onError: () => {
-                    AlertService.show(
-                        Object
-                            .entries(Error)
-                            .map(([key, value]) => value)
-                    );
-                }
-            })
-    } else {
-        AlertService.show(['You are not the owner Of this Petition'], 'error')
-    }
-
-}
-
-const page = usePage();
-
-const md = new MarkdownIt();
-const parsedDescription = computed(() => {
-  return md.render(props.petition.description);
+const form = useForm({
+    status: props?.petition?.status,
 });
+
+const emit = defineEmits<{(e: 'close'):void}>()
+
+const publishPetition = async () => {
+        try {
+            await form.put(route("petitions.publish", { petition: props.petition?.hash }));
+            props.petition.status = "published";
+            AlertService.show(["Petition has been published"], "success");
+            emit('close');
+        } catch (error) {
+            AlertService.show(["There was an error publishing the petition"], "error");
+        }
+};
+
 </script>

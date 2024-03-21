@@ -10,17 +10,19 @@ const props = withDefaults(
         show?: boolean;
         maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
         closeable?: boolean;
+        modalType?: string;
     }>(),
     {
         show: false,
         maxWidth: '2xl',
         closeable: true,
+        modalType: 'default',
     }
 );
 
 const emit = defineEmits(['close']);
 let configStore = useConfigStore()
-let { showModal } = storeToRefs(configStore);
+let { showModal, showPublishModal } = storeToRefs(configStore);
 const target = ref(null);
 onClickOutside(target, (event) => close());
 
@@ -38,7 +40,11 @@ watch(
 
 const close = () => {
     if (props.closeable) {
-        showModal.value = false
+        if (props.modalType === 'publish') {
+            showPublishModal.value = false;
+        } else {
+            showModal.value = false
+        }
         emit('close');
     }
 };
