@@ -117,33 +117,36 @@ Petitions may include a signature threshold, a deadline or both.
 
 ### Creating a Petition
 
-1. Navigate to the Petitions section of the app.  
-2. Select Create New Petition.
+1. Navigate to the Petitions section of the app.
 
 ![Petition New](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions1.jpg)
 
-3. Select Yes, that works.
+2. Select Create New Petition.
 
 ![Confirm Modal](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions2.jpg)
 
-4. Fill in the required fields.
+3. Select Yes, that works.
 
 ![Title Field](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions3.jpg)
 
-![Description Field](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions4.jpg)
+4. Fill in the required fields.
 
-5. Select Save Petition.
+![Description Field](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions4.jpg)
 
 ![Save Petition](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions5.jpg)
 
-6. After saving you can access the petition manage page to edit the petition and set token criteria.
+5. Select Save Petition.
 
 ![Manage Petition](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions6.jpg)
+
+6. After saving you can access the petition manage page to edit the petition and set token criteria.
+
+![Admin Settings](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions7.jpg)
 
 ### Admin Role
 For the petition to be available the admin must add signature goals. These determine how the petition advances, its visibility and its eligibility for becoming a ballot.
 
-![Admin Settings](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions7.jpg)
+![Signature Goals](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions8.jpg)
 
 Signature goals include:
 
@@ -151,7 +154,7 @@ Signature goals include:
 * Featured petition threshold  
 * Ballot eligibility threshold  
 
-![Signature Goals](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions8.jpg)
+![Sign Petition](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions9.jpg)
 
 ### Signing a Petition
 Petition creators can share a link to collect signatures. If the petition meets the visibility threshold it appears in the active list.
@@ -163,7 +166,7 @@ Signatures can be collected by:
 
 If a token requirement exists the email option is disabled.
 
-![Sign Petition](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions9.jpg)
+![Sign Petition](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions10.jpg)
 
 Creators can track petition progress.
 
@@ -173,8 +176,6 @@ Creators can track petition progress.
 
 ## Feature Description
 Polls are multiple-choice questions answered using Cardano wallets. Each vote is authenticated and recorded to ensure transparency and auditability. Polls help guide decisions, collect feedback and measure community sentiment.
-
-![Poll Overview](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/polls1.jpg)
 
 ## Purpose
 Polls allow communities to collect fast structured input. Polls support transparent feedback, pulse checks and sentiment analysis securely recorded on-chain.
@@ -186,17 +187,19 @@ Polls allow communities to collect fast structured input. Polls support transpar
 1. Navigate to the Polls section.  
 2. Select Create Poll.
 
-![Create Poll](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/polls2.jpg)
+![Poll Overview](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/polls1.jpg)
 
 3. Fill in the required fields for the poll question.
 
-![Poll Question](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/polls3.jpg)
+![Poll Question](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/polls2.jpg)
 
 4. Define who can respond by attaching an FT or NFT.
 
-![Poll Criteria](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/polls4.jpg)
+![Poll Criteria](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/polls3.jpg)
 
 5. Publish the poll. On admin approval the poll becomes live.
+
+![Poll Participate](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/polls4.jpg)
 
 ### Participating in a Poll
 Once approved the poll appears in the browse, active and answered tabs.
