@@ -49,11 +49,11 @@ Go to the admin dashboard and select “New Ballot.”
 
 Add a title and description, set the policyID to lovelace, set the type to file, set the status to published, then select Create.
 
-![Snapshot Upload](docs/images/ballots1.jpg)
+![Snapshot Upload](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots1.jpg)
 
 You can now upload your snapshot file.
 
-![Snapshot Confirm](docs/images/ballots2.jpg)
+![Snapshot Confirm](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots2.jpg)
 
 Select Confirm under the preview table to generate users and voting power. Each row links to the snapshot. A wallet’s stake key will later match the user to their voting power once they connect to vote.
 
@@ -66,31 +66,31 @@ The form captures all required fields as defined in `doc/schema/Ballot.json`. St
 
 1. Fill in the form and submit.
 
-![Ballot Form](docs/images/ballots3.jpg)
+![Ballot Form](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots3.jpg)
 
 2. Select Add Question. Questions follow the schema in `doc/schema/Question.json`.
 
-![Add Question](docs/images/ballots4.jpg)
+![Add Question](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots4.jpg)
 
 3. Add choices to the question.
 
-![Choices](docs/images/ballots5.jpg)
+![Choices](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots5.jpg)
 
 4. Attach the snapshot to your ballot.
 
-![Attach Snapshot](docs/images/ballots6.jpg)
+![Attach Snapshot](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots6.jpg)
 
 5. Add policies to your ballot. Policies derive from wallets you import or create. Seedphrases are hashed and stored internally. Wallets must contain enough ADA to cover minting costs.
 
-![Policy Wallet](docs/images/ballots7.jpg)
+![Policy Wallet](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots7.jpg)
 
 Once policies are added you may upload an image used on the token.
 
-![Policy Image](docs/images/ballots8.jpg)
+![Policy Image](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots8.jpg)
 
 6. Publish your ballot using the “Publish Ballot” button.
 
-![Publish](docs/images/ballots9.jpg)
+![Publish](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots9.jpg)
 
 Once published your ballot becomes available for voting.
 
@@ -100,12 +100,12 @@ Once published your ballot becomes available for voting.
 
 Navigate to the ballot list and select View on any open ballot.
 
-![Open Ballots](docs/images/ballots10.jpg)
+![Open Ballots](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots10.jpg)
 
 1. Register to vote. A registration token will be sent to your wallet.
 
-![Register](docs/images/ballots11.jpg)
+![Register](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots11.jpg)
 
 2. Once registered you may cast your vote. Select your choices and sign the transaction on-chain. A voting token will be sent to you with your selections as metadata.
 
-![Vote](docs/images/ballots12.jpg)
+![Vote](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots12.jpg)
