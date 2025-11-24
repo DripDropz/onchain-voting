@@ -1,3 +1,4 @@
+
 # Feature Documentation
 
 ## Table of Contents
@@ -7,9 +8,15 @@
     * How to Use  
         1. Creating a snapshot  
         2. Creating a Ballot  
-        3. Voting on a Ballot  
+        3. Voting on a Ballot
+2. Petitions  
+    * Purpose  
+    * Feature Description  
+    * How to Use  
+        1. Creating a Petition  
+        2. Signing a Petition
 
-# Ballots
+# 1. Ballots
 
 ## Feature Description
 A ballot, stored on-chain, is an official vote submission. It contains your cryptographically signed ranked choices for proposals or candidates. Voting power is automatically calculated based on the ADA staked at the snapshot so no funds need to be sent.
@@ -55,57 +62,119 @@ You can now upload your snapshot file.
 
 ![Snapshot Confirm](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots2.jpg)
 
-Select Confirm under the preview table to generate users and voting power. Each row links to the snapshot. A wallet’s stake key will later match the user to their voting power once they connect to vote.
+Select Confirm under the preview table to generate users and voting power.
 
 ---
 
 # Creating a Ballot
 
-On the admin dashboard select “New Ballot.”  
-The form captures all required fields as defined in `doc/schema/Ballot.json`. Starttime, endtime, and version are included. Questions can be added after submitting the form. The checklist on the right indicates missing steps.
-
 1. Fill in the form and submit.
 
 ![Ballot Form](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots3.jpg)
 
-2. Select Add Question. Questions follow the schema in `doc/schema/Question.json`.
+2. Select Add Question.
 
 ![Add Question](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots4.jpg)
 
-3. Add choices to the question.
+3. Add choices.
 
 ![Choices](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots5.jpg)
 
-4. Attach the snapshot to your ballot.
+4. Attach the snapshot.
 
 ![Attach Snapshot](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots6.jpg)
 
-5. Add policies to your ballot. Policies derive from wallets you import or create. Seedphrases are hashed and stored internally. Wallets must contain enough ADA to cover minting costs.
+5. Add policies.
 
-![Policy Wallet](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots7.jpg)
+![Policies](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots7.jpg)
 
-Once policies are added you may upload an image used on the token.
+6. Upload an image for the token.
 
-![Policy Image](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots8.jpg)
+![Token Image](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots8.jpg)
 
-6. Publish your ballot using the “Publish Ballot” button.
+7. Publish.
 
 ![Publish](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots9.jpg)
 
-Once published your ballot becomes available for voting.
-
 ---
 
-# Voting on the Ballot
-
-Navigate to the ballot list and select View on any open ballot.
+# Voting on a Ballot
 
 ![Open Ballots](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots10.jpg)
 
-1. Register to vote. A registration token will be sent to your wallet.
+1. Register to vote.
 
 ![Register](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots11.jpg)
 
-2. Once registered you may cast your vote. Select your choices and sign the transaction on-chain. A voting token will be sent to you with your selections as metadata.
+2. Cast your vote.
 
 ![Vote](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots12.jpg)
+
+---
+
+# 2. Petitions
+
+## Purpose
+Petitions allow users to propose changes or voice concerns about the ecosystem.
+
+## Feature Description
+Petitions enable users to initiate change, gather support, and surface high-interest issues. They are fully verifiable on-chain and can require NFTs, FTs, or staking conditions.
+
+---
+
+## How to Use
+
+### Creating a Petition
+
+1. Navigate to the Petitions section of the app.
+
+2. Click “Create New Petition.”
+
+![Petition New](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions1.jpg)
+
+3. Click “Yes, that works.”
+
+![Confirm Modal](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions2.jpg)
+
+4. Fill in the required fields.
+
+![Title Field](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions3.jpg)
+
+![Description Field](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions4.jpg)
+
+5. Save the petition.
+
+![Save Petition](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions5.jpg)
+
+6. Access the petition management page.
+
+![Manage Petition](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions6.jpg)
+
+---
+
+## Admin Role in Petition Creation
+
+Admins add signature goals that control visibility, featured status, and eligibility to become a ballot.
+
+![Admin Settings](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions7.jpg)
+
+![Signature Goals](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions8.jpg)
+
+---
+
+## Signing a Petition
+
+Petitions may be signed:
+
+1. By email  
+2. With a wallet  
+
+![Sign Petition](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions9.jpg)
+
+If a token requirement exists, email is disabled.
+
+![Token Requirement](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions10.jpg)
+
+Creators can track progress:
+
+![Petition Overview](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions11.jpg)
