@@ -1,4 +1,3 @@
-
 # Feature Documentation
 
 ## Table of Contents
@@ -15,13 +14,19 @@
     * How to Use  
         1. Creating a Petition  
         2. Signing a Petition
+3. Polls  
+    * Purpose  
+    * Feature Description  
+    * How to Use  
+        1. Creating a Poll  
+        2. Participating in a Poll
 
 # 1. Ballots
 
 ## Feature Description
 A ballot, stored on-chain, is an official vote submission. It contains your cryptographically signed ranked choices for proposals or candidates. Voting power is automatically calculated based on the ADA staked at the snapshot so no funds need to be sent.
 
-Once signed, your ballot is recorded directly on the Cardano blockchain. This makes it secure, transparent, and independently verifiable by anyone.
+Once signed, your ballot is recorded directly on the Cardano blockchain. This makes it secure, transparent and independently verifiable by anyone.
 
 Ballots are tied to a snapshot to ensure fairness and transparency.
 
@@ -38,23 +43,21 @@ Two policies support the governance mechanism.
 
 1. Registration Token Policy  
    This mints a registration token for each eligible wallet. This token is required for voting.
-
 2. Voting Token Policy  
    This mints a voting token after a successful vote and burns the registration token. Your choices appear as metadata on the voting token so anyone can verify them on-chain.
 
 ## Purpose
-This feature gives Cardano communities, DAOs, and projects a transparent secure on-chain voting mechanism that reflects the voice of real ADA holders. It is useful for community elections, governance decisions, proposal prioritization, and structured feedback.
+This feature gives Cardano communities, DAOs and projects a transparent secure on-chain voting mechanism that reflects the voice of real ADA holders. It is useful for community elections, governance decisions, proposal prioritization and structured feedback.
 
 ## How to Use
 Only admins may create new snapshots and ballots.
 
 ---
-
 # Creating a Snapshot
 
-Go to the admin dashboard and select “New Ballot.”
+Go to the admin dashboard and select “New Ballot”.
 
-Add a title and description, set the policyID to lovelace, set the type to file, set the status to published, then select Create.
+Add a title and description, set the policyID to lovelace, set the type to file, set the status to published then select Create.
 
 ![Snapshot Upload](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots1.jpg)
 
@@ -62,17 +65,16 @@ You can now upload your snapshot file.
 
 ![Snapshot Confirm](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots2.jpg)
 
-Select Confirm under the preview table to generate users and voting power.
+Select "Confirm" under the preview table to generate users and voting power.
 
 ---
-
 # Creating a Ballot
 
 1. Fill in the form and submit.
 
 ![Ballot Form](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots3.jpg)
 
-2. Select Add Question.
+2. Select "Add Question".
 
 ![Add Question](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots4.jpg)
 
@@ -97,7 +99,6 @@ Select Confirm under the preview table to generate users and voting power.
 ![Publish](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots9.jpg)
 
 ---
-
 # Voting on a Ballot
 
 ![Open Ballots](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots10.jpg)
@@ -111,28 +112,26 @@ Select Confirm under the preview table to generate users and voting power.
 ![Vote](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/ballots12.jpg)
 
 ---
-
 # 2. Petitions
 
 ## Purpose
 Petitions allow users to propose changes or voice concerns about the ecosystem.
 
 ## Feature Description
-Petitions enable users to initiate change, gather support, and surface high-interest issues. They are fully verifiable on-chain and can require NFTs, FTs, or staking conditions.
+Petitions enable users to initiate change, gather support and surface high-interest issues. They are fully verifiable on-chain and can require NFTs, FTs or staking conditions.
 
 ---
-
 ## How to Use
 
 ### Creating a Petition
 
 1. Navigate to the Petitions section of the app.
 
-2. Click “Create New Petition.”
+2. Click “Create New Petition”.
 
 ![Petition New](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions1.jpg)
 
-3. Click “Yes, that works.”
+3. Click “Yes, that works”.
 
 ![Confirm Modal](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions2.jpg)
 
@@ -151,17 +150,15 @@ Petitions enable users to initiate change, gather support, and surface high-inte
 ![Manage Petition](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions6.jpg)
 
 ---
-
 ## Admin Role in Petition Creation
 
-Admins add signature goals that control visibility, featured status, and eligibility to become a ballot.
+Admins add signature goals that control visibility, featured status and eligibility to become a ballot.
 
 ![Admin Settings](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions7.jpg)
 
 ![Signature Goals](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions8.jpg)
 
 ---
-
 ## Signing a Petition
 
 Petitions may be signed:
@@ -178,3 +175,47 @@ If a token requirement exists, email is disabled.
 Creators can track progress:
 
 ![Petition Overview](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/petitions11.jpg)
+
+---
+# 3. Polls
+
+## Feature Description
+Polls are multiple choice questions answered using Cardano wallets. Each vote is authenticated and recorded to ensure transparency and auditability. Polls typically involve choosing one or more predefined responses.
+
+Polls can:
+* Help guide project decisions.
+* Collect feedback on proposed features.
+* Measure community consensus on upcoming changes.
+
+## Purpose
+Polls allow fast structured input collection and deliver transparent feedback and community sentiment secured by blockchain verification.
+
+---
+## How to Use
+
+### Creating a Poll
+
+1. Navigate to the Polls section.
+
+![Polls List](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/polls1.jpg)
+
+2. Click “Create Poll”.
+
+![Create Poll](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/polls2.jpg)
+
+3. Fill in the required fields.
+
+![Poll Question](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/polls3.jpg)
+
+4. Define who can respond by attaching an FT or NFT.
+
+![Poll Criteria](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/polls4.jpg)
+
+5. Publish the poll. After admin approval it will be live.
+
+---
+## Participating in a Poll
+
+Once approved the poll appears in the browse, active and answered tabs.
+
+![Poll Participate](https://github.com/DripDropz/onchain-voting/blob/main/docs/images/polls5.jpg)
