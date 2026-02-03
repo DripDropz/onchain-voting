@@ -2,12 +2,21 @@ import {defineStore} from 'pinia';
 import {computed, ref} from 'vue';
 import PetitionData = App.DataTransferObjects.PetitionData;
 import RuleData = App.DataTransferObjects.RuleData;
+import axios from 'axios';
 
 export const usePetitionSignatureStore = defineStore('petition-signature', () => {
     let petition = ref<PetitionData>(null);
 
     function setPetition(petitionData: PetitionData) {
         petition.value = petitionData;
+    }
+
+    async function reloadPetitionData(petitionHash:string) {
+        const res = await axios.get(route('petitions.petitionData', { petition: petitionHash }));
+
+        if (res.status == 200) {
+            petition.value = res.data;
+        }
     }
     
     const visible = computed(() => petition.value?.petition_goals?.visible as RuleData);
@@ -68,6 +77,7 @@ export const usePetitionSignatureStore = defineStore('petition-signature', () =>
         currentGoalPercetage$: currentGoalPercetage,
         nextGoal$: nextGoal,
         setPetition,
+        reloadPetitionData,
     }
 });
 

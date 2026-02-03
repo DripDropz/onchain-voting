@@ -70,9 +70,9 @@ Route::get('query/{params?}', function (Request $request, BlockfrostRequest $fro
 })->where('params', '.*')->name('blockfrost-query');
 
 
-Route::post('/parse/csv', [SnapshotImportController::class, 'parseCSV']);
+Route::post('/parse/csv/{snapshot}', [SnapshotImportController::class, 'parseCSV']);
 Route::get('/parsed/csv/{filename}', [SnapshotImportController::class, 'getParsedCSV']);
-Route::post('/parse/csv/cancel', [SnapshotImportController::class, 'cancelParsedCSV']);
+Route::post('/parse/csv/cancel/{snapshot}', [SnapshotImportController::class, 'cancelParsedCSV']);
 Route::post('/upload/csv/{snapshot}', [SnapshotImportController::class, 'uploadCsv']);
 
 Route::get('/snapshot', [SnapshotController::class, 'searchSnapshot'])->name('searchSnapshot');

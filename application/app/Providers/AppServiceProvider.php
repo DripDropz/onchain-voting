@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Vinkla\Hashids\Facades\Hashids;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\SignedStorageUrlController;
+use Laravel\Vapor\Contracts\SignedStorageUrlController as SignedStorageUrlControllerContract;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,6 +36,13 @@ class AppServiceProvider extends ServiceProvider
             // Delegate to `exists:` validator
             return $validator->validateExists($attribute, $value, $parameters);
         });
+
+        if (!app()->environment('production')) {
+            $this->app->singleton(
+                SignedStorageUrlControllerContract::class,
+                SignedStorageUrlController::class
+            );
+        }
 
     }
 }

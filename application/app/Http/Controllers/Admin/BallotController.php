@@ -109,6 +109,7 @@ class BallotController extends Controller
         ];
         return Inertia::render('Auth/Ballot/View', [
             'ballot' => BallotData::from($ballot->load('snapshot', 'questions.choices', 'policies')),
+            'addresses' => $this->policyAddresses($ballot),
             'crumbs' => $crumbs,
         ]);
     }

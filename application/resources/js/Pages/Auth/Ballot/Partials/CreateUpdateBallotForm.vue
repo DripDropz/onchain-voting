@@ -1,6 +1,6 @@
 <template>
     <section class="flex items-start h-full gap-4">
-        <div class="w-2/3">
+        <div class="w-1/2">
             <header class="mb-2">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Create Ballot</h2>
 
@@ -180,7 +180,7 @@
                 </div>
             </form>
         </div>
-        <div class="sticky w-1/3 top-1">
+        <div class="sticky w-1/2 top-1">
             <BallotPublishChecklist class="mt-16" :ballot="ballot" :status="status"/>
         </div>
     </section>

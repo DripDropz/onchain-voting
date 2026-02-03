@@ -2,10 +2,15 @@
 
 namespace App\Providers;
 
+use App\Events\PetitionSigned;
 use App\Events\votingPowersImportedEvent;
 use App\Models\Policy;
 use App\Models\Snapshot;
 use App\Listeners\PublishSnapshotListener;
+use App\Listeners\UpdatePetitionAfterSignature;
+use App\Models\Ballot;
+use App\Observers\BallotObserver;
+use App\Observers\BallotPolicyObserver;
 use App\Observers\SnapshotObserver;
 use App\Observers\PolicyObserver;
 use Illuminate\Auth\Events\Registered;
@@ -24,7 +29,10 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         votingPowersImportedEvent::class => [
-            PublishSnapshotListener::class
+            PublishSnapshotListener::class,
+        ],
+        PetitionSigned::class => [
+            UpdatePetitionAfterSignature::class,
         ]
     ];
 
@@ -35,6 +43,7 @@ class EventServiceProvider extends ServiceProvider
     {
         Snapshot::observe(SnapshotObserver::class);
         Policy::observe(PolicyObserver::class);
+        Ballot::observe(BallotObserver::class);
     }
 
     /**

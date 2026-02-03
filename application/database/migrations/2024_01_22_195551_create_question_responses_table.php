@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('question_responses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->nullOnDelete();
-            $table->foreignId('model_id')->constrained('ballots')->nullOnDelete();
-            $table->text('model_type')->constrained('ballots')->nullOnDelete();
+            $table->foreignId('model_id')->nullOnDelete();
+            $table->text('model_type')->nullOnDelete();
             $table->foreignId('question_id')->constrained('questions')->nullOnDelete();
-            $table->foreignId('voting_power_id')->constrained('voting_powers')->nullOnDelete();
+            $table->foreignId('voting_power_id')->nullable()->constrained('voting_powers')->nullOnDelete();
             $table->integer('rank')->nullable();
             $table->text('submit_tx')->nullable();
             $table->timestamps();

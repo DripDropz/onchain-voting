@@ -2,12 +2,16 @@
     <div class="border border-slate-900 dark:border-slate-700 dark:text-slate-100 my-8 rounded-lg flex flex-row">
         <div class="w-2/3">
             <div class="p-4">
-                <h2 class="text-2xl mb-4 font-bold">{{ poll.title }}</h2>
+                <h2 class="text-2xl mb-4 font-bold">{{ poll.title }}<span class="text-lg text-white/60">-{{ poll.status }}</span></h2>
                 <span>{{ poll.description }}</span>
             </div>
             <div
                 class="p-4 border border-t- border-l-0 border-r-0 border-b-0  border-black dark:border-slate-700 flex flex-row items-center justify-between">
                 <h2 class="text-sm font-bold">{{ poll.hash }}</h2>
+                <button 
+                   v-if="poll.status !== 'approved'" 
+                   @click="approve()"
+                   class="bg-sky-500 text-white py-1 px-4 text-sm rounded-md">Approve</button>
                 <div class="flex flex-row items-center gap-8">
                     <div class="flex flex-row items-center gap-2">
                         <UsersIcon class="h-6 w-6"/>
@@ -36,13 +40,29 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, ref, computed} from 'vue';
+import {defineProps} from 'vue';
 import PollData = App.DataTransferObjects.PollData;
 import {UsersIcon, EnvelopeIcon} from '@heroicons/vue/20/solid';
 import voteAppLogo from '../../../../../images/openchainvote.png';
+import { useForm } from '@inertiajs/vue3';
+import AlertService from '@/shared/Services/alert-service';
 
 const props = defineProps<{
     poll: PollData;
 }>();
+
+const form = useForm({
+    status: props?.poll?.status ?? 'draft',
+});
+    
+const approve = async () => {
+        try {
+            await form.put(route('admin.polls.update', { poll: props.poll?.hash }));
+            props.poll.status = 'approved';
+            AlertService.show(['Poll Approved Successfully'], 'success');
+        } catch (error) {
+            AlertService.show(['Failed to approve poll. Please try again.'], 'error');
+        }
+};
 
 </script>

@@ -17,7 +17,7 @@ class PetitionSeeder extends Seeder
      */
     public function run(): void
     {
-        Petition::factory(15)
+        Petition::factory(40)
             ->recycle(User::factory()->count(1), 'user')
             ->hasAttached(
                 Signature::factory()->count(random_int(3, 33)),

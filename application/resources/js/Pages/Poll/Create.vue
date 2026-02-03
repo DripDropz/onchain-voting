@@ -61,7 +61,7 @@
                         <div class="ml-20 bg-white rounded-lg dark:bg-gray-900">
                             <div class="flex flex-col gap-4 mb-6">
                                 <h3 class="text-xl font-bold xl:text-x2l">Poll Criteria </h3>
-                                <p class="text-sm text-black/60">Users will need these items in their wallet in order to
+                                <p class="text-sm ">Users will need these items in their wallet in order to
                                     answer this poll
                                 </p>
                             </div>

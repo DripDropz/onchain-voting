@@ -3,23 +3,28 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Rule;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Ballot;
 use App\Models\Petition;
 use App\Models\Question;
 use App\Enums\RuleV1Enum;
+use App\Enums\QueryParams;
 use Illuminate\Http\Request;
 use App\Enums\QuestionTypeEnum;
 use App\Enums\RuleOperatorEnum;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Stringable;
 use App\Http\Controllers\Controller;
 use App\DataTransferObjects\RuleData;
 use App\DataTransferObjects\BallotData;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 use App\DataTransferObjects\PetitionData;
-use App\Enums\QueryParams;
-use Illuminate\Support\Stringable;
+use App\Events\PetitionSigned;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 class PetitionController extends Controller
 {
@@ -66,8 +71,6 @@ class PetitionController extends Controller
             'a' => 'published',
             default => null
         };
-
-        // dd($this->projectStatus);
     }
 
     private function petitionsCount(Request $request)
@@ -75,7 +78,7 @@ class PetitionController extends Controller
         $allCount = Petition::with('status', ['published', 'pending', 'approved', 'draft', 'rejected'])->count();
 
         $activeCount = Petition::where('status', ['published'])->count();
-        
+
         $pendingCount = Petition::whereIn('status', ['pending', 'approved'])->count();
 
         return [
@@ -86,24 +89,24 @@ class PetitionController extends Controller
     }
 
     public function petitionsData(Request $request)
-{
-    $this->setFilters($request);
+    {
+        $this->setFilters($request);
 
-    $petitions = Petition::latest();
+        $petitions = Petition::latest();
 
-    if ($this->projectStatus !== null) {
-        $statuses = explode(',', $this->projectStatus);
-        $petitions = $petitions->whereIn('status', $statuses);
+        if ($this->projectStatus !== null) {
+            $statuses = explode(',', $this->projectStatus);
+            $petitions = $petitions->whereIn('status', $statuses);
+        }
+
+        $results = $petitions->paginate($this->limit, ['*'], 'p', $this->currentPage)
+            ->onEachSide(1)
+            ->toArray();
+
+        return $results;
     }
 
-    $results = $petitions->paginate($this->limit, ['*'], 'p', $this->currentPage)
-        ->onEachSide(1)
-        ->toArray();
-  
-    return $results;
-}
 
-   
 
     /**
      * Display a single petition.
@@ -121,8 +124,11 @@ class PetitionController extends Controller
 
     public function edit(Petition $petition): Response
     {
+        $petition->load('media');
+
         return Inertia::render('Auth/Petition/Edit', [
-            'petition' => PetitionData::from($petition->load(['rules', 'user', 'ballot'])),
+            'petition' => PetitionData::from($petition->load(['rules'])),
+            'petitionImg' => optional($petition->getMedia('petitions'))->first()?->getUrl(),
             'crumbs' => [
                 ['label' => 'Petitions', 'link' => route('admin.petitions.index')],
                 ['label' => $petition->title],
@@ -131,7 +137,7 @@ class PetitionController extends Controller
     }
 
 
-public function update(Request $request, Petition $petition, Ballot $ballot,)
+    public function update(Request $request, Petition $petition, Ballot $ballot,)
     {
 
         switch ($request->status) {
@@ -210,6 +216,7 @@ public function update(Request $request, Petition $petition, Ballot $ballot,)
         if ($rule instanceof Rule) {
             $rule->value2 = $request->v2;
             $rule->save();
+            PetitionSigned::dispatch($petition);
             return RuleData::from($rule);
         } else {
             $rule = new Rule;
@@ -219,6 +226,7 @@ public function update(Request $request, Petition $petition, Ballot $ballot,)
             $rule->operator = RuleOperatorEnum::EQUALS_OR_GREATER_THAN->value;
             $rule->save();
             $petition->rules()->attach($rule->id);
+            PetitionSigned::dispatch($petition);
             return RuleData::from($rule);
         }
     }
@@ -237,5 +245,31 @@ public function update(Request $request, Petition $petition, Ballot $ballot,)
         return Inertia::modal('Auth/Petition/CreateSelectBallot', [
             'petition' => PetitionData::from($petition->load(['rules', 'user']))
         ])->baseRoute(previous_route_name(), ['petition' => $petition->hash]);
+    }
+
+    /**
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
+     */
+    public function uploadImage(Request $request, Petition $petition)
+    {
+        $this->validate($request, [
+            'key' => 'required|string',
+            'filename' => 'required|string',
+        ]);
+
+        $key = $request->key;
+        $filename = $request->filename;
+
+        $media = $petition->addMediaFromDisk($key, config('filesystems.default'))
+            ->addCustomHeaders([
+                'ACL' => 'public-read'
+            ])
+            ->usingFileName($filename)
+            ->toMediaCollection('petitions');
+
+        $url = $media->getUrl();
+
+        return response()->json(['url' => $url]);
     }
 }

@@ -1,11 +1,9 @@
 <template>
-    <div class="relative px-10 py-6 pb-16 border border-gray-800 rounded-lg dark:text-gray-200 dark:border-gray-200">
+    <div class="relative flex flex-col justify-start px-10 py-6 pb-8 border border-gray-800 rounded-lg dark:text-gray-200 dark:border-gray-200">
         <h2 class="mb-4 text-2xl font-extrabold">{{ publicPoll.question?.title }}</h2>
         <div
             v-for="(choice, index) in publicPoll.question?.choices"
-            :key="index"
-            class="flex mb-3"
-        >
+            :key="index" class="flex mb-8">
             <label class="w-full cursor-pointer">
                 <input
                     type="radio"
@@ -27,17 +25,19 @@
                 </span>
             </label>
         </div>
-        <div v-if="publicPoll.user_responses.length < 1" class="absolute bottom-0 items-center py-2">
-            <span>{{ "200" }} votes</span>
-            <button
+        <div v-if="publicPoll.status !== 'published'" class="bg-white/10 py-1 px-4 rounded-md mb-4 text-sky-500">
+             <p>Poll will be published when an admin approves it.</p>
+        </div>
+        <div class="mt-auto w-full bottom-0 flex justify-between items-center py-2">
+            <span>{{ publicPoll.responses_count ?? 0 }} votes</span>
+            <button v-if="publicPoll.user_responses.length < 1"
                 @click.prevent="startVoting"
-                class="px-4 py-2 mb-2 font-semibold text-white rounded-lg bg-sky-500 hover:bg-slate-600 hover:cursor-pointer ml-72"
-            >
+                class="px-4 py-2 mb-2 font-semibold text-white rounded-lg bg-sky-500 hover:bg-slate-600 hover:cursor-pointer ml-72">
                 Vote
             </button>
         </div>
     </div>
-    <Modal :show="showModal">
+    <Modal :show="showModal" @close="showModal = false">
         <VoteConfirmation
             @close="showModal = false"
             :poll="publicPoll"

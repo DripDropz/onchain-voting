@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('email')->nullable()->change();
+        Schema::table('petitions', function (Blueprint $table) {
+            $table->boolean('is_visible')->default(false);
+            $table->boolean('is_featured')->default(false);
         });
     }
 
@@ -21,8 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('email')->change();
+        Schema::table('petitions', function (Blueprint $table) {
+            $table->dropColumn('is_visible');
+            $table->dropColumn('is_featured');
         });
     }
 };

@@ -1,8 +1,13 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue";
 import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from "vite-plugin-wasm";
+
+const env = loadEnv(
+    'all',
+    process.cwd()
+);
 
 export default defineConfig({
     build: {
@@ -23,7 +28,7 @@ export default defineConfig({
     server: {
         host: '0.0.0.0',
         hmr: {
-            host: process.env.DOCKER_GATEWAY_HOST ?? '0.0.0.0',
+            host: env.VITE_DOCKER_GATEWAY_HOST ?? '0.0.0.0',
         }
     },
     plugins: [

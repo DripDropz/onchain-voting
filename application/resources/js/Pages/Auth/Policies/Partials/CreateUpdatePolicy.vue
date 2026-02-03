@@ -33,8 +33,8 @@ import BallotData = App.DataTransferObjects.BallotData;
 import PolicyData = App.DataTransferObjects.PolicyData;
 import NewBallotPolicyForm from '@/Pages/Auth/Policies/Partials/NewBallotPolicyForm.vue';
 import TextareaInput from '@/Components/TextareaInput.vue';
-import { computed } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { computed, onBeforeUnmount } from 'vue';
+import { useForm,router } from '@inertiajs/vue3';
 import AlertService from '@/shared/Services/alert-service';
 import { emit } from 'process';
 
@@ -75,5 +75,8 @@ function saveSeedPhrase() {
             },
         });
 }
+onBeforeUnmount(() => {
+    router.get(route('admin.ballots.view',{ballot:props.ballot.hash}));    
+})
 
 </script>

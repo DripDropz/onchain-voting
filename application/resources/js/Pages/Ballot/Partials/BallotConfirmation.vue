@@ -2,7 +2,7 @@
     <div
         class="absolute top-0 left-0 z-20 flex items-center justify-center w-full h-full p-8 text-white rounded-lg bg-sky-800/90">
         <div class="w-4/5 h-full p-1 rounded-lg bg-sky-700">
-            <Spinner v-if="savingResponse" class="absolute top-0 left-0 z-30" color="yellow" size="10"/>
+            <Spinner v-if="savingResponse" class="absolute top-0 left-0 z-30" color="yellow" size="10" />
 
             <div class="flex flex-col justify-start h-full gap-4 text-center">
                 <h3
@@ -24,19 +24,22 @@
                         <div class="mt-4">
                             <p class="text-xs">Your Selection(s)</p>
                             <p v-for="choice in userResponse.choices"
-                               class="p-3 font-semibold text-white text-md xl:text-2xl">
+                                class="p-3 font-semibold text-white text-md xl:text-2xl">
                                 {{ choice?.title }}
                             </p>
                         </div>
 
-                        <div>
-                            {{ confirmationCount }}/7 confirmations on-chain.
+                        <div v-if="voteSaved && confirmedOnChain">
+                            {{ confirmationsComplete ? '7' : confirmationCount }}/7 confirmations on-chain.
                         </div>
 
-                        <div class="flex flex-col items-center justify-center gap-2 absolute w-full">
-                            <svg role="status" v-if="confirmationCount<7"
-                                 class="relative z-30 w-6 h-6 text-gray-200 dark:text-gray-600 fill-yellow-400 animate-spin"
-                                 viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+
+                        <div class="absolute flex flex-col items-center justify-center w-full gap-2"
+                            v-if="voteSaved && confirmedOnChain">
+                            <svg role="status" v-if="confirmationCount < 7"
+                                class="relative z-30 w-6 h-6 text-gray-200 dark:text-gray-600 fill-yellow-400 animate-spin"
+                                viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
                                     fill="currentColor"></path>
@@ -45,31 +48,35 @@
                                     fill="currentFill"></path>
                             </svg>
                         </div>
+
+                        <div v-if="voteSaved && confirmedOnChain && working">
+                            Please wait, sending to chain!
+                        </div>
                     </div>
 
                     <div class="flex justify-center gap-3 p-3 mt-auto">
                         <div class="flex flex-col justify-center">
                             <button v-if="!voteRecordedOnChain" @click="emit('change-choice')"
-                                    class="px-2 py-1 text-xs border border-white border-dashed rounded-lg lg:px-3 xl:text-sm hover:bg-sky-900/90">
+                                class="px-2 py-1 text-xs border border-white border-dashed rounded-lg lg:px-3 xl:text-sm hover:bg-sky-900/90">
                                 Change
                             </button>
                         </div>
 
                         <button v-if="!voteSaved && !voteRecordedOnChain" @click="emit('save-choice')" type="button"
-                                class="rounded-full px-4 lg:px-6 py-0.5 xl:py-1 text-md xl:text-xl font-semibold text-sky-950 shadow-sm bg-sky-100 hover:bg-sky-300">
+                            class="rounded-full px-4 lg:px-6 py-0.5 xl:py-1 text-md xl:text-xl font-semibold text-sky-950 shadow-sm bg-sky-100 hover:bg-sky-300">
                             Save
                         </button>
 
-                        <button v-if="voteSaved && !voteRecordedOnChain && !hasUnansweredQuestions "
-                                @click="emit('record-onchain')" type="button"
-                                :disabled="confirmationCount < 7 && !hasRegistration"
-                                class="rounded-full px-4 lg:px-6 py-0.5 xl:py-1 text-md xl:text-xl font-semibold text-sky-950 shadow-sm"
-                                :class="[(confirmationCount < 7 || !hasRegistration)?'bg-slate-400 cursor-not-allowed':'bg-sky-100 hover:bg-sky-300']">
+                        <button v-if="voteSaved && !voteRecordedOnChain && !hasUnansweredQuestions"
+                            @click="emit('record-onchain')" type="button"
+                            :disabled="confirmationCount < 7 && !hasRegistration"
+                            class="rounded-full px-4 lg:px-6 py-0.5 xl:py-1 text-md xl:text-xl font-semibold text-sky-950 shadow-sm"
+                            :class="[(confirmationCount < 7 || !hasRegistration || working) ? 'bg-slate-400 cursor-not-allowed' : 'bg-sky-100 hover:bg-sky-300']">
                             Record ballot on chain
                         </button>
 
                         <span v-if="voteSaved && !voteRecordedOnChain && hasUnansweredQuestions"
-                              class="py-0.5 xl:py-1 text-sm xl:text-md font-semibold text-sky-100">
+                            class="py-0.5 xl:py-1 text-sm xl:text-md font-semibold text-sky-100">
                             Answer all questions to submit vote on chain.
                         </span>
                     </div>
@@ -82,7 +89,7 @@
 
                     <div class="mt-6">
                         <a target="_blank" :href="`${config?.explorer}/${submittedVote}`"
-                           class="px-4 py-2 text-sm font-semibold text-white rounded-lg bg-sky-900 hover:bg-sky-800">
+                            class="px-4 py-2 text-sm font-semibold text-white rounded-lg bg-sky-900 hover:bg-sky-800">
                             View Transaction
                         </a>
                     </div>
@@ -92,25 +99,28 @@
     </div>
 </template>
 <script lang="ts" setup>
-import {computed, ref} from 'vue';
+import { computed, ref } from 'vue';
 import BallotData = App.DataTransferObjects.BallotData;
 import BallotResponseData = App.DataTransferObjects.BallotResponseData;
 import Spinner from '@/Components/Spinner.vue';
-import {useConfigStore} from "@/stores/config-store";
-import {storeToRefs} from "pinia";
-import {useVoterStore} from '@/Pages/Voter/stores/voter-store';
+import { useConfigStore } from "@/stores/config-store";
+import { storeToRefs } from "pinia";
+import { useVoterStore } from '@/Pages/Voter/stores/voter-store';
 
 
 const props = defineProps<{
     ballot: BallotData;
     userResponse: BallotResponseData;
+    working: boolean
 }>();
 
 const configStore = useConfigStore();
 const voterStore = useVoterStore();
-const {config} = storeToRefs(configStore);
-const {confirmationCount, voterRegistrations} = storeToRefs(voterStore);
-voterStore.frostConfirm(props.ballot.hash);
+const { config } = storeToRefs(configStore);
+const { confirmationCount, voterRegistrations, confirmedOnChain, confirmationsComplete } = storeToRefs(voterStore);
+if (!confirmationsComplete.value) {
+    voterStore.frostConfirm(props.ballot.hash);
+}
 
 const savingResponse = ref(false);
 let hasRegistration = computed(() => !!voterRegistrations.value?.[props.ballot.hash].registration);

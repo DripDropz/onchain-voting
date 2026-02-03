@@ -24,6 +24,10 @@ class Poll extends Model implements Auditable, HasUser
         'id',
     ];
 
+    protected $withCount = [
+        'responses'
+    ];
+
     protected $appends = [
         'hash',
     ];

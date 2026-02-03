@@ -24,8 +24,15 @@ class PetitionPolicy extends AppPolicy
      */
     public function view(User $user, Petition $petition)
     {
-        return $this->canView($user, $petition) ? Response::allow()
-            : Response::deny('You are not authorized to create a Petition.');
+        if ($user->id === $petition->user->id) {
+            return Response::allow();
+        }
+
+        if ($petition->status === 'published') {
+            return Response::allow();
+        }
+
+        return Response::deny('You are not authorized to view this Petition.');
     }
 
     public function sign(User $user): mixed

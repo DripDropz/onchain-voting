@@ -16,6 +16,7 @@ export const useVoterStore = defineStore('voter', () => {
     const { walletName } = storeToRefs(walletStore);
     const ws = new WalletService(walletName.value);
     let confirmedOnChain = ref(false);
+    let confirmationsComplete = ref(false);
     let confirmationCount = ref(0);
 
     function registeredForBallot(ballotHash: string) {
@@ -90,14 +91,11 @@ export const useVoterStore = defineStore('voter', () => {
     }
 
     async function frostConfirm(ballotHash) {
-        const confirmationTimer = setInterval(async () => {
-            if (confirmationCount.value < 7) {
-                await loadRegistration(ballotHash);
-                confirmationCount.value++;
-            } else {
-                clearTimeout(confirmationTimer);
-            }
-        }, 3000)
+        const maxConfirmationCount = 7;
+        for (let i = 0; i < maxConfirmationCount; i++) {
+            await loadRegistration(ballotHash);
+            confirmationCount.value++;
+        }
     }
 
     const userVotingPower = function (ballotHash: string) {
@@ -107,6 +105,12 @@ export const useVoterStore = defineStore('voter', () => {
 
         return humanNumber(voterPowers.value[ballotHash], 5);
     };
+
+    watch(confirmationCount, () => {
+        if (confirmationCount.value == 7) {
+            confirmationsComplete.value = true;
+        }
+    });
 
 
     return {
@@ -121,6 +125,7 @@ export const useVoterStore = defineStore('voter', () => {
         confirmedOnChain,
         onChainConfirmation: onChainConfirmation,
         confirmationCount,
+        confirmationsComplete,
         frostConfirm,
     }
 });

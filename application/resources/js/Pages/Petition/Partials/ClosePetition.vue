@@ -36,22 +36,22 @@
 <script setup lang="ts">
 import { LockClosedIcon } from '@heroicons/vue/24/outline'
 import { useForm } from '@inertiajs/vue3';
-import PetitionData = App.DataTransferObjects.PetitionData;
 import AlertService from '@/shared/Services/alert-service';
+import {usePetitionSignatureStore} from '@/Pages/Petition/stores/petition-signature-store';
+import { storeToRefs } from 'pinia';
 
-const props = defineProps<{
-    petition: PetitionData;
-}>();
+let petitionSignatureStore = usePetitionSignatureStore();
+let {  petition$ } = storeToRefs(petitionSignatureStore);
 
 const form = useForm({
-    petition: props.petition.hash,
+    petition: petition$.value?.hash,
 });
 
 const emit = defineEmits<{(e: 'close'):void}>()
 
 function submit(){
     try {
-        form.patch(route('petitions.close', {petition: props.petition.hash}), {
+        form.patch(route('petitions.close', {petition: petition$.value?.hash}), {
             onSuccess: () => {
                 emit('close');
                 AlertService.show(["Petition closed successfully"], "success");

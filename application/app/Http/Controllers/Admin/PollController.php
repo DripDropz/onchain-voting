@@ -18,9 +18,8 @@ class PollController extends Controller
      */
     public function index()
     {
-        $polls = Poll::all();
+        $polls = Poll::latest();
         $crumbs = [
-
             [
                 'label' => 'Polls',
                 'link' => route('admin.polls.index')
@@ -35,14 +34,22 @@ class PollController extends Controller
             ]
         );
     }
-    
+
     public function pollsData(Request $request)
     {
         $page = $request->query('page',1);
         $perPage = $request->query('perPage', 6);
 
-        $polls = Poll::with('question.choices')->paginate($perPage, ['*'], 'page', $page);
+        $polls = Poll::with('question.choices')
+            ->paginate($perPage, ['*'], 'page', $page);
 
         return PollData::collection($polls);
     }
-}
+
+    public function update(Poll $poll)
+    {
+        $poll->update([
+            'status' => 'approved'
+        ]);
+    }
+    }

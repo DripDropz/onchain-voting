@@ -10,19 +10,21 @@ const props = withDefaults(
         show?: boolean;
         maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
         closeable?: boolean;
+        modalType?: string;
     }>(),
     {
         show: false,
         maxWidth: '2xl',
         closeable: true,
+        modalType: 'default',
     }
 );
 
 const emit = defineEmits(['close']);
 let configStore = useConfigStore()
-let { showModal } = storeToRefs(configStore);
+let { showModal, showPublishModal } = storeToRefs(configStore);
 const target = ref(null);
-onClickOutside(target, (event) => showModal.value = false);
+onClickOutside(target, (event) => close());
 
 
 watch(
@@ -38,6 +40,11 @@ watch(
 
 const close = () => {
     if (props.closeable) {
+        if (props.modalType === 'publish') {
+            showPublishModal.value = false;
+        } else {
+            showModal.value = false
+        }
         emit('close');
     }
 };
@@ -88,7 +95,7 @@ const maxWidthClass = computed(() => {
                         class="mb-6 overflow-hidden transition-all transform rounded-lg shadow-xl bg-sky-100 dark:bg-gray-800 sm:w-full sm:mx-auto"
                         :class="maxWidthClass">
                         <div class="flex justify-end w-full">
-                            <XMarkIcon class="w-5 h-5 mt-2 mr-2 cursor-pointer" @click="showModal = false" />
+                            <XMarkIcon class="w-5 h-5 mt-2 mr-2 cursor-pointer" @click="close" />
                         </div>
                         <slot v-if="show" ref="target" />
                     </div>
