@@ -1,127 +1,234 @@
-include application/.env
-sail := application/vendor/bin/sail
-
-$(eval export $(shell sed -ne 's/ *#.*$$//; /./ s/=.*$$// p' application/.env))
-
 .PHONY: init
 init:
-	@echo -n "Are you sure that you want to perform a clean install? [y/N] " && read ans && [ $${ans:-N} = y ]
-	docker run --rm --interactive --tty \
-          --volume ${PWD}/application:/app \
-          composer install --ignore-platform-reqs
-	sudo chown -R $(id -u -n):$(id -g -n) ${PWD}/application/vendor
-	cp application/.env.example application/.env
-	@echo "Enter your blockfrost project id:" && \
-        if [ `uname` = "Darwin" ]; then \
-            cd application && \
-            read bpid && \
-            sed -i '' "s/blockfrost_project_id/$${bpid}/" .env && \
-            cd ../; \
-        else \
-            cd application && \
-            read bpid && \
-            sed -i "s/blockfrost_project_id/$${bpid}/" .env && \
-            cd ../; \
-        fi
-	make up
-	sleep 20
-	make -j2 backend-install frontend-install
-	$(sail) artisan key:generate
-	make migrate
-	$(sail) artisan ciphersweet:generate-key
-	$(sail) artisan db:seed --class=RoleSeeder
-	$(sail) artisan db:seed --class=AdminUserSeeder
+	@echo "=============================================="
+	@echo "   Onchain Voting - Local Setup Wizard       "
+	@echo "=============================================="
+	@echo ""
+	@echo "This will set up the complete local development environment."
+	@echo ""
+	@echo -n "Continue with setup? [y/N]: " && read ans && [ $${ans:-N} = y ] || exit 0
+	@echo ""
+	@echo "==> Step 1: Copying environment files..."
+	@cp -n application/.env.example application/.env 2>/dev/null || true
+	@cp -n serverless-lucid/.env.example serverless-lucid/.env 2>/dev/null || true
+	@echo ""
+	@echo "==> Step 2: Starting Docker services..."
+	@make up
+	@echo ""
+	@echo "==> Waiting for services to be ready (30 seconds)..."
+	@sleep 30
+	@echo ""
+	@echo "==> Step 3: Installing composer dependencies (inside container)..."
+	@docker exec chainvote-app bash -c "cd /var/www/html && composer install --ignore-platform-reqs --no-interaction" || { echo "Composer install failed"; exit 1; }
+	@echo ""
+	@echo "==> Step 4: Cardano Network Selection"
+	@echo "----------------------------------------------"
+	@echo "Available networks:"
+	@echo "  1) Preview    (cardano-preview.blockfrost.io)"
+	@echo "  2) Preprod   (cardano-preprod.blockfrost.io)"
+	@echo "  3) Mainnet   (cardano-mainnet.blockfrost.io)"
+	@echo ""
+	@echo -n "Select network [1]: " && read network_choice; \
+	network_choice=$${network_choice:-1}; \
+	case $$network_choice in \
+		1) echo "preview" > /tmp/chainvote_network ;; \
+		2) echo "preprod" > /tmp/chainvote_network ;; \
+		3) echo "mainnet" > /tmp/chainvote_network ;; \
+		*) echo "preview" > /tmp/chainvote_network ;; \
+	esac
+	@network=$$(cat /tmp/chainvote_network); \
+	echo "Selected network: $$network"
+	@echo ""
+	@echo "==> Step 5: Blockfrost API Configuration"
+	@echo "----------------------------------------------"
+	@network=$$(cat /tmp/chainvote_network); \
+	case $$network in \
+		preview) \
+			echo "Enter your Blockfrost Preview Project ID:"; \
+			echo "Get it from: https://blockfrost.io/dashboard/preview"; \
+			echo -n "[leave empty for local dev only]: " && read bf_id; \
+			if [ -n "$$bf_id" ]; then \
+				docker exec chainvote-app bash -c "sed -i 's/BLOCKFROST_PROJECT_ID=.*/BLOCKFROST_PROJECT_ID=$$bf_id/' /var/www/html/.env"; \
+				docker exec chainvote-serverless bash -c "sed -i 's/BF_PREVIEW_ID=.*/BF_PREVIEW_ID=$$bf_id/' /code/.env"; \
+			fi; \
+			docker exec chainvote-app bash -c "sed -i 's|CARDANO_LUCID_NETWORK=.*|CARDANO_LUCID_NETWORK=preview|' /var/www/html/.env"; \
+			docker exec chainvote-app bash -c "sed -i 's|blockfrost.io/api/v0|cardano-preview.blockfrost.io/api/v0|' /var/www/html/.env"; \
+			docker exec chainvote-app bash -c "sed -i 's/CARDANO_NETWORK=.*/CARDANO_NETWORK=0/' /var/www/html/.env" \
+			;; \
+		preprod) \
+			echo "Enter your Blockfrost Preprod Project ID:"; \
+			echo "Get it from: https://blockfrost.io/dashboard/preprod"; \
+			echo -n "[leave empty for local dev only]: " && read bf_id; \
+			if [ -n "$$bf_id" ]; then \
+				docker exec chainvote-app bash -c "sed -i 's/BLOCKFROST_PROJECT_ID=.*/BLOCKFROST_PROJECT_ID=$$bf_id/' /var/www/html/.env"; \
+				docker exec chainvote-serverless bash -c "sed -i 's/BF_PREPROD_ID=.*/BF_PREPROD_ID=$$bf_id/' /code/.env"; \
+			fi; \
+			docker exec chainvote-app bash -c "sed -i 's|CARDANO_LUCID_NETWORK=.*|CARDANO_LUCID_NETWORK=preprod|' /var/www/html/.env"; \
+			docker exec chainvote-app bash -c "sed -i 's|blockfrost.io/api/v0|cardano-preprod.blockfrost.io/api/v0|' /var/www/html/.env"; \
+			docker exec chainvote-app bash -c "sed -i 's/CARDANO_NETWORK=.*/CARDANO_NETWORK=1/' /var/www/html/.env" \
+			;; \
+		mainnet) \
+			echo "Enter your Blockfrost Mainnet Project ID:"; \
+			echo "Get it from: https://blockfrost.io/dashboard/mainnet"; \
+			echo -n "[leave empty for local dev only]: " && read bf_id; \
+			if [ -n "$$bf_id" ]; then \
+				docker exec chainvote-app bash -c "sed -i 's/BLOCKFROST_PROJECT_ID=.*/BLOCKFROST_PROJECT_ID=$$bf_id/' /var/www/html/.env"; \
+				docker exec chainvote-serverless bash -c "sed -i 's/BF_MAINNET_ID=.*/BF_MAINNET_ID=$$bf_id/' /code/.env"; \
+			fi; \
+			docker exec chainvote-app bash -c "sed -i 's|CARDANO_LUCID_NETWORK=.*|CARDANO_LUCID_NETWORK=mainnet|' /var/www/html/.env"; \
+			docker exec chainvote-app bash -c "sed -i 's|blockfrost.io/api/v0|cardano-mainnet.blockfrost.io/api/v0|' /var/www/html/.env"; \
+			docker exec chainvote-app bash -c "sed -i 's/CARDANO_NETWORK=.*/CARDANO_NETWORK=2/' /var/www/html/.env" \
+			;; \
+	esac
+	@echo ""
+	@echo "==> Step 6: App Configuration"
+	@echo "----------------------------------------------"
+	@echo -n "App URL [http://localhost:8080]: " && read app_url; \
+		app_url=$${app_url:-http://localhost:8080}; \
+		docker exec chainvote-app bash -c "sed -i 's|APP_URL=.*|APP_URL=$$app_url|' /var/www/html/.env"
+	@echo ""
+	@echo "==> Step 7: Generating application keys..."
+	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan key:generate --force"
+	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan ciphersweet:generate-key --force"
+	@echo ""
+	@echo "==> Step 8: Running database migrations..."
+	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan migrate --force"
+	@echo ""
+	@echo "==> Step 9: Seeding database..."
+	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=RoleSeeder --force"
+	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=AdminUserSeeder --force"
+	@echo ""
+	@echo "==> Step 10: Installing frontend dependencies..."
+	@docker exec chainvote-app bash -c "cd /var/www/html && yarn install"
+	@echo ""
+	@echo "==> Step 11: Building frontend assets..."
+	@docker exec chainvote-app bash -c "cd /var/www/html && yarn build"
+	@echo ""
+	@echo "==> Step 12: Fixing WASM modules..."
+	@make wasm 2>/dev/null || true
+	@rm -f /tmp/chainvote_network
+	@echo ""
+	@echo "=============================================="
+	@echo "   Setup Complete!                          "
+	@echo "=============================================="
+	@echo ""
+	@echo "Services are now running:"
+	@echo "  - Main App:        http://localhost:8080"
+	@echo "  - Admin Dashboard: http://localhost:8080/admin/dashboard"
+	@echo "  - Vite Dev Server: http://localhost:5173"
+	@echo "  - Lucid API:       http://localhost:3000"
+	@echo "  - MinIO Console:   http://localhost:9001"
+	@echo "  - MinIO (S3):     http://localhost:9000"
+	@echo ""
+	@echo "Admin Credentials:"
+	@echo "  Username: chainvote"
+	@echo "  Password: ouroboros"
+	@echo ""
+	@echo "To stop services:  make down"
+	@echo "To start services: make up"
+	@echo "To view logs:      make logs"
+	@echo ""
 
 .PHONY: backend-install
 backend-install:
-	docker run --rm --interactive --tty \
-              --volume ${PWD}/application:/app \
-              composer install --ignore-platform-reqs
+	@docker exec chainvote-app bash -c "cd /var/www/html && composer install --ignore-platform-reqs --no-interaction"
 
 .PHONY: frontend-install
 frontend-install:
-	make frontend-clean
-	$(sail) yarn install
+	@make frontend-clean
+	@docker exec chainvote-app bash -c "cd /var/www/html && yarn install"
 
 .PHONY: restart
 restart:
-	make down
-	make up
+	@make down
+	@make up
 
 .PHONY: up
 up:
-	$(sail) up -d
+	@cp -n application/.env.example application/.env 2>/dev/null || true
+	@cp -n serverless-lucid/.env.example serverless-lucid/.env 2>/dev/null || true
+	@docker compose up -d
 
 .PHONY: down
 down:
-	$(sail) down
+	@docker compose down
 
 .PHONY: status
 status:
-	docker compose ps
+	@docker compose ps
 
 .PHONY: setup-db
 setup-db:
-	$(sail) artisan migrate:fresh --seed
+	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan migrate:fresh --seed --force"
 
 .PHONY: seed
 seed:
-	$(sail) artisan db:seed
+	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan db:seed --force"
 
 .PHONY: migrate
 migrate:
-	$(sail) artisan migrate
+	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan migrate --force"
 
 .PHONY: watch
 watch:
-	$(sail) up -d && $(sail) npx vite
+	@docker compose up -d && docker exec chainvote-app bash -c "cd /var/www/html && yarn dev"
 
 .PHONY: vite
 vite:
-	$(sail) npx vite
+	@docker exec chainvote-app bash -c "cd /var/www/html && yarn dev"
 
 .PHONY: build
 build:
-	$(sail) npx vite build
+	@docker exec chainvote-app bash -c "cd /var/www/html && yarn build"
 
 .PHONY: sh
 sh:
-	$(sail) shell $(filter-out $@,$(MAKECMDGOALS))
+	@docker exec -it chainvote-app bash
 
 .PHONY: artisan
 artisan:
-	$(sail) artisan $(filter-out $@,$(MAKECMDGOALS))
+	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan $(filter-out $@,$(MAKECMDGOALS))"
 
 .PHONY: test-backend
 test-backend:
-	$(sail) php ./vendor/bin/pest
+	@docker exec chainvote-app bash -c "cd /var/www/html && php ./vendor/bin/pest"
 
 .PHONY: wasm
 wasm:
-	cp ./application/node_modules/lucid-cardano/esm/src/core/libs/cardano_message_signing/cardano_message_signing_bg.wasm application/node_modules/.vite/deps/cardano_message_signing_bg.wasm
-	cp ./application/node_modules/lucid-cardano/esm/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib_bg.wasm application/node_modules/.vite/deps/cardano_multiplatform_lib_bg.wasm
+	@mkdir -p application/node_modules/.vite/deps 2>/dev/null || true
+	@cp -v application/node_modules/lucid-cardano/esm/src/core/libs/cardano_message_signing/cardano_message_signing_bg.wasm \
+		application/node_modules/.vite/deps/ 2>/dev/null || true
+	@cp -v application/node_modules/lucid-cardano/esm/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib_bg.wasm \
+		application/node_modules/.vite/deps/ 2>/dev/null || true
 
 .PHONY: frontend-clean
 frontend-clean:
-	rm -rf application/node_modules 2>/dev/null || true
-	$(sail) yarn cache clean
+	@docker exec chainvote-app bash -c "rm -rf /var/www/html/node_modules" 2>/dev/null || true
 
 .PHONY: rm
 rm:
-	$(sail) down -v
+	@docker compose down -v
 
 .PHONY: logs
 logs:
-	docker logs --follow chainvote.test
+	@docker logs --follow chainvote-app
 
-.PHONY:deps
-deps:
-	cp -v application/node_modules/lucid-cardano/esm/src/core/libs/cardano_message_signing/cardano_message_signing_bg.wasm \
-	application/node_modules/lucid-cardano/esm/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib_bg.wasm \
-	application/node_modules/.vite/deps
+.PHONY: logs-worker
+logs-worker:
+	@docker logs --follow chainvote-worker
+
+.PHONY: logs-lucid
+logs-lucid:
+	@docker logs --follow chainvote-lucid
+
+.PHONY: clean
+clean:
+	@echo "Stopping and removing all containers and volumes..."
+	@docker compose down -v --remove-orphans 2>/dev/null || true
+	@echo "Clean complete!"
 
 .PHONY: serverless-deploy
 serverless-deploy:
-	cd serverless-lucid && \
+	@cd serverless-lucid && \
 	npm install && \
 	serverless deploy

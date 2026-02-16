@@ -5,43 +5,42 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
-        "based/momentum-modal": "^0.2.0",
-        "doctrine/dbal": "3.8.*",
-        "guzzlehttp/guzzle": "^7.2",
-        "inertiajs/inertia-laravel": "^0.6.11",
-        "laravel/framework": "^10.0",
-        "laravel/horizon": "^5.16",
-        "laravel/sanctum": "^3.2",
-        "laravel/telescope": "^4.14",
-        "laravel/tinker": "^2.8",
-        "laravel/vapor-core": "^2.37",
-        "laravel/vapor-ui": "^1.7",
-        "league/flysystem-aws-s3-v3": "^3.24",
-        "owen-it/laravel-auditing": "^13.5",
-        "saloonphp/saloon": "^3.0",
+        "php": "^8.3",
+        "based/momentum-modal": "^0.3.0",
+        "doctrine/dbal": "^4.0",
+        "guzzlehttp/guzzle": "^7.9",
+        "inertiajs/inertia-laravel": "^1.0",
+        "laravel/framework": "^11.0",
+        "laravel/horizon": "^5.25",
+        "laravel/sanctum": "^4.0",
+        "laravel/telescope": "^5.0",
+        "laravel/tinker": "^2.9",
+        "laravel/vapor-core": "^2.40",
+        "league/flysystem-aws-s3-v3": "^3.29",
+        "owen-it/laravel-auditing": "^13.6",
+        "saloonphp/saloon": "^3.14",
         "spatie/enum": "^3.13",
         "spatie/laravel-ciphersweet": "^1.2",
-        "spatie/laravel-data": "^3.4",
+        "spatie/laravel-data": "^3.0",
         "spatie/laravel-enum": "^3.0",
-        "spatie/laravel-medialibrary": "^11.0.0",
-        "spatie/laravel-permission": "^5.10",
-        "spatie/laravel-typescript-transformer": "^2.2",
-        "staudenmeir/belongs-to-through": "^2.5",
+        "spatie/laravel-medialibrary": "^11.0",
+        "spatie/laravel-permission": "^6.0",
+        "spatie/laravel-typescript-transformer": "^2.3",
+        "staudenmeir/belongs-to-through": "^2.14",
         "tightenco/ziggy": "^1.0",
-        "vinkla/hashids": "^11.0"
+        "vinkla/hashids": "^12.0"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.9.1",
-        "laravel/breeze": "^1.20",
-        "laravel/pint": "^1.10",
-        "laravel/sail": "^1.18",
-        "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^7.0",
-        "pestphp/pest": "^2.6",
+        "fakerphp/faker": "^1.24",
+        "laravel/breeze": "^2.0",
+        "laravel/pint": "^1.18",
+        "laravel/sail": "^1.35",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.0",
+        "pestphp/pest": "^2.34",
         "pestphp/pest-plugin-laravel": "^2.0",
-        "phpunit/phpunit": "^10.0",
-        "spatie/laravel-ignition": "^2.0"
+        "phpunit/phpunit": "^10.5",
+        "spatie/laravel-ignition": "^2.8"
     },
     "autoload": {
         "psr-4": {
@@ -64,8 +63,7 @@
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-            "@php artisan vapor-ui:publish --ansi"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

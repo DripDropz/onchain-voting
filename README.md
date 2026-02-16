@@ -1,147 +1,145 @@
-# DripDropz Open Source On-Chain Voting #
+# DripDropz Open Source On-Chain Voting
 
-## Description ##
+## Description
 
 The goal of this code is to provide information, a framework, and ultimately a full-stack solution to users and 
 organizations seeking to conduct governance or voting on the Cardano blockchain.
 
-## Rationale ##
+## Rationale
 
-Key features that have informed design decisions of this platform include, but are not limited, to the following:
+Key features that have informed design decisions of this platform include:
 
-- **Public Auditability**: It is the belief of our team that all pertinent and relevant information concerning a vote to be
-  cast on-chain should be fully transparent and publicly auditable to all users (not withstanding some technical prowess)
-  at any time past or present without reliance on 3rd parties.
-- **Vote Security**: Particularly when conducting a vote utilizing on-chain assets (native $ADA or other native assets) the
-  paramount importance is proof of voter participation intent. This is not to be confused with voter collusion which
-  shall be addressed separately based upon historical observations.
-- **Ease of Use**: The voting platform should be as easy to use, understand, and participate with as possible to 
-  maximize voter participation in any particular vote or governance matter.
+- **Public Auditability**: All pertinent information concerning a vote should be fully transparent and publicly auditable.
+- **Vote Security**: Proof of voter participation intent using on-chain assets.
+- **Ease of Use**: As easy as possible to maximize voter participation.
 
-## Documentation ##
+## License
 
-Please refer to the schema and usage documentation found under [docs](docs/README.md).
+Creative Commons Attribution 4.0 International License. See [LICENSE](LICENSE.md) for details.
 
-## License ##
+---
 
-[<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />](http://creativecommons.org/licenses/by/4.0/)
+# Local Development Setup
 
-**DripDropz On-Chain Voting** by the _DripDropz Team_ is licensed under a 
-[Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/).
+## Prerequisites
 
-All of the work, documentation, source code, and information contained within this repository is licensed under the 
-Creative Commons 4.0 International "Attribution" license. Essentially this means you are free to use (including monetization),
-modify, adapt, and redistribute the code in any way you see fit. The only thing we ask is that you provide attribution on any
-derivative works or implementations. You may attribute either this repository or [DripDropz Team](https://dripdropz.io).
-Please see [LICENSE](LICENSE.md) for the full details of the license.
+- Docker & Docker Compose
+- Make
 
-## Other Ecosystem Developers and Participants ##
+## Quick Start
 
-- **DripDropz**: This platform was built out of the work performed on behalf of DripDropz to conduct on-chain governance
-  voting utilizing the $DRIP native asset. We have conducted several successful votes utilizing the techniques and
-  solutions described in this repository. It has always been our goal to give back to the Cardano community by open
-  sourcing solutions to common problems.
-  - More information and historic vote results available at: [https://dripdropz.io/vote/](https://dripdropz.io/vote/)
-- **SundaeSwap**: The team at SundaeSwap has been hard at work on their own version of on-chain governance using Merkle Tree
-  roll-ups to the blockchain to provide vote auditability.
-  - More information available at: [https://services.sundaeswap.finance/](https://services.sundaeswap.finance/)
-- **Voteaire**: The team at Voteaire has created a simple and easy to use voting platform that is open and available today to
-  all ecosystem participants. This platform was built out as an expansion to the earlier work performed by members of 
-  the DripDropz Team, the Voteaire Team, and other community participants on behalf of SPOCRA.
-  - Platform Available at: [https://voteaire.io](https://voteaire.io).
-  - Github: [https://github.com/voteaire/voteaire-onchain-spec/](https://github.com/voteaire/voteaire-onchain-spec/)
-- **SPOCRA**: The Stake Pool Operators Collective Representation Assemble (SPOCRA) conducted the very first on-chain voting
-  on Cardano in late 2020. The status of the group itself is unknown at the time of writing but much of the early work
-  done by the community and members of the DripDropz team to support and conduct the first SPOCRA votes has helped to 
-  shape and grow our current platform.
-  - Github: [https://github.com/SPOCRA/onchain-voting](https://github.com/SPOCRA/onchain-voting)
-- We are happy to add any other community-driven projects developing on-chain voting for the Cardano ecosystem. Please
-  let us know about them in the GitHub Issues tab above, so we can add them!
+### Automated Setup (Recommended)
 
-# Running Locally with docker-compose
-### Pre-requisites
-* Make sure you have docker installed and running. 
-* Make sure you have make installed.
-* Have sed installed
-* Have your blockfrost project id ready to paste into your terminal
+```bash
+make init
+```
 
+### Manual Setup
 
-### Get up and running
-1) Clone this repository: `git clone https://github.com/DripDropz/onchain-voting.git`    
-2) cd into the project directory: `cd onchain-voting`   
-3) Run `make init` to install all frontend and backend dependencies and start the docker services.
-4) Run `make vite` to start the vite dev server and watch for changes.
-5) When vite is up, In a separate terminal from the project root run `make wasm` to get wasm and vite to play nice.
-6) Navigate to `http://localhost:8080/admin/dashboard` in your browser.         
+```bash
+# Start services
+make up
 
+# Install dependencies
+docker exec chainvote-app bash -c "cd /var/www/html && composer install --ignore-platform-reqs --no-interaction"
 
-# Makefile Commands
-* [dev](#dev)
+# Generate keys
+docker exec chainvote-app bash -c "cd /var/www/html && php artisan key:generate --force"
+docker exec chainvote-app bash -c "cd /var/www/html && php artisan ciphersweet:generate-key --force"
 
-* [watch](#watch)
+# Run migrations
+docker exec chainvote-app bash -c "cd /var/www/html && php artisan migrate --force"
 
-* [docker-setup](#docker-setup)
+# Seed database
+docker exec chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=RoleSeeder --force"
+docker exec chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=AdminUserSeeder --force"
 
-* [backend-setup](#backend-setup)
+# Build frontend
+docker exec chainvote-app bash -c "cd /var/www/html && yarn install && yarn build"
+```
 
-* [backend-install](#backend-install)
+## Services
 
-* [frontend-install](#frontend-install)
+| Service | Container Name | URL | Description |
+|---------|---------------|-----|-------------|
+| App | chainvote-app | http://localhost:8080 | Main Laravel application |
+| Worker | chainvote-worker | - | Laravel Horizon queue worker |
+| Lucid | chainvote-lucid | http://localhost:3000 | Cardano Lucid API |
+| Serverless | chainvote-serverless | - | Serverless functions |
+| Database | chainvote-db | localhost:5432 | PostgreSQL |
+| Redis | redis | localhost:6379 | Redis cache |
+| MinIO | minio | localhost:9000/9001 | S3-compatible storage |
 
-* [frontend-clean](#frontend-clean)
+## Default Admin Credentials
 
-* [rm](#rm)
- 
-* [down](#down)
+- **Username:** `chainvote`
+- **Password:** `ouroboros`
 
-* [up](#up)
-* 
-* [test](#test)
+## Configuration
 
-## dev
-`make dev`  
-Runs docker services in the background, 
-installs composer dependencies, and generates application key.
+The setup wizard prompts for:
 
-## watch
-`make watch`  
-Starts vite dev server and watches for changes.
+1. **Cardano Network** - Preview / Preprod / Mainnet
+2. **Blockfrost Project ID** - Based on selected network
+3. **App URL** - Default: http://localhost:8080
 
-## docker-setup
-`make docker-setup`  
-Runs docker services in the background.
+### Environment Variables
 
-## backend-setup
-`make backend-setup`  
-Installs laravel composer dependencies,
-and generates application key.
+Key variables in `application/.env`:
 
-## backend-install
-`make backend-install`  
-Installs laravel composer dependencies.
+- `BLOCKFROST_PROJECT_ID` - Blockfrost API key
+- `CARDANO_NETWORK` - 0=preview, 1=preprod, 2=mainnet
+- `DB_HOST` - Should match container name (e.g., `chainvote.db`)
+- `REDIS_HOST` - Redis host
+- `AWS_ENDPOINT` - MinIO endpoint
 
-## frontend-install
-`make frontend-install`  
-Delete and reinstall node_modules.
+## Makefile Commands
 
-## frontend-clean
-`make frontend-clean`  
-Delete node_modules, lock files and yarn cache.
+| Command | Description |
+|---------|-------------|
+| `make init` | Run interactive setup wizard |
+| `make up` | Start all services |
+| `make down` | Stop all services |
+| `make restart` | Restart all services |
+| `make logs` | View app logs |
+| `make logs-worker` | View worker logs |
+| `make logs-lucid` | View lucid logs |
+| `make migrate` | Run migrations |
+| `make seed` | Seed database |
+| `make build` | Build frontend |
+| `make wasm` | Copy WASM modules |
+| `make clean` | Remove all containers and volumes |
 
-## rm
-`make rm`  
-remove all docker containers and volumes.
+## Tech Stack
 
-## down
-`make down`  
-shutdown all docker containers but keep volumes.
+### Backend
+- PHP 8.5
+- Laravel 11.x
+- Laravel Horizon
+- Laravel Sanctum
+- PostgreSQL 17
 
-## up
-`make up`  
-start docker containers.
+### Frontend
+- Vue.js 3
+- Vite
+- Tailwind CSS
+- Inertia.js
 
+### Infrastructure
+- Docker
+- MinIO (S3 storage)
+- Redis
 
-## test-backend
-`make test-backend`  
-Run pest php tests.
+## Troubleshooting
 
+```bash
+# Check container status
+docker ps
+
+# View logs
+make logs
+
+# Reset everything
+make clean
+make init
+```
