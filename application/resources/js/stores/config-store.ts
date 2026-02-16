@@ -2,7 +2,6 @@ import {defineStore} from 'pinia';
 import {onMounted, ref, Ref} from 'vue';
 import { useStorage } from '@vueuse/core';
 import axios from 'axios';
-import { usePage } from '@inertiajs/vue3';
 
 export interface Config {
     hosted_by_link: string;
@@ -23,7 +22,6 @@ export const useConfigStore = defineStore('config', () => {
     const config: Ref<Config> = ref<Config>({} as Config);
     let showModal = ref(false);
     let showPublishModal = ref(false);
-    let user =  usePage().props.auth.user;
 
 
     async function loadConfig() {
@@ -62,7 +60,6 @@ export const useConfigStore = defineStore('config', () => {
         toggleDarkMode,
         showModal,
         showPublishModal,
-        user
     }
 });
 
