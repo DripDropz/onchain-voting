@@ -1,3 +1,21 @@
+.PHONY: help
+help:
+	@echo "Onchain Voting - Available Commands"
+	@echo ""
+	@echo "  make init          - Full fresh setup (removes containers, rebuilds, installs, configures)"
+	@echo "  make up            - Start Docker services"
+	@echo "  make down          - Stop Docker services"
+	@echo "  make clean         - Remove all containers, volumes, and .env files"
+	@echo "  make build         - Build frontend assets"
+	@echo "  make watch         - Start Vite dev server"
+	@echo "  make logs          - View app logs"
+	@echo "  make logs-worker   - View worker logs"
+	@echo "  make logs-lucid    - View lucid API logs"
+	@echo "  make sh            - Shell into app container"
+	@echo "  make artisan       - Run artisan commands (e.g., make artisan migrate)"
+	@echo "  make test-backend  - Run backend tests"
+	@echo ""
+
 .PHONY: init
 init:
 	@echo "This will set up the complete local development environment."
@@ -48,7 +66,7 @@ init:
 			echo -n "[leave empty for local dev only]: " && read bf_id; \
 			if [ -n "$$bf_id" ]; then \
 				docker exec chainvote-app bash -c "sed -i 's/BLOCKFROST_PROJECT_ID=.*/BLOCKFROST_PROJECT_ID=$$bf_id/' /var/www/html/.env"; \
-				docker exec chainvote-serverless bash -c "sed -i 's/BF_PREVIEW_ID=.*/BF_PREVIEW_ID=$$bf_id/' /code/.env"; \
+				docker exec chainvote-serverless sh -c "sed -i 's/BF_PREVIEW_ID=.*/BF_PREVIEW_ID=$$bf_id/' /code/.env"; \
 			fi; \
 			docker exec chainvote-app bash -c "sed -i 's|CARDANO_LUCID_NETWORK=.*|CARDANO_LUCID_NETWORK=preview|' /var/www/html/.env"; \
 			docker exec chainvote-app bash -c "sed -i 's|blockfrost.io/api/v0|cardano-preview.blockfrost.io/api/v0|' /var/www/html/.env"; \
@@ -60,7 +78,7 @@ init:
 			echo -n "[leave empty for local dev only]: " && read bf_id; \
 			if [ -n "$$bf_id" ]; then \
 				docker exec chainvote-app bash -c "sed -i 's/BLOCKFROST_PROJECT_ID=.*/BLOCKFROST_PROJECT_ID=$$bf_id/' /var/www/html/.env"; \
-				docker exec chainvote-serverless bash -c "sed -i 's/BF_PREPROD_ID=.*/BF_PREPROD_ID=$$bf_id/' /code/.env"; \
+				docker exec chainvote-serverless sh -c "sed -i 's/BF_PREPROD_ID=.*/BF_PREPROD_ID=$$bf_id/' /code/.env"; \
 			fi; \
 			docker exec chainvote-app bash -c "sed -i 's|CARDANO_LUCID_NETWORK=.*|CARDANO_LUCID_NETWORK=preprod|' /var/www/html/.env"; \
 			docker exec chainvote-app bash -c "sed -i 's|blockfrost.io/api/v0|cardano-preprod.blockfrost.io/api/v0|' /var/www/html/.env"; \
@@ -72,7 +90,7 @@ init:
 			echo -n "[leave empty for local dev only]: " && read bf_id; \
 			if [ -n "$$bf_id" ]; then \
 				docker exec chainvote-app bash -c "sed -i 's/BLOCKFROST_PROJECT_ID=.*/BLOCKFROST_PROJECT_ID=$$bf_id/' /var/www/html/.env"; \
-				docker exec chainvote-serverless bash -c "sed -i 's/BF_MAINNET_ID=.*/BF_MAINNET_ID=$$bf_id/' /code/.env"; \
+				docker exec chainvote-serverless sh -c "sed -i 's/BF_MAINNET_ID=.*/BF_MAINNET_ID=$$bf_id/' /code/.env"; \
 			fi; \
 			docker exec chainvote-app bash -c "sed -i 's|CARDANO_LUCID_NETWORK=.*|CARDANO_LUCID_NETWORK=mainnet|' /var/www/html/.env"; \
 			docker exec chainvote-app bash -c "sed -i 's|blockfrost.io/api/v0|cardano-mainnet.blockfrost.io/api/v0|' /var/www/html/.env"; \
@@ -87,23 +105,26 @@ init:
 		docker exec chainvote-app bash -c "sed -i 's|APP_URL=.*|APP_URL=$$app_url|' /var/www/html/.env"
 	@echo ""
 	@echo "==> Step 8: Generating application keys..."
-	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan key:generate --force"
-	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan ciphersweet:generate-key --force"
+	@docker exec -u sail chainvote-app bash -c "cd /var/www/html && php artisan key:generate --force"
+	@docker exec -u sail chainvote-app bash -c "cd /var/www/html && php artisan ciphersweet:generate-key --force"
 	@echo ""
 	@echo "==> Step 9: Running database migrations..."
-	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan migrate --force"
+	@docker exec -u sail chainvote-app bash -c "cd /var/www/html && php artisan migrate --force"
 	@echo ""
 	@echo "==> Step 10: Seeding database..."
-	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=RoleSeeder --force"
-	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=AdminUserSeeder --force"
+	@docker exec -u sail chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=RoleSeeder --force"
+	@docker exec -u sail chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=AdminUserSeeder --force"
 	@echo ""
 	@echo "==> Step 11: Installing frontend dependencies..."
-	@docker exec chainvote-app bash -c "cd /var/www/html && yarn install"
+	@docker exec -u sail chainvote-app bash -c "cd /var/www/html && yarn install"
 	@echo ""
 	@echo "==> Step 12: Building frontend assets..."
-	@docker exec chainvote-app bash -c "cd /var/www/html && yarn build"
+	@docker exec -u sail chainvote-app bash -c "cd /var/www/html && yarn build"
 	@echo ""
-	@echo "==> Step 13: Fixing WASM modules..."
+	@echo "==> Step 13: Fixing storage permissions..."
+	@docker exec chainvote-app bash -c "chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache"
+	@echo ""
+	@echo "==> Step 14: Fixing WASM modules..."
 	@make wasm 2>/dev/null || true
 	@rm -f /tmp/chainvote_network
 	@echo ""

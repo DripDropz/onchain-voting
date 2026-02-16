@@ -192,26 +192,30 @@ docker exec chainvote-app bash -c "sed -i 's|APP_URL=.*|APP_URL=$app_url|' /var/
 print_success "App URL configured: $app_url"
 
 print_step "7" "Generating application keys..."
-docker exec chainvote-app bash -c "cd /var/www/html && php artisan key:generate --force" 2>/dev/null
-docker exec chainvote-app bash -c "cd /var/www/html && php artisan ciphersweet:generate-key --force" 2>/dev/null
+docker exec -u sail chainvote-app bash -c "cd /var/www/html && php artisan key:generate --force" 2>/dev/null
+docker exec -u sail chainvote-app bash -c "cd /var/www/html && php artisan ciphersweet:generate-key --force" 2>/dev/null
 print_success "Application keys generated"
 
 print_step "8" "Running database migrations..."
-docker exec chainvote-app bash -c "cd /var/www/html && php artisan migrate --force" 2>/dev/null
+docker exec -u sail chainvote-app bash -c "cd /var/www/html && php artisan migrate --force" 2>/dev/null
 print_success "Database migrations completed"
 
 print_step "9" "Seeding database..."
-docker exec chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=RoleSeeder --force" 2>/dev/null
-docker exec chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=AdminUserSeeder --force" 2>/dev/null
+docker exec -u sail chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=RoleSeeder --force" 2>/dev/null
+docker exec -u sail chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=AdminUserSeeder --force" 2>/dev/null
 print_success "Database seeded"
 
 print_step "10" "Installing frontend dependencies..."
-docker exec chainvote-app bash -c "cd /var/www/html && yarn install --immutable" 2>/dev/null || docker exec chainvote-app bash -c "cd /var/www/html && yarn install" 2>/dev/null
+docker exec -u sail chainvote-app bash -c "cd /var/www/html && yarn install --immutable" 2>/dev/null || docker exec -u sail chainvote-app bash -c "cd /var/www/html && yarn install" 2>/dev/null
 print_success "Frontend dependencies installed"
 
 print_step "11" "Building frontend assets..."
-docker exec chainvote-app bash -c "cd /var/www/html && yarn build" 2>/dev/null
+docker exec -u sail chainvote-app bash -c "cd /var/www/html && yarn build" 2>/dev/null
 print_success "Frontend assets built"
+
+print_step "12" "Fixing storage permissions..."
+docker exec chainvote-app bash -c "chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache" 2>/dev/null
+print_success "Storage permissions fixed"
 
 print_step "12" "Fixing WASM modules..."
 mkdir -p application/node_modules/.vite/deps 2>/dev/null || true
