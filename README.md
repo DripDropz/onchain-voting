@@ -64,11 +64,11 @@ docker exec chainvote-app bash -c "cd /var/www/html && yarn install && yarn buil
 |---------|---------------|-----|-------------|
 | App | chainvote-app | http://localhost:8080 | Main Laravel application |
 | Worker | chainvote-worker | - | Laravel Horizon queue worker |
-| Lucid | chainvote-lucid | http://localhost:3000 | Cardano Lucid API |
-| Serverless | chainvote-serverless | - | Serverless functions |
-| Database | chainvote-db | localhost:5432 | PostgreSQL |
-| Redis | redis | localhost:6379 | Redis cache |
-| MinIO | minio | localhost:9000/9001 | S3-compatible storage |
+| Lucid | chainvote-lucid | http://localhost:3000 | Cardano Lucid API (NestJS) |
+| Serverless | chainvote-serverless | http://localhost:3000 | Serverless Lucid functions |
+| Database | chainvote-db | localhost:5432 | PostgreSQL 17 |
+| Redis | onchain-voting-redis-1 | localhost:6379 | Redis cache |
+| MinIO | onchain-voting-minio-1 | localhost:9000/9001 | S3-compatible storage |
 
 ## Default Admin Credentials
 
@@ -89,9 +89,11 @@ Key variables in `application/.env`:
 
 - `BLOCKFROST_PROJECT_ID` - Blockfrost API key
 - `CARDANO_NETWORK` - 0=preview, 1=preprod, 2=mainnet
-- `DB_HOST` - Should match container name (e.g., `chainvote.db`)
-- `REDIS_HOST` - Redis host
-- `AWS_ENDPOINT` - MinIO endpoint
+- `DB_HOST` - Database host (e.g., `chainvote.db`)
+- `REDIS_HOST` - Redis host (e.g., `redis`)
+- `CARDANO_LUCID_ENDPOINT` - Lucid API endpoint (e.g., `http://lucid:3000`)
+- `AWS_ENDPOINT` - MinIO endpoint (e.g., `http://minio:9000`)
+- `MINIO_ENDPOINT` - MinIO endpoint (e.g., `http://minio:9000`)
 
 ## Makefile Commands
 
@@ -125,8 +127,14 @@ Key variables in `application/.env`:
 - Tailwind CSS
 - Inertia.js
 
+### Cardano Integration
+- Lucid Cardano (backend API via NestJS)
+- Blockfrost API
+
 ### Infrastructure
 - Docker
+- Node.js 18+
+- NestJS
 - MinIO (S3 storage)
 - Redis
 
@@ -134,12 +142,39 @@ Key variables in `application/.env`:
 
 ```bash
 # Check container status
-docker ps
+docker compose ps
 
 # View logs
 make logs
+
+# Restart a specific service
+docker compose restart worker
+
+# Access container shell
+make sh
+
+# Run artisan commands
+make artisan migrate
+make artisan db:seed
 
 # Reset everything
 make clean
 make init
 ```
+
+### Common Issues
+
+**Worker not starting:**
+- Ensure `SUPERVISOR_PHP_USER=sail` is set in docker-compose.yml
+
+**Redis connection errors:**
+- Ensure `REDIS_HOST=redis` in `.env` (not `chainvote.redis`)
+
+**Lucid API not accessible:**
+- Ensure `CARDANO_LUCID_ENDPOINT=http://lucid:3000` in `.env`
+
+**MinIO/S3 errors:**
+- Ensure `MINIO_ENDPOINT=http://minio:9000` in `.env`
+
+**Frontend build warnings about browserslist:**
+- Run `docker exec chainvote-app bash -c "cd /var/www/html && yarn dedupe"`

@@ -1,9 +1,6 @@
 .PHONY: init
 init:
-	@echo "=============================================="
-	@echo "   Onchain Voting - Local Setup Wizard       "
-	@echo "=============================================="
-	@echo ""
+	@bash $(CURDIR)/scripts/setup.sh
 	@echo "This will set up the complete local development environment."
 	@echo ""
 	@echo -n "Continue with setup? [y/N]: " && read ans && [ $${ans:-N} = y ] || exit 0
