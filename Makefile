@@ -1,24 +1,26 @@
 .PHONY: init
 init:
-	@bash $(CURDIR)/scripts/setup.sh
 	@echo "This will set up the complete local development environment."
 	@echo ""
 	@echo -n "Continue with setup? [y/N]: " && read ans && [ $${ans:-N} = y ] || exit 0
 	@echo ""
-	@echo "==> Step 1: Copying environment files..."
+	@echo "==> Step 1: Removing old containers and volumes..."
+	@make clean
+	@echo ""
+	@echo "==> Step 2: Copying environment files..."
 	@cp -n application/.env.example application/.env 2>/dev/null || true
 	@cp -n serverless-lucid/.env.example serverless-lucid/.env 2>/dev/null || true
 	@echo ""
-	@echo "==> Step 2: Starting Docker services..."
+	@echo "==> Step 3: Starting Docker services..."
 	@make up
 	@echo ""
 	@echo "==> Waiting for services to be ready (30 seconds)..."
 	@sleep 30
 	@echo ""
-	@echo "==> Step 3: Installing composer dependencies (inside container)..."
+	@echo "==> Step 4: Installing composer dependencies (inside container)..."
 	@docker exec chainvote-app bash -c "cd /var/www/html && composer install --ignore-platform-reqs --no-interaction" || { echo "Composer install failed"; exit 1; }
 	@echo ""
-	@echo "==> Step 4: Cardano Network Selection"
+	@echo "==> Step 5: Cardano Network Selection"
 	@echo "----------------------------------------------"
 	@echo "Available networks:"
 	@echo "  1) Preview    (cardano-preview.blockfrost.io)"
@@ -36,7 +38,7 @@ init:
 	@network=$$(cat /tmp/chainvote_network); \
 	echo "Selected network: $$network"
 	@echo ""
-	@echo "==> Step 5: Blockfrost API Configuration"
+	@echo "==> Step 6: Blockfrost API Configuration"
 	@echo "----------------------------------------------"
 	@network=$$(cat /tmp/chainvote_network); \
 	case $$network in \
@@ -78,30 +80,30 @@ init:
 			;; \
 	esac
 	@echo ""
-	@echo "==> Step 6: App Configuration"
+	@echo "==> Step 7: App Configuration"
 	@echo "----------------------------------------------"
 	@echo -n "App URL [http://localhost:8080]: " && read app_url; \
 		app_url=$${app_url:-http://localhost:8080}; \
 		docker exec chainvote-app bash -c "sed -i 's|APP_URL=.*|APP_URL=$$app_url|' /var/www/html/.env"
 	@echo ""
-	@echo "==> Step 7: Generating application keys..."
+	@echo "==> Step 8: Generating application keys..."
 	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan key:generate --force"
 	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan ciphersweet:generate-key --force"
 	@echo ""
-	@echo "==> Step 8: Running database migrations..."
+	@echo "==> Step 9: Running database migrations..."
 	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan migrate --force"
 	@echo ""
-	@echo "==> Step 9: Seeding database..."
+	@echo "==> Step 10: Seeding database..."
 	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=RoleSeeder --force"
 	@docker exec chainvote-app bash -c "cd /var/www/html && php artisan db:seed --class=AdminUserSeeder --force"
 	@echo ""
-	@echo "==> Step 10: Installing frontend dependencies..."
+	@echo "==> Step 11: Installing frontend dependencies..."
 	@docker exec chainvote-app bash -c "cd /var/www/html && yarn install"
 	@echo ""
-	@echo "==> Step 11: Building frontend assets..."
+	@echo "==> Step 12: Building frontend assets..."
 	@docker exec chainvote-app bash -c "cd /var/www/html && yarn build"
 	@echo ""
-	@echo "==> Step 12: Fixing WASM modules..."
+	@echo "==> Step 13: Fixing WASM modules..."
 	@make wasm 2>/dev/null || true
 	@rm -f /tmp/chainvote_network
 	@echo ""
@@ -144,7 +146,7 @@ restart:
 up:
 	@cp -n application/.env.example application/.env 2>/dev/null || true
 	@cp -n serverless-lucid/.env.example serverless-lucid/.env 2>/dev/null || true
-	@docker compose up -d
+	@docker compose up -d --build
 
 .PHONY: down
 down:
@@ -222,6 +224,8 @@ logs-lucid:
 clean:
 	@echo "Stopping and removing all containers and volumes..."
 	@docker compose down -v --remove-orphans 2>/dev/null || true
+	@echo "Removing environment files..."
+	@rm -f application/.env serverless-lucid/.env
 	@echo "Clean complete!"
 
 .PHONY: serverless-deploy
