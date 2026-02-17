@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Enums\PermissionEnum;
 use App\Models\Petition;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -37,49 +36,46 @@ class PetitionPolicy extends AppPolicy
 
     public function sign(User $user): mixed
     {
-        return !!$user;
+        return (bool) $user;
     }
 
     /**
      * Determine whether the user can create models.
-     *
-     *
-     * @throws \Exception
      */
-    public function create(User $user)
+    public function create(User $user): Response
     {
-        // return $this->canCreateAny($user)
-        //     ? Response::allow()
-        //     : Response::deny('You are not authorized to create a Petition.');
+        return $user
+            ? Response::allow()
+            : Response::deny('You must be logged in to create a petition.');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Petition $petition)
+    public function update(User $user, Petition $petition): Response
     {
-        // return $this->canUpdate($user, $petition)
-        //     ? Response::allow()
-        //     : Response::deny('You are not authorized to update this Petition.');
+        return $user->id === $petition->user_id
+            ? Response::allow()
+            : Response::deny('You are not authorized to update this petition.');
     }
 
     /**
      * Determine whether the user can publish the model.
      */
-    public function publish(User $user, Petition $petition)
+    public function publish(User $user, Petition $petition): Response
     {
-        // $authorized = $petition->publishable && $this->canUpdate($user, $petition);
-
-        // return $authorized
-        //     ? Response::allow()
-        //     : Response::deny('You are not authorized to publish this Petition.');
+        return $user->id === $petition->user_id
+            ? Response::allow()
+            : Response::deny('You are not authorized to publish this petition.');
     }
 
     /**
      * Determine whether the user can delete the post.
      */
-    public function delete(User $user, Petition $petition)
+    public function delete(User $user, Petition $petition): Response
     {
-        // return $user->hasAnyPermission([PermissionEnum::DELETE_BALLOT]) || $this->canDelete($user, $petition);
+        return $user->id === $petition->user_id
+            ? Response::allow()
+            : Response::deny('You are not authorized to delete this petition.');
     }
 }

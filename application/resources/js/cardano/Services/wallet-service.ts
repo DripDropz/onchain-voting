@@ -15,9 +15,19 @@ export default class WalletService {
     private api: any;
     private lucid: Lucid;
     private walletName: string;
+    
+    private static instances: Map<string, WalletService> = new Map();
 
     constructor(walletName?: string) {
         this.walletName = walletName;
+    }
+
+    public static getInstance(walletName?: string): WalletService {
+        const key = walletName || 'default';
+        if (!WalletService.instances.has(key)) {
+            WalletService.instances.set(key, new WalletService(walletName));
+        }
+        return WalletService.instances.get(key);
     }
 
     public async lucidInstance() {
@@ -86,12 +96,13 @@ export default class WalletService {
             if (!this.lucid || typeof this.lucid === 'undefined') {
                 await this.init(wallet);
             } else {
+                // Wallet already connected, just switch to new wallet if different
                 const api = await this.enableWallet(wallet);
                 this.lucid.selectWallet(api);
                 this.api = api;
             }
         } catch (e) {
-            console.log({e});
+            throw e;
         }
     }
 
@@ -99,18 +110,16 @@ export default class WalletService {
         if (typeof window.cardano === 'undefined' || !window?.cardano || !window.cardano[wallet]) {
             return Promise.reject(`${wallet} wallet not installed.`);
         }
-        console.log(`${wallet} enabled.`);
         return window.cardano[wallet]?.enable();
     }
 
     protected async init(wallet?: string) {
         const _wallet = wallet || this.walletName;
-        if (!!this.lucid || typeof this.lucid !== "undefined") {
-            const api = await this.enableWallet(_wallet);
-            this.lucid.selectWallet(api);
-            this.api = api;
+        
+        if (this.lucid && typeof this.lucid !== "undefined") {
             return;
         }
+        
         let lucid;
 
         try {
@@ -122,29 +131,41 @@ export default class WalletService {
             }
 
             const networkId = await api.getNetworkId();
+            
             const keys = await (new BlockfrostKeysService).getConfig();
             const envNetworkId = keys?.network_id;
+            
             const appUrl = keys?.app_url
             let network;
-            switch (envNetworkId) {
-                case "0":
-                    if (networkId !== 0) {
-                        AlertService.show(["Preview wallet needed"], 'error')
-                        throw new Error("Preview wallet needed");
-                    }
-                    network = "Preview";
-                    break;
-
-                case "1":
-                    if (networkId !== 1) {
-                        AlertService.show(["Mainnet wallet needed"], 'error')
-                        throw new Error("Mainnet wallet needed");
-                    }
-                    network = "Mainnet";
-                    break;
-                default:
-                    AlertService.show(["Invalid network"], 'error')
-                    throw new Error("Invalid network");
+            
+            // CIP-30 networkId: 0 = Testnet (Preprod/Preview), 1 = Mainnet
+            // envNetworkId from config: 0 = testnet, 1 = mainnet
+            const envNet = parseInt(envNetworkId);
+            
+            if (envNet === 0) {
+                // Testnet configured (Preprod/Preview)
+                if (networkId !== 0) {
+                    AlertService.show(["Testnet wallet needed (Preprod/Preview)"], 'error')
+                    throw new Error("Testnet wallet needed");
+                }
+                network = "Preprod";
+            } else if (envNet === 1) {
+                // Mainnet configured
+                if (networkId !== 1) {
+                    AlertService.show(["Mainnet wallet needed"], 'error')
+                    throw new Error("Mainnet wallet needed");
+                }
+                network = "Mainnet";
+            } else if (envNet === 42) {
+                // Custom testnet
+                if (networkId !== 42) {
+                    AlertService.show(["Custom testnet wallet needed"], 'error')
+                    throw new Error("Custom testnet wallet needed");
+                }
+                network = "Custom";
+            } else {
+                // Unknown config - accept whatever the wallet is on
+                network = networkId === 1 ? "Mainnet" : "Preprod";
             }
 
             lucid = await Lucid.new(

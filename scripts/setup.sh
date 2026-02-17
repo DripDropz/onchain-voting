@@ -140,7 +140,7 @@ print_step "5" "Blockfrost API Configuration"
 case $network in
     preview)
         echo "Enter your Blockfrost Preview Project ID:"
-        echo "Get it from: https://blockfrost.io/dashboard/preview"
+        echo "Get it from: https://blockfrost.io/dashboard"
         read -p "[leave empty for local dev only]: " bf_id
         if [ -n "$bf_id" ]; then
             docker exec chainvote-app bash -c "sed -i 's/BLOCKFROST_PROJECT_ID=.*/BLOCKFROST_PROJECT_ID=$bf_id/' /var/www/html/.env" 2>/dev/null
@@ -151,11 +151,11 @@ case $network in
         fi
         docker exec chainvote-app bash -c "sed -i 's|CARDANO_LUCID_NETWORK=.*|CARDANO_LUCID_NETWORK=preview|' /var/www/html/.env" 2>/dev/null
         docker exec chainvote-app bash -c "sed -i 's|blockfrost.io/api/v0|cardano-preview.blockfrost.io/api/v0|' /var/www/html/.env" 2>/dev/null
-        docker exec chainvote-app bash -c "sed -i 's/CARDANO_NETWORK=.*/CARDANO_NETWORK=0/' /var/www/html/.env" 2>/dev/null
+        docker exec chainvote-app bash -c "sed -i 's|CARDANO_NETWORK=.*|CARDANO_NETWORK=0|' /var/www/html/.env" 2>/dev/null
         ;;
     preprod)
         echo "Enter your Blockfrost Preprod Project ID:"
-        echo "Get it from: https://blockfrost.io/dashboard/preprod"
+        echo "Get it from: https://blockfrost.io/dashboard"
         read -p "[leave empty for local dev only]: " bf_id
         if [ -n "$bf_id" ]; then
             docker exec chainvote-app bash -c "sed -i 's/BLOCKFROST_PROJECT_ID=.*/BLOCKFROST_PROJECT_ID=$bf_id/' /var/www/html/.env" 2>/dev/null
@@ -166,11 +166,11 @@ case $network in
         fi
         docker exec chainvote-app bash -c "sed -i 's|CARDANO_LUCID_NETWORK=.*|CARDANO_LUCID_NETWORK=preprod|' /var/www/html/.env" 2>/dev/null
         docker exec chainvote-app bash -c "sed -i 's|blockfrost.io/api/v0|cardano-preprod.blockfrost.io/api/v0|' /var/www/html/.env" 2>/dev/null
-        docker exec chainvote-app bash -c "sed -i 's/CARDANO_NETWORK=.*/CARDANO_NETWORK=1/' /var/www/html/.env" 2>/dev/null
+        docker exec chainvote-app bash -c "sed -i 's/CARDANO_NETWORK=.*/CARDANO_NETWORK=0/' /var/www/html/.env" 2>/dev/null
         ;;
     mainnet)
         echo "Enter your Blockfrost Mainnet Project ID:"
-        echo "Get it from: https://blockfrost.io/dashboard/mainnet"
+        echo "Get it from: https://blockfrost.io/dashboard"
         read -p "[leave empty for local dev only]: " bf_id
         if [ -n "$bf_id" ]; then
             docker exec chainvote-app bash -c "sed -i 's/BLOCKFROST_PROJECT_ID=.*/BLOCKFROST_PROJECT_ID=$bf_id/' /var/www/html/.env" 2>/dev/null
@@ -181,7 +181,7 @@ case $network in
         fi
         docker exec chainvote-app bash -c "sed -i 's|CARDANO_LUCID_NETWORK=.*|CARDANO_LUCID_NETWORK=mainnet|' /var/www/html/.env" 2>/dev/null
         docker exec chainvote-app bash -c "sed -i 's|blockfrost.io/api/v0|cardano-mainnet.blockfrost.io/api/v0|' /var/www/html/.env" 2>/dev/null
-        docker exec chainvote-app bash -c "sed -i 's/CARDANO_NETWORK=.*/CARDANO_NETWORK=2/' /var/www/html/.env" 2>/dev/null
+        docker exec chainvote-app bash -c "sed -i 's/CARDANO_NETWORK=.*/CARDANO_NETWORK=1/' /var/www/html/.env" 2>/dev/null
         ;;
 esac
 

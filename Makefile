@@ -44,6 +44,17 @@ up:
 	@cp -n application/.env.example application/.env 2>/dev/null || true
 	@cp -n serverless-lucid/.env.example serverless-lucid/.env 2>/dev/null || true
 	@docker compose up -d --build
+	@echo ""
+	@echo "Services are now running:"
+	@echo "  - Main App:        http://localhost:8080"
+	@echo "  - Admin Dashboard: http://localhost:8080/admin/dashboard"
+	@echo "  - Vite Dev Server: http://localhost:5173"
+	@echo "  - Lucid API:       http://localhost:3000"
+	@echo "  - MinIO Console:   http://localhost:9001"
+	@echo "  - MinIO (S3):     http://localhost:9000"
+	@echo ""
+	@echo "To stop services:  make down"
+	@echo "To view logs:      make logs"
 
 .PHONY: down
 down:

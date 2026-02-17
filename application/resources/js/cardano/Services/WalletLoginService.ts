@@ -6,7 +6,7 @@ import AlertService from '@/shared/Services/alert-service';
 export async function walletMsgLogin(wallet: string , stakeAddr: string, redirectRoute:string|null = null, data = {}):Promise<{}> {
     try {
         const messageHex = fromText('Voter Login')
-        const signature = await (new WalletService())
+        const signature = await WalletService.getInstance()
             .signMessage(wallet, messageHex) as {};
 
         //get stakeAddr hex for comparison in backend
@@ -26,7 +26,7 @@ export async function walletMsgLogin(wallet: string , stakeAddr: string, redirec
 
 export async function txLogin(wallet: string , stakeAddr:string, redirectRoute:string|null = null, data = {}) {
     try {
-        const rawTx = await(new WalletService()).expiredTx(
+        const rawTx = await WalletService.getInstance().expiredTx(
             wallet,
             { lovelace: BigInt(0) },
             stakeAddr

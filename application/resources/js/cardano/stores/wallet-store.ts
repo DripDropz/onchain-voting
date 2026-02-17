@@ -17,7 +17,6 @@ interface WalletState {
 export const useWalletStore = defineStore('wallet', (): WalletState => {
     const walletData: Ref<Wallet> = ref({} as Wallet);
     const walletName: Ref<string> = useStorage('wallet-name', '', localStorage, { mergeDefaults: true });
-    getLucidInstance: () => Promise<Lucid>;
 
     function saveWallet(wallet: Wallet) {
         walletData.value = wallet;
@@ -32,7 +31,7 @@ export const useWalletStore = defineStore('wallet', (): WalletState => {
     }
 
     async function getLucidInstance() {
-        const ws = new WalletService(walletName.value);
+        const ws = WalletService.getInstance(walletName.value);
         return await ws.lucidInstance();
     }
 

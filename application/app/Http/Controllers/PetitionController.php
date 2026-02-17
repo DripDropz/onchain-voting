@@ -2,23 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Rule;
-use App\Models\User;
-use Inertia\Inertia;
-use Inertia\Response;
-use App\Models\Petition;
-use App\Enums\RuleV1Enum;
-use App\Models\Signature;
-use Illuminate\Http\Request;
+use App\DataTransferObjects\PetitionData;
+use App\DataTransferObjects\RuleData;
 use App\Enums\ModelStatusEnum;
 use App\Enums\RuleOperatorEnum;
+use App\Enums\RuleV1Enum;
+use App\Events\PetitionSigned;
+use App\Models\Petition;
+use App\Models\Rule;
+use App\Models\Signature;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use App\DataTransferObjects\RuleData;
-use App\DataTransferObjects\PetitionData;
-use App\Events\PetitionSigned;
 use Illuminate\Validation\Rule as ValidationRule;
-
+use Inertia\Inertia;
+use Inertia\Response;
 
 class PetitionController extends Controller
 {
@@ -32,32 +30,31 @@ class PetitionController extends Controller
 
     public bool $hasMorePages;
 
-    public array|null $filter;
+    public ?array $filter;
 
-    public bool|null $hasPending;
+    public ?bool $hasPending;
 
-    public bool|null $hasSigned;
+    public ?bool $hasSigned;
 
     public ?string $status = 'draft';
 
     /**
      * Display the petition list.
      */
-
     public function index()
     {
         $user = Auth::user();
         $crumbs = [
             [
                 'label' => 'Petitions',
-                'link' => route('petitions.index')
+                'link' => route('petitions.index'),
             ],
         ];
 
         $actions = [
             [
                 'label' => 'Create Petition',
-                'link' => route('petitions.create')
+                'link' => route('petitions.create'),
             ],
         ];
 
@@ -79,11 +76,11 @@ class PetitionController extends Controller
         $crumbs = [
             [
                 'label' => 'Petitions',
-                'link' => route('petitions.index')
+                'link' => route('petitions.index'),
             ],
             [
                 'label' => 'Petition Details',
-                'link' => route('petitions.view', ['petition' => $petition])
+                'link' => route('petitions.view', ['petition' => $petition]),
             ],
         ];
 
@@ -93,15 +90,15 @@ class PetitionController extends Controller
                 'link' => Auth::check() && Auth::user()?->id === $petition?->user?->id
                     ? route('petitions.manage', ['petition' => $petition])
                     : '',
-                'disabled' => !Auth::check() || (Auth::check() && Auth::user()?->id !== $petition?->user?->id),
+                'disabled' => ! Auth::check() || (Auth::check() && Auth::user()?->id !== $petition?->user?->id),
             ],
             [
                 'label' => 'Edit Petition',
-                'link' => route('petitions.create.stepOne', ['petition' => $petition])
+                'link' => route('petitions.create.stepOne', ['petition' => $petition]),
             ],
             [
                 'label' => $petition->closed ? 'Petition closed' : 'Close Petition',
-                "clickAction" => 'showModal',
+                'clickAction' => 'showModal',
                 'disabled' => $petition->closed || $petition->signatures()->count() > 0,
 
             ],
@@ -120,39 +117,39 @@ class PetitionController extends Controller
         $crumbs = [
             [
                 'label' => 'Petitions',
-                'link' => route('petitions.index')
+                'link' => route('petitions.index'),
             ],
             [
                 'label' => 'Petition Details',
-                'link' => route('petitions.view', ['petition' => $petition])
+                'link' => route('petitions.view', ['petition' => $petition]),
             ],
             [
                 'label' => 'Manage',
-                'link' => route('petitions.manage', ['petition' => $petition])
+                'link' => route('petitions.manage', ['petition' => $petition]),
             ],
         ];
 
         $actions = [
             [
                 'label' => 'Edit Petition',
-                'link' => route('petitions.create.stepOne', ['petition' => $petition])
+                'link' => route('petitions.create.stepOne', ['petition' => $petition]),
             ],
             [
                 'label' => 'View Petition',
-                'link' => route('petitions.view', ['petition' => $petition])
+                'link' => route('petitions.view', ['petition' => $petition]),
             ],
             [
                 'label' => $petition->closed ? 'Petition closed' : 'Close Petition',
-                "clickAction" => 'showModal',
+                'clickAction' => 'showModal',
                 'disabled' => $petition->closed || $petition->signatures()->count() > 0,
-        
+
             ],
         ];
 
         if ($petition->status->value === 'approved') {
             $firstAction = [
                 'label' => 'Publish Petition',
-                "clickAction" => 'showPublishModal',
+                'clickAction' => 'showPublishModal',
                 'disabled' => $petition->status === 'published',
             ];
             array_unshift($actions, $firstAction);
@@ -184,7 +181,7 @@ class PetitionController extends Controller
     {
         return Inertia::modal('Petition/Partials/MakeRule', [
             'petition' => PetitionData::from($petition->load(['categories', 'user', 'rules'])),
-            'type' => $request->type
+            'type' => $request->type,
         ])->baseRoute('petitions.manage', [
             'petition' => $petition->hash,
         ]);
@@ -212,8 +209,8 @@ class PetitionController extends Controller
     public function deleteRule(Petition $petition, Rule $rule)
     {
         return Inertia::modal('Petition/Partials/DeleteRule', [
-            'petition' => PetitionData::from($petition->load(['ballot', 'user',])),
-            'rule' => RuleData::from($rule)
+            'petition' => PetitionData::from($petition->load(['ballot', 'user'])),
+            'rule' => RuleData::from($rule),
         ])->baseRoute('petitions.manage', [
             'petition' => $petition->hash,
         ]);
@@ -223,6 +220,7 @@ class PetitionController extends Controller
     {
         $petition->rules()->detach($rule->id);
         $rule->delete();
+
         return to_route('petitions.manage', [
             'petition' => $petition->hash,
         ]);
@@ -232,24 +230,24 @@ class PetitionController extends Controller
     {
         $response = Gate::inspect('sign', $petition);
 
-        if (!$response->allowed()) {
+        if (! $response->allowed()) {
             return to_route('petitions.index');
         }
 
         $request->validate([
-            'email' => ValidationRule::requiredIf(!$request->signature),
-            'signature' => ValidationRule::requiredIf(!$request->email),
-            'stakeAddress' => ValidationRule::requiredIf(!!$request->signature && !$request->email)
+            'email' => ValidationRule::requiredIf(! $request->signature),
+            'signature' => ValidationRule::requiredIf(! $request->email),
+            'stakeAddress' => ValidationRule::requiredIf((bool) $request->signature && ! $request->email),
         ]);
 
         $signature = Signature::query()
             ->where('email_signature', $request->email)
             ->orWhere('stake_address', $request->stakeAddress)->first();
 
-        if (!$signature instanceof Signature) {
+        if (! $signature instanceof Signature) {
             $signature = new Signature;
 
-            if (!$request->signature) {
+            if (! $request->signature) {
                 $signature->email_signature = $request->email;
             } else {
                 $signature->wallet_signature = $request->signature;
@@ -276,11 +274,11 @@ class PetitionController extends Controller
             'crumbs' => [
                 [
                     'label' => 'Petitions',
-                    'link' => route('petitions.index')
+                    'link' => route('petitions.index'),
                 ],
                 [
                     'label' => 'Create Petition',
-                    'link' => route('petitions.create')
+                    'link' => route('petitions.create'),
                 ],
             ],
         ]);
@@ -307,10 +305,12 @@ class PetitionController extends Controller
         ]);
 
         $user = Auth::user();
+        abort_if(! $user, 401, 'You must be logged in to create a petition.');
 
         if ($request->petition) {
             $petition = Petition::byHash($request->petition);
             $petition->update(['title' => $validatedData['title']]);
+
             return to_route('petitions.create.stepTwo', $petition->hash);
         }
 
@@ -325,7 +325,6 @@ class PetitionController extends Controller
 
         return to_route('petitions.create.stepTwo', $petition->hash);
     }
-
 
     public function update(Request $request, Petition $petition)
     {
@@ -347,10 +346,10 @@ class PetitionController extends Controller
      */
     public function publish(Petition $petition)
     {
-            $petition->update([
-                'status' => 'published',
-                'started_at' => now()
-            ]);
+        $petition->update([
+            'status' => 'published',
+            'started_at' => now(),
+        ]);
     }
 
     public function petitionsData(Request $request)
@@ -421,6 +420,7 @@ class PetitionController extends Controller
         $allActiveCount = Petition::where('status', 'published')
             ->where('is_visible', true)
             ->count();
+
         return [
             'draftCount' => $draftCount,
             'activeCount' => $activeCount,

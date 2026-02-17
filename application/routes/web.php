@@ -1,13 +1,11 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BallotController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PetitionController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\VoterController;
-use App\Http\Controllers\BallotController;
-use App\Http\Controllers\PetitionController;
-use App\Http\Integrations\Blockfrost\Requests\BlockfrostRequest;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,7 +45,6 @@ Route::prefix('/ballots/{ballot}')->as('ballot.')->group(function () {
     Route::get('/policy-id/{policyType}', [BallotController::class, 'policyId'])->name('policyId');
     Route::get('/tx-hash', [VoterController::class, 'getTx'])->name('txHash');
 
-
     Route::post('/vote/start', [BallotController::class, 'startVoting'])->name('startVoting');
     Route::post('/vote/submit', [BallotController::class, 'completeVoting'])->name('completeVoting');
 });
@@ -73,7 +70,7 @@ Route::prefix('/petitions')->as('petitions.')->middleware('featureEnabled:petiti
 
     Route::get('/{petition}/data', [PetitionController::class, 'petitionData'])->name('petitionData');
 
-    Route::prefix('/workflow')->group(function () {
+    Route::prefix('/workflow')->middleware('auth')->group(function () {
         Route::get('/create/{petition?}', [PetitionController::class, 'create'])->name('create');
         Route::get('/create/{petition}/step/1', [PetitionController::class, 'create'])->name('create.stepOne');
 
@@ -82,20 +79,28 @@ Route::prefix('/petitions')->as('petitions.')->middleware('featureEnabled:petiti
         Route::get('/create/{petition}/step/3', [PetitionController::class, 'stepThree'])->name('create.stepThree');
     });
 
-    Route::patch('/{petition}/update', [PetitionController::class, 'update'])->name('update');
+    Route::patch('/{petition}/update', [PetitionController::class, 'update'])
+        ->middleware('auth')
+        ->name('update');
 
-    Route::patch('/{petition}/close', [PetitionController::class, 'close'])->name('close');
+    Route::patch('/{petition}/close', [PetitionController::class, 'close'])
+        ->middleware('auth')
+        ->name('close');
 
-    Route::post('/store', [PetitionController::class, 'store'])->name('store');
+    Route::post('/store', [PetitionController::class, 'store'])
+        ->middleware('auth')
+        ->name('store');
 
     Route::get('/{petition}/manage', [PetitionController::class, 'manage'])
-        ->middleware(['auth', 'verified'])
+        ->middleware('auth')
         ->name('manage');
 
-    Route::get('/{petition}/edit', [PetitionController::class, 'edit'])->name('edit');
+    Route::get('/{petition}/edit', [PetitionController::class, 'edit'])
+        ->middleware('auth')
+        ->name('edit');
 
     // rules
-    Route::prefix('{petition}/rules')->as('rules.')->group(function () {
+    Route::prefix('{petition}/rules')->as('rules.')->middleware('auth')->group(function () {
         Route::get('/create', [PetitionController::class, 'makeRule'])
             ->name('create');
         Route::post('/create', [PetitionController::class, 'saveRule'])
@@ -106,7 +111,7 @@ Route::prefix('/petitions')->as('petitions.')->middleware('featureEnabled:petiti
             ->name('delete');
     });
 
-    Route::prefix('{petition}/signatures')->as('signatures.')->group(function () {
+    Route::prefix('{petition}/signatures')->as('signatures.')->middleware('auth')->group(function () {
         Route::post('/sign', [PetitionController::class, 'signPetition'])
             ->name('store');
     });
@@ -118,10 +123,11 @@ Route::prefix('/petitions')->as('petitions.')->middleware('featureEnabled:petiti
         ->name('share');
 
     Route::put('/{petition}/publish', [PetitionController::class, 'publish'])
+        ->middleware('auth')
         ->name('publish');
 });
 
-//Polls
+// Polls
 Route::prefix('/polls')->as('polls.')->middleware('featureEnabled:poll')->group(function () {
     Route::get('/', [PollController::class, 'index'])
         ->name('index');
@@ -139,9 +145,6 @@ Route::prefix('/polls')->as('polls.')->middleware('featureEnabled:poll')->group(
     Route::post('/{poll}/store/question-response', [PollController::class, 'storeQuestionResponse'])->name('storeQuestionResponse');
 });
 
+require __DIR__.'/admin.php';
 
-
-
-require __DIR__ . '/admin.php';
-
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

@@ -2,11 +2,25 @@
 import BallotData = App.DataTransferObjects.BallotData;
 import VoterLayout from "@/Layouts/VoterLayout.vue";
 import voteSplashImg from '../../images/vote-splash.jpeg';
-import {Link} from "@inertiajs/vue3";
+import {Link, router, usePage} from "@inertiajs/vue3";
+import {computed} from "vue";
+import AlertService from "@/shared/Services/alert-service";
 
 defineProps<{
     ballots: BallotData[];
 }>();
+
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+
+function startPetition() {
+    if (!user.value) {
+        AlertService.show(["Login to create a petition."], "info");
+        router.visit(route('login.wallet'));
+        return;
+    }
+    router.visit(route('petitions.create'));
+}
 </script>
 
 <template>
@@ -45,10 +59,11 @@ defineProps<{
                             class="inline-flex items-center gap-x-2 rounded-md bg-white px-2 py-2.5  font-semibold text-sky-400 shadow-sm hover:bg-sky-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 border border-sky-400">
                             Open Ballots
                         </Link>
-                        <a href="#"
+                        <button
+                            @click.prevent="startPetition"
                             class="inline-flex items-center gap-x-2 rounded-md bg-sky-400 px-2 py-2.5  font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 ">
                             Start a petition
-                        </a>
+                        </button>
                     </div>
                 </div>
                 <div class="lg:w-1/2 h-full bg-center"

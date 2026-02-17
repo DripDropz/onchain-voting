@@ -35,7 +35,7 @@ let petitionSignatureStore = usePetitionSignatureStore();
 let submitSignature = async () => {
 
     const messageHex = fromText(`Sign petition ${props.petition.hash}`)
-    const signature = await (new WalletService())
+    const signature = await WalletService.getInstance()
         .signMessage(walletName.value, messageHex);
 
     let form = useForm({

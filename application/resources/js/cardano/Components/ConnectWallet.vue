@@ -82,6 +82,7 @@ const props = withDefaults(
 
 let open: Ref<boolean> = ref(false);
 let walletLoading = ref(false);
+let walletConnecting = false;
 
 let textColor = computed(() => props.backgroundColor == 'bg-white' ? 'text-sky-500' : 'text-white')
 
@@ -90,9 +91,11 @@ const walletStore = useWalletStore();
 const { walletData } = storeToRefs(walletStore);
 const { walletName } = storeToRefs(walletStore);
 
-const walletService = new WalletService()
+const walletService = WalletService.getInstance()
 
 async function enableWallet(wallet: string) {
+    if (walletConnecting) return;
+    walletConnecting = true;
     walletLoading.value = true;
     let walletData = {
         name: wallet
@@ -108,6 +111,9 @@ async function enableWallet(wallet: string) {
         walletLoading.value = false;
     } catch (e) {
         console.log(e);
+        walletLoading.value = false;
+    } finally {
+        walletConnecting = false;
     }
 }
 
@@ -118,8 +124,12 @@ async function getWalletAddress(): Promise<Wallet> {
     } as Wallet
 }
 
-if (walletName.value?.length > 0) {
-    enableWallet(walletName.value)
+if (walletData.value?.address && walletName.value) {
+    setTimeout(() => {
+        if (!walletData.value?.address && walletName.value) {
+            enableWallet(walletName.value)
+        }
+    }, 500);
 }
 
 const target = ref(null);
