@@ -111,20 +111,20 @@ class PetitionController extends Controller
             ->limit(8)
             ->get()
             ->map(fn ($sig) => [
-                'hash'           => $sig->hash,
-                'created_at'     => $sig->created_at?->toISOString(),
-                'type'           => $sig->wallet_signature ? 'wallet' : 'email',
+                'hash' => $sig->hash,
+                'created_at' => $sig->created_at?->toISOString(),
+                'type' => $sig->wallet_signature ? 'wallet' : 'email',
                 'masked_address' => $sig->stake_address
-                    ? substr($sig->stake_address, 0, 10) . '...' . substr($sig->stake_address, -6)
+                    ? substr($sig->stake_address, 0, 10).'...'.substr($sig->stake_address, -6)
                     : null,
             ]);
 
         return Inertia::render('Petition/View', [
-            'petition'          => PetitionData::from($petition->load(['ballot', 'user', 'rules'])),
-            'crumbs'            => $crumbs,
-            'signature'         => $petition->signatures()->where('user_id', Auth::user()?->id)->first(),
-            'actions'           => $actions,
-            'recentSignatures'  => $recentSignatures,
+            'petition' => PetitionData::from($petition->load(['ballot', 'user', 'rules'])),
+            'crumbs' => $crumbs,
+            'signature' => $petition->signatures()->where('user_id', Auth::user()?->id)->first(),
+            'actions' => $actions,
+            'recentSignatures' => $recentSignatures,
         ]);
     }
 
@@ -304,7 +304,7 @@ class PetitionController extends Controller
     {
         return Inertia::render('Petition/Workflows/StepTwo', [
             'petition' => PetitionData::from($petition->load('media')),
-            'crumbs'   => [
+            'crumbs' => [
                 ['label' => 'Petitions', 'link' => route('petitions.index')],
                 ['label' => $petition->title, 'link' => route('petitions.view', ['petition' => $petition])],
                 ['label' => 'Edit — Description', 'link' => route('petitions.create.stepTwo', ['petition' => $petition])],
@@ -316,7 +316,7 @@ class PetitionController extends Controller
     {
         return Inertia::render('Petition/Workflows/StepThree', [
             'petition' => $petition,
-            'crumbs'   => [
+            'crumbs' => [
                 ['label' => 'Petitions', 'link' => route('petitions.index')],
                 ['label' => $petition->title, 'link' => route('petitions.view', ['petition' => $petition])],
                 ['label' => 'Review & Submit', 'link' => route('petitions.create.stepThree', ['petition' => $petition])],
@@ -357,8 +357,8 @@ class PetitionController extends Controller
         abort_if(Auth::user()?->id !== $petition->user_id, 403, 'You are not the owner of this petition.');
 
         $validatedData = $request->validate([
-            'description'        => 'required',
-            'cover_image'        => 'nullable|image|max:4096',
+            'description' => 'required',
+            'cover_image' => 'nullable|image|max:4096',
             'remove_cover_image' => 'nullable|boolean',
         ]);
 
@@ -490,6 +490,7 @@ class PetitionController extends Controller
                 'totalPetitions' => Petition::whereNotIn('status', ['draft'])->whereNull('deleted_at')->count(),
                 'reviewingCount' => Petition::whereIn('status', ['pending', 'approved'])->whereNull('deleted_at')->count(),
                 'publishedCount' => Petition::where('status', 'published')->where('is_visible', true)->whereNull('deleted_at')->count(),
+                'collectingCount' => Petition::where('status', 'published')->where('is_visible', false)->whereNull('deleted_at')->count(),
                 'totalSignatures' => Signature::count(),
             ];
         });

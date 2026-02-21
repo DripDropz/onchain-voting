@@ -52,29 +52,8 @@
             <div class="h-full inner-container">
                 <PetitionBrowser v-if="currentTab === 'browse' && props.platformStats.publishedCount > 0" :context="'browse'" :params="{}" />
 
-                <template v-else-if="!!user">
-                    <template v-for="option in menuOptions" :key="option.value">
-                        <PetitionBrowser
-                            v-if="currentTab === option.value && option.value !== 'browse'"
-                            :context="option.value"
-                            :params="option.param"
-                        />
-                    </template>
-                </template>
-
-                <div v-else-if="currentTab !== 'signed' && currentTab !== 'browse'" class="py-16">
-                    <LoginToView>
-                        <span class="dark:text-white">Login to view your {{ currentTab }} petitions.</span>
-                    </LoginToView>
-                </div>
-            </div>
-
-            <!-- Empty browse state -->
-            <template>
-                <div
-                    v-if="currentTab === 'browse' && props.platformStats.publishedCount === 0"
-                    class="inner-container py-10"
-                >
+                <!-- Empty browse state: no visible petitions yet -->
+                <div v-else-if="currentTab === 'browse'" class="py-10">
                     <!-- Petition lifecycle strip -->
                     <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden mb-6">
                         <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800">
@@ -106,10 +85,10 @@
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 px-6 py-5">
                         <div class="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
                             <ClockIcon class="w-5 h-5 shrink-0 text-sky-400" />
-                            <span v-if="props.platformStats.reviewingCount > 0">
-                                <strong class="text-gray-700 dark:text-gray-200">{{ props.platformStats.reviewingCount }}</strong>
-                                {{ props.platformStats.reviewingCount === 1 ? 'petition is' : 'petitions are' }}
-                                currently working through our review process. Check back soon.
+                            <span v-if="props.platformStats.reviewingCount > 0 || props.platformStats.collectingCount > 0">
+                                <strong class="text-gray-700 dark:text-gray-200">{{ props.platformStats.reviewingCount + props.platformStats.collectingCount }}</strong>
+                                {{ (props.platformStats.reviewingCount + props.platformStats.collectingCount) === 1 ? 'petition is' : 'petitions are' }}
+                                active — some are collecting signatures to become visible. Check back soon.
                             </span>
                             <span v-else>
                                 No active petitions yet. Be the first to start one and make your voice heard.
@@ -133,7 +112,23 @@
                         </button>
                     </div>
                 </div>
-            </template>
+
+                <template v-else-if="!!user">
+                    <template v-for="option in menuOptions" :key="option.value">
+                        <PetitionBrowser
+                            v-if="currentTab === option.value && option.value !== 'browse'"
+                            :context="option.value"
+                            :params="option.param"
+                        />
+                    </template>
+                </template>
+
+                <div v-else-if="currentTab !== 'signed'" class="py-16">
+                    <LoginToView>
+                        <span class="dark:text-white">Login to view your {{ currentTab }} petitions.</span>
+                    </LoginToView>
+                </div>
+            </div>
 
             <template v-if="user">
                 <div
@@ -223,6 +218,7 @@ const props = withDefaults(
             totalPetitions: number;
             reviewingCount: number;
             publishedCount: number;
+            collectingCount: number;
             totalSignatures: number;
         };
     }>(),
