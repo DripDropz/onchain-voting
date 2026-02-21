@@ -4,7 +4,6 @@
 
 <script lang="ts" setup>
 import { Bar } from 'vue-chartjs';
-import { BarChart } from 'vue-chart-3';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
 import QuestionData = App.DataTransferObjects.QuestionData;
 

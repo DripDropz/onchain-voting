@@ -10,7 +10,9 @@
             <!-- Header row: title + status badge -->
             <div class="flex items-start justify-between gap-4">
                 <Link
-                    :href="route('petitions.view', { petition: petition.hash })"
+                    :href="petition?.user_id === user?.id && petition.status !== 'published'
+                        ? route('petitions.manage', { petition: petition.hash })
+                        : route('petitions.view', { petition: petition.hash })"
                     class="text-lg font-semibold text-gray-900 dark:text-white leading-snug hover:text-sky-500 dark:hover:text-sky-400 transition-colors line-clamp-2"
                 >
                     {{ petition.title }}
@@ -48,7 +50,7 @@
                 <Link
                     v-if="petition?.user_id === user?.id"
                     :href="route('petitions.manage', { petition: petition.hash })"
-                    class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
+                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 transition-colors"
                 >
                     <Cog6ToothIcon class="w-3.5 h-3.5" />
                     Manage

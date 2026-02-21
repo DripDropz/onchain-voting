@@ -56,6 +56,24 @@
             </div>
 
             <!-- Empty states -->
+            <template>
+                <div
+                    v-if="currentTab === 'browse' && props.counts.allCount === 0"
+                    class="inner-container py-16"
+                >
+                    <EmptyState
+                        title="No active petitions yet"
+                        description="There are no published petitions to browse right now. Check back soon or start one yourself."
+                        action-label="Create a Petition"
+                        :action-href="user ? route('petitions.create') : undefined"
+                    >
+                        <template #icon>
+                            <MagnifyingGlassIcon class="w-12 h-12 text-gray-300 dark:text-gray-600" />
+                        </template>
+                    </EmptyState>
+                </div>
+            </template>
+
             <template v-if="user">
                 <div
                     v-if="currentTab === 'signed' && signedCount === 0"
@@ -125,6 +143,7 @@ import {
     DocumentPlusIcon,
     ClockIcon,
     CheckCircleIcon,
+    MagnifyingGlassIcon,
 } from "@heroicons/vue/24/outline";
 
 const props = withDefaults(

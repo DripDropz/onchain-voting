@@ -57,7 +57,7 @@ let expectedVPCount:ComputedRef<number> = computed(() => props.snapshot.metadata
 let uploadedVPCount:ComputedRef<number> = computed(() => votingPowerPagination?.value?.total ?? 0);
 
 let getPercentageUploaded = ($expected: number, uploaded: number) => {
-    return ((uploaded / $expected) * 100) ?? 0;
+        return ($expected > 0) ? (uploaded / $expected) * 100 : 0;
 }
 const percentageLoader = setInterval(() => {
     let percentage = getPercentageUploaded(expectedVPCount.value, uploadedVPCount.value)
