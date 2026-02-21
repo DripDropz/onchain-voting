@@ -84,6 +84,11 @@ else
     print_info "application/.env already exists, skipping"
 fi
 
+# Ensure Redis is used for cache and session (patch any stale file values)
+sed -i 's/^CACHE_DRIVER=.*/CACHE_DRIVER=redis/' application/.env
+sed -i 's/^SESSION_DRIVER=.*/SESSION_DRIVER=redis/' application/.env
+print_success "Cache and session drivers set to redis"
+
 if [ ! -f serverless-lucid/.env ]; then
     cp -n serverless-lucid/.env.example serverless-lucid/.env 2>/dev/null || true
     print_success "Created serverless-lucid/.env"

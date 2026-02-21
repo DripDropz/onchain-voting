@@ -13,6 +13,7 @@ use App\Models\Rule;
 use App\Models\Signature;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule as ValidationRule;
 use Inertia\Inertia;
@@ -62,6 +63,7 @@ class PetitionController extends Controller
 
         return Inertia::render('Petition/Index', [
             'counts' => $counts,
+            'platformStats' => $this->platformStats(),
             'user' => $user,
             'crumbs' => $crumbs,
             'actions' => $actions,
@@ -479,6 +481,18 @@ class PetitionController extends Controller
     public function petitionData(Request $request, Petition $petition)
     {
         return PetitionData::from($petition->load(['ballot', 'user', 'rules']));
+    }
+
+    private function platformStats(): array
+    {
+        return Cache::remember('petition_platform_stats', now()->addMinutes(5), function () {
+            return [
+                'totalPetitions' => Petition::whereNotIn('status', ['draft'])->whereNull('deleted_at')->count(),
+                'reviewingCount' => Petition::whereIn('status', ['pending', 'approved'])->whereNull('deleted_at')->count(),
+                'publishedCount' => Petition::where('status', 'published')->where('is_visible', true)->whereNull('deleted_at')->count(),
+                'totalSignatures' => Signature::count(),
+            ];
+        });
     }
 
     private function petitionsCount(Request $request)
