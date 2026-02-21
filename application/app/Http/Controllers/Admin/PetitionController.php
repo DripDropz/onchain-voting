@@ -127,7 +127,7 @@ class PetitionController extends Controller
         $petition->load('media');
 
         return Inertia::render('Auth/Petition/Edit', [
-            'petition' => PetitionData::from($petition->load(['rules'])),
+            'petition' => PetitionData::from($petition->load(['rules', 'user'])),
             'petitionImg' => optional($petition->getMedia('petitions'))->first()?->getUrl(),
             'crumbs' => [
                 ['label' => 'Petitions', 'link' => route('admin.petitions.index')],
@@ -228,6 +228,7 @@ class PetitionController extends Controller
             $rule->type = $request->type;
             $rule->title = $request->title;
             $rule->value1 = $request->v1;
+            $rule->value2 = $request->v2;
             $rule->operator = RuleOperatorEnum::EQUALS_OR_GREATER_THAN->value;
             $rule->save();
             $petition->rules()->attach($rule->id);

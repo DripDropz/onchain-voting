@@ -72,8 +72,17 @@
                                         }}
                                     </span>
                                 </div>
-                                <div class="p-2 border border-gray-300 sm:rounded-lg dark:border-gray-600">
-                                    <p v-html="parseMarkdown(petition.description)"></p>
+                                <div class="p-4 border border-gray-300 sm:rounded-lg dark:border-gray-600">
+                                    <div
+                                        class="prose prose-sm dark:prose-invert max-w-none
+                                               prose-headings:font-bold
+                                               prose-a:text-sky-400 prose-a:no-underline hover:prose-a:underline
+                                               prose-blockquote:border-sky-500 prose-blockquote:text-gray-400
+                                               prose-code:text-sky-300 prose-pre:bg-gray-800
+                                               prose-strong:text-white prose-li:text-gray-300
+                                               prose-table:text-gray-300 prose-th:text-white"
+                                        v-html="parseMarkdown(petition.description ?? '')"
+                                    />
                                 </div>
                             </div>
                         </div>
