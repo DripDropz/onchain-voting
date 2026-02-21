@@ -29,7 +29,7 @@
         <div class="flex justify-center gap-10">
             <button
                 type="button"
-                class="mt-3 inline-flex justify-center rounded-md bg-white px-4 py-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 sm:col-start-1 sm:mt-0"
+                class="mt-3 inline-flex justify-center rounded-md bg-white dark:bg-gray-700 px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 sm:col-start-1 sm:mt-0"
                 @click.prevent="$emit('close')"
                 ref="cancelButtonRef"
             >

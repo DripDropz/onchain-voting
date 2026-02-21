@@ -5,8 +5,8 @@
         <div v-for="(criterion, index) in criteriaRef"
                   class="flex flex-row items-center justify-between w-full gap-2 py-1 border-b border-gray-400 border-opacity-40 dark:border-gray-600 ">
             <div class="flex flex-col gap-1 text-sm">
-                <span class="font-bold">{{ criterion.name }}</span>
-                <span class="font-light break-all text-slate-500" v-if="criterion?.assetName && criterion?.hash">
+                <span class="font-bold dark:text-white">{{ criterion.name }}</span>
+                <span class="font-light break-all text-slate-500 dark:text-slate-400" v-if="criterion?.assetName && criterion?.hash">
                     {{ criterion?.assetName }}
                 </span>
                 <span class="w-24 h-3 bg-slate-300 dark:bg-gray-700 animate-pulse" v-if=" !!criterion?.hash && !criterion?.assetName"></span>
