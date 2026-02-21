@@ -15,7 +15,7 @@ class AdminRoutes
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = auth()->user();
+        $user = auth('admin')->user();
 
         if (! $user || empty($user->roles) || ! $this->hasAdminRole($user->roles)) {
             abort(401, 'Unauthorized');

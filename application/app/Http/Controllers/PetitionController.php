@@ -342,10 +342,28 @@ class PetitionController extends Controller
     }
 
     /**
+     * Submit a petition for admin review.
+     */
+    public function submitForReview(Petition $petition)
+    {
+        Gate::authorize('publish', $petition);
+
+        abort_if($petition->status->value !== 'draft', 422, 'Only draft petitions can be submitted for review.');
+
+        $petition->update(['status' => ModelStatusEnum::PENDING->value]);
+
+        return to_route('petitions.manage', $petition->hash);
+    }
+
+    /**
      * Publish a petition.
      */
     public function publish(Petition $petition)
     {
+        Gate::authorize('publish', $petition);
+
+        abort_if($petition->status->value !== 'approved', 422, 'Only approved petitions can be published.');
+
         $petition->update([
             'status' => 'published',
             'started_at' => now(),

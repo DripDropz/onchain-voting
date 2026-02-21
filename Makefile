@@ -86,7 +86,9 @@ vite:
 
 .PHONY: build
 build:
+	@docker exec chainvote-app bash -c "rm -f /var/www/html/public/hot" 2>/dev/null || true
 	@docker exec chainvote-app bash -c "cd /var/www/html && yarn build"
+	@docker exec chainvote-app bash -c "rm -f /var/www/html/public/hot" 2>/dev/null || true
 
 .PHONY: sh
 sh:

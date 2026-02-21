@@ -150,7 +150,7 @@ case $network in
             print_info "Skipping Blockfrost configuration"
         fi
         docker exec chainvote-app bash -c "sed -i 's|CARDANO_LUCID_NETWORK=.*|CARDANO_LUCID_NETWORK=preview|' /var/www/html/.env" 2>/dev/null
-        docker exec chainvote-app bash -c "sed -i 's|blockfrost.io/api/v0|cardano-preview.blockfrost.io/api/v0|' /var/www/html/.env" 2>/dev/null
+        docker exec chainvote-app bash -c "sed -i 's|BLOCKFROST_BASE_URL=.*|BLOCKFROST_BASE_URL=https://cardano-preview.blockfrost.io/api/v0|' /var/www/html/.env" 2>/dev/null
         docker exec chainvote-app bash -c "sed -i 's|CARDANO_NETWORK=.*|CARDANO_NETWORK=0|' /var/www/html/.env" 2>/dev/null
         ;;
     preprod)
@@ -165,7 +165,7 @@ case $network in
             print_info "Skipping Blockfrost configuration"
         fi
         docker exec chainvote-app bash -c "sed -i 's|CARDANO_LUCID_NETWORK=.*|CARDANO_LUCID_NETWORK=preprod|' /var/www/html/.env" 2>/dev/null
-        docker exec chainvote-app bash -c "sed -i 's|blockfrost.io/api/v0|cardano-preprod.blockfrost.io/api/v0|' /var/www/html/.env" 2>/dev/null
+        docker exec chainvote-app bash -c "sed -i 's|BLOCKFROST_BASE_URL=.*|BLOCKFROST_BASE_URL=https://cardano-preprod.blockfrost.io/api/v0|' /var/www/html/.env" 2>/dev/null
         docker exec chainvote-app bash -c "sed -i 's/CARDANO_NETWORK=.*/CARDANO_NETWORK=0/' /var/www/html/.env" 2>/dev/null
         ;;
     mainnet)
@@ -180,7 +180,7 @@ case $network in
             print_info "Skipping Blockfrost configuration"
         fi
         docker exec chainvote-app bash -c "sed -i 's|CARDANO_LUCID_NETWORK=.*|CARDANO_LUCID_NETWORK=mainnet|' /var/www/html/.env" 2>/dev/null
-        docker exec chainvote-app bash -c "sed -i 's|blockfrost.io/api/v0|cardano-mainnet.blockfrost.io/api/v0|' /var/www/html/.env" 2>/dev/null
+        docker exec chainvote-app bash -c "sed -i 's|BLOCKFROST_BASE_URL=.*|BLOCKFROST_BASE_URL=https://cardano-mainnet.blockfrost.io/api/v0|' /var/www/html/.env" 2>/dev/null
         docker exec chainvote-app bash -c "sed -i 's/CARDANO_NETWORK=.*/CARDANO_NETWORK=1/' /var/www/html/.env" 2>/dev/null
         ;;
 esac
@@ -200,11 +200,14 @@ docker exec -u sail chainvote-app bash -c "cd /var/www/html && php artisan db:se
 print_success "Database seeded"
 
 print_step "9" "Installing frontend dependencies..."
-docker exec -u sail chainvote-app bash -c "cd /var/www/html && yarn install --immutable" 2>/dev/null || docker exec -u sail chainvote-app bash -c "cd /var/www/html && yarn install" 2>/dev/null
+docker exec chainvote-app bash -c "rm -rf /var/www/html/node_modules && mkdir -p /var/www/html/node_modules && chown -R sail:sail /var/www/html/node_modules"
+docker exec -u sail chainvote-app bash -c "cd /var/www/html && yarn install"
 print_success "Frontend dependencies installed"
 
 print_step "10" "Building frontend assets..."
-docker exec -u sail chainvote-app bash -c "cd /var/www/html && yarn build" 2>/dev/null
+docker exec chainvote-app bash -c "rm -f /var/www/html/public/hot" 2>/dev/null || true
+docker exec -u sail chainvote-app bash -c "cd /var/www/html && yarn build"
+docker exec chainvote-app bash -c "rm -f /var/www/html/public/hot" 2>/dev/null || true
 print_success "Frontend assets built"
 
 print_step "11" "Fixing storage permissions..."

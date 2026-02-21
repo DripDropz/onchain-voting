@@ -6,14 +6,22 @@
 
         <div class="flex flex-col gap-24 my-8 lg:flex-row dark:text-slate-100">
             <div class="lg:w-[60%]">
-                <div class="h-[250px] border border-slate-700 border-dashed rounded-lg flex flex-col items-center">
-                    <div class="my-auto">
-                        <PhotoIcon class="w-16 h-16 m-auto text-slate-300" />
+                <div class="rounded-lg overflow-hidden mb-0">
+                    <img
+                        v-if="petition$.image_url"
+                        :src="petition$.image_url"
+                        :alt="petition$.title"
+                        class="w-full h-[250px] object-cover rounded-lg"
+                    />
+                    <div v-else class="h-[250px] border border-slate-700 border-dashed rounded-lg flex flex-col items-center">
+                        <div class="my-auto">
+                            <PhotoIcon class="w-16 h-16 m-auto text-slate-300" />
+                        </div>
                     </div>
                 </div>
 
                 <div class="my-8">
-                    <h2 class="text-2xl font-bold">{{ petition$.hash }}</h2>
+                    <h2 class="text-2xl font-bold">{{ petition$.user?.name }}</h2>
                     <p class="my-2 font-semibold text-slate-500">
                         Started this petition on
                         {{ formatDate(petition$.created_at) }}

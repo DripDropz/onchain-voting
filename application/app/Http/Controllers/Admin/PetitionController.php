@@ -146,6 +146,11 @@ class PetitionController extends Controller
                     'status' => $request->status
                 ]);
                 break;
+            case 'rejected':
+                $petition->update([
+                    'status' => $request->status
+                ]);
+                break;
             case 'ballot':
                 $ballotEligible = intval($petition->petition_goals['ballot-eligible']['value2']);
                 $operator = $petition->petition_goals['ballot-eligible']['operator'];

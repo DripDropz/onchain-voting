@@ -76,7 +76,7 @@ let {isDarkMode} = storeToRefs(configStore);
 
                                         <template #content>
                                             <DropdownLink :href="route('admin.profile.edit')"> Profile</DropdownLink>
-                                            <DropdownLink :href="route('logout')" method="post" as="button">
+                                            <DropdownLink :href="route('admin.logout')" method="post" as="button">
                                                 Log Out
                                             </DropdownLink>
                                         </template>
@@ -128,7 +128,7 @@ let {isDarkMode} = storeToRefs(configStore);
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('admin.profile.edit')"> Profile</ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('logout')" method="post" as="button">
+                            <ResponsiveNavLink :href="route('admin.logout')" method="post" as="button">
                                 Log Out
                             </ResponsiveNavLink>
                         </div>

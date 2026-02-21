@@ -8,8 +8,18 @@ use App\Http\Controllers\Admin\PetitionController;
 use App\Http\Controllers\Admin\SnapshotController;
 use App\Http\Controllers\Admin\PollController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Auth\AdminAuthenticatedSessionController;
 
-Route::prefix('/admin')->as('admin.')->middleware(['auth', 'verified', 'admin.routes'])->group(function () {
+Route::prefix('/admin')->as('admin.')->group(function () {
+    Route::middleware('guest:admin')->group(function () {
+        Route::get('/login', [AdminAuthenticatedSessionController::class, 'create'])->name('login');
+        Route::post('/login', [AdminAuthenticatedSessionController::class, 'store'])->name('loginStore');
+    });
+
+    Route::post('/logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout');
+});
+
+Route::prefix('/admin')->as('admin.')->middleware(['auth:admin', 'admin.routes'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Ballot

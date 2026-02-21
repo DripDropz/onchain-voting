@@ -8,21 +8,61 @@
                 <div class="container flex flex-col items-center gap-6 w-full pb-3">
                     <p class="text-xl font-bold leading-tight xl:text-2xl">{{ petition.title }}</p>
 
-                  <div v-if="petition.status === 'draft'" class="flex items-center gap-2 text-base">
+                  <!-- Draft: not yet submitted for review -->
+                  <div v-if="petition.status === 'draft'" class="flex flex-col items-center gap-3 text-base">
+                    <p class="text-gray-500 dark:text-gray-400 text-sm text-center">
+                      Your petition is saved as a draft. Submit it for admin review when you're ready.
+                    </p>
+                    <button
+                        @click.prevent="submitForReview()"
+                        class="font-semibold bg-sky-500 text-white hover:bg-sky-600 py-2 px-6 rounded-md text-sm">
+                        Submit for Review
+                    </button>
+                  </div>
+
+                  <!-- Pending: submitted, waiting for admin -->
+                  <div v-if="petition.status === 'pending'" class="flex items-center gap-2 text-base">
                     <div class="opacity-75">Status:</div>
                     <p class="font-bold leading-tight text-amber-500">
-                      Waiting for admin approval.
+                      Awaiting admin review&hellip;
                     </p>
                   </div>
+
+                  <!-- Approved: ready to publish -->
                   <div v-if="petition.status === 'approved'" class="flex flex-col items-center gap-4 text-base">
                     <p class="font-bold leading-tight text-green-500">
-                      Your Petition has been approved.
+                      Your Petition has been approved!
                     </p>
                     <button
                             @click.prevent="publishPetition()"
-                            class="font-semibold bg-sky-500 txt-white hover:text-slate-700 dark:hover:text-white py-2 px-4 rounded-md">
-                            <span>Publish</span>
+                            class="font-semibold bg-sky-500 text-white hover:bg-sky-600 py-2 px-6 rounded-md">
+                            <span>Publish Petition</span>
                         </button>
+                  </div>
+
+                  <!-- Rejected: notify and offer edit -->
+                  <div v-if="petition.status === 'rejected'" class="flex flex-col items-center gap-3 text-base">
+                    <p class="font-bold leading-tight text-red-500">
+                      Your petition was not approved.
+                    </p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 text-center">
+                      You may edit your petition and resubmit it for review.
+                    </p>
+                    <Link :href="route('petitions.create.stepOne', { petition: petition.hash })"
+                        class="font-semibold bg-white dark:bg-gray-800 border border-sky-400 text-sky-500 hover:bg-sky-50 dark:hover:bg-gray-700 py-2 px-6 rounded-md text-sm">
+                        Edit Petition
+                    </Link>
+                  </div>
+
+                  <!-- Published: live -->
+                  <div v-if="petition.status === 'published'" class="flex flex-col items-center gap-3 text-base">
+                    <p class="font-bold leading-tight text-sky-500">
+                      Your petition is live!
+                    </p>
+                    <Link :href="route('petitions.view', { petition: petition.hash })"
+                        class="font-semibold bg-sky-500 text-white hover:bg-sky-600 py-2 px-6 rounded-md text-sm">
+                        View Public Page
+                    </Link>
                   </div>
                 </div>
             </div>
@@ -132,6 +172,16 @@ const publishPetition = async () => {
         } catch (error) {
             AlertService.show(["There was an error publishing the petition"], "error");
         }
+};
+
+const submitForReview = async () => {
+    try {
+        await form.patch(route("petitions.submit", { petition: props.petition?.hash }));
+        props.petition.status = "pending";
+        AlertService.show(["Petition submitted for admin review"], "success");
+    } catch (error) {
+        AlertService.show(["There was an error submitting the petition"], "error");
+    }
 };
 
 let copy = (link) => {

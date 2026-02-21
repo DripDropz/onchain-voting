@@ -125,6 +125,10 @@ Route::prefix('/petitions')->as('petitions.')->middleware('featureEnabled:petiti
     Route::put('/{petition}/publish', [PetitionController::class, 'publish'])
         ->middleware('auth')
         ->name('publish');
+
+    Route::patch('/{petition}/submit', [PetitionController::class, 'submitForReview'])
+        ->middleware('auth')
+        ->name('submit');
 });
 
 // Polls
