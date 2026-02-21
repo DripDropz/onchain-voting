@@ -145,25 +145,7 @@
                                         <p class="text-sm font-semibold text-white mb-1">Share This Petition</p>
                                         <p class="text-sm text-gray-500">Spread awareness by sharing your petition link with your community.</p>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <div class="flex items-center flex-1 gap-2 px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-400 min-w-0">
-                                            <LinkIcon class="w-4 h-4 shrink-0 text-gray-500" />
-                                            <span class="truncate">{{ link }}</span>
-                                        </div>
-                                        <button
-                                            @click="copy(link)"
-                                            class="shrink-0 inline-flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-medium bg-gray-800 border border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
-                                        >
-                                            <ClipboardIcon class="w-4 h-4" />
-                                            Copy
-                                        </button>
-                                    </div>
-                                    <Link :href="`share`">
-                                        <button class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-white text-sm font-semibold transition-colors shadow-lg shadow-sky-500/20">
-                                            <ShareIcon class="w-4 h-4" />
-                                            Share on Social Media
-                                        </button>
-                                    </Link>
+                                    <PetitionShareWidget :link="link" :title="petition.title" />
                                 </div>
                             </div>
 
@@ -192,9 +174,6 @@ import {
     PaperAirplaneIcon,
     RocketLaunchIcon,
     ArrowTopRightOnSquareIcon,
-    LinkIcon,
-    ClipboardIcon,
-    ShareIcon,
     ClockIcon,
     CheckCircleIcon,
     XCircleIcon,
@@ -212,6 +191,7 @@ import ClosePetition from "./Partials/ClosePetition.vue";
 import PublishPetition from "./Partials/PublishPetition.vue";
 import PetitionGoals from "./Partials/PetitionGoals.vue";
 import PetitionSupporters from "@/Pages/Petition/Partials/PetitionSupporters.vue";
+import PetitionShareWidget from "./Partials/PetitionShareWidget.vue";
 import { useConfigStore } from "@/stores/config-store";
 import { storeToRefs } from "pinia";
 
@@ -235,15 +215,6 @@ const submitForReview = async () => {
         AlertService.show(["Petition submitted for admin review"], "success");
     } catch (error) {
         AlertService.show(["There was an error submitting the petition"], "error");
-    }
-};
-
-const copy = (text: string) => {
-    try {
-        navigator.clipboard.writeText(text);
-        AlertService.show(["Link copied to clipboard"], "success");
-    } catch {
-        AlertService.show(["Could not copy link"], "error");
     }
 };
 
