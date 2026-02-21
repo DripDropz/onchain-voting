@@ -68,14 +68,14 @@
             <!-- Status-specific actions (owner only) -->
             <div v-if="isOwner" class="flex items-center gap-2">
 
-                <!-- DRAFT: Preview, Edit, Delete -->
+                <!-- DRAFT: Manage, Edit, Delete -->
                 <template v-if="petition.status === 'draft'">
                     <Link
-                        :href="route('petitions.view', { petition: petition.hash })"
+                        :href="route('petitions.manage', { petition: petition.hash })"
                         class="action-btn action-btn-ghost"
                     >
-                        <EyeIcon class="w-3.5 h-3.5" />
-                        Preview
+                        <Cog6ToothIcon class="w-3.5 h-3.5" />
+                        Manage
                     </Link>
                     <Link
                         :href="route('petitions.create.stepOne', { petition: petition.hash })"
@@ -93,14 +93,14 @@
                     </button>
                 </template>
 
-                <!-- PENDING: Preview only (under review) -->
+                <!-- PENDING: Manage + Under Review badge -->
                 <template v-else-if="petition.status === 'pending'">
                     <Link
-                        :href="route('petitions.view', { petition: petition.hash })"
+                        :href="route('petitions.manage', { petition: petition.hash })"
                         class="action-btn action-btn-ghost"
                     >
-                        <EyeIcon class="w-3.5 h-3.5" />
-                        Preview
+                        <Cog6ToothIcon class="w-3.5 h-3.5" />
+                        Manage
                     </Link>
                     <span class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50">
                         <ClockIcon class="w-3.5 h-3.5" />
@@ -108,14 +108,14 @@
                     </span>
                 </template>
 
-                <!-- APPROVED: Preview, Revert to Draft, Publish -->
+                <!-- APPROVED: Manage, Revert to Draft, Publish -->
                 <template v-else-if="petition.status === 'approved'">
                     <Link
-                        :href="route('petitions.view', { petition: petition.hash })"
+                        :href="route('petitions.manage', { petition: petition.hash })"
                         class="action-btn action-btn-ghost"
                     >
-                        <EyeIcon class="w-3.5 h-3.5" />
-                        Preview
+                        <Cog6ToothIcon class="w-3.5 h-3.5" />
+                        Manage
                     </Link>
                     <button
                         @click.prevent="revertToDraft"
@@ -134,14 +134,14 @@
                     </button>
                 </template>
 
-                <!-- REJECTED: Preview, Edit & Resubmit -->
+                <!-- REJECTED: Manage, Edit & Resubmit -->
                 <template v-else-if="petition.status === 'rejected'">
                     <Link
-                        :href="route('petitions.view', { petition: petition.hash })"
+                        :href="route('petitions.manage', { petition: petition.hash })"
                         class="action-btn action-btn-ghost"
                     >
-                        <EyeIcon class="w-3.5 h-3.5" />
-                        Preview
+                        <Cog6ToothIcon class="w-3.5 h-3.5" />
+                        Manage
                     </Link>
                     <Link
                         :href="route('petitions.create.stepOne', { petition: petition.hash })"
@@ -152,8 +152,15 @@
                     </Link>
                 </template>
 
-                <!-- PUBLISHED: View public page only -->
+                <!-- PUBLISHED: Manage + View public page -->
                 <template v-else-if="petition.status === 'published'">
+                    <Link
+                        :href="route('petitions.manage', { petition: petition.hash })"
+                        class="action-btn action-btn-ghost"
+                    >
+                        <Cog6ToothIcon class="w-3.5 h-3.5" />
+                        Manage
+                    </Link>
                     <Link
                         :href="route('petitions.view', { petition: petition.hash })"
                         class="action-btn action-btn-primary"
@@ -202,6 +209,7 @@ import {
     ArrowUturnLeftIcon,
     ClockIcon,
     ExclamationTriangleIcon,
+    Cog6ToothIcon,
 } from "@heroicons/vue/20/solid";
 import { Link, useForm, usePage } from "@inertiajs/vue3";
 import AlertService from "@/shared/Services/alert-service";

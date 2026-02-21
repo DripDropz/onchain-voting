@@ -1,11 +1,10 @@
 <template>
-  <div>
+  <div class="flex flex-col gap-4 mt-6">
     <PetitionListItem
       v-for="petition in petitions"
       :key="petition.hash"
       :petition="petition"
     />
-    
   </div>
 </template>
 
