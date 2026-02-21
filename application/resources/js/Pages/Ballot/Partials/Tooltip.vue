@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref } from "vue";
+import { ref } from "vue";
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
 
 const props = defineProps({

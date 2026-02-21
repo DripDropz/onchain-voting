@@ -97,7 +97,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { ref, defineProps } from 'vue';
+import { ref } from 'vue';
 import PolicyData = App.DataTransferObjects.PolicyData;
 import BallotData = App.DataTransferObjects.BallotData;
 import AlertService from '@/shared/Services/alert-service';

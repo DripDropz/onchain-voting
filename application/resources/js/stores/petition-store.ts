@@ -170,6 +170,14 @@ export const usePetitionStore = defineStore('petition-store', () => {
         currentContext.value = context;
     }
 
+    function removePetition(hash: string) {
+        for (const context of Object.keys(publicPetition.value[0])) {
+            publicPetition.value[0][context].petitions = publicPetition.value[0][context].petitions.filter(
+                (p) => p.hash !== hash
+            );
+        }
+    }
+
     watch(() => currentModel.value?.currPage, () => {
         getFilteredData().then();
     }, { deep: true })
@@ -200,5 +208,6 @@ export const usePetitionStore = defineStore('petition-store', () => {
         showMore,
         setContext,
         singlePublicPetition,
+        removePetition,
     }
 });

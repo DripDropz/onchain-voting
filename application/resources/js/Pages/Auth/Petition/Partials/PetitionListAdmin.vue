@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from 'vue';
+import { computed } from 'vue';
 import PetitionData = App.DataTransferObjects.PetitionData;
 import PetitionListItem from './PetitionListItem.vue';
 

@@ -14,8 +14,8 @@
                         1
                     </span>
                     <p class="dark:text-white pt-1.5">
-                        <span class="font-extrabold">Submit for admin review.</span>
-                        An admin will approve or reject your petition before it goes public.
+                        <span class="font-extrabold">Admin review &amp; goal-setting.</span>
+                        An admin will review your petition, set the signature goal required for it to go public, and then approve or reject it.
                     </p>
                 </li>
                 <li class="flex items-start gap-4">
@@ -23,14 +23,24 @@
                         2
                     </span>
                     <p class="dark:text-white pt-1.5">
-                        <span class="font-extrabold">Once approved, publish it</span>
-                        and share it with your community to collect signatures.
+                        <span class="font-extrabold">Once approved, you publish it</span>
+                        and share it with your community to start collecting signatures.
+                    </p>
+                </li>
+                <li class="flex items-start gap-4">
+                    <span class="flex items-center justify-center shrink-0 w-9 h-9 rounded-full border-2 border-sky-500 text-sky-600 dark:text-sky-400 font-semibold text-sm">
+                        3
+                    </span>
+                    <p class="dark:text-white pt-1.5">
+                        <span class="font-extrabold">Reach the signature threshold</span>
+                        set by the admin for your petition to become publicly visible on OpenChainVote.
                     </p>
                 </li>
             </ol>
 
             <p class="bg-gray-100 dark:bg-gray-800 dark:text-gray-300 w-full px-4 py-4 rounded-lg text-sm leading-relaxed">
-                Your petition will appear publicly on OpenChainVote once it reaches the visibility signature threshold set by an admin.
+                <strong>Note:</strong> Signature goals are determined by an admin during the review process — you do not need to set them yourself.
+                If your petition is approved but you want to make changes, you can revert it back to draft from your petition management page.
             </p>
 
             <div class="flex flex-row justify-end gap-3 pb-8">

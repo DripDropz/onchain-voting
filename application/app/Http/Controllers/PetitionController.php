@@ -370,6 +370,51 @@ class PetitionController extends Controller
         ]);
     }
 
+    /**
+     * Delete a draft petition (soft delete).
+     */
+    public function destroy(Petition $petition)
+    {
+        abort_if(Auth::user()?->id !== $petition->user_id, 403, 'You are not the owner of this petition.');
+        abort_if($petition->status->value !== 'draft', 422, 'Only draft petitions can be deleted.');
+
+        $petition->delete();
+
+        return to_route('petitions.index');
+    }
+
+    /**
+     * Revert an approved petition back to draft so the owner can make changes.
+     */
+    public function revertToDraft(Petition $petition)
+    {
+        abort_if(Auth::user()?->id !== $petition->user_id, 403, 'You are not the owner of this petition.');
+        abort_if($petition->status->value !== 'approved', 422, 'Only approved petitions can be reverted to draft.');
+
+        $petition->update(['status' => ModelStatusEnum::DRAFT->value]);
+
+        return to_route('petitions.manage', $petition->hash);
+    }
+
+    /**
+     * Upload a cover image for a petition (owner only).
+     */
+    public function uploadImage(Request $request, Petition $petition)
+    {
+        abort_if(Auth::user()?->id !== $petition->user_id, 403, 'You are not the owner of this petition.');
+
+        $request->validate([
+            'image' => 'required|image|max:4096',
+        ]);
+
+        $petition->clearMediaCollection('petitions');
+
+        $media = $petition->addMediaFromRequest('image')
+            ->toMediaCollection('petitions');
+
+        return response()->json(['url' => $media->getUrl()]);
+    }
+
     public function petitionsData(Request $request)
     {
         $this->perPage = $request->query('perPage', 4);

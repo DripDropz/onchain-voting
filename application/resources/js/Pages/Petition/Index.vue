@@ -1,8 +1,5 @@
 <template>
-    <VoterLayout page="Petitions" :crumbs="crumbs" :actions="[{
-        label: 'Create Petition',
-        clickAction: 'showModal'
-    }]">
+    <VoterLayout page="Petitions" :crumbs="crumbs" :actions="[createPetitionAction]">
         <section class="w-full py-12 mx-auto container">
             <div class="inner-container">
                 <h2 class="mb-8 text-3xl font-bold leading-tight text-center text-gray-800 xl:text-4xl dark:text-gray-200">
@@ -159,6 +156,12 @@ const props = withDefaults(
 
 let configStore = useConfigStore();
 let { showModal } = storeToRefs(configStore);
+
+const createPetitionAction = computed(() =>
+    props.user
+        ? { label: 'Create Petition', link: route('petitions.create') }
+        : { label: 'Create Petition', clickAction: 'showModal' }
+);
 
 const currentTab = ref('browse');
 

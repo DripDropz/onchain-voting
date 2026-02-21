@@ -129,6 +129,18 @@ Route::prefix('/petitions')->as('petitions.')->middleware('featureEnabled:petiti
     Route::patch('/{petition}/submit', [PetitionController::class, 'submitForReview'])
         ->middleware('auth')
         ->name('submit');
+
+    Route::delete('/{petition}/destroy', [PetitionController::class, 'destroy'])
+        ->middleware('auth')
+        ->name('destroy');
+
+    Route::patch('/{petition}/revert', [PetitionController::class, 'revertToDraft'])
+        ->middleware('auth')
+        ->name('revert');
+
+    Route::post('/{petition}/upload-image', [PetitionController::class, 'uploadImage'])
+        ->middleware('auth')
+        ->name('uploadImage');
 });
 
 // Polls

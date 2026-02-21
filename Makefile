@@ -1,3 +1,31 @@
+# ---------------------------------------------------------------------------
+# Port configuration — read from application/.env when available
+# ---------------------------------------------------------------------------
+APP_PORT      := 8080
+LUCID_PORT    := 3000
+MINIO_PORT    := 9000
+MINIO_UI_PORT := 9001
+
+_ENV_VITE_PORT := $(shell grep -s '^VITE_PORT=' application/.env 2>/dev/null | cut -d'=' -f2)
+VITE_PORT      := $(if $(_ENV_VITE_PORT),$(_ENV_VITE_PORT),5173)
+
+# ---------------------------------------------------------------------------
+# Reusable service URL banner
+# ---------------------------------------------------------------------------
+define show_urls
+	@echo ""
+	@echo "Services are now running:"
+	@echo "  - Main App:        http://localhost:$(APP_PORT)"
+	@echo "  - Admin Dashboard: http://localhost:$(APP_PORT)/admin/dashboard"
+	@echo "  - Vite Dev Server: http://localhost:$(VITE_PORT)"
+	@echo "  - Lucid API:       http://localhost:$(LUCID_PORT)"
+	@echo "  - MinIO Console:   http://localhost:$(MINIO_UI_PORT)"
+	@echo "  - MinIO (S3):      http://localhost:$(MINIO_PORT)"
+	@echo ""
+	@echo "To stop services:  make down"
+	@echo "To view logs:      make logs"
+endef
+
 .PHONY: help
 help:
 	@echo ""
@@ -44,17 +72,7 @@ up:
 	@cp -n application/.env.example application/.env 2>/dev/null || true
 	@cp -n serverless-lucid/.env.example serverless-lucid/.env 2>/dev/null || true
 	@docker compose up -d --build
-	@echo ""
-	@echo "Services are now running:"
-	@echo "  - Main App:        http://localhost:8080"
-	@echo "  - Admin Dashboard: http://localhost:8080/admin/dashboard"
-	@echo "  - Vite Dev Server: http://localhost:5173"
-	@echo "  - Lucid API:       http://localhost:3000"
-	@echo "  - MinIO Console:   http://localhost:9001"
-	@echo "  - MinIO (S3):     http://localhost:9000"
-	@echo ""
-	@echo "To stop services:  make down"
-	@echo "To view logs:      make logs"
+	$(show_urls)
 
 .PHONY: down
 down:
@@ -78,7 +96,10 @@ migrate:
 
 .PHONY: watch
 watch:
-	@docker compose up -d && docker exec chainvote-app bash -c "cd /var/www/html && yarn dev"
+	@make down
+	@docker compose up -d
+	$(show_urls)
+	@docker exec chainvote-app bash -c "cd /var/www/html && yarn dev"
 
 .PHONY: vite
 vite:

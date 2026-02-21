@@ -35,11 +35,21 @@
 
             <div class="lg:w-[30%]">
                 <div v-if="!petition$?.ballot">
-                    <Link :href="route('petitions.manage', { petition: petition$.hash })"></Link>
-
                     <SignatureProgress :petition="petition$"/>
 
-                    <SignPetitionForm :signature="signature" :user="user" />
+                    <!-- Sign form: disabled in preview mode for the petition owner -->
+                    <div v-if="isPreview" class="relative mt-2">
+                        <div class="pointer-events-none opacity-40 select-none">
+                            <SignPetitionForm :signature="signature" :user="user" />
+                        </div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800/80 dark:bg-gray-700/90 text-white text-sm font-semibold backdrop-blur-sm">
+                                <LockClosedIcon class="w-4 h-4" />
+                                Sign form disabled in preview
+                            </span>
+                        </div>
+                    </div>
+                    <SignPetitionForm v-else :signature="signature" :user="user" />
                 </div>
                 <div class="flex flex-col items-center justify-center" v-if="petition$?.ballot">
                     <span class="mt-8 mb-4 text-2xl font-bold">Petition moved to ballot</span>
@@ -59,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps } from "vue";
+import { computed } from "vue";
 import PetitionData = App.DataTransferObjects.PetitionData;
 import SignatureData = App.DataTransferObjects.SignatureData;
 import { LockClosedIcon, PhotoIcon } from "@heroicons/vue/20/solid";
@@ -79,6 +89,7 @@ const page = usePage();
 
 const props = defineProps<{
     signature: SignatureData;
+    isPreview?: boolean;
 }>();
 
 let petitionSignatureStore = usePetitionSignatureStore();

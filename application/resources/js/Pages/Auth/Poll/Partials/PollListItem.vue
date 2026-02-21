@@ -40,7 +40,6 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps} from 'vue';
 import PollData = App.DataTransferObjects.PollData;
 import {UsersIcon, EnvelopeIcon} from '@heroicons/vue/20/solid';
 import voteAppLogo from '../../../../../images/openchainvote.png';

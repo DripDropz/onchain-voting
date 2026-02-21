@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, ref, computed} from 'vue';
+import { ref, computed } from 'vue';
 import PollData = App.DataTransferObjects.PollData;
 import PollListItem from "@/Pages/Auth/Poll/Partials/PollListItem.vue";
 
