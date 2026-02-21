@@ -18,7 +18,6 @@ import WalletService from '@/cardano/Services/wallet-service';
 import { fromText, getAddressDetails } from '@lucid-cardano';
 import PetitionData = App.DataTransferObjects.PetitionData;
 import AlertService from '../Services/alert-service';
-import { Inertia } from '@inertiajs/inertia'
 import { useForm } from '@inertiajs/vue3';
 import { usePetitionSignatureStore } from '@/Pages/Petition/stores/petition-signature-store';
 
