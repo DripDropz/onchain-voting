@@ -13,7 +13,11 @@
                </div>
 
                <div v-if="petition$.status === 'published' || isOwner">
-                   <PetitionSingle :signature="signature" :is-preview="isOwner && petition$.status !== 'published'" />
+                   <PetitionSingle
+                       :signature="signature"
+                       :is-preview="isOwner && petition$.status !== 'published'"
+                       :recent-signatures="recentSignatures"
+                   />
                </div>
                <div v-else class="flex flex-row justify-center my-8 border rounded-lg border-slate-900 dark:border-slate-700 dark:text-slate-100">
                    <p class="py-16 text-2xl font-semibold text-center dark:text-white">This petition is not yet published.</p>
@@ -44,6 +48,7 @@ const props = defineProps<{
    crumbs: [];
    actions: []
    signature: SignatureData;
+   recentSignatures?: any[];
 }>();
 
 let configStore = useConfigStore();

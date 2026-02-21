@@ -1,6 +1,6 @@
 <template>
-    <VoterLayout page="Create a petition">
-        <section class="w-full max-w-2xl mx-auto pt-12 px-4 space-y-6">
+    <VoterLayout page="Create a petition" :crumbs="crumbs">
+        <section class="w-full max-w-5xl mx-auto pt-12 px-4 space-y-6">
             <WorkflowProgress :current-step="2" />
 
             <div class="space-y-2 dark:text-white">
@@ -69,7 +69,7 @@
                 <!-- Description editor -->
                 <div class="space-y-2">
                     <label class="block font-medium text-base dark:text-white">Description</label>
-                    <v-md-editor v-model="form.description" height="400px" lang="en-US" />
+                    <v-md-editor v-model="form.description" height="600px" lang="en-US" />
                     <p v-if="form.errors.description" class="text-sm text-red-500 dark:text-red-400">{{ form.errors.description }}</p>
                 </div>
 
@@ -107,6 +107,7 @@ import { PhotoIcon, XMarkIcon } from "@heroicons/vue/20/solid";
 
 const props = defineProps<{
     petition: PetitionData;
+    crumbs?: [];
 }>();
 
 VueMarkdownEditor.lang.use("en-US", enUS);

@@ -104,11 +104,25 @@ class PetitionController extends Controller
             ],
         ];
 
+        $recentSignatures = $petition->signatures()
+            ->latest()
+            ->limit(8)
+            ->get()
+            ->map(fn ($sig) => [
+                'hash'           => $sig->hash,
+                'created_at'     => $sig->created_at?->toISOString(),
+                'type'           => $sig->wallet_signature ? 'wallet' : 'email',
+                'masked_address' => $sig->stake_address
+                    ? substr($sig->stake_address, 0, 10) . '...' . substr($sig->stake_address, -6)
+                    : null,
+            ]);
+
         return Inertia::render('Petition/View', [
-            'petition' => PetitionData::from($petition->load(['ballot', 'user', 'rules'])),
-            'crumbs' => $crumbs,
-            'signature' => $petition->signatures()->where('user_id', Auth::user()?->id)->first(),
-            'actions' => $actions,
+            'petition'          => PetitionData::from($petition->load(['ballot', 'user', 'rules'])),
+            'crumbs'            => $crumbs,
+            'signature'         => $petition->signatures()->where('user_id', Auth::user()?->id)->first(),
+            'actions'           => $actions,
+            'recentSignatures'  => $recentSignatures,
         ]);
     }
 
@@ -288,6 +302,11 @@ class PetitionController extends Controller
     {
         return Inertia::render('Petition/Workflows/StepTwo', [
             'petition' => PetitionData::from($petition->load('media')),
+            'crumbs'   => [
+                ['label' => 'Petitions', 'link' => route('petitions.index')],
+                ['label' => $petition->title, 'link' => route('petitions.view', ['petition' => $petition])],
+                ['label' => 'Edit — Description', 'link' => route('petitions.create.stepTwo', ['petition' => $petition])],
+            ],
         ]);
     }
 
@@ -295,6 +314,11 @@ class PetitionController extends Controller
     {
         return Inertia::render('Petition/Workflows/StepThree', [
             'petition' => $petition,
+            'crumbs'   => [
+                ['label' => 'Petitions', 'link' => route('petitions.index')],
+                ['label' => $petition->title, 'link' => route('petitions.view', ['petition' => $petition])],
+                ['label' => 'Review & Submit', 'link' => route('petitions.create.stepThree', ['petition' => $petition])],
+            ],
         ]);
     }
 

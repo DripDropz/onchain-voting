@@ -25,7 +25,7 @@
 
             <!-- Description -->
             <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 leading-relaxed">
-                {{ petition.description }}
+                {{ descriptionPreview }}
             </p>
 
             <!-- Inline delete confirmation -->
@@ -185,7 +185,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import MarkdownIt from "markdown-it";
 import PetitionData = App.DataTransferObjects.PetitionData;
+
+const md = new MarkdownIt({ html: false, breaks: true, linkify: false });
 import Modal from "@/Components/Modal.vue";
 import PublishPetition from "./PublishPetition.vue";
 import {
@@ -207,6 +210,13 @@ import { usePetitionStore } from "@/stores/petition-store";
 const props = defineProps<{
     petition: PetitionData;
 }>();
+
+const descriptionPreview = computed(() => {
+    const html = md.render(props.petition.description ?? "");
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return div.textContent ?? div.innerText ?? "";
+});
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);

@@ -1,5 +1,5 @@
 <template>
-    <VoterLayout page="Create a petition">
+    <VoterLayout page="Create a petition" :crumbs="crumbs">
         <section class="w-full max-w-2xl mx-auto pt-12 px-4 space-y-6">
             <WorkflowProgress :current-step="3" />
 
@@ -72,6 +72,7 @@ import WorkflowProgress from "../Partials/WorkflowProgress.vue";
 
 const props = defineProps<{
     petition: PetitionData;
+    crumbs?: [];
 }>();
 
 const submitting = ref(false);
