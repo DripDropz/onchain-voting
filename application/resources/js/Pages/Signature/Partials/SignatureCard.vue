@@ -109,6 +109,6 @@ const getSignatureType = (): string => {
     }
 };
 
-const maskedAddress = props.signature.stake_address?.slice(0, 12) + '****' + props.signature.stake_address?.slice(-12);
-const maskedSignature = props.signature.wallet_signature?.slice(0, 10) + '****' + props.signature.wallet_signature?.slice(-10);
+const maskedAddress = props.signature.stake_address?.slice(0, 12) + '****' + props.signature.stake_address?.slice(-6);
+const maskedSignature = props.signature.wallet_signature?.slice(0, 12) + '****' + props.signature.wallet_signature?.slice(-6);
 </script>
