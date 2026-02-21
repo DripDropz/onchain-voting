@@ -79,7 +79,7 @@ Route::prefix('/petitions')->as('petitions.')->middleware('featureEnabled:petiti
         Route::get('/create/{petition}/step/3', [PetitionController::class, 'stepThree'])->name('create.stepThree');
     });
 
-    Route::patch('/{petition}/update', [PetitionController::class, 'update'])
+    Route::post('/{petition}/update', [PetitionController::class, 'update'])
         ->middleware('auth')
         ->name('update');
 
@@ -138,9 +138,6 @@ Route::prefix('/petitions')->as('petitions.')->middleware('featureEnabled:petiti
         ->middleware('auth')
         ->name('revert');
 
-    Route::post('/{petition}/upload-image', [PetitionController::class, 'uploadImage'])
-        ->middleware('auth')
-        ->name('uploadImage');
 });
 
 // Polls

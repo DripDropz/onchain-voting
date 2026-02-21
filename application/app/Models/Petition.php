@@ -40,7 +40,7 @@ class Petition extends Model implements Auditable, HasUser, HasMedia
     ];
 
     protected $appends = [
-        'hash', 'closed','petition_goals'
+        'hash', 'closed', 'petition_goals', 'image_url',
     ];
 
     protected $casts = [
@@ -96,9 +96,17 @@ class Petition extends Model implements Auditable, HasUser, HasMedia
             }
         );
     }
+    public function imageUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->getFirstMediaUrl('petitions') ?: null,
+        );
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('petitions')
-             ->useDisk(config('filesystems.default'));
+             ->singleFile()
+             ->useDisk('public');
     }
 }

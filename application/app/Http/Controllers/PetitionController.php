@@ -287,7 +287,7 @@ class PetitionController extends Controller
     public function stepTwo(Petition $petition)
     {
         return Inertia::render('Petition/Workflows/StepTwo', [
-            'petition' => $petition,
+            'petition' => PetitionData::from($petition->load('media')),
         ]);
     }
 
@@ -328,12 +328,26 @@ class PetitionController extends Controller
 
     public function update(Request $request, Petition $petition)
     {
+        abort_if(Auth::user()?->id !== $petition->user_id, 403, 'You are not the owner of this petition.');
+
         $validatedData = $request->validate([
-            'description' => 'required',
+            'description'        => 'required',
+            'cover_image'        => 'nullable|image|max:4096',
+            'remove_cover_image' => 'nullable|boolean',
         ]);
 
         $petition->description = $validatedData['description'];
         $petition->save();
+
+        if ($request->boolean('remove_cover_image')) {
+            $petition->clearMediaCollection('petitions');
+        }
+
+        if ($request->hasFile('cover_image')) {
+            $petition->clearMediaCollection('petitions');
+            $petition->addMediaFromRequest('cover_image')
+                ->toMediaCollection('petitions');
+        }
     }
 
     public function close(Petition $petition)
@@ -394,25 +408,6 @@ class PetitionController extends Controller
         $petition->update(['status' => ModelStatusEnum::DRAFT->value]);
 
         return to_route('petitions.manage', $petition->hash);
-    }
-
-    /**
-     * Upload a cover image for a petition (owner only).
-     */
-    public function uploadImage(Request $request, Petition $petition)
-    {
-        abort_if(Auth::user()?->id !== $petition->user_id, 403, 'You are not the owner of this petition.');
-
-        $request->validate([
-            'image' => 'required|image|max:4096',
-        ]);
-
-        $petition->clearMediaCollection('petitions');
-
-        $media = $petition->addMediaFromRequest('image')
-            ->toMediaCollection('petitions');
-
-        return response()->json(['url' => $media->getUrl()]);
     }
 
     public function petitionsData(Request $request)

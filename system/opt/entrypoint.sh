@@ -15,13 +15,14 @@ php artisan package:discover
 
 php artisan migrate --force
 
+php artisan storage:link
+
 mkdir -p /var/run/supervisor
 mkdir -p /ipc
 
 if [[ "$APP_ENV" != "local" ]] && [[ "$APP_ENV" != "testing" ]]; then
   php artisan cache:clear
-  php artisan view:clear    
-  php artisan storage:link
+  php artisan view:clear
   php artisan optimize
   php artisan event:cache
 fi

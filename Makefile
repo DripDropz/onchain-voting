@@ -31,18 +31,33 @@ help:
 	@echo ""
 	@echo "Onchain Voting - Available Commands"
 	@echo ""
-	@echo "  make init          - Run setup wizard (TUI)"
-	@echo "  make up            - Start Docker services"
-	@echo "  make down          - Stop Docker services"
-	@echo "  make clean         - Remove all containers, volumes, and .env files"
-	@echo "  make build         - Build frontend assets"
-	@echo "  make watch         - Start Vite dev server"
-	@echo "  make logs          - View app logs"
-	@echo "  make logs-worker   - View worker logs"
-	@echo "  make logs-lucid    - View lucid API logs"
-	@echo "  make sh            - Shell into app container"
-	@echo "  make artisan       - Run artisan commands (e.g., make artisan migrate)"
-	@echo "  make test-backend  - Run backend tests"
+	@echo "  Setup & Lifecycle"
+	@echo "  make init              - Run setup wizard (TUI)"
+	@echo "  make up                - Start Docker services"
+	@echo "  make down              - Stop Docker services"
+	@echo "  make restart           - Restart Docker services"
+	@echo "  make clean             - Remove all containers, volumes, and .env files"
+	@echo "  make status            - Show Docker service status"
+	@echo ""
+	@echo "  Build (with cache)"
+	@echo "  make build             - Build frontend assets (yarn install + build)"
+	@echo "  make backend-install   - Install backend PHP dependencies"
+	@echo "  make frontend-install  - Clean and reinstall frontend dependencies"
+	@echo ""
+	@echo "  Rebuild (no cache)"
+	@echo "  make rebuild           - Rebuild everything: Docker + backend + frontend"
+	@echo "  make rebuild-docker    - Rebuild Docker images only (no cache)"
+	@echo "  make rebuild-backend   - Rebuild backend PHP dependencies only (no cache)"
+	@echo "  make rebuild-frontend  - Rebuild frontend assets only (no cache)"
+	@echo ""
+	@echo "  Development"
+	@echo "  make watch             - Start Vite dev server (with hot reload)"
+	@echo "  make logs              - View app logs"
+	@echo "  make logs-worker       - View worker logs"
+	@echo "  make logs-lucid        - View lucid API logs"
+	@echo "  make sh                - Shell into app container"
+	@echo "  make artisan           - Run artisan commands (e.g., make artisan migrate)"
+	@echo "  make test-backend      - Run backend tests"
 	@echo ""
 
 .PHONY: init
@@ -110,6 +125,47 @@ build:
 	@docker exec chainvote-app bash -c "rm -f /var/www/html/public/hot" 2>/dev/null || true
 	@docker exec chainvote-app bash -c "cd /var/www/html && yarn install && yarn build"
 	@docker exec chainvote-app bash -c "rm -f /var/www/html/public/hot" 2>/dev/null || true
+
+.PHONY: rebuild-docker
+rebuild-docker:
+	@echo "Rebuilding Docker images (no cache)..."
+	@docker compose build --no-cache
+	@docker compose up -d
+	$(show_urls)
+
+.PHONY: rebuild-backend
+rebuild-backend:
+	@echo "Rebuilding backend PHP dependencies (no cache)..."
+	@docker exec chainvote-app bash -c "cd /var/www/html && composer install --ignore-platform-reqs --no-interaction --no-cache"
+	@echo "Backend rebuilt!"
+
+.PHONY: rebuild-frontend
+rebuild-frontend:
+	@echo "Rebuilding frontend assets (no cache)..."
+	@docker exec chainvote-app bash -c "rm -rf /var/www/html/node_modules"
+	@docker exec chainvote-app bash -c "rm -f /var/www/html/public/hot" 2>/dev/null || true
+	@docker exec chainvote-app bash -c "cd /var/www/html && yarn install && yarn build"
+	@docker exec chainvote-app bash -c "rm -f /var/www/html/public/hot" 2>/dev/null || true
+	@echo "Frontend rebuilt!"
+
+.PHONY: rebuild
+rebuild:
+	@echo ""
+	@echo "Rebuilding all components (no cache) — .env files and database untouched..."
+	@echo ""
+	@echo "[1/3] Rebuilding Docker images..."
+	@docker compose build --no-cache
+	@docker compose up -d
+	@echo "[2/3] Rebuilding backend PHP dependencies..."
+	@docker exec chainvote-app bash -c "cd /var/www/html && composer install --ignore-platform-reqs --no-interaction --no-cache"
+	@echo "[3/3] Rebuilding frontend assets..."
+	@docker exec chainvote-app bash -c "rm -rf /var/www/html/node_modules"
+	@docker exec chainvote-app bash -c "rm -f /var/www/html/public/hot" 2>/dev/null || true
+	@docker exec chainvote-app bash -c "cd /var/www/html && yarn install && yarn build"
+	@docker exec chainvote-app bash -c "rm -f /var/www/html/public/hot" 2>/dev/null || true
+	@echo ""
+	@echo "All components rebuilt!"
+	$(show_urls)
 
 .PHONY: sh
 sh:
