@@ -36,6 +36,7 @@ import ClosePetition from "./Partials/ClosePetition.vue";
 import { useConfigStore } from "@/stores/config-store";
 import { storeToRefs } from "pinia";
 import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import {usePetitionSignatureStore} from '@/Pages/Petition/stores/petition-signature-store';
 
 const props = defineProps<{
@@ -46,7 +47,10 @@ const props = defineProps<{
 }>();
 
 let configStore = useConfigStore();
-let { showModal, user } = storeToRefs(configStore);
+let { showModal } = storeToRefs(configStore);
+
+const page = usePage();
+const user = computed(() => page.props.auth?.user);
 
 let petitionSignatureStore = usePetitionSignatureStore();
 petitionSignatureStore.setPetition(props.petition);

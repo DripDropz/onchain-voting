@@ -28,7 +28,7 @@ export default defineConfig({
     server: {
         host: '0.0.0.0',
         hmr: {
-            host: env.VITE_DOCKER_GATEWAY_HOST ?? '0.0.0.0',
+            host: env.VITE_DOCKER_GATEWAY_HOST ?? 'localhost',
         }
     },
     plugins: [
