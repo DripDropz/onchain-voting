@@ -3,7 +3,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+cd "$SCRIPT_DIR/.."
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -211,6 +211,7 @@ print_success "Frontend dependencies installed"
 
 print_step "10" "Building frontend assets..."
 docker exec chainvote-app bash -c "rm -f /var/www/html/public/hot" 2>/dev/null || true
+docker exec chainvote-app bash -c "mkdir -p /var/www/html/public/build && chown -R sail:sail /var/www/html/public/build" 2>/dev/null || true
 docker exec -u sail chainvote-app bash -c "cd /var/www/html && yarn build"
 docker exec chainvote-app bash -c "rm -f /var/www/html/public/hot" 2>/dev/null || true
 print_success "Frontend assets built"
