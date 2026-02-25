@@ -19,7 +19,7 @@ class HandleInertiaRequests extends Middleware
     /**
      * Determine the current asset version.
      */
-    public function version(Request $request): string|null
+    public function version(Request $request): ?string
     {
         return parent::version($request);
     }
@@ -31,19 +31,28 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $user = $request->is('admin/*') || $request->is('admin')
+        $isAdminRoute = $request->is('admin/*') || $request->is('admin');
+        $hasAdminSession = auth('admin')->check();
+
+        $user = $isAdminRoute
             ? auth('admin')?->user()
             : auth()?->user();
 
         $user?->load(['roles']);
+
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $user ? UserData::from($user) : null,
             ],
-            'feature-flags'=>[
-                'ballots'=> config('app.feature_flags.ballots'),
-                'petitions'=> config('app.feature_flags.petitions'),
-                'polls'=> config('app.feature_flags.polls')
+            'adminContext' => [
+                'isAdminRoute' => $isAdminRoute,
+                'label' => $isAdminRoute ? 'Admin Console' : null,
+                'hasAdminSession' => $hasAdminSession,
+            ],
+            'feature-flags' => [
+                'ballots' => config('app.feature_flags.ballots'),
+                'petitions' => config('app.feature_flags.petitions'),
+                'polls' => config('app.feature_flags.polls'),
             ],
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [

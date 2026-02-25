@@ -129,7 +129,7 @@
                                 </div>
                                 <div class="bg-gray-900 rounded-xl border border-gray-800 p-6">
                                     <p class="text-sm text-gray-500 mb-5">Restrict who can sign by requiring an NFT or fungible token.</p>
-                                    <Criteria :model="petition" />
+                                    <Criteria :model="petition" mode="editable" />
                                 </div>
                             </div>
 

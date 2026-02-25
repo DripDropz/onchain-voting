@@ -1,10 +1,41 @@
 <template>
-    <VoterLayout page="Petitions" :crumbs="crumbs" :actions="[createPetitionAction]">
-        <section class="w-full py-12 mx-auto container">
+    <VoterLayout page="Petitions" :crumbs="crumbs" :actions="[]">
+        <section class="w-full py-12 mx-auto container pb-24 md:pb-12">
             <div class="inner-container">
                 <h2 class="mb-6 text-3xl font-bold leading-tight text-center text-gray-800 xl:text-4xl dark:text-gray-200">
                     Petitions
                 </h2>
+                <div class="flex justify-center mb-8">
+                    <div class="w-full max-w-4xl p-5 border shadow-sm rounded-2xl bg-gradient-to-r from-sky-50 via-cyan-50 to-sky-100 border-sky-200 dark:from-sky-900/35 dark:via-cyan-900/25 dark:to-sky-900/35 dark:border-sky-700/60">
+                        <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
+                            <div class="text-center sm:text-left">
+                                <p class="text-sm font-semibold tracking-wide uppercase text-sky-700 dark:text-sky-300">
+                                    Ready to launch your own cause?
+                                </p>
+                                <p class="mt-1 text-sm text-slate-700 dark:text-slate-200">
+                                    Start a petition and invite your community to support it.
+                                </p>
+                            </div>
+                            <Link
+                                v-if="user"
+                                :href="route('petitions.create')"
+                                class="inline-flex items-center gap-2.5 px-6 py-3.5 text-sm font-semibold tracking-wide text-white uppercase transition-colors rounded-xl shadow-md bg-sky-600 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-sky-50 dark:focus:ring-offset-slate-900"
+                            >
+                                <DocumentPlusIcon class="w-5 h-5" />
+                                Create Petition
+                            </Link>
+                            <button
+                                v-else
+                                type="button"
+                                @click="showModal = true"
+                                class="inline-flex items-center gap-2.5 px-6 py-3.5 text-sm font-semibold tracking-wide text-white uppercase transition-colors rounded-xl shadow-md bg-sky-600 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-sky-50 dark:focus:ring-offset-slate-900"
+                            >
+                                <DocumentPlusIcon class="w-5 h-5" />
+                                Create Petition
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Platform stats bar -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
@@ -118,6 +149,25 @@
                 <PetitionConfirmation @close="showModal = false" />
             </Modal>
         </section>
+        <div class="fixed z-40 md:hidden bottom-6 right-4">
+            <Link
+                v-if="user"
+                :href="route('petitions.create')"
+                class="inline-flex items-center gap-2 px-4 py-3 text-xs font-semibold tracking-wide text-white uppercase transition-colors rounded-full shadow-lg bg-sky-600 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+            >
+                <DocumentPlusIcon class="w-4 h-4" />
+                Create Petition
+            </Link>
+            <button
+                v-else
+                type="button"
+                @click="showModal = true"
+                class="inline-flex items-center gap-2 px-4 py-3 text-xs font-semibold tracking-wide text-white uppercase transition-colors rounded-full shadow-lg bg-sky-600 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+            >
+                <DocumentPlusIcon class="w-4 h-4" />
+                Create Petition
+            </button>
+        </div>
     </VoterLayout>
 </template>
 
@@ -168,12 +218,6 @@ const props = withDefaults(
 let configStore = useConfigStore();
 let { showModal } = storeToRefs(configStore);
 const petitionStore = usePetitionStore();
-
-const createPetitionAction = computed(() =>
-    props.user
-        ? { label: 'Create Petition', link: route('petitions.create') }
-        : { label: 'Create Petition', clickAction: 'showModal' }
-);
 
 const currentTab = ref('browse');
 

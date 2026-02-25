@@ -24,6 +24,7 @@ export const usePetitionStore = defineStore('petition-store', () => {
     let params: Ref<{ [x: string]: any; } | null> = ref(null);
     let currentContext = ref('browse');
     let loadingMore = ref(false);
+    let activePublicRequestKey: Ref<string | null> = ref(null);
     let publicPetition: Ref<{
         [context: string]: {
             petitions: PetitionData[];
@@ -137,6 +138,18 @@ export const usePetitionStore = defineStore('petition-store', () => {
                 data['statusfilter'] = ['published'];
             }
 
+            const requestKey = JSON.stringify({
+                context,
+                nextCursor: data.nextCursor ?? null,
+                hasMorePages: data.hasMorePages ?? null,
+                params: params ?? null,
+            });
+
+            if (loadingMore.value && activePublicRequestKey.value === requestKey) {
+                return;
+            }
+            activePublicRequestKey.value = requestKey;
+
             await PublicPetitionService.fetchPetitions(data)
                 .then((res) => {
                     publicPetition.value[0][context].hasMorePages = res.hasMorePages;
@@ -144,9 +157,13 @@ export const usePetitionStore = defineStore('petition-store', () => {
                     publicPetition.value[0][context].petitions = [...publicPetition.value[0][context].petitions, ...res.petitions];
                 }).finally(() => {
                     loadingMore.value = false
+                    if (activePublicRequestKey.value === requestKey) {
+                        activePublicRequestKey.value = null;
+                    }
                 })
         } catch (error) {
             loadingMore.value = false
+            activePublicRequestKey.value = null;
             AlertService.show(['error'], 'error ')
         }
     }

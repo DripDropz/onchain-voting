@@ -51,7 +51,7 @@
                         <!-- Petition criteria / goals -->
                         <div class="p-6 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg dark:text-white">
                             <h2 class="mb-4 text-lg font-semibold">Petition Criteria</h2>
-                            <Criteria :model="petition" />
+                            <Criteria :model="petition" mode="readonly" />
                         </div>
 
                         <!-- Admin actions -->

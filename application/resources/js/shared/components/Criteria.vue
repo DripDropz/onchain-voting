@@ -1,99 +1,157 @@
 <template>
-     <div class="flex flex-col p-2 overflow-auto min-h-48 max-h-48 justify-items-center">
-    <div>
-
-        <div v-for="(criterion, index) in criteriaRef"
-                  class="flex flex-row items-center justify-between w-full gap-2 py-1 border-b border-gray-400 border-opacity-40 dark:border-gray-600 ">
-            <div class="flex flex-col gap-1 text-sm">
-                <span class="font-bold dark:text-white">{{ criterion.name }}</span>
-                <span class="font-light break-all text-slate-500 dark:text-slate-400" v-if="criterion?.assetName && criterion?.hash">
-                    {{ criterion?.assetName }}
-                </span>
-                <span class="w-24 h-3 bg-slate-300 dark:bg-gray-700 animate-pulse" v-if=" !!criterion?.hash && !criterion?.assetName"></span>
+    <div class="flex flex-col p-2">
+        <div v-if="isReadonlyMode" class="flex flex-col">
+            <div
+                v-if="configuredCriteria.length === 0"
+                class="rounded-lg border border-dashed border-gray-300 px-3 py-2 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400"
+            >
+                No gated signing criteria configured.
             </div>
-            <div>
-                <label class="relative inline-flex items-center " :for="`${index}`" :class="[(readonly || model?.status == 'published' || model?.status == 'closed' || model?.ballot)?'cursor-not-allowed':'cursor-pointer' ]">
-                    <input type="checkbox" :id="`${index}`" :value="criterion.type" class="sr-only peer" :disabled="readonly || model?.status == 'published' || model?.status == 'closed' || model?.ballot"
-                        @change="(e) => makeRule(e.target.checked, criterion.type, criterion.hash)"
-                        :checked="!!criterion.hash">
-                    <div
-                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-sky-300 dark:peer-focus:ring-sky-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-sky-400">
-                    </div>
-                </label>
+
+            <div
+                v-for="criterion in configuredCriteria"
+                :key="`readonly-${criterion.type}`"
+                class="flex w-full flex-col gap-1 border-gray-400 border-opacity-40 py-2 text-sm dark:border-gray-600"
+            >
+                <span class="font-bold dark:text-white">{{ criterion.name }}</span>
+                <span v-if="criterion.title" class="text-slate-500 dark:text-slate-400">{{ criterion.title }}</span>
+                <span class="break-all font-mono text-xs text-slate-500 dark:text-slate-400">
+                    Policy ID: {{ criterion.value2 }}
+                </span>
+            </div>
+        </div>
+
+        <div v-else>
+            <div
+                v-for="(criterion, index) in criteriaRef"
+                :key="`editable-${criterion.type}`"
+                class="flex w-full flex-row items-center justify-between gap-2 border-b border-gray-400 border-opacity-40 py-2 dark:border-gray-600"
+            >
+                <div class="flex flex-col gap-1 text-sm">
+                    <span class="font-bold dark:text-white">{{ criterion.name }}</span>
+                    <span
+                        v-if="criterion.hash && criterion.value2"
+                        class="break-all font-mono text-xs text-slate-500 dark:text-slate-400"
+                    >
+                        Policy ID: {{ criterion.value2 }}
+                    </span>
+                </div>
+                <div>
+                    <label
+                        class="relative inline-flex items-center"
+                        :for="`${criterion.type}-${index}`"
+                        :class="[isEditingDisabled ? 'cursor-not-allowed' : 'cursor-pointer']"
+                    >
+                        <input
+                            :id="`${criterion.type}-${index}`"
+                            type="checkbox"
+                            :value="criterion.type"
+                            class="peer sr-only"
+                            :disabled="isEditingDisabled"
+                            :checked="!!criterion.hash"
+                            @change="(e) => makeRule((e.target as HTMLInputElement).checked, criterion.type, criterion.hash)"
+                        >
+                        <div
+                            class="h-6 w-11 rounded-full bg-gray-200 peer-focus:ring-4 peer-focus:ring-sky-300 after:absolute after:start-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-sky-400 peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full dark:bg-gray-700 dark:border-gray-600 dark:peer-focus:ring-sky-800"
+                        />
+                    </label>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </template>
 
 <script lang="ts" setup>
-import { router } from '@inertiajs/vue3';
+import { router } from "@inertiajs/vue3";
+import { computed, ref, watch } from "vue";
 import PetitionData = App.DataTransferObjects.PetitionData;
-import { computed, ref, watch } from 'vue';
 import PollData = App.DataTransferObjects.PollData;
-import axios from 'axios';
 
+type CriterionType = "nft" | "ft";
 
-const props = withDefaults(defineProps<{
-    model?: PetitionData|PollData;
-    readonly?: boolean;
-    returnRoute?: string;
-}>(), {
-    readonly: false,
-    returnRoute: 'petitions.manage',
+type CriteriaRow = {
+    name: string;
+    type: CriterionType;
+    hash?: string | null;
+    title?: string | null;
+    value2?: string | null;
+};
+
+const props = withDefaults(
+    defineProps<{
+        model?: PetitionData | PollData;
+        readonly?: boolean;
+        returnRoute?: string;
+        mode?: "editable" | "readonly";
+    }>(),
+    {
+        readonly: false,
+        returnRoute: "petitions.manage",
+    }
+);
+
+const isReadonlyMode = computed(() => {
+    if (props.mode) {
+        return props.mode === "readonly";
+    }
+
+    return props.readonly;
 });
 
-let criteria = computed(()=> [
+const isEditingDisabled = computed(() => {
+    return (
+        !props.model?.hash ||
+        isReadonlyMode.value ||
+        props.model?.status === "published" ||
+        props.model?.status === "closed" ||
+        !!props.model?.ballot
+    );
+});
+
+const criteria = computed<CriteriaRow[]>(() => [
     {
-        name: 'NFT',
-        'type': 'nft',
-        'assetName': null,
-        ...(props.model && props.model.rules ? props.model.rules.filter((item) => item.type == 'nft')[0] : {})
+        name: "NFT",
+        type: "nft",
+        ...(props.model?.rules?.find((item) => item.type === "nft") ?? {}),
     },
     {
-        name: 'FT',
-        'type': 'ft',
-        'assetName': null,
-        ...(props.model && props.model.rules ? props.model.rules.filter((item) => item.type == 'ft')[0] : {})
-    }
+        name: "FT",
+        type: "ft",
+        ...(props.model?.rules?.find((item) => item.type === "ft") ?? {}),
+    },
 ]);
 
-let criteriaRef = ref(criteria.value);
+const criteriaRef = ref<CriteriaRow[]>(criteria.value);
 
-let makeRule = (toggleOn, type, hash) => {
-    if (props.readonly) {
+const configuredCriteria = computed(() => {
+    return criteria.value.filter((criterion) => !!criterion.hash && !!criterion.value2);
+});
+
+const makeRule = (toggleOn: boolean, type: CriterionType, hash?: string | null): void => {
+    if (isReadonlyMode.value || isEditingDisabled.value || !props.model?.hash) {
         return;
     }
 
-    const data = { type, returnRoute: props.returnRoute }
-    if (toggleOn && props.model && !hash) {
-        router.get(route('petitions.rules.create', { petition: props.model.hash }), data)
-    } else if (!toggleOn && props.model && hash) {
-        router.get(route('petitions.rules.removeRule', { petition: props.model.hash, rule: hash, returnRoute: props.returnRoute }))
+    const data = { type, returnRoute: props.returnRoute };
+
+    if (toggleOn && !hash) {
+        router.get(route("petitions.rules.create", { petition: props.model.hash }), data);
+    } else if (!toggleOn && hash) {
+        router.get(
+            route("petitions.rules.removeRule", {
+                petition: props.model.hash,
+                rule: hash,
+                returnRoute: props.returnRoute,
+            })
+        );
     }
-}
+};
 
-
-let getAssetData = async () => {
-    for (let i = 0; i < criteriaRef.value.length; i++) {
-        const element = criteriaRef.value[i];
-        if (element?.value2) {
-                 let res = (await axios.get(route('frost.asset', { policy: element.value2 }))).data;
-            const assetData = res.asset;
-            criteriaRef.value[i].assetName = assetData?.metadata?.name ?? assetData?.onchain_metadata?.name ?? assetData?.name ?? assetData?.fingerprint   
-        }
-    }
-}
-
-if (props.model?.rules?.length) {
-    getAssetData();
-}
-
-watch(()=> criteria.value,()=>{
-    criteriaRef.value = criteria.value;
-    if (props.model?.rules?.length) {
-        getAssetData();
-    }
-},{deep:true})
-
+watch(
+    () => criteria.value,
+    (nextCriteria) => {
+        criteriaRef.value = nextCriteria;
+    },
+    { deep: true }
+);
 </script>

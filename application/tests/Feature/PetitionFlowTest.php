@@ -39,6 +39,57 @@ test('browse petition data only returns visible published petitions', function (
     expect($response->json('petitions.0.hash'))->toBe($visiblePetition->hash);
 });
 
+test('save rule rejects invalid policy id format', function () {
+    $user = User::factory()->create();
+    $petition = makePublishedPetition($user, true);
+
+    $response = $this->actingAs($user)->post(route('petitions.rules.saveRule', [
+        'petition' => $petition->hash,
+    ]), [
+        'type' => 'nft',
+        'title' => 'Dev Cards',
+        'policy' => 'invalid-policy-id',
+    ]);
+
+    $response->assertSessionHasErrors('policy');
+    $this->assertDatabaseMissing('rules', [
+        'title' => 'Dev Cards',
+    ]);
+});
+
+test('save rule stores normalized policy id for petition gate', function () {
+    $user = User::factory()->create();
+    $petition = makePublishedPetition($user, true);
+    $policy = strtoupper('7d878696b149b529807aa01b8e20785e0a0d470c32c13f53f08a55e3');
+
+    $response = $this->actingAs($user)->post(route('petitions.rules.saveRule', [
+        'petition' => $petition->hash,
+    ]), [
+        'type' => 'nft',
+        'title' => 'Dev Cards',
+        'policy' => $policy,
+    ]);
+
+    $response->assertSuccessful();
+    $this->assertDatabaseHas('rules', [
+        'type' => 'nft',
+        'title' => 'Dev Cards',
+        'value2' => strtolower($policy),
+    ]);
+
+    $ruleId = Rule::query()
+        ->where('type', 'nft')
+        ->where('title', 'Dev Cards')
+        ->value('id');
+
+    expect($ruleId)->not->toBeNull();
+
+    $this->assertDatabaseHas('petition_rule', [
+        'petition_id' => $petition->id,
+        'rule_id' => $ruleId,
+    ]);
+});
+
 test('gated petition signing is blocked when cached asset check fails', function () {
     $user = User::factory()->create([
         'voter_id' => 'stake_test1failedassetcheck00000000000000000000000000000000000',

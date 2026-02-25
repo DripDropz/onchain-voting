@@ -210,17 +210,23 @@ class PetitionController extends Controller
 
     public function saveRule(Request $request, Petition $petition)
     {
+        $normalizedPolicy = strtolower(trim((string) $request->input('policy', '')));
+
+        $request->merge([
+            'policy' => $normalizedPolicy,
+        ]);
+
         $request->validate([
-            'type' => 'required',
-            'title' => 'required',
-            'policy' => 'required',
+            'type' => ['required', ValidationRule::in(['ft', 'nft'])],
+            'title' => ['required', 'string', 'max:255'],
+            'policy' => ['required', 'string', 'size:56', 'regex:/^[0-9a-f]{56}$/'],
         ]);
 
         $rule = new Rule;
         $rule->type = $request->type;
         $rule->title = $request->title;
         $rule->value1 = RuleV1Enum::POLICY->value;
-        $rule->value2 = $request->policy;
+        $rule->value2 = $normalizedPolicy;
         $rule->operator = RuleOperatorEnum::EQUALS->value;
         $rule->save();
 
@@ -554,7 +560,7 @@ class PetitionController extends Controller
                 $ruleTitle = $rule->title ?: "{$assetType} gate";
 
                 throw ValidationException::withMessages([
-                    'signature' => "You do not meet the {$ruleTitle} requirement for this petition.",
+                    'signature' => "Your wallet must hold at least one asset under policy {$policy} to satisfy the {$ruleTitle} requirement.",
                 ]);
             }
         }

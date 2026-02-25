@@ -30,7 +30,7 @@ const props = withDefaults(defineProps<{
 let petitionStore = usePetitionStore();
 let { publicPetition, loadingMore } = storeToRefs(petitionStore);
 
-if (!publicPetition.value[0]?.[props.context]?.petitions.length) {
+if (!loadingMore.value && !publicPetition.value[0]?.[props.context]?.petitions.length) {
     loadingMore.value = true;
     petitionStore.loadPublicPetitions(props.context, props.params).then()
 }

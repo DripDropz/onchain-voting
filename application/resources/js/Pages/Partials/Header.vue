@@ -50,6 +50,12 @@
                 <p>Logout</p>
                 <ArrowRightOnRectangleIcon class="w-5 h-5"></ArrowRightOnRectangleIcon>
                 </Link>
+                <Link v-if="hasAdminSession"
+                    :href="route('admin.dashboard')"
+                    class="flex items-center h-full gap-2 px-3 py-2 mx-1 font-medium text-white rounded-lg bg-rose-600 hover:bg-rose-500">
+                <p>Admin</p>
+                <ArrowTopRightOnSquareIcon class="w-5 h-5"></ArrowTopRightOnSquareIcon>
+                </Link>
             </div>
             <div class="lg:hidden">
                 <div class="relative flex flex-col justify-between">
@@ -68,6 +74,12 @@
                                     class="flex justify-start p-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{{
                                         option.name }}</a>
                             </li>
+                            <li v-if="hasAdminSession">
+                                <Link :href="route('admin.dashboard')"
+                                    class="flex justify-start p-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    Admin
+                                </Link>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -80,7 +92,7 @@
 import { Link, router } from '@inertiajs/vue3';
 import ConnectWallet from "@/cardano/Components/ConnectWallet.vue";
 import DarkModeButton from '@/shared/components/DarkModeButton.vue';
-import { ArrowRightOnRectangleIcon, Bars3Icon } from '@heroicons/vue/24/outline';
+import { ArrowRightOnRectangleIcon, ArrowTopRightOnSquareIcon, Bars3Icon } from '@heroicons/vue/24/outline';
 import { usePage } from "@inertiajs/vue3";
 import { useWalletStore } from '@/cardano/stores/wallet-store';
 import { useConfigStore } from '@/stores/config-store';
@@ -104,6 +116,7 @@ withDefaults(defineProps<{
 });
 
 const currentUri =  usePage().props.ziggy.uri;
+const hasAdminSession = Boolean(usePage().props.adminContext?.hasAdminSession);
 let showMenu = ref(false);
 const menuOptions = [
     { name: 'Ballots', href: route('ballots.index'), uri: '/ballots' ,visible:usePage().props['feature-flags'].ballots},

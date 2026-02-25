@@ -100,7 +100,7 @@
                                     <div class="flex justify-start w-full pb-3">
                                         <p class="text-xl leading-tight xl:text-2xl "> Petition Criteria</p>
                                     </div>
-                                    <Criteria :model="petition" />
+                                    <Criteria :model="petition" mode="readonly" />
                                 </div>
                                 <div>
                                     <TallyCriteria :model="petition" @update="() => router.reload()" />

@@ -48,7 +48,7 @@
                 <p class="text-sm text-gray-500 dark:text-gray-400">
                     Configure NFT/FT policy gating now so signers must hold the required asset before they can participate.
                 </p>
-                <Criteria :model="petition" :return-route="'petitions.create.stepThree'" />
+                <Criteria :model="petition" mode="editable" :return-route="'petitions.create.stepThree'" />
             </div>
 
             <div class="flex flex-row justify-end gap-3 pb-8">

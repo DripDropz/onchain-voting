@@ -120,7 +120,7 @@
                         class="rounded-xl border border-gray-800 bg-gray-900 p-5 space-y-3"
                     >
                         <p class="text-xs font-semibold uppercase tracking-widest text-gray-500">Participation Criteria</p>
-                        <Criteria :model="petition$" :readonly="true" />
+                        <Criteria :model="petition$" mode="readonly" />
                     </div>
 
                     <!-- Sign form card -->
