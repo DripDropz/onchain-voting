@@ -195,3 +195,58 @@ test('petition data returns existing signature by stake address context', functi
     $response->assertOk();
     expect($response->json('signature.hash'))->toBe($signature->hash);
 });
+
+test('wallet signing does not reuse unrelated null-email signatures and preserves stake address redirect context', function () {
+    $owner = User::factory()->create();
+    $walletAUser = User::factory()->create();
+    $walletBUser = User::factory()->create();
+    $petition = makePublishedPetition($owner, true);
+
+    $walletAStakeAddress = 'stake_test1walletaexisting0000000000000000000000000000000000';
+    $walletBStakeAddress = 'stake_test1walletbnew0000000000000000000000000000000000000';
+
+    $existingSignature = new Signature;
+    $existingSignature->user_id = $walletAUser->id;
+    $existingSignature->wallet_signature = 'wallet_signature_for_wallet_a';
+    $existingSignature->stake_address = $walletAStakeAddress;
+    $existingSignature->save();
+
+    $petition->signatures()->attach($existingSignature->id, [
+        'model_type' => Petition::class,
+    ]);
+
+    $response = $this->actingAs($walletBUser)->post(route('petitions.signatures.store', [
+        'petition' => $petition->hash,
+    ]), [
+        'signature' => 'wallet_signature_for_wallet_b',
+        'stakeAddress' => $walletBStakeAddress,
+    ]);
+
+    $response->assertRedirect(route('petitions.view', [
+        'petition' => $petition->hash,
+        'stakeAddress' => $walletBStakeAddress,
+    ]));
+
+    $this->assertDatabaseCount('signatures', 2);
+    $this->assertDatabaseHas('signatures', [
+        'user_id' => $walletBUser->id,
+        'stake_address' => $walletBStakeAddress,
+    ]);
+
+    $newSignatureId = Signature::query()
+        ->where('stake_address', $walletBStakeAddress)
+        ->value('id');
+
+    expect($newSignatureId)->not->toBeNull();
+
+    $this->assertDatabaseHas('model_signatures', [
+        'signature_id' => $existingSignature->id,
+        'model_type' => Petition::class,
+        'model_id' => $petition->id,
+    ]);
+    $this->assertDatabaseHas('model_signatures', [
+        'signature_id' => $newSignatureId,
+        'model_type' => Petition::class,
+        'model_id' => $petition->id,
+    ]);
+});

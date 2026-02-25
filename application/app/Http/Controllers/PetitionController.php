@@ -271,9 +271,15 @@ class PetitionController extends Controller
 
         $this->ensureWalletMeetsPetitionAssetCriteria($petition, $request);
 
-        $signature = Signature::query()
-            ->where('email_signature', $request->email)
-            ->orWhere('stake_address', $request->stakeAddress)->first();
+        $signatureQuery = Signature::query();
+
+        if ($request->filled('email')) {
+            $signatureQuery->where('email_signature', $request->email);
+        } elseif ($request->filled('stakeAddress')) {
+            $signatureQuery->where('stake_address', $request->stakeAddress);
+        }
+
+        $signature = $signatureQuery->first();
 
         if (! $signature instanceof Signature) {
             $signature = new Signature;
@@ -308,7 +314,15 @@ class PetitionController extends Controller
         PetitionSigned::dispatch($petition);
         Cache::forget('petition_platform_stats');
 
-        return to_route('petitions.view', $petition->hash);
+        $redirectParams = [
+            'petition' => $petition->hash,
+        ];
+
+        if ($request->filled('stakeAddress')) {
+            $redirectParams['stakeAddress'] = $request->stakeAddress;
+        }
+
+        return to_route('petitions.view', $redirectParams);
     }
 
     public function create(Petition $petition)

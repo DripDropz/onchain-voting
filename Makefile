@@ -27,8 +27,12 @@ define show_urls
 	@echo "  - MinIO Console:   http://localhost:$(MINIO_UI_PORT)"
 	@echo "  - MinIO (S3):      http://localhost:$(MINIO_PORT)"
 	@echo ""
-	@echo "To stop services:  make down"
-	@echo "To view logs:      make logs"
+	@echo "Admin Credentials:"
+	@echo "  Email:    admin@chainvote.local"
+	@echo "  Password: ouroboros"
+	@echo ""
+	@echo "To stop services: make down"
+	@echo "To view logs:     make logs"
 endef
 
 .PHONY: help
