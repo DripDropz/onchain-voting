@@ -1,6 +1,6 @@
 <template>
     <VoterLayout page="Create a petition" :crumbs="crumbs">
-        <section class="w-full max-w-2xl mx-auto pt-12 px-4 space-y-6">
+        <section class="w-full max-w-4xl mx-auto pt-12 px-4 space-y-6">
             <WorkflowProgress :current-step="3" />
 
             <div class="space-y-2 dark:text-white">
@@ -43,6 +43,14 @@
                 If your petition is approved but you want to make changes, you can revert it back to draft from your petition management page.
             </p>
 
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 space-y-3">
+                <h2 class="text-lg font-bold dark:text-white">Optional: Gated Signing Criteria</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Configure NFT/FT policy gating now so signers must hold the required asset before they can participate.
+                </p>
+                <Criteria :model="petition" :return-route="'petitions.create.stepThree'" />
+            </div>
+
             <div class="flex flex-row justify-end gap-3 pb-8">
                 <button
                     @click.prevent="saveDraft"
@@ -69,6 +77,7 @@ import PetitionData = App.DataTransferObjects.PetitionData;
 import AlertService from "@/shared/Services/alert-service";
 import { router, useForm } from "@inertiajs/vue3";
 import WorkflowProgress from "../Partials/WorkflowProgress.vue";
+import Criteria from "@/shared/components/Criteria.vue";
 
 const props = defineProps<{
     petition: PetitionData;

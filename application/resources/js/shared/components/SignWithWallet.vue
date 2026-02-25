@@ -45,7 +45,7 @@ let submitSignature = async () => {
     form.post(route('petitions.signatures.store', { petition: props.petition.hash }),
         {
             onSuccess: () => {
-                petitionSignatureStore.reloadPetitionData(props.petition.hash).then();
+                petitionSignatureStore.reloadPetitionData(props.petition.hash, walletData.value.stakeAddress).then();
                 AlertService.show(['Petition Signed '], 'success');
             },
             onError: (errors) => {

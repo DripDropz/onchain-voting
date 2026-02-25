@@ -166,6 +166,22 @@ export const usePetitionStore = defineStore('petition-store', () => {
         return publicPetition?.value[0][currentContext.value]?.nextCursor && publicPetition?.value[0][currentContext.value]?.hasMorePages;
     })
 
+    function resetContext(context: string) {
+        if (!publicPetition.value[0]?.[context]) {
+            return;
+        }
+
+        publicPetition.value[0][context].petitions = [];
+        publicPetition.value[0][context].nextCursor = null;
+        publicPetition.value[0][context].hasMorePages = null;
+    }
+
+    async function reloadContext(context = 'browse', params = null) {
+        resetContext(context);
+        loadingMore.value = true;
+        await loadPublicPetitions(context, params);
+    }
+
     function setContext(context: any) {
         currentContext.value = context;
     }
@@ -209,5 +225,7 @@ export const usePetitionStore = defineStore('petition-store', () => {
         setContext,
         singlePublicPetition,
         removePetition,
+        resetContext,
+        reloadContext,
     }
 });

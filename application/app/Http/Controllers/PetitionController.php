@@ -8,6 +8,8 @@ use App\Enums\ModelStatusEnum;
 use App\Enums\RuleOperatorEnum;
 use App\Enums\RuleV1Enum;
 use App\Events\PetitionSigned;
+use App\Http\Integrations\Blockfrost\Requests\BlockfrostRequest;
+use App\Models\ModelSignature;
 use App\Models\Petition;
 use App\Models\Rule;
 use App\Models\Signature;
@@ -16,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule as ValidationRule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -122,7 +125,7 @@ class PetitionController extends Controller
         return Inertia::render('Petition/View', [
             'petition' => PetitionData::from($petition->load(['ballot', 'user', 'rules'])),
             'crumbs' => $crumbs,
-            'signature' => $petition->signatures()->where('user_id', Auth::user()?->id)->first(),
+            'signature' => $this->resolvePetitionSignature($petition, $request->query('stakeAddress')),
             'actions' => $actions,
             'recentSignatures' => $recentSignatures,
         ]);
@@ -195,10 +198,12 @@ class PetitionController extends Controller
 
     public function makeRule(Petition $petition, Request $request)
     {
+        $baseRoute = $this->resolvePetitionRuleBaseRoute($request);
+
         return Inertia::modal('Petition/Partials/MakeRule', [
             'petition' => PetitionData::from($petition->load(['categories', 'user', 'rules'])),
             'type' => $request->type,
-        ])->baseRoute('petitions.manage', [
+        ])->baseRoute($baseRoute, [
             'petition' => $petition->hash,
         ]);
     }
@@ -222,12 +227,14 @@ class PetitionController extends Controller
         $petition->rules()->attach($rule->id);
     }
 
-    public function deleteRule(Petition $petition, Rule $rule)
+    public function deleteRule(Petition $petition, Rule $rule, Request $request)
     {
+        $baseRoute = $this->resolvePetitionRuleBaseRoute($request);
+
         return Inertia::modal('Petition/Partials/DeleteRule', [
             'petition' => PetitionData::from($petition->load(['ballot', 'user'])),
             'rule' => RuleData::from($rule),
-        ])->baseRoute('petitions.manage', [
+        ])->baseRoute($baseRoute, [
             'petition' => $petition->hash,
         ]);
     }
@@ -256,6 +263,8 @@ class PetitionController extends Controller
             'stakeAddress' => ValidationRule::requiredIf((bool) $request->signature && ! $request->email),
         ]);
 
+        $this->ensureWalletMeetsPetitionAssetCriteria($petition, $request);
+
         $signature = Signature::query()
             ->where('email_signature', $request->email)
             ->orWhere('stake_address', $request->stakeAddress)->first();
@@ -274,11 +283,24 @@ class PetitionController extends Controller
             $signature->save();
         }
 
-        $petition?->signatures()->syncWithPivotValues($signature->id, [
-            'model_type' => Petition::class,
-        ], false);
+        $petitionId = $petition->getKey();
+
+        $hasSignatureLink = ModelSignature::query()
+            ->where('signature_id', $signature->id)
+            ->where('model_type', Petition::class)
+            ->where('model_id', $petitionId)
+            ->exists();
+
+        if (! $hasSignatureLink) {
+            ModelSignature::query()->insert([
+                'signature_id' => $signature->id,
+                'model_type' => Petition::class,
+                'model_id' => $petitionId,
+            ]);
+        }
 
         PetitionSigned::dispatch($petition);
+        Cache::forget('petition_platform_stats');
 
         return to_route('petitions.view', $petition->hash);
     }
@@ -315,7 +337,7 @@ class PetitionController extends Controller
     public function stepThree(Petition $petition)
     {
         return Inertia::render('Petition/Workflows/StepThree', [
-            'petition' => $petition,
+            'petition' => PetitionData::from($petition->load(['rules'])),
             'crumbs' => [
                 ['label' => 'Petitions', 'link' => route('petitions.index')],
                 ['label' => $petition->title, 'link' => route('petitions.view', ['petition' => $petition])],
@@ -480,7 +502,120 @@ class PetitionController extends Controller
 
     public function petitionData(Request $request, Petition $petition)
     {
-        return PetitionData::from($petition->load(['ballot', 'user', 'rules']));
+        $petitionData = PetitionData::from($petition->load(['ballot', 'user', 'rules']));
+        $stakeAddress = $request->query('stakeAddress');
+
+        if ($stakeAddress) {
+            return [
+                'petition' => $petitionData,
+                'signature' => $this->resolvePetitionSignature($petition, $stakeAddress),
+            ];
+        }
+
+        return $petitionData;
+    }
+
+    private function ensureWalletMeetsPetitionAssetCriteria(Petition $petition, Request $request): void
+    {
+        $assetRules = $petition->rules()
+            ->whereIn('type', ['ft', 'nft'])
+            ->whereNotNull('value2')
+            ->get();
+        $petitionId = $petition->getKey();
+
+        if ($assetRules->isEmpty()) {
+            return;
+        }
+
+        $stakeAddress = $request->string('stakeAddress')->toString();
+
+        if (empty($stakeAddress)) {
+            throw ValidationException::withMessages([
+                'signature' => 'A connected wallet is required to sign this gated petition.',
+            ]);
+        }
+
+        foreach ($assetRules as $rule) {
+            $policy = (string) $rule->value2;
+            $cacheKey = sprintf(
+                'petition_asset_gate:%d:%d:%s:%s',
+                $petitionId,
+                $rule->id,
+                md5($stakeAddress),
+                $policy
+            );
+
+            $hasPolicyAsset = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($stakeAddress, $policy) {
+                return $this->walletHasPolicyAsset($stakeAddress, $policy);
+            });
+
+            if (! $hasPolicyAsset) {
+                $assetType = strtoupper((string) $rule->type);
+                $ruleTitle = $rule->title ?: "{$assetType} gate";
+
+                throw ValidationException::withMessages([
+                    'signature' => "You do not meet the {$ruleTitle} requirement for this petition.",
+                ]);
+            }
+        }
+    }
+
+    private function walletHasPolicyAsset(string $stakeAddress, string $policy): bool
+    {
+        try {
+            $frost = app(BlockfrostRequest::class);
+            $frost->setEndPoint("/accounts/{$stakeAddress}/addresses/assets/{$policy}");
+            $response = $frost->send();
+
+            if (! $response->successful()) {
+                return false;
+            }
+
+            $assets = $response->json();
+
+            return is_array($assets) && count($assets) > 0;
+        } catch (\Throwable $exception) {
+            return false;
+        }
+    }
+
+    private function resolvePetitionSignature(Petition $petition, ?string $stakeAddress = null): ?Signature
+    {
+        $signatures = $petition->signatures();
+        $user = Auth::user();
+        $resolvedStakeAddress = $stakeAddress ?: $user?->voter_id;
+
+        if (! $user?->id && ! $resolvedStakeAddress) {
+            return null;
+        }
+
+        return $signatures
+            ->where(function ($query) use ($user, $resolvedStakeAddress) {
+                if ($user?->id) {
+                    $query->orWhere('user_id', $user->id);
+                }
+
+                if ($resolvedStakeAddress) {
+                    $query->orWhere('stake_address', $resolvedStakeAddress);
+                }
+            })
+            ->latest()
+            ->first();
+    }
+
+    private function resolvePetitionRuleBaseRoute(Request $request): string
+    {
+        $requestedRoute = (string) $request->query('returnRoute', 'petitions.manage');
+        $allowedRoutes = [
+            'petitions.manage',
+            'petitions.create.stepThree',
+        ];
+
+        if (! in_array($requestedRoute, $allowedRoutes, true)) {
+            return 'petitions.manage';
+        }
+
+        return $requestedRoute;
     }
 
     private function platformStats(): array

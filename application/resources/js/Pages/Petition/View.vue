@@ -59,6 +59,7 @@ const user = computed(() => page.props.auth?.user);
 
 let petitionSignatureStore = usePetitionSignatureStore();
 petitionSignatureStore.setPetition(props.petition);
+petitionSignatureStore.setSignature(props.signature ?? null);
 let { petition$ } = storeToRefs(petitionSignatureStore);
 
 const isOwner = computed(() => !!user.value && petition$.value?.user_id === user.value.id);

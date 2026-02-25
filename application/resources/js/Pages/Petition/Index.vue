@@ -50,68 +50,7 @@
 
             <!-- Tab content -->
             <div class="h-full inner-container">
-                <PetitionBrowser v-if="currentTab === 'browse' && props.platformStats.publishedCount > 0" :context="'browse'" :params="{}" />
-
-                <!-- Empty browse state: no visible petitions yet -->
-                <div v-else-if="currentTab === 'browse'" class="py-10">
-                    <!-- Petition lifecycle strip -->
-                    <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden mb-6">
-                        <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800">
-                            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                How petitions work
-                            </h3>
-                        </div>
-                        <div class="flex flex-col sm:flex-row items-stretch divide-y sm:divide-y-0 sm:divide-x divide-gray-100 dark:divide-gray-800">
-                            <div
-                                v-for="(step, index) in lifecycleSteps"
-                                :key="step.label"
-                                class="flex flex-1 flex-row sm:flex-col items-center gap-3 sm:gap-2 px-5 py-4 sm:py-5 sm:text-center"
-                            >
-                                <div class="shrink-0 flex items-center justify-center w-9 h-9 rounded-full" :class="step.bgClass">
-                                    <component :is="step.icon" class="w-4.5 h-4.5" :class="step.iconClass" />
-                                </div>
-                                <div>
-                                    <div class="flex items-center gap-1.5 sm:justify-center">
-                                        <span class="text-xs font-semibold text-gray-400 dark:text-gray-500">{{ index + 1 }}</span>
-                                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{ step.label }}</span>
-                                    </div>
-                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{{ step.description }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Activity note + CTA -->
-                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 px-6 py-5">
-                        <div class="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
-                            <ClockIcon class="w-5 h-5 shrink-0 text-sky-400" />
-                            <span v-if="props.platformStats.reviewingCount > 0 || props.platformStats.collectingCount > 0">
-                                <strong class="text-gray-700 dark:text-gray-200">{{ props.platformStats.reviewingCount + props.platformStats.collectingCount }}</strong>
-                                {{ (props.platformStats.reviewingCount + props.platformStats.collectingCount) === 1 ? 'petition is' : 'petitions are' }}
-                                active — some are collecting signatures to become visible. Check back soon.
-                            </span>
-                            <span v-else>
-                                No active petitions yet. Be the first to start one and make your voice heard.
-                            </span>
-                        </div>
-                        <a
-                            v-if="user"
-                            :href="route('petitions.create')"
-                            class="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold transition-colors"
-                        >
-                            <DocumentPlusIcon class="w-4 h-4" />
-                            Create a Petition
-                        </a>
-                        <button
-                            v-else
-                            @click="showModal = true"
-                            class="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold transition-colors"
-                        >
-                            <DocumentPlusIcon class="w-4 h-4" />
-                            Create a Petition
-                        </button>
-                    </div>
-                </div>
+                <PetitionBrowser v-if="currentTab === 'browse'" :context="'browse'" :params="{}" />
 
                 <template v-else-if="!!user">
                     <template v-for="option in menuOptions" :key="option.value">
@@ -192,6 +131,7 @@ import Modal from '@/Components/Modal.vue';
 import PetitionConfirmation from './Partials/PetitionConfirmation.vue';
 import LoginToView from "@/shared/components/LoginToView.vue";
 import { useConfigStore } from '@/stores/config-store';
+import { usePetitionStore } from '@/stores/petition-store';
 import { storeToRefs } from 'pinia';
 import PetitionBrowser from './Partials/PetitionBrowser.vue';
 import {
@@ -227,6 +167,7 @@ const props = withDefaults(
 
 let configStore = useConfigStore();
 let { showModal } = storeToRefs(configStore);
+const petitionStore = usePetitionStore();
 
 const createPetitionAction = computed(() =>
     props.user
@@ -237,6 +178,10 @@ const createPetitionAction = computed(() =>
 const currentTab = ref('browse');
 
 const changeTab = (tabName: string) => {
+    if (tabName === 'browse' && currentTab.value !== 'browse') {
+        petitionStore.reloadContext('browse', {}).then();
+    }
+
     currentTab.value = tabName;
 };
 

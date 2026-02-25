@@ -6,6 +6,11 @@ LUCID_PORT    := 3000
 MINIO_PORT    := 9000
 MINIO_UI_PORT := 9001
 
+# Keep a stable compose project name so named volumes
+# do not shift when commands are run from different contexts.
+COMPOSE_PROJECT_NAME ?= onchain-voting
+export COMPOSE_PROJECT_NAME
+
 _ENV_VITE_PORT := $(shell grep -s '^VITE_PORT=' application/.env 2>/dev/null | cut -d'=' -f2)
 VITE_PORT      := $(if $(_ENV_VITE_PORT),$(_ENV_VITE_PORT),5173)
 
@@ -111,8 +116,10 @@ migrate:
 
 .PHONY: watch
 watch:
-	@make down
+	@cp -n application/.env.example application/.env 2>/dev/null || true
+	@cp -n serverless-lucid/.env.example serverless-lucid/.env 2>/dev/null || true
 	@docker compose up -d
+	@docker exec chainvote-app bash -c "test -d /var/www/html/node_modules || (cd /var/www/html && yarn install)"
 	$(show_urls)
 	@docker exec chainvote-app bash -c "cd /var/www/html && yarn dev"
 

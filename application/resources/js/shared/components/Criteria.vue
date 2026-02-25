@@ -12,8 +12,8 @@
                 <span class="w-24 h-3 bg-slate-300 dark:bg-gray-700 animate-pulse" v-if=" !!criterion?.hash && !criterion?.assetName"></span>
             </div>
             <div>
-                <label class="relative inline-flex items-center " :for="`${index}`" :class="[(model?.status == 'published' || model?.status == 'closed' || model?.ballot)?'cursor-not-allowed':'cursor-pointer' ]">
-                    <input type="checkbox" :id="`${index}`" :value="criterion.type" class="sr-only peer" :disabled="model?.status == 'published' || model?.status == 'closed' || model?.ballot"
+                <label class="relative inline-flex items-center " :for="`${index}`" :class="[(readonly || model?.status == 'published' || model?.status == 'closed' || model?.ballot)?'cursor-not-allowed':'cursor-pointer' ]">
+                    <input type="checkbox" :id="`${index}`" :value="criterion.type" class="sr-only peer" :disabled="readonly || model?.status == 'published' || model?.status == 'closed' || model?.ballot"
                         @change="(e) => makeRule(e.target.checked, criterion.type, criterion.hash)"
                         :checked="!!criterion.hash">
                     <div
@@ -36,7 +36,11 @@ import axios from 'axios';
 
 const props = withDefaults(defineProps<{
     model?: PetitionData|PollData;
+    readonly?: boolean;
+    returnRoute?: string;
 }>(), {
+    readonly: false,
+    returnRoute: 'petitions.manage',
 });
 
 let criteria = computed(()=> [
@@ -57,11 +61,15 @@ let criteria = computed(()=> [
 let criteriaRef = ref(criteria.value);
 
 let makeRule = (toggleOn, type, hash) => {
-    const data = { type }
+    if (props.readonly) {
+        return;
+    }
+
+    const data = { type, returnRoute: props.returnRoute }
     if (toggleOn && props.model && !hash) {
         router.get(route('petitions.rules.create', { petition: props.model.hash }), data)
     } else if (!toggleOn && props.model && hash) {
-        router.get(route('petitions.rules.removeRule', { petition: props.model.hash, rule: hash }))
+        router.get(route('petitions.rules.removeRule', { petition: props.model.hash, rule: hash, returnRoute: props.returnRoute }))
     }
 }
 

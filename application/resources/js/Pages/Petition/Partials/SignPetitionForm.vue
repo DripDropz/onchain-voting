@@ -1,7 +1,7 @@
 <template>
     <div class="space-y-4">
         <p class="text-sm font-semibold text-white">
-            {{ signature ? 'Your Signature' : 'Sign this petition' }}
+            {{ signatureState ? 'Your Signature' : 'Sign this petition' }}
         </p>
 
         <!-- Not logged in -->
@@ -16,7 +16,7 @@
         </div>
 
         <!-- Logged in, not yet signed -->
-        <div v-else-if="!signature" class="rounded-xl bg-sky-950/40 border border-sky-700/30 p-4 space-y-3">
+        <div v-else-if="!signatureState" class="rounded-xl bg-sky-950/40 border border-sky-700/30 p-4 space-y-3">
             <div class="space-y-0.5">
                 <p class="text-sm font-semibold text-sky-300">Sign with your Cardano Wallet</p>
                 <p class="text-xs text-gray-400 leading-relaxed">
@@ -28,7 +28,7 @@
 
         <!-- Already signed -->
         <div v-else>
-            <SignatureCard :signature="signature" />
+            <SignatureCard :signature="signatureState" />
         </div>
     </div>
 </template>
@@ -41,6 +41,8 @@ import SignWithWallet from '@/shared/components/SignWithWallet.vue';
 import SignatureCard from '@/Pages/Signature/Partials/SignatureCard.vue';
 import { usePetitionSignatureStore } from '@/Pages/Petition/stores/petition-signature-store';
 import { storeToRefs } from 'pinia';
+import { computed, watch } from 'vue';
+import { useWalletStore } from '@/cardano/stores/wallet-store';
 
 defineProps<{
     user?: {}
@@ -48,5 +50,20 @@ defineProps<{
 }>();
 
 const petitionSignatureStore = usePetitionSignatureStore();
-const { petition$ } = storeToRefs(petitionSignatureStore);
+const { petition$, signature$ } = storeToRefs(petitionSignatureStore);
+const walletStore = useWalletStore();
+const { walletData } = storeToRefs(walletStore);
+
+const signatureState = computed(() => signature$.value ?? null);
+
+watch(
+    () => walletData.value?.stakeAddress,
+    (stakeAddress) => {
+        if (!stakeAddress || !petition$.value?.hash) {
+            return;
+        }
+
+        petitionSignatureStore.reloadPetitionData(petition$.value.hash, stakeAddress).then();
+    }
+);
 </script>

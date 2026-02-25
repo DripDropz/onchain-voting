@@ -2,19 +2,38 @@ import {defineStore} from 'pinia';
 import {computed, ref} from 'vue';
 import PetitionData = App.DataTransferObjects.PetitionData;
 import RuleData = App.DataTransferObjects.RuleData;
+import SignatureData = App.DataTransferObjects.SignatureData;
 import axios from 'axios';
 
 export const usePetitionSignatureStore = defineStore('petition-signature', () => {
     let petition = ref<PetitionData>(null);
+    let signature = ref<SignatureData | null>(null);
 
     function setPetition(petitionData: PetitionData) {
         petition.value = petitionData;
     }
 
-    async function reloadPetitionData(petitionHash:string) {
-        const res = await axios.get(route('petitions.petitionData', { petition: petitionHash }));
+    function setSignature(signatureData: SignatureData | null) {
+        signature.value = signatureData;
+    }
+
+    async function reloadPetitionData(petitionHash:string, stakeAddress?: string) {
+        const query: Record<string, string> = {};
+        if (stakeAddress) {
+            query.stakeAddress = stakeAddress;
+        }
+
+        const res = await axios.get(route('petitions.petitionData', { petition: petitionHash }), {
+            params: query,
+        });
 
         if (res.status == 200) {
+            if (res.data?.petition) {
+                petition.value = res.data.petition;
+                signature.value = res.data.signature ?? null;
+                return;
+            }
+
             petition.value = res.data;
         }
     }
@@ -67,6 +86,7 @@ export const usePetitionSignatureStore = defineStore('petition-signature', () =>
 
     return {
         petition$: petition,
+        signature$: signature,
         visible$: visible,
         featurePetition$: featurePetition,
         ballotEligible$: ballotEligible,
@@ -77,6 +97,7 @@ export const usePetitionSignatureStore = defineStore('petition-signature', () =>
         currentGoalPercetage$: currentGoalPercetage,
         nextGoal$: nextGoal,
         setPetition,
+        setSignature,
         reloadPetitionData,
     }
 });

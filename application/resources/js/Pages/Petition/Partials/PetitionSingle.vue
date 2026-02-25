@@ -115,6 +115,14 @@
                         </div>
                     </div>
 
+                    <div
+                        v-if="hasParticipationCriteria"
+                        class="rounded-xl border border-gray-800 bg-gray-900 p-5 space-y-3"
+                    >
+                        <p class="text-xs font-semibold uppercase tracking-widest text-gray-500">Participation Criteria</p>
+                        <Criteria :model="petition$" :readonly="true" />
+                    </div>
+
                     <!-- Sign form card -->
                     <div class="rounded-xl border border-gray-800 bg-gray-900 p-5">
                         <!-- Preview overlay -->
@@ -202,6 +210,7 @@ import SignatureProgress from './SignatureProgress.vue';
 import PetitionGoals from './PetitionGoals.vue';
 import SignPetitionForm from './SignPetitionForm.vue';
 import PetitionShareWidget from './PetitionShareWidget.vue';
+import Criteria from '@/shared/components/Criteria.vue';
 
 const props = defineProps<{
     signature?: SignatureData;
@@ -252,6 +261,10 @@ const hasGoals = computed(() =>
     visible$.value?.value2 != null ||
     featurePetition$.value?.value2 != null ||
     ballotEligible$.value?.value2 != null
+);
+
+const hasParticipationCriteria = computed(() =>
+    !!petition$.value?.rules?.find((rule) => rule.type === 'ft' || rule.type === 'nft')
 );
 
 const liveStatusBadge = computed(() => {
