@@ -146,16 +146,66 @@ Route::prefix('/polls')->as('polls.')->middleware('featureEnabled:poll')->group(
         ->name('index');
     Route::get('/pollsData/{params?}', [PollController::class, 'pollsData'])->name('pollsData');
 
-    Route::get('/pollData/{poll}', [PollController::class, 'pollData'])->name('pollData');
+    Route::get('/{poll}/data', [PollController::class, 'pollData'])->name('pollData');
 
     Route::get('/userPollsData/{params?}', [PollController::class, 'userPollsData'])->name('userPollsData');
 
-    Route::get('/create', [PollController::class, 'create'])
-        ->name('create');
-    Route::post('/create', [PollController::class, 'store'])
+    Route::prefix('/workflow')->middleware('auth')->group(function () {
+        Route::get('/create/{poll?}', [PollController::class, 'create'])->name('create');
+        Route::get('/create/{poll}/step/1', [PollController::class, 'create'])->name('create.stepOne');
+        Route::get('/create/{poll}/step/2', [PollController::class, 'stepTwo'])->name('create.stepTwo');
+        Route::get('/create/{poll}/step/3', [PollController::class, 'stepThree'])->name('create.stepThree');
+    });
+
+    Route::post('/store', [PollController::class, 'store'])
+        ->middleware('auth')
         ->name('store');
 
-    Route::post('/{poll}/store/question-response', [PollController::class, 'storeQuestionResponse'])->name('storeQuestionResponse');
+    Route::post('/{poll}/update', [PollController::class, 'update'])
+        ->middleware('auth')
+        ->name('update');
+
+    Route::get('/{poll}/manage', [PollController::class, 'manage'])
+        ->middleware('auth')
+        ->name('manage');
+
+    Route::get('/{poll}/edit', [PollController::class, 'edit'])
+        ->middleware('auth')
+        ->name('edit');
+
+    Route::prefix('{poll}/rules')->as('rules.')->middleware('auth')->group(function () {
+        Route::get('/create', [PollController::class, 'makeRule'])
+            ->name('create');
+        Route::post('/create', [PollController::class, 'saveRule'])
+            ->name('saveRule');
+        Route::get('{rule}/delete', [PollController::class, 'deleteRule'])
+            ->name('removeRule');
+        Route::post('{rule}/delete', [PollController::class, 'removeRule'])
+            ->name('delete');
+    });
+
+    Route::patch('/{poll}/submit', [PollController::class, 'submitForReview'])
+        ->middleware('auth')
+        ->name('submit');
+
+    Route::put('/{poll}/publish', [PollController::class, 'publish'])
+        ->middleware('auth')
+        ->name('publish');
+
+    Route::patch('/{poll}/close', [PollController::class, 'close'])
+        ->middleware('auth')
+        ->name('close');
+
+    Route::delete('/{poll}/destroy', [PollController::class, 'destroy'])
+        ->middleware('auth')
+        ->name('destroy');
+
+    Route::post('/{poll}/store/question-response', [PollController::class, 'storeQuestionResponse'])
+        ->middleware('auth')
+        ->name('storeQuestionResponse');
+
+    Route::get('/{poll}', [PollController::class, 'view'])
+        ->name('view');
 });
 
 require __DIR__.'/admin.php';

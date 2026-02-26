@@ -8,10 +8,22 @@
             <div
                 class="p-4 border border-t- border-l-0 border-r-0 border-b-0  border-black dark:border-slate-700 flex flex-row items-center justify-between">
                 <h2 class="text-sm font-bold">{{ poll.hash }}</h2>
-                <button 
-                   v-if="poll.status !== 'approved'" 
-                   @click="approve()"
-                   class="bg-sky-500 text-white py-1 px-4 text-sm rounded-md">Approve</button>
+                <div class="flex items-center gap-2">
+                    <button
+                        v-if="poll.status === 'pending'"
+                        @click="review('approved')"
+                        class="bg-sky-500 text-white py-1 px-4 text-sm rounded-md"
+                    >
+                        Approve
+                    </button>
+                    <button
+                        v-if="poll.status === 'pending'"
+                        @click="review('rejected')"
+                        class="bg-red-500 text-white py-1 px-4 text-sm rounded-md"
+                    >
+                        Reject
+                    </button>
+                </div>
                 <div class="flex flex-row items-center gap-8">
                     <div class="flex flex-row items-center gap-2">
                         <UsersIcon class="h-6 w-6"/>
@@ -53,15 +65,16 @@ const props = defineProps<{
 const form = useForm({
     status: props?.poll?.status ?? 'draft',
 });
-    
-const approve = async () => {
-        try {
-            await form.put(route('admin.polls.update', { poll: props.poll?.hash }));
-            props.poll.status = 'approved';
-            AlertService.show(['Poll Approved Successfully'], 'success');
-        } catch (error) {
-            AlertService.show(['Failed to approve poll. Please try again.'], 'error');
-        }
+
+const review = async (status: 'approved' | 'rejected') => {
+    form.status = status;
+    try {
+        await form.put(route('admin.polls.update', { poll: props.poll?.hash }));
+        props.poll.status = status;
+        AlertService.show([`Poll ${status} successfully`], 'success');
+    } catch (error) {
+        AlertService.show([`Failed to mark poll as ${status}. Please try again.`], 'error');
+    }
 };
 
 </script>

@@ -420,7 +420,10 @@ class PetitionController extends Controller
 
     public function close(Petition $petition)
     {
-        $petition->update(['ended_at' => now()]);
+        $petition->update([
+            'ended_at' => now(),
+            'status' => ModelStatusEnum::CLOSED->value,
+        ]);
     }
 
     /**

@@ -1,5 +1,5 @@
 <template>
-    <VoterLayout page="Manage Petition" :crumbs="crumbs">
+    <VoterLayout page="Manage Poll" :crumbs="crumbs">
         <div class="w-full">
 
             <!-- Status Strip -->
@@ -19,18 +19,18 @@
                 <div class="container mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                     <div class="flex items-start gap-3 min-w-0">
                         <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-sky-500/15 border border-sky-500/20 shrink-0 mt-0.5">
-                            <DocumentTextIcon class="w-5 h-5 text-sky-400" />
+                            <ChartPieIcon class="w-5 h-5 text-sky-400" />
                         </div>
                         <div class="min-w-0">
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-widest mb-1">Managing Petition</p>
-                            <h1 class="text-2xl font-bold text-white leading-tight">{{ petition.title }}</h1>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-widest mb-1">Managing Poll</p>
+                            <h1 class="text-2xl font-bold text-white leading-tight">{{ poll.title }}</h1>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-2 shrink-0">
-                        <template v-if="petition.status === 'draft'">
+                        <template v-if="poll.status === 'draft'">
                             <Link
-                                :href="route('petitions.create.stepOne', { petition: petition.hash })"
+                                :href="route('polls.create.stepOne', { poll: poll.hash })"
                                 class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
                             >
                                 <PencilSquareIcon class="w-4 h-4" />
@@ -45,26 +45,26 @@
                             </button>
                         </template>
 
-                        <template v-else-if="petition.status === 'pending'">
+                        <template v-else-if="poll.status === 'pending'">
                             <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-blue-500/10 border border-blue-500/30 text-blue-300 cursor-default select-none">
                                 <ClockIcon class="w-4 h-4" />
                                 Under Review
                             </span>
                         </template>
 
-                        <template v-else-if="petition.status === 'approved'">
+                        <template v-else-if="poll.status === 'approved'">
                             <button
                                 @click.prevent="showPublishModal = true"
                                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-green-500 hover:bg-green-400 text-white shadow-lg shadow-green-500/20 transition-colors"
                             >
                                 <RocketLaunchIcon class="w-4 h-4" />
-                                Publish Petition
+                                Publish Poll
                             </button>
                         </template>
 
-                        <template v-else-if="petition.status === 'rejected'">
+                        <template v-else-if="poll.status === 'rejected'">
                             <Link
-                                :href="route('petitions.create.stepOne', { petition: petition.hash })"
+                                :href="route('polls.create.stepOne', { poll: poll.hash })"
                                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-red-500 hover:bg-red-400 text-white shadow-lg shadow-red-500/20 transition-colors"
                             >
                                 <PencilSquareIcon class="w-4 h-4" />
@@ -72,16 +72,16 @@
                             </Link>
                         </template>
 
-                        <template v-else-if="petition.status === 'published'">
+                        <template v-else-if="poll.status === 'published'">
                             <button
-                                @click.prevent="showModal = true"
+                                @click.prevent="showCloseModal = true"
                                 class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-gray-700 text-gray-400 hover:border-red-600/60 hover:text-red-400 hover:bg-red-500/10 transition-colors"
                             >
                                 <LockClosedIcon class="w-4 h-4" />
-                                Close Petition
+                                Close Poll
                             </button>
                             <Link
-                                :href="route('petitions.view', { petition: petition.hash })"
+                                :href="route('polls.view', { poll: poll.hash })"
                                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-sky-500 hover:bg-sky-400 text-white shadow-lg shadow-sky-500/20 transition-colors"
                             >
                                 <ArrowTopRightOnSquareIcon class="w-4 h-4" />
@@ -97,22 +97,44 @@
                 <div class="container mx-auto">
                     <div class="grid gap-6 lg:grid-cols-5">
 
-                        <!-- Left column (wider): Profile Overview -->
+                        <!-- Left column (wider): Poll Overview -->
                         <div class="lg:col-span-3 flex flex-col gap-6">
                             <div>
                                 <div class="flex items-center gap-2.5 mb-4">
                                     <UsersIcon class="w-4 h-4 text-sky-400 shrink-0" />
-                                    <h2 class="text-xs font-semibold uppercase tracking-widest text-gray-400 whitespace-nowrap">Profile Overview</h2>
+                                    <h2 class="text-xs font-semibold uppercase tracking-widest text-gray-400 whitespace-nowrap">Poll Overview</h2>
                                     <div class="flex-1 h-px bg-gray-800" />
                                 </div>
                                 <div class="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
                                     <div class="p-6 border-b border-gray-800">
-                                        <PetitionSupporters :petition="petition" />
+                                        <PollSupporters :poll="poll" />
                                     </div>
                                     <div class="p-6">
-                                        <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">Petition Goals</p>
-                                        <PetitionGoals :petition="petition" />
+                                        <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">Poll Details</p>
+                                        <PollGoals :poll="poll" />
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- Poll Question Preview -->
+                            <div class="bg-gray-900 rounded-xl border border-gray-800 p-6">
+                                <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">Question</p>
+                                <p class="text-lg font-semibold text-white mb-4">{{ poll.question?.title }}</p>
+                                <ul class="space-y-2">
+                                    <li
+                                        v-for="choice in poll.question?.choices"
+                                        :key="choice.hash"
+                                        class="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-gray-200"
+                                    >
+                                        {{ choice.title }}
+                                        <span v-if="choice.responses_count !== undefined && choice.responses_count > 0" class="text-sm text-gray-500 ml-2">
+                                            ({{ choice.responses_count }} votes)
+                                        </span>
+                                    </li>
+                                </ul>
+                                <div v-if="poll.description" class="mt-4 pt-4 border-t border-gray-800">
+                                    <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2">Description</p>
+                                    <div class="text-sm text-gray-400" v-html="poll.description"></div>
                                 </div>
                             </div>
                         </div>
@@ -120,32 +142,32 @@
                         <!-- Right column (narrower): Criteria + Share -->
                         <div class="lg:col-span-2 flex flex-col gap-6">
 
-                            <!-- Signing Criteria -->
+                            <!-- Voting Criteria -->
                             <div>
                                 <div class="flex items-center gap-2.5 mb-4">
                                     <AdjustmentsHorizontalIcon class="w-4 h-4 text-sky-400 shrink-0" />
-                                    <h2 class="text-xs font-semibold uppercase tracking-widest text-gray-400 whitespace-nowrap">Signing Criteria</h2>
+                                    <h2 class="text-xs font-semibold uppercase tracking-widest text-gray-400 whitespace-nowrap">Voting Criteria</h2>
                                     <div class="flex-1 h-px bg-gray-800" />
                                 </div>
                                 <div class="bg-gray-900 rounded-xl border border-gray-800 p-6">
-                                    <p class="text-sm text-gray-500 mb-5">Restrict who can sign by requiring an NFT or fungible token.</p>
-                                    <Criteria :model="petition" mode="editable" />
+                                    <p class="text-sm text-gray-500 mb-5">Restrict who can vote by requiring an NFT or fungible token.</p>
+                                    <Criteria :model="poll" mode="editable" />
                                 </div>
                             </div>
 
-                            <!-- Grow Your Petition / Share -->
+                            <!-- Grow Your Poll / Share -->
                             <div>
                                 <div class="flex items-center gap-2.5 mb-4">
                                     <MegaphoneIcon class="w-4 h-4 text-sky-400 shrink-0" />
-                                    <h2 class="text-xs font-semibold uppercase tracking-widest text-gray-400 whitespace-nowrap">Grow Your Petition</h2>
+                                    <h2 class="text-xs font-semibold uppercase tracking-widest text-gray-400 whitespace-nowrap">Grow Your Poll</h2>
                                     <div class="flex-1 h-px bg-gray-800" />
                                 </div>
                                 <div class="bg-gray-900 rounded-xl border border-gray-800 p-6 flex flex-col gap-5">
                                     <div>
-                                        <p class="text-sm font-semibold text-white mb-1">Share This Petition</p>
-                                        <p class="text-sm text-gray-500">Spread awareness by sharing your petition link with your community.</p>
+                                        <p class="text-sm font-semibold text-white mb-1">Share This Poll</p>
+                                        <p class="text-sm text-gray-500">Spread awareness by sharing your poll link with your community.</p>
                                     </div>
-                                    <PetitionShareWidget :link="link" :title="petition.title" />
+                                    <PollShareWidget :link="link" :title="poll.title" />
                                 </div>
                             </div>
 
@@ -154,20 +176,20 @@
                 </div>
             </div>
 
-            <Modal :show="showModal">
-                <ClosePetition :petition="petition" @close="showModal = false" />
+            <Modal :show="showCloseModal">
+                <ClosePoll :poll="poll" @close="showCloseModal = false" />
             </Modal>
             <Modal :show="showPublishModal" :modalType="'publish'">
-                <PublishPetition :petition="petition" @close="showPublishModal = false" />
+                <PublishPoll :poll="poll" @close="showPublishModal = false" />
             </Modal>
         </div>
     </VoterLayout>
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import VoterLayout from "@/Layouts/VoterLayout.vue";
-import PetitionData = App.DataTransferObjects.PetitionData;
+import PollData = App.DataTransferObjects.PollData;
 import { Link, useForm } from "@inertiajs/vue3";
 import {
     PencilSquareIcon,
@@ -178,7 +200,7 @@ import {
     CheckCircleIcon,
     XCircleIcon,
     CheckBadgeIcon,
-    DocumentTextIcon,
+    ChartPieIcon,
     UsersIcon,
     AdjustmentsHorizontalIcon,
     MegaphoneIcon,
@@ -187,41 +209,38 @@ import {
 import AlertService from "@/shared/Services/alert-service";
 import Criteria from "@/shared/components/Criteria.vue";
 import Modal from "@/Components/Modal.vue";
-import ClosePetition from "./Partials/ClosePetition.vue";
-import PublishPetition from "./Partials/PublishPetition.vue";
-import PetitionGoals from "./Partials/PetitionGoals.vue";
-import PetitionSupporters from "@/Pages/Petition/Partials/PetitionSupporters.vue";
-import PetitionShareWidget from "./Partials/PetitionShareWidget.vue";
-import { useConfigStore } from "@/stores/config-store";
-import { storeToRefs } from "pinia";
+import PublishPoll from "./Partials/PublishPoll.vue";
+import ClosePoll from "./Partials/ClosePoll.vue";
+import PollGoals from "./Partials/PollGoals.vue";
+import PollSupporters from "./Partials/PollSupporters.vue";
+import PollShareWidget from "./Partials/PollShareWidget.vue";
 
 const props = defineProps<{
-    petition: PetitionData;
-    crumbs: [];
-    actions: [];
+    poll: PollData;
+    crumbs?: [];
+    actions?: [];
 }>();
 
-let configStore = useConfigStore();
-let { showModal, showPublishModal } = storeToRefs(configStore);
-
+const showPublishModal = ref(false);
+const showCloseModal = ref(false);
 const form = useForm({
-    status: props?.petition?.status,
+    status: props.poll?.status,
 });
 
-const submitForReview = async () => {
+async function submitForReview() {
     try {
-        await form.patch(route("petitions.submit", { petition: props.petition?.hash }));
-        props.petition.status = "pending";
-        AlertService.show(["Petition submitted for admin review"], "success");
+        await form.patch(route("polls.submit", { poll: props.poll.hash }));
+        props.poll.status = "pending";
+        AlertService.show(["Poll submitted for admin review"], "success");
     } catch (error) {
-        AlertService.show(["There was an error submitting the petition"], "error");
+        AlertService.show(["There was an error submitting the poll"], "error");
     }
-};
+}
 
-const link = route("petitions.view", { petition: props.petition.hash });
+const link = route("polls.view", { poll: props.poll.hash });
 
 const statusBanner = computed(() => {
-    const s = props.petition.status;
+    const s = props.poll.status;
     const configs: Record<string, any> = {
         draft: {
             stripBg:   "bg-amber-950/30",
@@ -245,7 +264,7 @@ const statusBanner = computed(() => {
             icon:      CheckCircleIcon,
             iconColor: "text-green-400",
             textColor: "text-green-200",
-            message:   "Approved — your petition is ready to publish and start collecting signatures.",
+            message:   "Approved — your poll is ready to publish and start collecting votes.",
         },
         rejected: {
             stripBg:   "bg-red-950/30",
@@ -253,7 +272,7 @@ const statusBanner = computed(() => {
             icon:      XCircleIcon,
             iconColor: "text-red-400",
             textColor: "text-red-200",
-            message:   "Not approved. Please edit your petition and resubmit for another review.",
+            message:   "Not approved. Please edit your poll and resubmit for another review.",
         },
         published: {
             stripBg:   "bg-sky-950/30",
@@ -261,7 +280,7 @@ const statusBanner = computed(() => {
             icon:      CheckBadgeIcon,
             iconColor: "text-sky-400",
             textColor: "text-sky-200",
-            message:   "Live — your petition is publicly visible and collecting signatures.",
+            message:   "Live — your poll is publicly visible and collecting votes.",
         },
         closed: {
             stripBg:   "bg-gray-950/30",
@@ -269,7 +288,7 @@ const statusBanner = computed(() => {
             icon:      LockClosedIcon,
             iconColor: "text-gray-400",
             textColor: "text-gray-200",
-            message:   "Closed — signature collection has ended.",
+            message:   "Closed — voting has ended for this poll.",
         },
     };
     return configs[s] ?? configs.draft;

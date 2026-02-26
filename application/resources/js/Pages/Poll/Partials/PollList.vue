@@ -1,5 +1,5 @@
 <template >
-    <div class="grid grid-cols-2 gap-8 py-8">
+    <div class="grid gap-4 mt-6 sm:grid-cols-1 lg:grid-cols-2">
         <template v-for="poll in polls" :key="poll.hash">
             <PollListItem :poll="poll"/>
         </template>

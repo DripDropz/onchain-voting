@@ -34,6 +34,8 @@ class QuestionChoiceData extends Data
         public ?BallotData $ballot,
 
         public ?int $order,
-    ) {
-    }
+
+        #[TypescriptOptional]
+        public ?int $responses_count,
+    ) {}
 }

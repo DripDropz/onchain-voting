@@ -7,6 +7,7 @@ use App\Models\Traits\HashIdModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use OwenIt\Auditing\Auditable as IsAuditable;
 use OwenIt\Auditing\Contracts\Auditable;
 use Znck\Eloquent\Relations\BelongsToThrough;
@@ -31,6 +32,7 @@ class QuestionChoice extends Model implements Auditable
     protected $appends = [
         'hash',
         'question_hash',
+        'responses_count',
     ];
 
     protected $casts = [
@@ -56,11 +58,23 @@ class QuestionChoice extends Model implements Auditable
         return $this->belongsTo(Question::class, 'question_id');
     }
 
+    public function responses(): BelongsToMany
+    {
+        return $this->belongsToMany(QuestionResponse::class, 'question_responses_question_choices');
+    }
+
+    public function responsesCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->responses()->count()
+        );
+    }
+
     public static function booted(): void
     {
         static::creating(function ($model) {
             $model->order = self::query()->where('question_id', $model->question_id)
-                    ->orderByDesc('order')->first()?->order + self::ORDER_GAP;
+                ->orderByDesc('order')->first()?->order + self::ORDER_GAP;
         });
 
         static::addGlobalScope('order', function (Builder $builder) {

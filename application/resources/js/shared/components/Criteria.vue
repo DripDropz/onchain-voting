@@ -90,6 +90,36 @@ const props = withDefaults(
     }
 );
 
+const isPollModel = computed(() => {
+    return Boolean((props.model as PollData | undefined)?.question !== undefined);
+});
+
+const ruleRoutes = computed(() => {
+    if (isPollModel.value) {
+        return {
+            create: "polls.rules.create",
+            remove: "polls.rules.removeRule",
+        };
+    }
+
+    return {
+        create: "petitions.rules.create",
+        remove: "petitions.rules.removeRule",
+    };
+});
+
+const modelRouteParam = computed(() => {
+    return isPollModel.value ? "poll" : "petition";
+});
+
+const effectiveReturnRoute = computed(() => {
+    if (props.returnRoute !== "petitions.manage") {
+        return props.returnRoute;
+    }
+
+    return isPollModel.value ? "polls.manage" : "petitions.manage";
+});
+
 const isReadonlyMode = computed(() => {
     if (props.mode) {
         return props.mode === "readonly";
@@ -102,6 +132,8 @@ const isEditingDisabled = computed(() => {
     return (
         !props.model?.hash ||
         isReadonlyMode.value ||
+        props.model?.status === "pending" ||
+        props.model?.status === "approved" ||
         props.model?.status === "published" ||
         props.model?.status === "closed" ||
         !!props.model?.ballot
@@ -132,16 +164,19 @@ const makeRule = (toggleOn: boolean, type: CriterionType, hash?: string | null):
         return;
     }
 
-    const data = { type, returnRoute: props.returnRoute };
+    const data = { type, returnRoute: effectiveReturnRoute.value };
+    const routeParams = {
+        [modelRouteParam.value]: props.model.hash,
+    };
 
     if (toggleOn && !hash) {
-        router.get(route("petitions.rules.create", { petition: props.model.hash }), data);
+        router.get(route(ruleRoutes.value.create, routeParams), data);
     } else if (!toggleOn && hash) {
         router.get(
-            route("petitions.rules.removeRule", {
-                petition: props.model.hash,
+            route(ruleRoutes.value.remove, {
+                ...routeParams,
                 rule: hash,
-                returnRoute: props.returnRoute,
+                returnRoute: effectiveReturnRoute.value,
             })
         );
     }
