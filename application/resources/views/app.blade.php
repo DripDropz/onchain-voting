@@ -13,6 +13,27 @@
         <!-- Scripts -->
         @routes
 
+        <!-- Theme initialization script - prevents FOUC -->
+        <script>
+            (function() {
+                const hasUserPreference = localStorage.getItem('user-theme-preference') === 'true';
+                let isDarkMode;
+                
+                if (hasUserPreference) {
+                    // User has manually set a preference
+                    const storedTheme = localStorage.getItem('dark-mode');
+                    isDarkMode = storedTheme === 'true';
+                } else {
+                    // Use system preference
+                    isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                }
+                
+                if (isDarkMode) {
+                    document.documentElement.classList.add('dark');
+                }
+            })();
+        </script>
+
         @production
             {{vite_production_assets()}}
         @else

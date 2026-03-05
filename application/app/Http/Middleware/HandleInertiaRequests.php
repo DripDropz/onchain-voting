@@ -3,8 +3,10 @@
 namespace App\Http\Middleware;
 
 use App\DataTransferObjects\UserData;
+use Closure;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Symfony\Component\HttpFoundation\Response;
 use Tightenco\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
@@ -15,6 +17,25 @@ class HandleInertiaRequests extends Middleware
      * @var string
      */
     protected $rootView = 'app';
+
+    /**
+     * Handle the incoming request.
+     *
+     * @param  \Closure(Request): (Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        $response = parent::handle($request, $next);
+
+        // Add cache-busting headers for admin routes to prevent stale data
+        if ($request->is('admin/*') || $request->is('admin')) {
+            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', '0');
+        }
+
+        return $response;
+    }
 
     /**
      * Determine the current asset version.

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\DataTransferObjects\PollData;
-use App\Enums\QueryParams;
 use App\Http\Controllers\Controller;
 use App\Models\Poll;
 use Illuminate\Http\Request;
@@ -17,6 +16,10 @@ class PollController extends Controller
     protected int $limit;
 
     protected ?string $statusFilter = null;
+
+    protected ?string $sortBy = null;
+
+    protected ?string $sortOrder = null;
 
     /**
      * Display the poll list.
@@ -40,14 +43,22 @@ class PollController extends Controller
             'filter' => [
                 'status' => $this->statusFilter,
             ],
+            'sort' => [
+                'sortBy' => $this->sortBy ?? 'created_at',
+                'sortOrder' => $this->sortOrder ?? 'desc',
+            ],
         ]);
     }
 
     protected function setFilters(Request $request): void
     {
-        $this->limit = (int) ($request->input(QueryParams::PER_PAGE) ?? $request->input('perPage', 6));
-        $this->currentPage = (int) ($request->input(QueryParams::PAGE) ?? $request->input('page', 1));
-        $this->statusFilter = $request->input(QueryParams::STATUS) ?? $request->input('status');
+        $this->limit = (int) ($request->input('perPage', 10));
+        $this->currentPage = (int) ($request->input('page', 1));
+
+        // Default to 'review' (pending) status to show only records awaiting approval
+        $this->statusFilter = $request->input('status', 'review');
+        $this->sortBy = $request->input('sortBy', 'created_at');
+        $this->sortOrder = $request->input('sortOrder', 'desc');
     }
 
     public function pollsData(Request $request)
@@ -55,17 +66,34 @@ class PollController extends Controller
         $this->setFilters($request);
 
         $polls = Poll::query()
-            ->latest()
-            ->with(['question.choices', 'rules', 'user'])
-            ->when($this->statusFilter === 'review', function ($query) {
-                $query->whereIn('status', ['pending']);
-            })
-            ->when($this->statusFilter === 'active', function ($query) {
-                $query->whereIn('status', ['approved', 'published']);
-            })
-            ->paginate($this->limit, ['*'], 'page', $this->currentPage);
+            ->with(['question.choices', 'rules', 'user']);
 
-        return PollData::collection($polls);
+        // Apply status filter - default to review (pending/approved)
+        if ($this->statusFilter === 'review' || $this->statusFilter === null) {
+            $polls = $polls->whereIn('status', ['pending', 'approved']);
+        } elseif ($this->statusFilter === 'active') {
+            $polls = $polls->whereIn('status', ['approved', 'published']);
+        } elseif ($this->statusFilter === 'all') {
+            // No status filter - show all
+        } else {
+            // Specific status filter
+            $polls = $polls->where('status', $this->statusFilter);
+        }
+
+        // Apply sorting
+        $sortBy = $this->sortBy ?? 'created_at';
+        $sortOrder = $this->sortOrder ?? 'desc';
+
+        if ($sortBy === 'title') {
+            $polls = $polls->orderBy('title', $sortOrder);
+        } elseif ($sortBy === 'status') {
+            $polls = $polls->orderBy('status', $sortOrder);
+        } else {
+            // Default to created_at
+            $polls = $polls->orderBy('created_at', $sortOrder);
+        }
+
+        return PollData::collection($polls->paginate($this->limit, ['*'], 'page', $this->currentPage));
     }
 
     public function update(Request $request, Poll $poll): void

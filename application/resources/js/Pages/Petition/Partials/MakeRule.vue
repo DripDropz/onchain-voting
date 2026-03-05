@@ -131,6 +131,8 @@ let form = useForm({
     policy: '',
     title: '',
     type: props.type,
+    image_url: '',
+    asset_metadata: '',
 })
 
 const policyPattern = /^[0-9a-fA-F]{56}$/;
@@ -141,9 +143,23 @@ let query = async () => {
         let res = (await axios.get(route('frost.asset', { policy: form.policy }))).data;
         assetData.value = res.asset;
         assetCount.value = res.assetCount;
+        // Store image URL and metadata for saving
+        let url = assetImageUrl.value;
+        if (url) {
+            form.image_url = url;
+        }
+        // Store relevant metadata as JSON string
+        let metadata = {
+            name: assetData.value?.metadata?.name ?? assetData.value?.onchain_metadata?.name ?? assetData.value?.name ?? assetData.value?.fingerprint,
+            policy: form.policy,
+            fingerprint: assetData.value?.fingerprint,
+        };
+        form.asset_metadata = JSON.stringify(metadata);
     } catch (error) {
         assetData.value = null;
         assetCount.value = null;
+        form.image_url = '';
+        form.asset_metadata = '';
     } finally {
         working.value = false;
     }

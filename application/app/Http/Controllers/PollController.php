@@ -204,6 +204,9 @@ class PollController extends Controller
             })->when($this->hasActive, function ($query) {
                 $query->where('user_id', Auth::user()->id)
                     ->whereIn('status', ['published']);
+            })->when(! $hasDraft && ! $this->hasPending && ! $this->hasAnswered && ! $this->hasActive && ! $this->status, function ($query) {
+                // Default: show only published polls for public browse
+                $query->where('status', 'published');
             })->when($this->nextCursor, function ($query) {
                 $query->cursorPaginate($this->perPage, ['*'], 'cursor', $this->nextCursor);
             })->cursorPaginate($this->perPage);
@@ -411,7 +414,11 @@ class PollController extends Controller
     {
         Gate::authorize('publish', $poll);
 
-        abort_if($poll->status->value !== 'draft', 422, 'Only draft polls can be submitted for review.');
+        abort_if(
+            ! in_array($poll->status->value, ['draft', 'rejected']),
+            422,
+            'Only draft or rejected polls can be submitted for review.'
+        );
 
         $poll->update(['status' => ModelStatusEnum::PENDING->value]);
 
@@ -475,6 +482,8 @@ class PollController extends Controller
             'type' => ['required', ValidationRule::in(['ft', 'nft'])],
             'title' => ['required', 'string', 'max:255'],
             'policy' => ['required', 'string', 'size:56', 'regex:/^[0-9a-f]{56}$/'],
+            'image_url' => ['nullable', 'string', 'url'],
+            'asset_metadata' => ['nullable', 'string'],
         ]);
 
         $rule = new Rule;
@@ -483,6 +492,8 @@ class PollController extends Controller
         $rule->value1 = RuleV1Enum::POLICY->value;
         $rule->value2 = $normalizedPolicy;
         $rule->operator = RuleOperatorEnum::EQUALS->value;
+        $rule->image_url = $request->input('image_url');
+        $rule->asset_metadata = $request->input('asset_metadata');
         $rule->save();
 
         $poll->rules()->attach($rule->id);

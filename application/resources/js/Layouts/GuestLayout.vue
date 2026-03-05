@@ -11,7 +11,7 @@ let {isDarkMode} = storeToRefs(configStore);
 
 <template>
     <div :class="{'dark': isDarkMode }">
-        <div class="flex flex-col items-center min-h-screen pt-6 bg-sky-100 sm:justify-center sm:pt-0 dark:bg-gray-900">
+        <div class="flex flex-col items-center min-h-screen pt-6 bg-sky-50 dark:bg-gray-950 sm:justify-center sm:pt-0">
             <div>
                 <Link href="/">
                     <ApplicationLogo class="w-20 h-20 text-gray-500 fill-current" />
@@ -19,7 +19,7 @@ let {isDarkMode} = storeToRefs(configStore);
             </div>
 
             <div
-                class="w-full px-6 py-4 mt-6 overflow-hidden bg-sky-200 shadow-md sm:max-w-md dark:bg-gray-800 sm:rounded-lg"
+                class="w-full px-6 py-4 mt-6 overflow-hidden bg-white dark:bg-gray-900 shadow-md sm:max-w-md sm:rounded-lg border border-gray-200 dark:border-gray-700"
             >
             <GlobalAlertComponent/>
                 <slot />

@@ -2,34 +2,28 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Rule;
-use Illuminate\Support\Carbon;
-use Inertia\Inertia;
-use Inertia\Response;
+use App\DataTransferObjects\BallotData;
+use App\DataTransferObjects\PetitionData;
+use App\DataTransferObjects\RuleData;
+use App\Enums\QuestionTypeEnum;
+use App\Enums\RuleOperatorEnum;
+use App\Events\PetitionSigned;
+use App\Http\Controllers\Controller;
 use App\Models\Ballot;
 use App\Models\Petition;
 use App\Models\Question;
-use App\Enums\RuleV1Enum;
-use App\Enums\QueryParams;
+use App\Models\Rule;
 use Illuminate\Http\Request;
-use App\Enums\QuestionTypeEnum;
-use App\Enums\RuleOperatorEnum;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Stringable;
-use App\Http\Controllers\Controller;
-use App\DataTransferObjects\RuleData;
-use App\DataTransferObjects\BallotData;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Redirect;
-use App\DataTransferObjects\PetitionData;
-use App\Events\PetitionSigned;
+use Inertia\Inertia;
+use Inertia\Response;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 class PetitionController extends Controller
 {
-
-    public array|null $filter;
+    public ?array $filter;
 
     protected int $currentPage;
 
@@ -42,19 +36,24 @@ class PetitionController extends Controller
      */
     public function index(Request $request)
     {
+        $sortOptions = $this->setFilters($request);
         $petitions = $this->petitionsData($request);
 
         $props = [
             'perPage' => $this->limit,
             'currentPage' => $this->currentPage,
             'filter' => [
-                'status' => $this->projectStatus
+                'status' => $this->projectStatus,
             ],
-            'counts' => $this->petitionsCount(request()),
+            'sort' => [
+                'sortBy' => $sortOptions['sortBy'] ?? 'created_at',
+                'sortOrder' => $sortOptions['sortOrder'] ?? 'desc',
+            ],
+            'counts' => $this->petitionsCount($request),
             'petitions' => $petitions,
             'crumbs' => [
                 'label' => 'Petitions',
-                'link' => route('admin.petitions.index')
+                'link' => route('admin.petitions.index'),
             ],
         ];
 
@@ -63,21 +62,31 @@ class PetitionController extends Controller
 
     protected function setFilters(Request $request)
     {
-        $this->limit = $request->input(QueryParams::PER_PAGE, 6);
-        $this->currentPage = $request->input(QueryParams::PAGE, 1);
+        $this->limit = $request->input('perPage', 10);
+        $this->currentPage = $request->input('page', 1);
+        $sortBy = $request->input('sortBy', 'created_at');
+        $sortOrder = $request->input('sortOrder', 'desc');
 
-        $this->projectStatus = match ($request->input(QueryParams::STATUS, null)) {
-            'r' => implode(',', ['pending', 'approved']),
-            'a' => 'published',
-            default => null
+        $this->projectStatus = match ($request->input('status', null)) {
+            'all' => null, // Show all (no filter)
+            'review' => implode(',', ['pending', 'approved']),
+            'active' => 'published',
+            'r' => implode(',', ['pending', 'approved']), // Backward compatibility
+            'a' => 'published', // Backward compatibility
+            default => implode(',', ['pending', 'approved']), // Default to pending+approved (review)
         };
+
+        return [
+            'sortBy' => $sortBy,
+            'sortOrder' => $sortOrder,
+        ];
     }
 
-    private function petitionsCount(Request $request)
+    private function petitionsCount(Request $request): array
     {
-        $allCount = Petition::with('status', ['published', 'pending', 'approved', 'draft', 'rejected'])->count();
+        $allCount = Petition::whereIn('status', ['published', 'pending', 'approved', 'draft', 'rejected'])->count();
 
-        $activeCount = Petition::where('status', ['published'])->count();
+        $activeCount = Petition::where('status', 'published')->count();
 
         $pendingCount = Petition::whereIn('status', ['pending', 'approved'])->count();
 
@@ -90,13 +99,27 @@ class PetitionController extends Controller
 
     public function petitionsData(Request $request)
     {
-        $this->setFilters($request);
+        $sortOptions = $this->setFilters($request);
 
-        $petitions = Petition::latest();
+        $petitions = Petition::query();
 
+        // Apply status filter
         if ($this->projectStatus !== null) {
             $statuses = explode(',', $this->projectStatus);
             $petitions = $petitions->whereIn('status', $statuses);
+        }
+
+        // Apply sorting
+        $sortBy = $sortOptions['sortBy'] ?? 'created_at';
+        $sortOrder = $sortOptions['sortOrder'] ?? 'desc';
+
+        if ($sortBy === 'title') {
+            $petitions = $petitions->orderBy('title', $sortOrder);
+        } elseif ($sortBy === 'status') {
+            $petitions = $petitions->orderBy('status', $sortOrder);
+        } else {
+            // Default to created_at
+            $petitions = $petitions->orderBy('created_at', $sortOrder);
         }
 
         $results = $petitions->paginate($this->limit, ['*'], 'p', $this->currentPage)
@@ -105,8 +128,6 @@ class PetitionController extends Controller
 
         return $results;
     }
-
-
 
     /**
      * Display a single petition.
@@ -118,7 +139,7 @@ class PetitionController extends Controller
             'crumbs' => [
                 ['label' => 'Petitions', 'link' => route('admin.petitions.index')],
                 ['label' => $petition->title],
-            ]
+            ],
         ]);
     }
 
@@ -132,23 +153,22 @@ class PetitionController extends Controller
             'crumbs' => [
                 ['label' => 'Petitions', 'link' => route('admin.petitions.index')],
                 ['label' => $petition->title],
-            ]
+            ],
         ]);
     }
 
-
-    public function update(Request $request, Petition $petition, Ballot $ballot,)
+    public function update(Request $request, Petition $petition, Ballot $ballot)
     {
 
         switch ($request->status) {
             case 'approved':
                 $petition->update([
-                    'status' => $request->status
+                    'status' => $request->status,
                 ]);
                 break;
             case 'rejected':
                 $petition->update([
-                    'status' => $request->status
+                    'status' => $request->status,
                 ]);
                 break;
             case 'ballot':
@@ -158,11 +178,11 @@ class PetitionController extends Controller
                 DB::beginTransaction();
                 try {
                     // Create ballot
-                    if (!$canMoveToBallot) {
+                    if (! $canMoveToBallot) {
                         return back();
                     }
 
-                    if (!$ballot?->id) {
+                    if (! $ballot?->id) {
                         $ballot = new Ballot;
                         $ballot->title = $request->ballotTitle;
                         $ballot->description = $request->ballotDescription;
@@ -172,7 +192,7 @@ class PetitionController extends Controller
 
                     $question = $ballot->questions()->first();
 
-                    if (!$question?->id) {
+                    if (! $question?->id) {
                         // create question
                         $question = $ballot->questions()->create([
                             'title' => $request->questionTitle,
@@ -188,15 +208,17 @@ class PetitionController extends Controller
                         'title' => $petition->title,
                         'user_id' => $petition->user_id,
                         'description' => $petition->description,
-                        'order' => $question->choices()->count() + 1
+                        'order' => $question->choices()->count() + 1,
                     ]);
 
                     $ballot->petition()->save($petition);
                     DB::commit();
+
                     return BallotData::from($ballot);
                 } catch (\Throwable $th) {
                     DB::rollBack();
                     throw $th;
+
                     return back();
                 }
 
@@ -210,18 +232,19 @@ class PetitionController extends Controller
             'type' => 'required',
             'v1' => 'required',
             'v2' => 'required',
-            'title' => 'required'
+            'title' => 'required',
         ]);
 
         $rule = $petition->rules()->where([
             'type' => $request->type,
-            'value1' => $request->v1
+            'value1' => $request->v1,
         ])->first();
 
         if ($rule instanceof Rule) {
             $rule->value2 = $request->v2;
             $rule->save();
             PetitionSigned::dispatch($petition);
+
             return RuleData::from($rule);
         } else {
             $rule = new Rule;
@@ -233,6 +256,7 @@ class PetitionController extends Controller
             $rule->save();
             $petition->rules()->attach($rule->id);
             PetitionSigned::dispatch($petition);
+
             return RuleData::from($rule);
         }
     }
@@ -241,6 +265,7 @@ class PetitionController extends Controller
     {
         $petition->rules()->detach($rule->id);
         $rule->delete();
+
         return to_route('petitions.manage', [
             'petition' => $petition->hash,
         ]);
@@ -249,7 +274,7 @@ class PetitionController extends Controller
     public function moveToBallot(Petition $petition)
     {
         return Inertia::modal('Auth/Petition/CreateSelectBallot', [
-            'petition' => PetitionData::from($petition->load(['rules', 'user']))
+            'petition' => PetitionData::from($petition->load(['rules', 'user'])),
         ])->baseRoute(previous_route_name(), ['petition' => $petition->hash]);
     }
 
@@ -269,7 +294,7 @@ class PetitionController extends Controller
 
         $media = $petition->addMediaFromDisk($key, config('filesystems.default'))
             ->addCustomHeaders([
-                'ACL' => 'public-read'
+                'ACL' => 'public-read',
             ])
             ->usingFileName($filename)
             ->toMediaCollection('petitions');

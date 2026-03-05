@@ -220,6 +220,8 @@ class PetitionController extends Controller
             'type' => ['required', ValidationRule::in(['ft', 'nft'])],
             'title' => ['required', 'string', 'max:255'],
             'policy' => ['required', 'string', 'size:56', 'regex:/^[0-9a-f]{56}$/'],
+            'image_url' => ['nullable', 'string', 'url'],
+            'asset_metadata' => ['nullable', 'string'],
         ]);
 
         $rule = new Rule;
@@ -228,6 +230,8 @@ class PetitionController extends Controller
         $rule->value1 = RuleV1Enum::POLICY->value;
         $rule->value2 = $normalizedPolicy;
         $rule->operator = RuleOperatorEnum::EQUALS->value;
+        $rule->image_url = $request->input('image_url');
+        $rule->asset_metadata = $request->input('asset_metadata');
         $rule->save();
 
         $petition->rules()->attach($rule->id);
@@ -433,7 +437,11 @@ class PetitionController extends Controller
     {
         Gate::authorize('publish', $petition);
 
-        abort_if($petition->status->value !== 'draft', 422, 'Only draft petitions can be submitted for review.');
+        abort_if(
+            ! in_array($petition->status->value, ['draft', 'rejected']),
+            422,
+            'Only draft or rejected petitions can be submitted for review.'
+        );
 
         $petition->update(['status' => ModelStatusEnum::PENDING->value]);
 

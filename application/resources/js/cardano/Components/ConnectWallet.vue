@@ -34,22 +34,22 @@
                     <span :class="[textColor]" aria-hidden="true">&darr;</span>
                 </span>
             </button>
-            <button @click.prevent="disconnectWallet" class="bg-white rounded-r-md" v-if="!!walletData?.address">
+            <button @click.prevent="disconnectWallet" class="bg-white dark:bg-gray-800 rounded-r-md" v-if="!!walletData?.address">
                 <XMarkIcon class="w-5 h-5" aria-hidden="true" :class="[textColor]" />
             </button>
         </div>
 
 
         <div v-show="open" style="display: none;" ref="target"
-            class="absolute z-20 justify-center w-full overflow-visible rounded-b-lg shadow-md bg-sky-100 max-w-64">
-            <div v-if="WalletList.length === 0" class="px-4 py-2 text-center text-gray-700">
+            class="absolute z-20 justify-center w-full overflow-visible rounded-b-lg shadow-md bg-sky-100 dark:bg-gray-800 max-w-64">
+            <div v-if="WalletList.length === 0" class="px-4 py-2 text-center text-gray-700 dark:text-gray-300">
                 No wallets found
             </div>
             <div v-else class="flex flex-col items-center gap-2 py-1 divide-y divide-slate-800 divide-opacity-40"
                 role="none">
                 <a v-for="wallet in WalletList" href="#"
                     @click.prevent="(open = !open); walletService.supports(wallet?.name) ? enableWallet(wallet?.name) : ''"
-                    class="inline-flex w-full gap-2 px-4 py-2 text-xl text-gray-700"
+                    class="inline-flex w-full gap-2 px-4 py-2 text-xl text-gray-700 dark:text-gray-200 hover:bg-sky-200 dark:hover:bg-gray-700"
                     :class="{ 'hidden': !walletService.supports(wallet?.name) }" role="menuitem">
                     <img :alt="wallet?.altText" class="w-6 h-auto" :src="wallet?.imageSrc" />
                     <span>{{ wallet?.walletName }}</span>

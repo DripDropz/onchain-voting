@@ -225,6 +225,11 @@ export const usePetitionStore = defineStore('petition-store', () => {
         getFilteredData().then();
     }, { deep: true })
 
+    function clearAdminPetitions() {
+        currentModel.value = {} as CurrentModel<any, any, any, any, any>;
+        params.value = null;
+    }
+
     return {
         formData,
         petition,
@@ -244,5 +249,6 @@ export const usePetitionStore = defineStore('petition-store', () => {
         removePetition,
         resetContext,
         reloadContext,
+        clearAdminPetitions,
     }
 });

@@ -48,6 +48,24 @@
             </div>
 
             <div class="flex items-center gap-2">
+                <!-- Approve/Reject for pending petitions -->
+                <template v-if="petition.status === 'pending'">
+                    <button
+                        @click="review('approved')"
+                        class="action-btn action-btn-success"
+                    >
+                        <CheckIcon class="w-3.5 h-3.5" />
+                        Approve
+                    </button>
+                    <button
+                        @click="review('rejected')"
+                        class="action-btn action-btn-danger"
+                    >
+                        <XMarkIcon class="w-3.5 h-3.5" />
+                        Reject
+                    </button>
+                </template>
+
                 <!-- View public page -->
                 <Link
                     :href="route('petitions.view', { petition: petition.hash })"
@@ -85,13 +103,16 @@
 import { computed } from 'vue';
 import MarkdownIt from 'markdown-it';
 import PetitionData = App.DataTransferObjects.PetitionData;
-import { Link } from "@inertiajs/vue3";
+import { Link, useForm } from "@inertiajs/vue3";
+import AlertService from '@/shared/Services/alert-service';
 import {
     UsersIcon,
     CalendarIcon,
     EyeIcon,
     PencilIcon,
     ArrowTopRightOnSquareIcon,
+    CheckIcon,
+    XMarkIcon,
 } from '@heroicons/vue/20/solid';
 
 const md = new MarkdownIt({ html: false, breaks: true, linkify: false });
@@ -99,6 +120,21 @@ const md = new MarkdownIt({ html: false, breaks: true, linkify: false });
 const props = defineProps<{
     petition: PetitionData;
 }>();
+
+const form = useForm({
+    status: props?.petition?.status ?? 'draft',
+});
+
+const review = async (status: 'approved' | 'rejected') => {
+    form.status = status;
+    try {
+        await form.patch(route('admin.petitions.update', { petition: props.petition?.hash }));
+        props.petition.status = status;
+        AlertService.show([`Petition ${status} successfully`], 'success');
+    } catch (error) {
+        AlertService.show([`Failed to mark petition as ${status}. Please try again.`], 'error');
+    }
+};
 
 const descriptionPreview = computed(() => {
     const html = md.render(props.petition.description ?? '');
@@ -155,5 +191,11 @@ const statusBadgeClass = computed(() => ({
 }
 .action-btn-primary {
     @apply bg-sky-500 hover:bg-sky-600 text-white;
+}
+.action-btn-success {
+    @apply bg-emerald-500 hover:bg-emerald-600 text-white;
+}
+.action-btn-danger {
+    @apply bg-red-500 hover:bg-red-600 text-white;
 }
 </style>

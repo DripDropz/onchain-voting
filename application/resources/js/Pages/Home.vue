@@ -61,7 +61,7 @@ function startPetition() {
                         </Link>
                         <button
                             @click.prevent="startPetition"
-                            class="inline-flex items-center gap-x-2 rounded-md bg-sky-400 px-2 py-2.5  font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 ">
+                            class="inline-flex items-center gap-x-2 rounded-md bg-sky-500 dark:bg-sky-600 px-2 py-2.5  font-semibold text-white shadow-sm hover:bg-sky-600 dark:hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 ">
                             Start a petition
                         </button>
                     </div>

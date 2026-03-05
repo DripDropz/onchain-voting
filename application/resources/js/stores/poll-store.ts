@@ -193,6 +193,12 @@ export const usePollStore = defineStore('poll-store', () => {
         await loadPublicPolls(context, params);
     }
 
+    function clearAdminPolls() {
+        pollsData.value = [];
+        pollsPagination.value = undefined;
+        pollsQueryData.value = { p: 1, l: 10 };
+    }
+
     return {
         formData,
         poll,
@@ -216,5 +222,6 @@ export const usePollStore = defineStore('poll-store', () => {
         reloadContext,
         resetContext,
         resetAllContexts,
+        clearAdminPolls,
     }
 });
