@@ -6,6 +6,21 @@
         <!-- Status accent bar -->
         <div class="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl" :class="statusBarColor" />
 
+        <!-- Image with placeholder -->
+        <div class="relative w-full h-32 overflow-hidden bg-gray-800">
+            <img
+                v-if="poll.image_url"
+                :src="poll.image_url"
+                :alt="poll.title || poll.question?.title"
+                class="absolute inset-0 w-full h-full object-cover"
+            />
+            <div
+                v-else
+                class="absolute inset-0 bg-gradient-to-br from-sky-950 via-gray-900 to-gray-950"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent" />
+        </div>
+
         <div class="flex flex-col flex-1 pl-5 pr-5 pt-5 pb-4 gap-3">
             <!-- Header row: title + status badge -->
             <div class="flex items-start justify-between gap-4">
