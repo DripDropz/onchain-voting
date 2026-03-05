@@ -12,6 +12,7 @@
     ],
     "sail": false,
     "skills": [
+        "pest-testing",
         "inertia-vue-development",
         "tailwindcss-development",
         "medialibrary-development"
