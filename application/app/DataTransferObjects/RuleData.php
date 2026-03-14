@@ -2,12 +2,12 @@
 
 namespace App\DataTransferObjects;
 
-use Spatie\LaravelData\Data;
-use Spatie\TypeScriptTransformer\Attributes\TypeScript;
-use Spatie\LaravelData\Attributes\WithoutValidation;
 use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\Validation\StringType;
+use Spatie\LaravelData\Attributes\WithoutValidation;
+use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
+use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
 class RuleData extends Data
@@ -34,6 +34,13 @@ class RuleData extends Data
 
         #[StringType]
         public ?string $value2,
-    ) {
-    }
+
+        #[TypescriptOptional]
+        #[StringType]
+        public ?string $image_url,
+
+        #[TypescriptOptional]
+        #[StringType]
+        public ?string $asset_metadata,
+    ) {}
 }

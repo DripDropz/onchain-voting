@@ -22,14 +22,13 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "types": [
-      "node"
+      "node",
+      "jest"
     ],
     "paths": {
       "@chainvote/*": ["./src/*"],
       "@chainvote/modules/*": ["./src/modules/*"],
       "@chainvote/services/*": ["./src/services/*"]
-    },
-    "main": "./main.js",
-    "exports": "./main.js"
+    }
   }
 }

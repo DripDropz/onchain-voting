@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col bg-white rounded-lg dark:bg-gray-900 ">
+    <div class="flex flex-col">
         <div class="flex flex-col items-center w-full h-full">
             <div :class="{
                     'relative float-left m-4 text-center': hasNextGoal$,
@@ -12,17 +12,17 @@
                         'absolute  flex flex-col bottom-24 text-center w-full': hasNextGoal$,
                         'flex flex-col text-center w-full': !hasNextGoal$
                     }">
-                    <span class="text-xl font-bold leading-tight xl:text-2xl">{{ petition$.signatures_count }}</span>
-                    <span> supporters</span>
+                    <span class="text-xl font-bold leading-tight xl:text-2xl text-white">{{ petition$.signatures_count }}</span>
+                    <span class="text-sm text-gray-400"> supporters</span>
                 </div>
                 <div v-if="lackingNextGoal$" class="flex flex-col items-center w-full">
-                    <span>waiting for admin to set next petition goals</span>
+                    <span class="text-sm text-gray-400 italic">waiting for admin to set next petition goals</span>
                 </div>
                 <div v-if="allGoalsAchieved$" class="flex flex-col items-center w-full">
-                    <span>All petition goals achieved</span>
+                    <span class="text-sm text-green-400">All petition goals achieved</span>
                 </div>
                 <div v-if="hasNextGoal$" class="flex flex-col items-center w-full">
-                    <span>Only <span class="font-bold">{{ neededSupportesNextGoal$ }} more</span> supporters to your next goal.</span>
+                    <span class="text-sm text-gray-400">Only <span class="font-bold text-white">{{ neededSupportesNextGoal$ }} more</span> supporters to your next goal.</span>
                 </div>
             </div>
         </div>

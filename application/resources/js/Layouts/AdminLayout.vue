@@ -19,8 +19,15 @@ let {isDarkMode} = storeToRefs(configStore);
 
 <template>
     <div :class="{'dark': isDarkMode }" v-if="!!$page.props?.auth?.user">
-        <div class="min-h-screen bg-sky-50 dark:bg-gray-900">
-            <nav class="bg-sky-50 border-b border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+        <div class="min-h-screen text-slate-100 bg-slate-950 dark:bg-slate-950">
+            <nav class="border-b bg-slate-900/95 border-slate-700 dark:bg-slate-900/95 dark:border-slate-700">
+                <div class="border-b bg-rose-700 border-rose-500/70">
+                    <div class="px-4 py-1 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                        <p class="text-xs font-semibold tracking-widest text-center uppercase text-rose-50 sm:text-left">
+                            {{ $page.props.adminContext?.label ?? 'Admin Console' }}
+                        </p>
+                    </div>
+                </div>
                 <!-- Primary Navigation Menu -->
                 <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
@@ -31,6 +38,9 @@ let {isDarkMode} = storeToRefs(configStore);
                                     <ApplicationLogo
                                         class="block w-auto text-gray-800 fill-current h-9 dark:text-gray-200"/>
                                 </Link>
+                                <span class="hidden px-2 py-1 ml-3 text-xs font-semibold tracking-wide uppercase border rounded-md sm:inline-flex bg-rose-800/80 text-rose-100 border-rose-500/80">
+                                    Admin
+                                </span>
                             </div>
 
                             <!-- Navigation Links -->
@@ -61,7 +71,7 @@ let {isDarkMode} = storeToRefs(configStore);
                                         <template #trigger>
                                             <span class="inline-flex rounded-md">
                                                 <button type="button"
-                                                        class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-sky-100 border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
+                                                        class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out border rounded-md text-slate-200 border-slate-600 bg-slate-800 hover:text-white hover:border-slate-500 focus:outline-none">
                                                     {{ $page.props.auth.user.name }}
 
                                                     <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
@@ -76,7 +86,7 @@ let {isDarkMode} = storeToRefs(configStore);
 
                                         <template #content>
                                             <DropdownLink :href="route('admin.profile.edit')"> Profile</DropdownLink>
-                                            <DropdownLink :href="route('logout')" method="post" as="button">
+                                            <DropdownLink :href="route('admin.logout')" method="post" as="button">
                                                 Log Out
                                             </DropdownLink>
                                         </template>
@@ -90,7 +100,7 @@ let {isDarkMode} = storeToRefs(configStore);
                         <!-- Hamburger -->
                         <div class="flex items-center -mr-2 sm:hidden">
                             <button @click="showingNavigationDropdown = !showingNavigationDropdown"
-                                    class="inline-flex items-center justify-center p-2 text-gray-400 transition duration-150 ease-in-out rounded-md dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400">
+                                    class="inline-flex items-center justify-center p-2 transition duration-150 ease-in-out rounded-md text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:bg-slate-800 focus:text-white">
                                 <svg class="w-6 h-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path :class="{
                                         hidden: showingNavigationDropdown,
@@ -112,23 +122,28 @@ let {isDarkMode} = storeToRefs(configStore);
                 <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
                      class="sm:hidden">
                     <div class="pt-2 pb-3 space-y-1">
+                        <div class="px-4 pb-2 mb-1">
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold tracking-widest uppercase border rounded-md bg-rose-800/80 text-rose-100 border-rose-500/80">
+                                {{ $page.props.adminContext?.label ?? 'Admin Console' }}
+                            </span>
+                        </div>
                         <ResponsiveNavLink :href="route('admin.dashboard')" :active="route().current('dashboard')">
                             Dashboard
                         </ResponsiveNavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->
-                    <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
+                    <div class="pt-4 pb-1 border-t border-slate-700 dark:border-slate-700">
                         <div class="px-4">
-                            <div class="text-base font-medium text-gray-800 dark:text-gray-200">
+                            <div class="text-base font-medium text-slate-100 dark:text-slate-100">
                                 {{ $page.props.auth.user.name }}
                             </div>
-                            <div class="text-sm font-medium text-gray-500">{{ $page.props.auth.user.email }}</div>
+                            <div class="text-sm font-medium text-slate-400">{{ $page.props.auth.user.email }}</div>
                         </div>
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('admin.profile.edit')"> Profile</ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('logout')" method="post" as="button">
+                            <ResponsiveNavLink :href="route('admin.logout')" method="post" as="button">
                                 Log Out
                             </ResponsiveNavLink>
                         </div>
@@ -137,7 +152,7 @@ let {isDarkMode} = storeToRefs(configStore);
             </nav>
 
             <!-- Page Heading -->
-            <header class="bg-white shadow dark:bg-gray-800" v-if="$slots.header">
+            <header class="border-b shadow bg-slate-900 border-slate-700 dark:bg-slate-900 dark:border-slate-700" v-if="$slots.header">
                 <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <slot name="header"/>
                 </div>

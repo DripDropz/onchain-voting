@@ -22,7 +22,7 @@ const props = withDefaults(
 
 const emit = defineEmits(['close']);
 let configStore = useConfigStore()
-let { showModal, showPublishModal } = storeToRefs(configStore);
+let { showModal, showPublishModal, isDarkMode } = storeToRefs(configStore);
 const target = ref(null);
 onClickOutside(target, (event) => close());
 
@@ -77,6 +77,7 @@ const maxWidthClass = computed(() => {
     <teleport to="body">
         <transition leave-active-class="duration-200">
             <div v-show="show" class="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 overflow-y-auto sm:px-0"
+                :class="{ 'dark': isDarkMode }"
                 scroll-region>
                 <transition enter-active-class="duration-300 ease-out" enter-from-class="opacity-0"
                     enter-to-class="opacity-100" leave-active-class="duration-200 ease-in" leave-from-class="opacity-100"

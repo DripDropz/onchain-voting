@@ -153,7 +153,7 @@ export default class BallotService {
             const walletStore = useWalletStore();
             const { walletName } = walletStore;
 
-            const ws = new WalletService(walletName);
+            const ws = WalletService.getInstance(walletName);
             BallotService.lucid = await ws.lucidInstance();
             return BallotService.lucid;
         } catch (error) {

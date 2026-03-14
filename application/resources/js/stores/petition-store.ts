@@ -24,6 +24,7 @@ export const usePetitionStore = defineStore('petition-store', () => {
     let params: Ref<{ [x: string]: any; } | null> = ref(null);
     let currentContext = ref('browse');
     let loadingMore = ref(false);
+    let activePublicRequestKey: Ref<string | null> = ref(null);
     let publicPetition: Ref<{
         [context: string]: {
             petitions: PetitionData[];
@@ -137,6 +138,18 @@ export const usePetitionStore = defineStore('petition-store', () => {
                 data['statusfilter'] = ['published'];
             }
 
+            const requestKey = JSON.stringify({
+                context,
+                nextCursor: data.nextCursor ?? null,
+                hasMorePages: data.hasMorePages ?? null,
+                params: params ?? null,
+            });
+
+            if (loadingMore.value && activePublicRequestKey.value === requestKey) {
+                return;
+            }
+            activePublicRequestKey.value = requestKey;
+
             await PublicPetitionService.fetchPetitions(data)
                 .then((res) => {
                     publicPetition.value[0][context].hasMorePages = res.hasMorePages;
@@ -144,9 +157,13 @@ export const usePetitionStore = defineStore('petition-store', () => {
                     publicPetition.value[0][context].petitions = [...publicPetition.value[0][context].petitions, ...res.petitions];
                 }).finally(() => {
                     loadingMore.value = false
+                    if (activePublicRequestKey.value === requestKey) {
+                        activePublicRequestKey.value = null;
+                    }
                 })
         } catch (error) {
             loadingMore.value = false
+            activePublicRequestKey.value = null;
             AlertService.show(['error'], 'error ')
         }
     }
@@ -166,8 +183,32 @@ export const usePetitionStore = defineStore('petition-store', () => {
         return publicPetition?.value[0][currentContext.value]?.nextCursor && publicPetition?.value[0][currentContext.value]?.hasMorePages;
     })
 
+    function resetContext(context: string) {
+        if (!publicPetition.value[0]?.[context]) {
+            return;
+        }
+
+        publicPetition.value[0][context].petitions = [];
+        publicPetition.value[0][context].nextCursor = null;
+        publicPetition.value[0][context].hasMorePages = null;
+    }
+
+    async function reloadContext(context = 'browse', params = null) {
+        resetContext(context);
+        loadingMore.value = true;
+        await loadPublicPetitions(context, params);
+    }
+
     function setContext(context: any) {
         currentContext.value = context;
+    }
+
+    function removePetition(hash: string) {
+        for (const context of Object.keys(publicPetition.value[0])) {
+            publicPetition.value[0][context].petitions = publicPetition.value[0][context].petitions.filter(
+                (p) => p.hash !== hash
+            );
+        }
     }
 
     watch(() => currentModel.value?.currPage, () => {
@@ -183,6 +224,11 @@ export const usePetitionStore = defineStore('petition-store', () => {
         currentModel.value.currPage = null
         getFilteredData().then();
     }, { deep: true })
+
+    function clearAdminPetitions() {
+        currentModel.value = {} as CurrentModel<any, any, any, any, any>;
+        params.value = null;
+    }
 
     return {
         formData,
@@ -200,5 +246,9 @@ export const usePetitionStore = defineStore('petition-store', () => {
         showMore,
         setContext,
         singlePublicPetition,
+        removePetition,
+        resetContext,
+        reloadContext,
+        clearAdminPetitions,
     }
 });

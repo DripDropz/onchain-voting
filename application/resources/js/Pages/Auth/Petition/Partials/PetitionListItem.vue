@@ -1,101 +1,216 @@
 <template>
-    <div class="flex flex-row my-8 border rounded-lg border-slate-900 dark:border-slate-700 dark:text-slate-100">
-        <div class="w-2/3">
-            <div class="p-4">
-                <h2 class="mb-4 text-2xl font-bold align-middle">
-                    <Link
-                        v-if="!petition?.ballot"
-                        :href="route('admin.petitions.edit', { petition: petition.hash })"
-                        class="font-semibold hover:text-sky-500">
-                        {{ petition.title }} <span class="opacity-30 text-sm">- {{ petition.status }}</span>
-                    </Link>
-                </h2>
-                <span v-html="parseMarkdown(petition.description)"></span>
-            </div>
+    <div class="group relative flex flex-col bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+        <!-- Status accent bar -->
+        <div class="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl" :class="statusBarColor" />
+
+        <!-- Image with placeholder -->
+        <div class="relative w-full h-32 overflow-hidden bg-gray-800">
+            <img
+                v-if="petition.image_url"
+                :src="petition.image_url"
+                :alt="petition.title"
+                class="absolute inset-0 w-full h-full object-cover"
+            />
             <div
-                class="flex flex-row items-center justify-between p-4 border border-b-0 border-l-0 border-r-0 border-black border-t- dark:border-slate-700">
-                <div class="flex flex-row items-center justify-between gap-8 w-full">
-                    <h2 class="text-sm font-bold">{{ petition.hash }}</h2>
+                v-else
+                class="absolute inset-0 bg-gradient-to-br from-sky-950 via-gray-900 to-gray-950"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent" />
+        </div>
 
-                    <div class="flex flex-row items-center gap-2">
-                        <Link
-                            :href="route('petitions.view', { petition: petition.hash })"
-                            class="font-semibold text-sky-500 hover:text-slate-700 dark:hover:text-white">
-                            <span>View</span>
-                        </Link>
+        <div class="flex flex-col flex-1 pl-5 pr-5 pt-5 pb-4 gap-3">
+            <!-- Header row: title + status badge -->
+            <div class="flex items-start justify-between gap-4">
+                <Link
+                    v-if="!petition?.ballot"
+                    :href="route('admin.petitions.edit', { petition: petition.hash })"
+                    class="text-lg font-semibold text-gray-900 dark:text-white leading-snug hover:text-sky-500 dark:hover:text-sky-400 transition-colors line-clamp-2"
+                >
+                    {{ petition.title }}
+                </Link>
+                <span v-else class="text-lg font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2">
+                    {{ petition.title }}
+                </span>
+                <span
+                    class="shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
+                    :class="statusBadgeClass"
+                >
+                    {{ statusLabel }}
+                </span>
+            </div>
 
-                        <Link
-                            v-if="!petition?.ballot"
-                            :href="route('admin.petitions.edit', { petition: petition.hash })"
-                            class="font-semibold text-sky-500 hover:text-slate-700 dark:hover:text-white">
-                            <span>Edit</span>
-                        </Link>
+            <!-- Description preview -->
+            <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 leading-relaxed">
+                {{ descriptionPreview }}
+            </p>
 
-                        <Link :href="route('admin.ballots.view', { ballot: petition?.ballot?.hash })"
-                              v-if="petition.ballot">
-                            <button :theme="'primary'"
-                                    class="flex flex-row items-center gap-2 px-4 py-1 font-semibold border-2 rounded-lg text-sky-500 border-sky-500">
-                                view ballot
-                                <ArrowTopRightOnSquareIcon class="w-5 h-5"/>
-                            </button>
-                        </Link>
-                    </div>
+            <!-- Hash -->
+            <p class="text-xs font-mono text-gray-400 dark:text-gray-600">{{ petition.hash }}</p>
+        </div>
 
-                    <div class="flex flex-row items-center gap-8">
-                        <div class="flex flex-row items-center gap-2">
-                            <UsersIcon class="w-6 h-6"/>
-                            <p>{{ petition.signatures_count }}</p>
-                        </div>
-                        <div class="flex flex-row items-center gap-2">
-                            <EnvelopeIcon class="w-6 h-6"/>
-                            <span>
-                                {{
-                                    formatDate(petition.status === 'published' ? petition.started_at : petition.created_at)
-                                }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+        <!-- Footer row -->
+        <div class="flex items-center justify-between px-5 py-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+            <div class="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
+                <span class="flex items-center gap-1">
+                    <UsersIcon class="w-3.5 h-3.5" />
+                    {{ petition.signatures_count ?? 0 }}
+                    <span class="hidden sm:inline">signatures</span>
+                </span>
+                <span class="flex items-center gap-1">
+                    <CalendarIcon class="w-3.5 h-3.5" />
+                    {{ formatDate(petition.status === 'published' ? petition.started_at : petition.created_at) }}
+                </span>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <!-- Approve/Reject for pending petitions -->
+                <template v-if="petition.status === 'pending'">
+                    <button
+                        @click="review('approved')"
+                        class="action-btn action-btn-success"
+                    >
+                        <CheckIcon class="w-3.5 h-3.5" />
+                        Approve
+                    </button>
+                    <button
+                        @click="review('rejected')"
+                        class="action-btn action-btn-danger"
+                    >
+                        <XMarkIcon class="w-3.5 h-3.5" />
+                        Reject
+                    </button>
+                </template>
+
+                <!-- View public page -->
+                <Link
+                    :href="route('petitions.view', { petition: petition.hash })"
+                    class="action-btn action-btn-ghost"
+                >
+                    <EyeIcon class="w-3.5 h-3.5" />
+                    View
+                </Link>
+
+                <!-- Edit in admin (if not moved to ballot) -->
+                <Link
+                    v-if="!petition?.ballot"
+                    :href="route('admin.petitions.edit', { petition: petition.hash })"
+                    class="action-btn action-btn-primary"
+                >
+                    <PencilIcon class="w-3.5 h-3.5" />
+                    Edit
+                </Link>
+
+                <!-- View ballot (if moved to ballot) -->
+                <Link
+                    v-if="petition.ballot"
+                    :href="route('admin.ballots.view', { ballot: petition.ballot.hash })"
+                    class="action-btn action-btn-primary"
+                >
+                    <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
+                    View Ballot
+                </Link>
             </div>
         </div>
-        <ul
-            class="flex flex-row items-center justify-center w-1/3 rounded-tr-lg rounded-br-lg bg-slate-200 dark:bg-slate-700">
-            <li class="w-auto ocv-link">
-                <img :src="voteAppLogo" alt="Logo" class="w-10 h-10 filter grayscale">
-            </li>
-
-            <li class="w-auto ocv-link">
-                <h1 class="font-bold tracking-tight sm:text-xl xl:text-3xl font-display text-slate-900 dark:text-slate-200">
-                    ChainVote
-                </h1>
-            </li>
-        </ul>
     </div>
 </template>
 
 <script setup lang="ts">
-import {defineProps} from 'vue';
-import PetitionData = App.DataTransferObjects.PetitionData;
-import {UsersIcon, EnvelopeIcon} from '@heroicons/vue/20/solid';
-import voteAppLogo from '../../../../../images/openchainvote.png';
-import {Link} from "@inertiajs/vue3";
-import {ArrowTopRightOnSquareIcon} from '@heroicons/vue/20/solid';
+import { computed } from 'vue';
 import MarkdownIt from 'markdown-it';
+import PetitionData = App.DataTransferObjects.PetitionData;
+import { Link, useForm } from "@inertiajs/vue3";
+import AlertService from '@/shared/Services/alert-service';
+import {
+    UsersIcon,
+    CalendarIcon,
+    EyeIcon,
+    PencilIcon,
+    ArrowTopRightOnSquareIcon,
+    CheckIcon,
+    XMarkIcon,
+} from '@heroicons/vue/20/solid';
 
+const md = new MarkdownIt({ html: false, breaks: true, linkify: false });
 
-defineProps<{
+const props = defineProps<{
     petition: PetitionData;
 }>();
 
+const form = useForm({
+    status: props?.petition?.status ?? 'draft',
+});
+
+const review = async (status: 'approved' | 'rejected') => {
+    form.status = status;
+    try {
+        await form.patch(route('admin.petitions.update', { petition: props.petition?.hash }));
+        props.petition.status = status;
+        AlertService.show([`Petition ${status} successfully`], 'success');
+    } catch (error) {
+        AlertService.show([`Failed to mark petition as ${status}. Please try again.`], 'error');
+    }
+};
+
+const descriptionPreview = computed(() => {
+    const html = md.render(props.petition.description ?? '');
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent ?? div.innerText ?? '';
+});
+
 const formatDate = (dateString: string): string => {
-    const options = {month: '2-digit', day: '2-digit', year: '2-digit'};
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return new Date(dateString).toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
 };
 
-const md = new MarkdownIt();
+const statusLabel = computed(() => {
+    const labels: Record<string, string> = {
+        draft:     'Draft',
+        pending:   'Under Review',
+        approved:  'Approved',
+        rejected:  'Rejected',
+        published: 'Published',
+        closed:    'Closed',
+    };
+    return labels[props.petition.status] ?? props.petition.status;
+});
 
-const parseMarkdown = (content: string): string => {
-    return md.render(content);
-};
+const statusBarColor = computed(() => ({
+    'bg-amber-400':  props.petition.status === 'draft',
+    'bg-blue-400':   props.petition.status === 'pending',
+    'bg-green-500':  props.petition.status === 'approved',
+    'bg-red-500':    props.petition.status === 'rejected',
+    'bg-sky-500':    props.petition.status === 'published',
+    'bg-gray-400':   props.petition.status === 'closed',
+}));
 
+const statusBadgeClass = computed(() => ({
+    'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400':  props.petition.status === 'draft',
+    'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400':      props.petition.status === 'pending',
+    'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400':  props.petition.status === 'approved',
+    'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400':          props.petition.status === 'rejected',
+    'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-400':          props.petition.status === 'published',
+    'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400':         props.petition.status === 'closed',
+}));
 </script>
+
+<style scoped>
+.action-btn {
+    @apply inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors;
+}
+.action-btn-ghost {
+    @apply bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200;
+}
+.action-btn-primary {
+    @apply bg-sky-500 hover:bg-sky-600 text-white;
+}
+.action-btn-success {
+    @apply bg-emerald-500 hover:bg-emerald-600 text-white;
+}
+.action-btn-danger {
+    @apply bg-red-500 hover:bg-red-600 text-white;
+}
+</style>

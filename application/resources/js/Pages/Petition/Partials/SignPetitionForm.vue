@@ -1,79 +1,69 @@
 <template>
-    <form class="flex flex-col gap-4">
-        <div>
-            <h2 class="mt-8 mb-4 text-2xl font-bold">{{ signature ? 'Signature' : 'Sign this petition' }}</h2>
-        </div>
+    <div class="space-y-4">
+        <p class="text-sm font-semibold text-white">
+            {{ signatureState ? 'Your Signature' : 'Sign this petition' }}
+        </p>
 
-        <div class="w-full px-4 py-8 bg-slate-100 rounded-xl" v-if="!user">
+        <!-- Not logged in -->
+        <div v-if="!user" class="rounded-xl bg-gray-800/60 border border-gray-700 px-4 py-5 text-center space-y-3">
+            <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-sky-500/15 border border-sky-500/20">
+                <PencilSquareIcon class="w-5 h-5 text-sky-400" />
+            </div>
+            <p class="text-sm text-gray-400">Connect your wallet to sign this petition</p>
             <LoginToView>
-                <span class="dark:text-slate-900">Login to sign petition.</span>
+                <span class="sr-only">Login to sign</span>
             </LoginToView>
         </div>
 
-        <div v-if="user && !signature" class="relative">
+        <!-- Logged in, not yet signed -->
+        <div v-else-if="!signatureState" class="rounded-xl bg-sky-950/40 border border-sky-700/30 p-4 space-y-3">
+            <div class="space-y-0.5">
+                <p class="text-sm font-semibold text-sky-300">Sign with your Cardano Wallet</p>
+                <p class="text-xs text-gray-400 leading-relaxed">
+                    Your wallet signature is cryptographically verifiable and provides the strongest proof of your identity.
+                </p>
+            </div>
             <SignWithWallet :petition="petition$" />
-            <Divider />
-            <div class="sticky flex flex-col gap-3">
-                <TextInput v-model="form.firstName" type="text" placeholder="First Name" />
-                <TextInput v-model="form.lastName" type="text" placeholder="Last Name" />
-                <TextInput v-model="form.email" type="email" placeholder="Email" />
-            </div>
-            <div class="flex justify-end mt-3">
-                <PrimaryButton :theme="'primary'" class="flex items-center justify-center w-full" :default-class="'py-2'"
-                    @click.prevent="submitForm">
-                    Sign this petition
-                </PrimaryButton>
-            </div>
         </div>
 
-        <div v-if="signature" class="relative">
-            <SignatureCard :signature="signature" />
+        <!-- Already signed -->
+        <div v-else>
+            <SignatureCard :signature="signatureState" />
         </div>
-
-
-    </form>
+    </div>
 </template>
 
 <script setup lang="ts">
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { useForm } from '@inertiajs/vue3';
+import { PencilSquareIcon } from '@heroicons/vue/20/solid';
 import SignatureData = App.DataTransferObjects.SignatureData;
-import AlertService from '@/shared/Services/alert-service';
-import TextInput from '@/Components/TextInput.vue';
 import LoginToView from '@/shared/components/LoginToView.vue';
-import Divider from '@/shared/components/Divider.vue';
 import SignWithWallet from '@/shared/components/SignWithWallet.vue';
 import SignatureCard from '@/Pages/Signature/Partials/SignatureCard.vue';
-import {usePetitionSignatureStore} from '@/Pages/Petition/stores/petition-signature-store';
+import { usePetitionSignatureStore } from '@/Pages/Petition/stores/petition-signature-store';
 import { storeToRefs } from 'pinia';
+import { computed, watch } from 'vue';
+import { useWalletStore } from '@/cardano/stores/wallet-store';
 
-
-const props = defineProps<{
+defineProps<{
     user?: {}
     signature?: SignatureData;
 }>();
 
-let petitionSignatureStore = usePetitionSignatureStore();
-let {  petition$ } = storeToRefs(petitionSignatureStore);
+const petitionSignatureStore = usePetitionSignatureStore();
+const { petition$, signature$ } = storeToRefs(petitionSignatureStore);
+const walletStore = useWalletStore();
+const { walletData } = storeToRefs(walletStore);
 
-let form = useForm({
-    firstName: '',
-    lastName: '',
-    email: ''
-})
+const signatureState = computed(() => signature$.value ?? null);
 
-const submitForm = async() => {
-    form.post(route('petitions.signatures.store', { petition: petition$.value.hash }),
-        {
-            onSuccess: async() => {
-                await petitionSignatureStore.reloadPetitionData(petition$.value.hash);
-                AlertService.show(['Petition Signed '], 'success');
-            },
-            onError: (errors) => {
-                AlertService.show(
-                    Object.entries(errors).map(([key, value]) => value)
-                );
-            },
-        })
-};
+watch(
+    () => walletData.value?.stakeAddress,
+    (stakeAddress) => {
+        if (!stakeAddress || !petition$.value?.hash) {
+            return;
+        }
+
+        petitionSignatureStore.reloadPetitionData(petition$.value.hash, stakeAddress).then();
+    }
+);
 </script>

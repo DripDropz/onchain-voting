@@ -1,8 +1,7 @@
 import {defineStore} from 'pinia';
-import {onMounted, ref, Ref} from 'vue';
+import {onMounted, ref, Ref, watch} from 'vue';
 import { useStorage } from '@vueuse/core';
 import axios from 'axios';
-import { usePage } from '@inertiajs/vue3';
 
 export interface Config {
     hosted_by_link: string;
@@ -18,13 +17,64 @@ export interface ConfigStore {
     config: Config;
 }
 
+function getSystemPreference(): boolean {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
 export const useConfigStore = defineStore('config', () => {
-    const isDarkMode: Ref<Boolean> = useStorage('dark-mode', true, localStorage, {mergeDefaults: true});
+    // Track if user has manually set a preference
+    const hasUserPreference: Ref<boolean> = useStorage('user-theme-preference', false, localStorage);
+    
+    // Use stored preference if user set one, otherwise use system preference
+    const isDarkMode: Ref<boolean> = ref(false);
+    
     const config: Ref<Config> = ref<Config>({} as Config);
     let showModal = ref(false);
     let showPublishModal = ref(false);
-    let user =  usePage().props.auth.user;
 
+    function initializeTheme() {
+        if (hasUserPreference.value) {
+            // User has manually set a preference, use stored value
+            const storedValue = localStorage.getItem('dark-mode');
+            isDarkMode.value = storedValue !== null ? storedValue === 'true' : getSystemPreference();
+        } else {
+            // No user preference, use system preference
+            isDarkMode.value = getSystemPreference();
+        }
+        updateHtmlClass();
+    }
+
+    function updateHtmlClass() {
+        if (typeof document !== 'undefined') {
+            if (isDarkMode.value) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+    }
+
+    function toggleDarkMode() {
+        isDarkMode.value = !isDarkMode.value;
+        hasUserPreference.value = true; // Mark that user has manually set preference
+        localStorage.setItem('dark-mode', String(isDarkMode.value));
+        updateHtmlClass();
+    }
+
+    // Watch for system preference changes
+    function setupSystemPreferenceListener() {
+        if (typeof window !== 'undefined') {
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            mediaQuery.addEventListener('change', (e) => {
+                if (!hasUserPreference.value) {
+                    // Only auto-switch if user hasn't manually set a preference
+                    isDarkMode.value = e.matches;
+                    updateHtmlClass();
+                }
+            });
+        }
+    }
 
     async function loadConfig() {
         const configData = (await axios.get(route('config.app')))?.data;
@@ -40,10 +90,6 @@ export const useConfigStore = defineStore('config', () => {
         };
     }
 
-    function toggleDarkMode() {
-        isDarkMode.value = !isDarkMode.value;
-    }
-
     function toggleModal() {
         showModal.value = !showModal.value;
     }
@@ -52,7 +98,12 @@ export const useConfigStore = defineStore('config', () => {
         showPublishModal.value = !showPublishModal.value;
     }
 
-    onMounted(loadConfig);
+    // Initialize on mount
+    onMounted(() => {
+        loadConfig();
+        initializeTheme();
+        setupSystemPreferenceListener();
+    });
 
     return {
         config,
@@ -62,7 +113,7 @@ export const useConfigStore = defineStore('config', () => {
         toggleDarkMode,
         showModal,
         showPublishModal,
-        user
+        initializeTheme,
     }
 });
 

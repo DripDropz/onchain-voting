@@ -31,13 +31,13 @@
         </div>
         <div class="flex flex-row items-center justify-end w-1/3 gap-6 text-white">
             <div
-                class="relative lg:flex items-center gap-0 py-0.5 pl-1 bg-sky-400 rounded-lg flex-nowrap hover:bg-sky-300 hidden">
+                class="relative lg:flex items-center gap-0 py-0.5 pl-1 bg-sky-500 dark:bg-sky-600 rounded-lg flex-nowrap hover:bg-sky-400 dark:hover:bg-sky-500 hidden">
                 <div class="relative hover:text-yellow-400" >
-                    <ConnectWallet background-color="bg-white"></ConnectWallet>
+                    <ConnectWallet background-color="bg-white dark:bg-gray-800"></ConnectWallet>
                 </div>
 
                 <Link :href="route('login.wallet', { hash: pageData?.hash })" v-if="!user?.hash"
-                    class="flex items-center h-full gap-2 px-3 py-2 mx-1 bg-sky-400 rounde-lg hover:bg-sky-400">
+                    class="flex items-center h-full gap-2 px-3 py-2 mx-1 bg-sky-500 dark:bg-sky-600 rounded-lg hover:bg-sky-400 dark:hover:bg-sky-500">
                 <p>Login</p>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="relative w-5 h-5">
@@ -46,15 +46,21 @@
                 </svg>
                 </Link>
                 <Link preserve-state v-if="user?.hash" href="#" @click.prevent="logout"
-                    class="flex items-center h-full gap-2 px-3 py-2 mx-1 bg-sky-400 rounde-lg hover:bg-sky-400">
+                    class="flex items-center h-full gap-2 px-3 py-2 mx-1 bg-sky-500 dark:bg-sky-600 rounded-lg hover:bg-sky-400 dark:hover:bg-sky-500">
                 <p>Logout</p>
                 <ArrowRightOnRectangleIcon class="w-5 h-5"></ArrowRightOnRectangleIcon>
+                </Link>
+                <Link v-if="hasAdminSession"
+                    :href="route('admin.dashboard')"
+                    class="flex items-center h-full gap-2 px-3 py-2 mx-1 font-medium text-white rounded-lg bg-rose-600 hover:bg-rose-500">
+                <p>Admin</p>
+                <ArrowTopRightOnSquareIcon class="w-5 h-5"></ArrowTopRightOnSquareIcon>
                 </Link>
             </div>
             <div class="lg:hidden">
                 <div class="relative flex flex-col justify-between">
                     <button @click="showMenu = !showMenu"
-                        class="flex items-end justify-end w-full p-1 text-sm font-medium text-center text-white rounded-lg bg-sky-400 hover:bg-sky-500 focus:ring-4 focus:outline-none focus:ring-sky-300 dark:bg-sky-400 dark:hover:bg-sky-500 dark:focus:ring-sky-700"
+                        class="flex items-end justify-end w-full p-1 text-sm font-medium text-center text-white rounded-lg bg-sky-500 dark:bg-sky-600 hover:bg-sky-400 dark:hover:bg-sky-500 focus:ring-4 focus:outline-none focus:ring-sky-300 dark:focus:ring-sky-700"
                         type="button">
                         <Bars3Icon class="w-5 h-5" />
                     </button>
@@ -68,6 +74,12 @@
                                     class="flex justify-start p-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{{
                                         option.name }}</a>
                             </li>
+                            <li v-if="hasAdminSession">
+                                <Link :href="route('admin.dashboard')"
+                                    class="flex justify-start p-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    Admin
+                                </Link>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -80,7 +92,7 @@
 import { Link, router } from '@inertiajs/vue3';
 import ConnectWallet from "@/cardano/Components/ConnectWallet.vue";
 import DarkModeButton from '@/shared/components/DarkModeButton.vue';
-import { ArrowRightOnRectangleIcon, Bars3Icon } from '@heroicons/vue/24/outline';
+import { ArrowRightOnRectangleIcon, ArrowTopRightOnSquareIcon, Bars3Icon } from '@heroicons/vue/24/outline';
 import { usePage } from "@inertiajs/vue3";
 import { useWalletStore } from '@/cardano/stores/wallet-store';
 import { useConfigStore } from '@/stores/config-store';
@@ -104,6 +116,7 @@ withDefaults(defineProps<{
 });
 
 const currentUri =  usePage().props.ziggy.uri;
+const hasAdminSession = Boolean(usePage().props.adminContext?.hasAdminSession);
 let showMenu = ref(false);
 const menuOptions = [
     { name: 'Ballots', href: route('ballots.index'), uri: '/ballots' ,visible:usePage().props['feature-flags'].ballots},

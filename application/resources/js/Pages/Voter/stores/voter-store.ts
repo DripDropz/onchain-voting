@@ -14,7 +14,7 @@ export const useVoterStore = defineStore('voter', () => {
     const voterRegistrations: Ref<{ [key: string]: { policyId?: PolicyId, registration?: UTxO } }> = ref({});
     const walletStore = useWalletStore();
     const { walletName } = storeToRefs(walletStore);
-    const ws = new WalletService(walletName.value);
+    const ws = WalletService.getInstance(walletName.value);
     let confirmedOnChain = ref(false);
     let confirmationsComplete = ref(false);
     let confirmationCount = ref(0);

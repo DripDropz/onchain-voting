@@ -18,7 +18,6 @@ import WalletService from '@/cardano/Services/wallet-service';
 import { fromText, getAddressDetails } from '@lucid-cardano';
 import PetitionData = App.DataTransferObjects.PetitionData;
 import AlertService from '../Services/alert-service';
-import { Inertia } from '@inertiajs/inertia'
 import { useForm } from '@inertiajs/vue3';
 import { usePetitionSignatureStore } from '@/Pages/Petition/stores/petition-signature-store';
 
@@ -35,7 +34,7 @@ let petitionSignatureStore = usePetitionSignatureStore();
 let submitSignature = async () => {
 
     const messageHex = fromText(`Sign petition ${props.petition.hash}`)
-    const signature = await (new WalletService())
+    const signature = await WalletService.getInstance()
         .signMessage(walletName.value, messageHex);
 
     let form = useForm({
@@ -46,7 +45,7 @@ let submitSignature = async () => {
     form.post(route('petitions.signatures.store', { petition: props.petition.hash }),
         {
             onSuccess: () => {
-                petitionSignatureStore.reloadPetitionData(props.petition.hash).then();
+                petitionSignatureStore.reloadPetitionData(props.petition.hash, walletData.value.stakeAddress).then();
                 AlertService.show(['Petition Signed '], 'success');
             },
             onError: (errors) => {

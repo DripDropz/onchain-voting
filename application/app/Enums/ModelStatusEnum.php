@@ -9,6 +9,7 @@ enum ModelStatusEnum: string
     case PUBLISHED = 'published';
     case APPROVED = 'approved';
     case REJECTED = 'rejected';
+    case CLOSED = 'closed';
 
     public static function values(): array
     {

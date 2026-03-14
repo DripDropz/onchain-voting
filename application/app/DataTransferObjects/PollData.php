@@ -2,17 +2,16 @@
 
 namespace App\DataTransferObjects;
 
-use Spatie\LaravelData\Attributes\Validation\BooleanType;
+use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\IntegerType;
+use Spatie\LaravelData\Attributes\Validation\Required;
+use Spatie\LaravelData\Attributes\Validation\Rule;
+use Spatie\LaravelData\Attributes\Validation\StringType;
+use Spatie\LaravelData\Attributes\WithoutValidation;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\DataCollection;
-use Spatie\LaravelData\Attributes\Validation\Rule;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
-use Spatie\LaravelData\Attributes\WithoutValidation;
-use Spatie\LaravelData\Attributes\Validation\Required;
-use Spatie\TypeScriptTransformer\Attributes\TypeScript;
-use Spatie\LaravelData\Attributes\Validation\StringType;
 use Spatie\TypeScriptTransformer\Attributes\Optional as TypescriptOptional;
+use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
 class PollData extends Data
@@ -41,11 +40,23 @@ class PollData extends Data
         #[WithoutValidation]
         public ?UserData $user,
 
+        #[WithoutValidation]
+        public ?int $user_id,
+
         #[TypeScriptOptional]
         public ?string $created_at,
 
         #[TypeScriptOptional]
         public ?string $updated_at,
+
+        #[TypeScriptOptional]
+        public ?string $started_at,
+
+        #[TypeScriptOptional]
+        public ?string $ended_at,
+
+        #[TypeScriptOptional]
+        public ?string $image_url,
 
         #[Required]
         #[Rule('string')]
@@ -65,8 +76,7 @@ class PollData extends Data
         /** @var QuestionResponseData[] */
         public ?DataCollection $user_responses,
 
-    ) {
-    }
+    ) {}
 
     public static function attributes(): array
     {

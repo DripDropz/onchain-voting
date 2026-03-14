@@ -83,11 +83,10 @@
 </template>
 
 <script lang="ts" setup>
-import { defineEmits, computed, ref, watch, ComputedRef, onMounted } from "vue";
+import { computed, ref, watch } from "vue";
 import Multiselect from '@vueform/multiselect';
 import Pagination from "@/types/pagination";
 import { onUpdated } from "vue";
-import PetitionData = App.DataTransferObjects.PetitionData;
 
 const props = defineProps<{
     pagination: Pagination ;

@@ -56,7 +56,7 @@ import VoterLayout from "@/Layouts/VoterLayout.vue";
 import { LinkIcon, EnvelopeIcon } from "@heroicons/vue/20/solid";
 import PetitionData = App.DataTransferObjects.PetitionData;
 import AlertService from "@/shared/Services/alert-service";
-import { defineProps, ref } from "vue";
+import { ref } from "vue";
 
 const props = defineProps<{
     petition: PetitionData;

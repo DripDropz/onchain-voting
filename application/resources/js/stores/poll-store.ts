@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch, onMounted, Ref } from 'vue';
-import { InertiaForm } from "@inertiajs/vue3";
+import { InertiaForm, usePage } from "@inertiajs/vue3";
 import PollData = App.DataTransferObjects.PollData;
 import Pagination from "@/types/pagination";
 import PollsQuery from '@/types/polls-query';
@@ -19,6 +19,8 @@ export const usePollStore = defineStore('poll-store', () => {
     let pollsQueryData = ref<PollsQuery | null>({ p: 1, l: 10 });
     let loadingMore = ref(false)
     let currentContext = ref('browse');
+    let currentUserId = ref<number | null>(null);
+    let activePublicRequestKey: Ref<string | null> = ref(null);
     let publicPoll: Ref<{
         [context: string]: {
             polls: PollData[];
@@ -42,12 +44,46 @@ export const usePollStore = defineStore('poll-store', () => {
             nextCursor: null,
             hasMorePages: null,
         },
+        'draft':{
+            polls: [],
+            nextCursor: null,
+            hasMorePages: null,
+        },
         'answered':{
             polls: [],
             nextCursor: null,
             hasMorePages: null,
         },
     }]);
+
+    // Watch for user changes and reset store when user changes
+    const page = usePage();
+    watch(() => page.props.auth?.user?.id, (newUserId, oldUserId) => {
+        if (newUserId !== oldUserId) {
+            resetAllContexts();
+            currentUserId.value = newUserId ?? null;
+        }
+    }, { immediate: true });
+
+    function resetAllContexts() {
+        const contexts = ['browse', 'active', 'pending', 'draft', 'answered'];
+        contexts.forEach(context => {
+            if (publicPoll.value[0]?.[context]) {
+                publicPoll.value[0][context].polls = [];
+                publicPoll.value[0][context].nextCursor = null;
+                publicPoll.value[0][context].hasMorePages = null;
+            }
+        });
+        activePublicRequestKey.value = null;
+    }
+
+    function resetContext(context: string) {
+        if (publicPoll.value[0]?.[context]) {
+            publicPoll.value[0][context].polls = [];
+            publicPoll.value[0][context].nextCursor = null;
+            publicPoll.value[0][context].hasMorePages = null;
+        }
+    }
 
     function uploadFormData(form: any) {
         formData.value = form;
@@ -89,16 +125,40 @@ export const usePollStore = defineStore('poll-store', () => {
                 ...params
             }
 
+            // Create a unique request key to prevent duplicate simultaneous requests
+            const requestKey = JSON.stringify({
+                context,
+                nextCursor: data.nextCursor ?? null,
+                hasMorePages: data.hasMorePages ?? null,
+                params: params ?? null,
+                userId: currentUserId.value,
+            });
+
+            // Skip if this exact request is already in flight
+            if (loadingMore.value && activePublicRequestKey.value === requestKey) {
+                return;
+            }
+            activePublicRequestKey.value = requestKey;
+
             await PublicPollService.fetchPolls(data)
                 .then((res) => {
                     publicPoll.value[0][context].hasMorePages = res.hasMorePages;
                     publicPoll.value[0][context].nextCursor = res.nextCursor;
-                    publicPoll.value[0][context].polls = [...publicPoll.value[0][context].polls ,...res.polls];
+                    
+                    // Deduplicate polls by hash before adding
+                    const existingHashes = new Set(publicPoll.value[0][context].polls.map(p => p.hash));
+                    const newPolls = res.polls.filter(p => !existingHashes.has(p.hash));
+                    
+                    publicPoll.value[0][context].polls = [...publicPoll.value[0][context].polls, ...newPolls];
                 }).finally(() => {
-                    loadingMore.value = false
+                    loadingMore.value = false;
+                    if (activePublicRequestKey.value === requestKey) {
+                        activePublicRequestKey.value = null;
+                    }
                 })
         } catch (error) {
-            loadingMore.value = false
+            loadingMore.value = false;
+            activePublicRequestKey.value = null;
             AlertService.show(['error'], 'error ')
         }
     }
@@ -118,6 +178,27 @@ export const usePollStore = defineStore('poll-store', () => {
         return publicPoll?.value[0][currentContext.value]?.nextCursor && publicPoll?.value[0][currentContext.value]?.hasMorePages;
     });
 
+    function removePoll(hash: string) {
+        const context = currentContext.value;
+        if (publicPoll.value[0][context]) {
+            publicPoll.value[0][context].polls = publicPoll.value[0][context].polls.filter(
+                (poll) => poll.hash !== hash
+            );
+        }
+    }
+
+    async function reloadContext(context: string, params: any) {
+        resetContext(context);
+        loadingMore.value = true;
+        await loadPublicPolls(context, params);
+    }
+
+    function clearAdminPolls() {
+        pollsData.value = [];
+        pollsPagination.value = undefined;
+        pollsQueryData.value = { p: 1, l: 10 };
+    }
+
     return {
         formData,
         poll,
@@ -136,6 +217,11 @@ export const usePollStore = defineStore('poll-store', () => {
         publicPoll,
         currentContext,
         setContext,
-        singlePublicPoll
+        singlePublicPoll,
+        removePoll,
+        reloadContext,
+        resetContext,
+        resetAllContexts,
+        clearAdminPolls,
     }
 });

@@ -1,21 +1,24 @@
 <template>
     <ModalRoute :max-width-class="'max-w-[55rem]'">
         <div class="flex flex-col h-full p-6 border border-slate-200 gap-y-4 dark:border-slate-700 ">
-            <p class="text-xl font-bold leading-tight xl:text-2xl">Make Petition Rules</p>
+            <p class="text-xl font-bold leading-tight xl:text-2xl">Configure Petition Gate</p>
             <div class="flex flex-col gap-2">
-                <p>Title </p>
+                <p>Policy Name</p>
                 <TextInput class="w-full" :Placeholder="'Title here...'" v-model="form.title" />
             </div>
 
             <div class="flex flex-col gap-2">
-                <p>Policy Id </p>
-                <TextInput class="w-full" :Placeholder="'Paste Policy here...'" v-model="form.policy" />
+                <p>Policy ID</p>
+                <TextInput class="w-full" :Placeholder="'Paste 56-character policy ID...'" v-model="form.policy" />
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                    Signers will qualify if they hold any asset under this policy.
+                </p>
             </div>
 
             <div class="flex flex-col gap-4">
                 <div v-if="!assetData && working">
                     <p>
-                        Fetching asset data, please wait to confirm...
+                        Validating policy and fetching sample asset data...
                     </p>
                     <div role="status" class="flex flex-col gap-6 p-3 lg:flex-row">
                         <div class="flex items-center justify-center w-64 h-64 mb-4 rounded bg-slate-300 dark:bg-slate-700">
@@ -47,7 +50,10 @@
 
                 <div class="w-full gap-4 " v-if="assetData">
                     <p class="mb-4 font-bold">
-                        We found {{ assetCount }} assets under this policy. Here is your first asset's detail.
+                        We found {{ assetCount }} assets under this policy. This sample asset preview is for policy confirmation only.
+                    </p>
+                    <p class="mb-4 text-sm text-slate-500 dark:text-slate-400">
+                        This rule saves only the policy ID. Any asset under this policy satisfies the gate.
                     </p>
                     <div class="flex flex-col gap-6 p-3 lg:flex-row">
                         <UseImage :src="assetImageUrl" class="w-64 h-64">
@@ -71,20 +77,14 @@
                             <div>
                                 <div
                                     class="flex flex-col justify-start gap-2 py-3 border-b border-slate-400 border-opacity-40 dark:border-slate-600 text-wrap">
-                                    <span class="mr-2 font-bold">Fingerprint:</span> <span class="break-all">
+                                    <span class="mr-2 font-bold">Sample Asset Name:</span> <span class="break-all">
                                         {{ assetData.value?.metadata?.name ?? assetData.value?.onchain_metadata?.name ??
                                             assetData.value?.name ?? assetData.fingerprint }}
                                     </span>
                                 </div>
-<!--                                <div-->
-<!--                                    class="flex flex-col justify-start w-full gap-2 py-3 border-b border-slate-400 border-opacity-40 dark:border-slate-600 text-wrap">-->
-<!--                                    <span class="mr-2 font-bold">Policy:</span> <span class="break-all">{{-->
-<!--                                        assetData.policy_id }}</span>-->
-<!--                                </div>-->
                                 <div
                                     class="flex flex-col justify-start w-full gap-2 py-3 border-b border-slate-400 border-opacity-40 dark:border-slate-600 text-wrap">
-                                    <span class="mr-2 font-bold">Asset :</span> <span class="break-all">{{ assetData.asset
-                                    }}</span>
+                                    <span class="mr-2 font-bold">Policy ID:</span> <span class="break-all">{{ form.policy }}</span>
                                 </div>
                             </div>
                         </div>
@@ -131,14 +131,38 @@ let form = useForm({
     policy: '',
     title: '',
     type: props.type,
+    image_url: '',
+    asset_metadata: '',
 })
+
+const policyPattern = /^[0-9a-fA-F]{56}$/;
 
 let query = async () => {
     working.value = true;
-    let res = (await axios.get(route('frost.asset', { policy: form.policy }))).data;
-    assetData.value = res.asset;
-    assetCount.value = res.assetCount;
-    working.value = false;
+    try {
+        let res = (await axios.get(route('frost.asset', { policy: form.policy }))).data;
+        assetData.value = res.asset;
+        assetCount.value = res.assetCount;
+        // Store image URL and metadata for saving
+        let url = assetImageUrl.value;
+        if (url) {
+            form.image_url = url;
+        }
+        // Store relevant metadata as JSON string
+        let metadata = {
+            name: assetData.value?.metadata?.name ?? assetData.value?.onchain_metadata?.name ?? assetData.value?.name ?? assetData.value?.fingerprint,
+            policy: form.policy,
+            fingerprint: assetData.value?.fingerprint,
+        };
+        form.asset_metadata = JSON.stringify(metadata);
+    } catch (error) {
+        assetData.value = null;
+        assetCount.value = null;
+        form.image_url = '';
+        form.asset_metadata = '';
+    } finally {
+        working.value = false;
+    }
 }
 
 let assetImageUrl = computed(() => {
@@ -168,6 +192,16 @@ let saveRule = () => {
 
 
 watch(() => form.policy, () => {
+    const trimmedPolicy = form.policy.trim();
+    form.policy = trimmedPolicy;
+
+    if (!policyPattern.test(trimmedPolicy)) {
+        assetData.value = null;
+        assetCount.value = null;
+        working.value = false;
+        return;
+    }
+
     query();
 })
 

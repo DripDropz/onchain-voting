@@ -62,11 +62,15 @@ Route::prefix('/query-chain')->as('frost.')->group(
 );
 
 Route::get('query/{params?}', function (Request $request, BlockfrostRequest $frost) {
-    $uri = str_replace('api/query','', $request->getRequestUri());
+    $uri = '/' . $request->route('params');
     $frost->setEndPoint($uri);
-    $response = $frost->send();
 
-    return $response->json();
+    try {
+        $response = $frost->send();
+        return $response->json();
+    } catch (\Throwable $e) {
+        return response()->json(['error' => $e->getMessage()], 502);
+    }
 })->where('params', '.*')->name('blockfrost-query');
 
 

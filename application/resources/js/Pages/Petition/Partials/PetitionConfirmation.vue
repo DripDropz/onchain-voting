@@ -1,58 +1,44 @@
 <template>
-    <div class="p-4 bg-white dark:bg-gray-800 space-y-6">
+    <div class="p-6 bg-white dark:bg-gray-800 space-y-6 text-center">
         <div>
-            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-sky-300">
-                <SignalIcon class="h-7 w-7" aria-hidden="true" />
+            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-sky-100 dark:bg-sky-900/40">
+                <SignalIcon class="h-7 w-7 text-sky-500" aria-hidden="true" />
             </div>
-            <div class="mt-3 text-center sm:mt-5">
-                <h1 class="font-semibold leading-6 text-gray-900 dark:text-white text-lg">
-                    Are you ok with the petition's criteria?
+            <div class="mt-4 space-y-2">
+                <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    Sign in to create a petition
                 </h1>
-                <div class="mt-2">
-                    <p class="text-sm text-gray-500 dark:text-white">
-                        In order for folks to sign your petition they'll need to
-                        meet the following criteria:
-
-                        <span class="font-extrabold">
-                            Staked to NEWM NFT held:Drippyz, FT amount: 100A
-                        </span>
-                    </p>
-                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    You need to be logged in to create a petition on OpenChainVote.
+                </p>
             </div>
         </div>
-        <div class="flex justify-center gap-10">
+        <div class="flex justify-center gap-3">
             <button
                 type="button"
-                class="mt-3 inline-flex justify-center rounded-md bg-white px-4 py-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 sm:col-start-1 sm:mt-0"
+                class="inline-flex justify-center rounded-md bg-white dark:bg-gray-700 px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
                 @click="$emit('close')"
-                ref="cancelButtonRef">
-                Nevermind
+            >
+                Cancel
             </button>
-            <button @click.prevent="createPetition" class="inline-flex justify-center rounded-md bg-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:col-start-2">
-                Yes, that works
+            <button
+                @click.prevent="goToLogin"
+                class="inline-flex justify-center rounded-md bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+            >
+                Sign in
             </button>
         </div>
     </div>
 </template>
-<script setup lang="ts">
-import AlertService from '@/shared/Services/alert-service';
-import {SignalIcon} from '@heroicons/vue/24/outline'
-import { router, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
 
-const page = usePage();
-const user = computed(() => page.props.auth.user);
+<script setup lang="ts">
+import { SignalIcon } from '@heroicons/vue/24/outline';
+import { router } from '@inertiajs/vue3';
+
 const emit = defineEmits(['close']);
 
-function createPetition(){
-    if(!user.value){
-        emit('close');
-        AlertService.show(["Login to create a petition."], "info");
-        setTimeout(() => { router.visit(route('login.wallet')) }, 1000);
-        return
-    } else {
-        router.visit(route('petitions.create'));
-        emit('close');
-    }
+function goToLogin() {
+    emit('close');
+    router.visit(route('login.wallet'));
 }
 </script>
